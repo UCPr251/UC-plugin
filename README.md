@@ -13,3 +13,11 @@
 ```Bash
 git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
+
+## 声明
+
+---
+
+- **未经本人允许，请勿在任何公共场合传播本插件。**
+
+---
