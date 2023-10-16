@@ -1,0 +1,12 @@
+BlivePush1:
+  - bilibili_live.php?_U_&id=_U_
+  - json
+BlivePush2:
+  - room.php?_U_&uid=_U_
+  - text
+BdynamicPush1:
+  - bilibili_dynamic.php?_U_&uid=_U_
+  - json
+BdynamicPush2:
+  - room.php?_U_&uid=_U_
+  - text
