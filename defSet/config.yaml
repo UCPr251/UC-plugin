@@ -18,7 +18,7 @@ isDetecteFloodScreen: false
 # B站直播推送配置
 BlivePush:
   # 群聊推送全局开关
-  isGoup: true
+  isGroup: true
   # 私聊推送全局开关
   isPrivate: true
   # 私聊订阅开关，关闭仅主人可私聊订阅
