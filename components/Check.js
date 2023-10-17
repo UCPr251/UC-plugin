@@ -53,7 +53,7 @@ const Check = {
   permission(userId, need = undefined) {
     if (need) {
       const permission = this.permission(userId)
-      if (UCPr.isMaster && permission < 2) return false
+      if (UCPr.onlyMaster && permission < 2) return false
       if (permission >= need) return true
       return false
     }
@@ -70,10 +70,11 @@ const Check = {
   },
 
   /** 检查对方是否有该群管理权限 */
-  target(userId, groupId) {
+  target(userId, groupId, only = false) {
+    if (only && !this.str(UCPr.Master, userId)) return false
     if (!this.str(UCPr.AdminArr, userId)) return false
-    const Admin = UCPr.Admin
-    const permission = Admin[userId]
+    if (only && UCPr.onlyMaster) return false
+    const permission = UCPr.Admin[userId]
     if (permission === false) return true
     if (this.str(permission, groupId)) return true
     return false

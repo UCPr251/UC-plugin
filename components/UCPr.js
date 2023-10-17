@@ -126,8 +126,8 @@ const UCPr = {
   },
 
   /** 是否仅主人可操作 */
-  get isMaster() {
-    return this.config.isMaster ?? false
+  get onlyMaster() {
+    return this.config.onlyMaster ?? false
   },
 
   /** 插件优先级 */
@@ -138,6 +138,16 @@ const UCPr = {
   /** 选择服务 */
   get server() {
     return this.config.server ?? 1
+  },
+
+  /** 用户无权限回复 */
+  get noPerReply() {
+    return this.config.noPerReply ?? '无权限'
+  },
+
+  /** Bot无权限回复 */
+  get noPowReply() {
+    return this.config.noPowReply ?? '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
   },
 
   /** 主人列表 */
@@ -174,6 +184,11 @@ const UCPr = {
   /** 机器人qq */
   get qq() {
     return this.defaultCfg.qq ?? Bot.uin
+  },
+
+  /** 直播推送配置 */
+  get BlivePush() {
+    return this.config.BlivePush ?? {}
   }
 
 }

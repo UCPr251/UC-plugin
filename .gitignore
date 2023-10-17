@@ -5,6 +5,7 @@
 /resources
 /test.js
 /system
+/components/Per.js
 /.editorconfig
 /.eslintrc.cjs
 /apps/*

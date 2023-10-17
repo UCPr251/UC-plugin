@@ -3,13 +3,31 @@ log: true
 # 插件主人是否和机器人主人合并，不影响超管设置
 isDefaultMaster: true
 # 是否仅主人可操作
-isMaster: false
+onlyMaster: false
 # 插件优先级
 priority: 251
 # 选择服务
 server: 1
+# 用户无权限回复
+noPerReply: 无权限
+# Bot无权限回复
+noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
 # 刷屏检测开关
 isDetecteFloodScreen: false
+
+# B站直播推送配置
+BlivePush:
+  # 群聊推送全局开关
+  isGoup: true
+  # 私聊推送全局开关
+  isPrivate: true
+  # 私聊订阅开关，关闭仅主人可私聊订阅
+  isPrivateSubscribe: false
+  # 是否允许群原生管理员订阅推送，关闭仅主人和插件群管理员可订阅
+  isGroupAdmin: true
+  # 推送检测间隔，单位分钟，不能小于1，不建议小于2，需要重启
+  mins: 4
+
 # 刷屏检测配置
 DetecteFloodScreen:
   # 刷屏触发数量

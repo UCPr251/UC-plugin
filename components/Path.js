@@ -17,6 +17,8 @@ const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
+const BPGjson = path.join(data, 'BGroup.json')
+const BPPjson = path.join(data, 'BPrivate.json')
 
 /** 路径配置 */
 const Path = {
@@ -55,7 +57,11 @@ const Path = {
   /** ./data/errorLog.json */
   errorLogjson,
   /** ./data/accredit.json */
-  accreditjson
+  accreditjson,
+  /** 直播推送群聊数据 */
+  BPGjson,
+  /** 直播推送私聊数据 */
+  BPPjson
 }
 
 export default Path

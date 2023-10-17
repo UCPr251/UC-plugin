@@ -102,6 +102,15 @@ const common = {
     return obj.role === 'admin' || obj.role === 'owner'
   },
 
+  /** 判断Bot是否是管理员或群主 */
+  async botIsGroupAdmin(group) {
+    if (typeof group === 'number' || typeof group === 'string') {
+      if (!Number(group)) return false
+      group = await Bot.pickGroup(group)
+    }
+    return group.is_admin || group.is_owner
+  },
+
   async pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
       if (!Number(group)) return false
@@ -113,13 +122,6 @@ const common = {
   /** 踢出群员，需要管理权限 */
   async kickMember(groupId, userId) {
     return await this.pickGroup(groupId).kickMember(userId)
-  },
-
-  /** 判断Bot是否是管理员或群主 */
-  async botIsGroupAdmin(group) {
-    group = await this.pickGroup(group)
-    const memInfo = (await group.pickMember(Bot.uin)).info
-    return this.isGroupAdmin(memInfo)
   },
 
   /** 群员信息对象 */
