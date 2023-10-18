@@ -2,7 +2,6 @@
 /.vs
 /.vscode
 /config
-/resources
 /test.js
 /system
 /.editorconfig
