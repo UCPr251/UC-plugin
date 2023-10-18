@@ -32,12 +32,13 @@ function transformObj(obj, property) {
 function getNewGuobaConfig() {
   ALLCONFIG = _.merge({}, config, permissionCfg)
   now_config = _.cloneDeep(ALLCONFIG)
+  now_config = transformObj(now_config, 'BlivePush')
   now_config = transformObj(now_config, 'DetecteFloodScreen')
   now_config = transformObj(now_config, 'recall')
-  now_config.Master = now_config.Master.join('，')
+  now_config.Master = _.sortBy(now_config.Master).join('，')
   // now_config.SuperAdmin = now_config.SuperAdmin.join('，')
-  now_config.blackQQ = now_config.blackQQ.join('，')
-  now_config.whiteQQ = now_config.whiteQQ.join('，')
+  now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
+  now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
 }
 
 function getConfig(mode) {
@@ -130,6 +131,11 @@ const UCPr = {
     return this.config.onlyMaster ?? false
   },
 
+  /** 仅主人可操作时，对本拥有权限的管理的回复 */
+  get onlyMasterReply() {
+    return this.config.onlyMasterReply ?? '当前仅主人可操作'
+  },
+
   /** 插件优先级 */
   get priority() {
     return this.config.priority ?? 251
@@ -150,6 +156,11 @@ const UCPr = {
     return this.config.noPowReply ?? '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
   },
 
+  /** api连接失败回复 */
+  get fetchErrReply() {
+    return this.config.fetchErrReply ?? '连接失败，请稍后重试'
+  },
+
   /** 主人列表 */
   get Master() {
     if (!this.isDefaultMaster) return this.permissionCfg.Master
@@ -167,23 +178,23 @@ const UCPr = {
   },
 
   /** 黑名单列表 */
-  get blackQQ() {
-    return this.permissionCfg.blackQQ
+  get BlackQQ() {
+    return this.permissionCfg.BlackQQ ?? []
   },
 
   /** 白名单列表 */
-  get whiteQQ() {
-    return this.permissionCfg.whiteQQ
+  get WhiteQQ() {
+    return this.permissionCfg.WhiteQQ ?? []
   },
 
   /** 是否输出日志 */
   get log() {
-    return this.config.log
+    return this.config.log ?? true
   },
 
   /** 机器人qq */
   get qq() {
-    return this.defaultCfg.qq ?? Bot.uin
+    return Bot.uin ?? this.defaultCfg.qq
   },
 
   /** 直播推送配置 */

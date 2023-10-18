@@ -35,6 +35,27 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
+  /** 计算时间差值，返回{ Y, M, D, h, m, s } */
+  diff(start_time, end_time) {
+    const startDate = moment(start_time, 'YYYY-MM-DD HH:mm:ss')
+    const endDate = end_time ? moment(end_time, 'YYYY-MM-DD HH:mm:ss') : moment()
+    const diffDuration = moment.duration(endDate.diff(startDate))
+    const Y = diffDuration.years()
+    const M = diffDuration.months()
+    const D = diffDuration.days()
+    const h = diffDuration.hours()
+    const m = diffDuration.minutes()
+    const s = diffDuration.seconds()
+    return { Y, M, D, h, m, s }
+  },
+
+  /** 时间差描述字符串，精确到分 */
+  diffStr(start_time, end_time) {
+    const { Y, M, D, h, m } = this.diff(start_time, end_time)
+    const str = `${Y}年${M}个月${D}天${h}小时${m}分钟`
+    return str.slice(str.match(/[1-9]/)?.index || 0)
+  },
+
   /**
    * 汉语数字转阿拉伯数字
    * @author 椰羊

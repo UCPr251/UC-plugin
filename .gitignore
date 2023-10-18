@@ -5,11 +5,11 @@
 /resources
 /test.js
 /system
-/components/Per.js
 /.editorconfig
 /.eslintrc.cjs
 /apps/*
 !/apps/update.js
+!/apps/Admin.js
 !/apps/addJS.js
 !/apps/configSet.js
 !/apps/loveMys.js

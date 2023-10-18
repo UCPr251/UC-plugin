@@ -1,19 +1,21 @@
 # 是否输出日志
 log: true
-# 插件主人是否和机器人主人合并，不影响超管设置
+# 插件主人是否和机器人主人合并，不影响管理设置
 isDefaultMaster: true
-# 是否仅主人可操作
-onlyMaster: false
 # 插件优先级
 priority: 251
 # 选择服务
-server: 1
+server: 2
+# 是否仅主人可操作
+onlyMaster: false
+# 仅主人可操作时，对本拥有权限的管理的回复
+onlyMasterReply: 当前仅允许主人操作
 # 用户无权限回复
 noPerReply: 无权限
 # Bot无权限回复
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
-# 刷屏检测开关
-isDetecteFloodScreen: false
+# api连接失败回复
+fetchErrReply: 服务连接失败，请稍后重试
 
 # B站直播推送配置
 BlivePush:
@@ -23,13 +25,17 @@ BlivePush:
   isPrivate: true
   # 私聊订阅开关，关闭仅主人可私聊订阅
   isPrivateSubscribe: false
-  # 是否允许群原生管理员订阅推送，关闭仅主人和插件群管理员可订阅
-  isGroupAdmin: true
+  # 是否允许群插件管理员订阅推送，关闭仅主人或群原生管理员可订阅
+  isA: true
+  # 是否允许群原生管理员订阅推送，关闭仅主人或插件群管理员可订阅
+  isGA: true
   # 推送检测间隔，单位分钟，不能小于1，不建议小于2，需要重启
   mins: 4
 
 # 刷屏检测配置
 DetecteFloodScreen:
+  # 刷屏检测开关
+  isOpen: true
   # 刷屏触发数量
   judgeNum: 10
   # 是否警告，达到(刷屏数量-2)时提醒

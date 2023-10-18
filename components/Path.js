@@ -4,6 +4,7 @@ const Plugin_Name = 'UC-plugin'
 const _path = process.cwd()
 const otheryaml = path.join(_path, 'config', 'config', 'other.yaml')
 const plugins = path.join(_path, 'plugins')
+const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
 const apps = path.join(UC, 'apps')
 const config = path.join(UC, 'config')
@@ -17,8 +18,8 @@ const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
-const BPGjson = path.join(data, 'BGroup.json')
-const BPPjson = path.join(data, 'BPrivate.json')
+const BLPGroupjson = path.join(data, 'BLPGroup.json')
+const BLPPrivatejson = path.join(data, 'BLPPrivate.json')
 
 /** 路径配置 */
 const Path = {
@@ -30,6 +31,8 @@ const Path = {
   _path,
   /** 云崽/plugins */
   plugins,
+  /** 云崽/plugins/example */
+  example,
   /** other.yaml */
   otheryaml,
   /** ../UC-plugin */
@@ -59,9 +62,9 @@ const Path = {
   /** ./data/accredit.json */
   accreditjson,
   /** 直播推送群聊数据 */
-  BPGjson,
+  BLPGroupjson,
   /** 直播推送私聊数据 */
-  BPPjson
+  BLPPrivatejson
 }
 
 export default Path

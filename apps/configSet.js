@@ -15,6 +15,22 @@ Data.watch(Path.otheryaml, getNewCfg)
 
 getNewCfg()
 
+const helptext =
+  `[UC]configset.js支持指令修改config/other.yaml中所有内容
+正则匹配规则如下：
+0./^#?(config|UC)(帮助|菜单)$/i
+1./^#?(开启|启用|禁用|关闭)(自动)?(同意)?好友申请$/
+2./^#?(设置)?(自动)?退群人数(.*)$/
+3./^#?(增加|删除)主人(.*)$/
+4./^#?(拉黑|解黑)(群)?(.*)$/
+5./^#?(加白|解白)(群)?(.*)$/
+6./^#?(开启|启用|关闭|禁用)私聊$/
+7./^#?设置(私聊禁用|禁用私聊)回复(.*)$/
+8./^#?(增加|删除)(私聊)?通行字符串(.*)$/
+9./^#?(主人|黑名单群|黑名单|白名单|(私聊)?通行字符串)列表$/
+单次指令间隔参数可批量操作
+`
+
 export class UCConfigSet extends plugin {
   constructor() {
     super({
@@ -24,39 +40,43 @@ export class UCConfigSet extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: /^#?(UC)?(开启|启用|禁用|关闭)(自动)?(同意)?好友申请$/,
+          reg: /^#?config帮助$/i,
+          fnc: 'help'
+        },
+        {
+          reg: /^#?(开启|启用|禁用|关闭)(自动)?(同意)?好友申请$/,
           fnc: 'autoFriend'
         },
         {
-          reg: /^#?(UC)?(设置)?(自动)?退群人数\d+$/,
+          reg: /^#?(设置)?(自动)?退群人数\d+$/,
           fnc: 'autoQuit'
         },
         {
-          reg: /^#?(UC)?(增加|删除)主人(.*)/,
+          reg: /^#?(增加|删除)主人(.*)/,
           fnc: 'BWset'
         },
         {
-          reg: /^#?(UC)?(拉黑|解黑)(群)?(.*)/,
+          reg: /^#?(拉黑|解黑)(群)?(.*)/,
           fnc: 'BWset'
         },
         {
-          reg: /^#?(UC)?(加白|解白)(群)?(.*)$/,
+          reg: /^#?(加白|解白)(群)?(.*)$/,
           fnc: 'BWset'
         },
         {
-          reg: /^#?(UC)?(开启|启用|关闭|禁用)私聊$/,
+          reg: /^#?(开启|启用|关闭|禁用)私聊$/,
           fnc: 'disablePrivate'
         },
         {
-          reg: /^#?(UC)?设置(私聊禁用|禁用私聊)回复(.*)/,
+          reg: /^#?设置(私聊禁用|禁用私聊)回复(.*)/,
           fnc: 'disableMsg'
         },
         {
-          reg: /^#?(UC)?(增加|删除)(私聊)?通行字符串(.+)/,
+          reg: /^#?(增加|删除)(私聊)?通行字符串(.+)/,
           fnc: 'disableAdopt'
         },
         {
-          reg: /^#?(UC)?(主人|黑名单群?|白名单|(私聊)?通行字符串)列表$/,
+          reg: /^#?(主人|黑名单群?|白名单|(私聊)?通行字符串)列表$/,
           fnc: 'dataList'
         }
       ]
@@ -69,10 +89,14 @@ export class UCConfigSet extends plugin {
 
   verify() {
     if (!Check.permission(this.e.sender.user_id, 2)) {
-      this.reply('无权限')
+      this.reply(UCPr.noPerReply)
       return false
     }
     return true
+  }
+
+  async help(e) {
+    return e.reply(helptext)
   }
 
   async autoFriend(e) {
