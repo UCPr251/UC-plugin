@@ -51,6 +51,11 @@ const file = {
     return fs.readFileSync(path, 'utf8')
   },
 
+  /** 写入数据 */
+  writeFileSync(path, data) {
+    return fs.writeFileSync(path, data)
+  },
+
   /** 创建文件夹 */
   mkdirSync(path, recursive) {
     return fs.mkdirSync(path, { recursive })

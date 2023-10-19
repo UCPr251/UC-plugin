@@ -34,6 +34,35 @@ BlivePush:
   # 推送检测间隔，单位分钟，不能小于1，不建议小于2，需要重启
   mins: 4
 
+# 放大图片配置
+bigjpg:
+  # 放大图片key
+  apiKey:
+  # 放大风格，art和photo，代表卡通和照片，卡通图片放大效果最佳
+  style: art
+  # 默认放大降噪级别，可选[-1, 0, 1, 2, 3]，代表[无，低，中，高，最高]
+  noise: 3
+  # 默认放大倍数，可选[1, 2, 3, 4]，代表[2倍，4倍，8倍，16倍]
+  magnification: 1
+  # 每人每天放大次数限制，0为不限制，主人不受限
+  limits: 3
+  # 放大的图片是否自动保存，保存位置 resources/bigjpg
+  isSave: false
+  # 是否仅允许主人使用
+  isM: false
+  # 是否允许群插件管理员使用
+  isA: true
+  # 是否允许群原生管理员使用
+  isGA: true
+  # 是否允许每个人使用
+  isE: true
+  # 4倍限制，关闭仅允许主人放大4倍
+  x4Limit: false
+  # 8倍限制，关闭仅允许主人放大8倍
+  x8Limit: false
+  # 16倍限制，关闭仅允许主人放大16倍
+  x16Limit: false
+
 # 刷屏检测配置
 DetecteFloodScreen:
   # 刷屏检测开关

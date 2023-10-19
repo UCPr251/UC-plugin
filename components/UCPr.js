@@ -205,6 +205,11 @@ const UCPr = {
   /** 直播推送配置 */
   get BlivePush() {
     return this.config.BlivePush ?? {}
+  },
+
+  /** 放大图片配置 */
+  get bigjpg() {
+    return this.config.bigjpg ?? {}
   }
 
 }

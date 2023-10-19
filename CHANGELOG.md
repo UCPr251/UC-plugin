@@ -5,6 +5,7 @@
 - 适配[BlivePush]，支持锅巴
 - 新增[queueUp]，可用与群内排队
 - 新增[loveMys]`更新过码插件`功能
+- 适配[bigjpg]
 
 # 10-16
 

@@ -13,6 +13,7 @@ const system = path.join(defSet, 'system')
 const servesyaml = path.join(system, 'serves.yaml')
 const decryptyaml = path.join(system, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
+const bigjpg = path.join(resources, 'bigjpg')
 const configyaml = path.join(config, 'config.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
@@ -52,6 +53,8 @@ const Path = {
   decryptyaml,
   /** ./resources */
   resources,
+  /** ./resources/bigjpg */
+  bigjpg,
   /** ./config/config.yaml */
   configyaml,
   /** ./config/permission.yaml */

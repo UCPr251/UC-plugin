@@ -1,4 +1,5 @@
 import { Path, Check, common, file, UCPr, Permission } from '../components/index.js'
+import { segment } from 'icqq'
 import _ from 'lodash'
 
 await init()
@@ -29,7 +30,11 @@ export class UCQueueUp extends plugin {
         },
         {
           reg: /^#?UC排队信息$/i,
-          fnc: 'getPrizeDraw'
+          fnc: 'getQueueUpInfo'
+        },
+        {
+          reg: /^#(UC)?队列$/i,
+          fnc: 'getQueueingUpList'
         }
       ]
     })
@@ -79,11 +84,12 @@ export class UCQueueUp extends plugin {
     if (!info || !info.ing) return e.reply('当前群无进行中的排队任务')
     const name = await common.getName(e.group_id, e.at)
     if (Check.str(info.finished, e.at)) return e.reply(`群员${name}（${e.at}）本次排队已完成`)
-    if (!Check.str(info.joining, e.at)) return e.reply(`群员${name}（${e.at}）未参与排队`)
+    const index = info.joining.indexOf(e.at)
+    if (index === -1) return e.reply(`群员${name}（${e.at}）未参与排队`)
     _.pull(info.joining, e.at)
+    e.reply([segment.at(info.joining[index]), '排到你了哦！别错过了哦~'])
     info.finished.push(e.at)
     savaData(queueUpData)
-    return e.reply('操作成功')
   }
 
   async OCQueueUp(e) {
@@ -99,8 +105,8 @@ export class UCQueueUp extends plugin {
     return e.reply(`成功${status}本群排队啦！`, true)
   }
 
-  async getPrizeDraw(e) {
-    // if (!this.verify()) return false
+  async getQueueUpInfo(e) {
+    if (!this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     const memberData = await common.getMemberObj(e.group)
@@ -130,6 +136,23 @@ export class UCQueueUp extends plugin {
     const replyMsg = await common.makeForwardMsg(e, reply, title)
     return e.reply(replyMsg)
   }
+
+  async getQueueingUpList(e) {
+    const queueUpData = getData()
+    const info = queueUpData[e.group_id]
+    if (_.isEmpty(info.joining)) return e.reply('排队队列为空')
+    const memberData = await common.getMemberObj(e.group)
+    const playersInfo = info.joining
+      .map((player, index) => {
+        let memInfo = memberData[player]
+        let name = memInfo.card || memInfo.nickname
+        return `${index + 1}、${name}（${player}）`
+      })
+    const index = info.joining.indexOf(e.sender.user_id)
+    const reply = '排队队列\n\n' + playersInfo.join('\n') + index > -1 ? `你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！` : ''
+    return e.reply(reply)
+  }
+
 }
 
 async function init() {

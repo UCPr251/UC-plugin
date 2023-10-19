@@ -35,6 +35,12 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
+  /** 今天剩余秒数 */
+  get EXsecondes() {
+    const EXtime = moment().add(1, 'days').format('YYYY-MM-DD 00:00:00')
+    return -moment().diff(EXtime, 'seconds')
+  },
+
   /** 计算时间差值，返回{ Y, M, D, h, m, s } */
   diff(start_time, end_time) {
     const startDate = moment(start_time, 'YYYY-MM-DD HH:mm:ss')

@@ -4,14 +4,18 @@ import { Check, UCPr } from './index.js'
 
 /** 群聊权限判断 */
 class Permission {
-  constructor(e, { isA = false, isGA = true }) {
+  constructor(e, { isM = false, isA = false, isGA = true, isE = false }) {
     this.e = e
     this.sender = e.sender
     this.id = this.sender.user_id
+    /** 是否仅允许主人操作 */
+    this.isM = isM
     /** 是否允许群原生管理员操作 */
     this.isGA = isGA
     /** 是否允许插件群管理员操作 */
     this.isA = isA
+    /** 是否允许任何人操作 */
+    this.isE = isE
   }
 
   /** 发送者id */
@@ -63,11 +67,12 @@ class Permission {
     }
     return false
   }
-  /** 是否有权限操作 */
+  /** 是否有权限操作，判断优先级 主人>黑名单>仅主人>允许任何人>插件管理员=群管理员 */
   get isPer() {
+    if (this.isMaster) return true
     if (this.isBlack) return false
     if (UCPr.onlyMaster && !this.isMaster) return false
-    if (this.isMaster) return true
+    if (this.isE) return true
     if (!this.isA && !this.isPow) return false
     if (this.isPow && this.isGA) return true
     return this.isAdmin

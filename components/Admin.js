@@ -6,15 +6,16 @@ import _ from 'lodash'
 const Admin = {
   /**
    * 修改config.yaml属性对应值
-   * @param {*} element 需要操作的元素
+   * @param {*} path 需要操作的元素
    * @param {*} operation 修改值
-   * @returns {undefined|true|'already'} 操作结果code
+   * @returns {undefined|true|1} 操作结果code
    */
-  changeCfg(element, operation) {
+  changeCfg(path, operation) {
     const cfg = UCPr.config
-    if (cfg[element] === undefined) return undefined
-    if (cfg[element] === operation) return 'already'
-    cfg[element] = operation
+    const old = _.get(cfg, path)
+    if (old === undefined) return undefined
+    if (_.isEqual(old, operation)) return 1
+    _.set(cfg, path, operation)
     file.YAMLsaver(Path.configyaml, cfg)
     return true
   },
