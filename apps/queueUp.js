@@ -33,8 +33,8 @@ export class UCQueueUp extends plugin {
           fnc: 'getQueueUpInfo'
         },
         {
-          reg: /^#(UC)?队列$/i,
-          fnc: 'getQueueingUpList'
+          reg: /^#?(UC)?队列$/i,
+          fnc: 'getList'
         }
       ]
     })
@@ -81,7 +81,7 @@ export class UCQueueUp extends plugin {
     if (!e.at || !this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
-    if (!info || !info.ing) return e.reply('当前群无进行中的排队任务')
+    if (!info || !info.ing) return e.reply('当前群无进行中的排队任务', true)
     const name = await common.getName(e.group_id, e.at)
     if (Check.str(info.finished, e.at)) return e.reply(`群员${name}（${e.at}）本次排队已完成`)
     const index = info.joining.indexOf(e.at)
@@ -96,7 +96,7 @@ export class UCQueueUp extends plugin {
     if (!this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
-    if (!info) return e.reply('本群尚未创建排队')
+    if (!info) return e.reply('本群尚未创建排队', true)
     const isOpen = /开启/.test(e.msg)
     const status = isOpen ? '开启' : '关闭'
     if (info.ing === isOpen) return e.reply(`当前群内排队已经是${status}状态了`)
@@ -105,10 +105,11 @@ export class UCQueueUp extends plugin {
     return e.reply(`成功${status}本群排队啦！`, true)
   }
 
-  async getQueueUpInfo(e) {
+  async getList(e) {
     if (!this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
+    if (!info) return e.reply('本群尚未创建排队', true)
     const memberData = await common.getMemberObj(e.group)
     const playersInfo = info.joining
       .map((player, index) => {
@@ -140,6 +141,7 @@ export class UCQueueUp extends plugin {
   async getQueueingUpList(e) {
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
+    if (!info) return e.reply('本群尚未创建排队', true)
     if (_.isEmpty(info.joining)) return e.reply('排队队列为空')
     const memberData = await common.getMemberObj(e.group)
     const playersInfo = info.joining
