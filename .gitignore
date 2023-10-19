@@ -6,6 +6,7 @@
 /system
 /.editorconfig
 /.eslintrc.cjs
+/defSet/system/decrypt.yaml
 /apps/*
 !/apps/update.js
 !/apps/Admin.js
