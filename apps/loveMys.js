@@ -17,6 +17,10 @@ export class UCLoveMys extends plugin {
       priority: UCPr.priority,
       rule: [
         {
+          reg: /^#?UC过码帮助$/i,
+          fnc: 'loveMysHelp'
+        },
+        {
           reg: /^#?UC安装(过码|loveMys)$/i,
           fnc: 'installLoveMys'
         },
@@ -47,6 +51,11 @@ export class UCLoveMys extends plugin {
       return false
     }
     return true
+  }
+
+  async loveMysHelp(e) {
+    const hlepMsg = 'UC-plugin过码管理\n安装过码：#UC安装过码\n注入token：#UC注入过码tk你的tk\n查询剩余次数：#UC验证码查询\n更新过码插件：#UC更新过码'
+    return e.reply(hlepMsg)
   }
 
   async installLoveMys(e) {
