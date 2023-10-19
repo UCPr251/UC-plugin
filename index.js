@@ -54,4 +54,6 @@ if (status) {
     log.blue('-------------------')
 }
 
+setTimeout(Data.update, 2000)
+
 export { apps }
