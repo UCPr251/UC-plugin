@@ -105,7 +105,7 @@ export class UCQueueUp extends plugin {
     return e.reply(`成功${status}本群排队啦！`, true)
   }
 
-  async getList(e) {
+  async getQueueUpInfo(e) {
     if (!this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
@@ -138,7 +138,7 @@ export class UCQueueUp extends plugin {
     return e.reply(replyMsg)
   }
 
-  async getQueueingUpList(e) {
+  async getList(e) {
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (!info) return e.reply('本群尚未创建排队', true)
