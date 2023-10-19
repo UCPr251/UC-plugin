@@ -30,6 +30,11 @@ const UCDate = {
     return moment().format('YYYY-MM-DD HH:mm:ss')
   },
 
+  /** 当前日期时间数字串：20230731035700 */
+  get NowTimeNum() {
+    return moment().format('YYYYMMDDHHmmss')
+  },
+
   /** 当前[日期, 时间]，[年-月-日, 时:分:秒] */
   get date_time() {
     return this.NowTime.split(' ')
