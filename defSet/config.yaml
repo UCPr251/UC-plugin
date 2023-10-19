@@ -6,6 +6,8 @@ isDefaultMaster: true
 priority: 251
 # 选择服务
 server: 2
+# Bot名称
+BotName:
 # 是否仅主人可操作
 onlyMaster: false
 # 仅主人可操作时，对本拥有权限的管理的回复

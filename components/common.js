@@ -125,8 +125,8 @@ const common = {
   },
 
   /** 群员信息对象 */
-  async getMemberObj(groupId) {
-    return Object.fromEntries(await Bot.pickGroup(groupId).getMemberMap())
+  async getMemberObj(group) {
+    return Object.fromEntries((await common.pickGroup(group)).getMemberMap())
   },
 
   /** 返回群用户昵称 */

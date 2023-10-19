@@ -20,6 +20,7 @@ const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
 const BLPGroupjson = path.join(data, 'BLPGroup.json')
 const BLPPrivatejson = path.join(data, 'BLPPrivate.json')
+const queueUpjson = path.join(data, 'queueUp.json')
 
 /** 路径配置 */
 const Path = {
@@ -64,7 +65,9 @@ const Path = {
   /** 直播推送群聊数据 */
   BLPGroupjson,
   /** 直播推送私聊数据 */
-  BLPPrivatejson
+  BLPPrivatejson,
+  /** 群内排队 */
+  queueUpjson
 }
 
 export default Path

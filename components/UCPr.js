@@ -146,6 +146,11 @@ const UCPr = {
     return this.config.server ?? 1
   },
 
+  /** Bot名称 */
+  get BotName() {
+    return this.config.BotName || Bot.nickname
+  },
+
   /** 用户无权限回复 */
   get noPerReply() {
     return this.config.noPerReply ?? '无权限'
