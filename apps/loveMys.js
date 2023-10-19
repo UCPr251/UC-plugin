@@ -1,8 +1,11 @@
+/* eslint-disable new-cap */
 import { Path, Data, UCPr, Check, file } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
+import { update } from '../../other/update.js'
 import path from 'path'
 
-const loveMys = path.join(Path.plugins, 'loveMys-plugin')
+const Plugin_Name = 'loveMys-plugin'
+const loveMys = path.join(Path.plugins, Plugin_Name)
 const apiyaml = path.join(loveMys, 'config', 'api.yaml')
 
 export class UCLoveMys extends plugin {
@@ -24,6 +27,10 @@ export class UCLoveMys extends plugin {
         {
           reg: /^#?UC(验证码?|yzm)查询$/i,
           fnc: 'queryToken'
+        },
+        {
+          reg: /^#?UC更新过码$/i,
+          fnc: 'gitpull'
         }
       ]
     })
@@ -73,6 +80,23 @@ export class UCLoveMys extends plugin {
     if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
     if (!api) return e.reply('请先注入api，#UC注入过码api加你的api')
     return await e.reply(`剩余次数：${await times(api, token)}`)
+  }
+
+  async gitpull() {
+    if (!this.verify()) return false
+    let Update_Plugin = new update()
+    Update_Plugin.e = this.e
+    Update_Plugin.reply = this.reply
+    if (Update_Plugin.getPlugin(Plugin_Name)) {
+      if (this.e.msg.includes('强制')) {
+        Data.execute(loveMys, 'git reset --hard')
+      }
+      await Update_Plugin.runUpdate(Plugin_Name)
+      if (Update_Plugin.isUp) {
+        this.reply('更新过码插件成功，请手动重启')
+      }
+    }
+    return true
   }
 
 }
