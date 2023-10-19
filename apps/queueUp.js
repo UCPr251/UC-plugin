@@ -151,8 +151,11 @@ export class UCQueueUp extends plugin {
         return `${index + 1}、${name}（${player}）`
       })
     const index = info.joining.indexOf(e.sender.user_id)
-    const reply = '排队队列\n\n' + playersInfo.join('\n') + index > -1 ? `你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！` : ''
-    return e.reply(reply)
+    let replyMsg = '排队队列\n\n' + playersInfo.join('\n')
+    if (index > -1) {
+      replyMsg += `\n\n你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！`
+    }
+    return e.reply(replyMsg)
   }
 
 }
