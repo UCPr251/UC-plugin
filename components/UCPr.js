@@ -18,13 +18,15 @@ export let now_config = {}
 /** 实时全部配置信息 */
 export let ALLCONFIG = {}
 
-/** 将纯粹对象转换为普通属性 */
-function transformObj(obj, property) {
-  for (let key in obj[property]) {
-    obj[property + key] = obj[property][key]
-    delete obj[property][key]
+/** 将对象的纯粹对象属性转换为普通属性 */
+function transformObj(obj, ...property) {
+  for (const _property of property) {
+    for (const key in obj[_property]) {
+      obj[_property + '.' + key] = obj[_property][key]
+      delete obj[_property][key]
+    }
+    delete obj[_property]
   }
-  delete obj[property]
   return obj
 }
 
@@ -32,11 +34,8 @@ function transformObj(obj, property) {
 function getNewGuobaConfig() {
   ALLCONFIG = _.merge({}, config, permissionCfg)
   now_config = _.cloneDeep(ALLCONFIG)
-  now_config = transformObj(now_config, 'BlivePush')
-  now_config = transformObj(now_config, 'DetecteFloodScreen')
-  now_config = transformObj(now_config, 'recall')
+  now_config = transformObj(now_config, 'BlivePush', 'bigjpg', 'DetecteFloodScreen', 'recall')
   now_config.Master = _.sortBy(now_config.Master).join('，')
-  // now_config.SuperAdmin = now_config.SuperAdmin.join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
   now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
 }
@@ -149,6 +148,11 @@ const UCPr = {
   /** Bot名称 */
   get BotName() {
     return this.config.BotName || Bot.nickname
+  },
+
+  /** 过码剩余次数提醒预警值 */
+  get loveMysNotice() {
+    return this.config.loveMysNotice ?? 50
   },
 
   /** 用户无权限回复 */

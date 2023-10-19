@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Path, Data, UCPr } from '../components/index.js'
+import { Path, Data, UCPr, Check } from '../components/index.js'
 import { update } from '../../other/update.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
@@ -13,26 +13,40 @@ export class UCUpdate extends plugin {
       rule: [
         {
           reg: /^#?UC(强制)?更新$/i,
-          fnc: 'update',
-          permission: 'master'
+          fnc: 'update'
+        },
+        {
+          reg: /^#?(UC)?(强制)?(更新|刷新)授权$/i,
+          fnc: 'refresh'
         }
       ]
     })
   }
 
-  async update() {
+  async update(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return false
     let Update_Plugin = new update()
-    Update_Plugin.e = this.e
+    Update_Plugin.e = e
     Update_Plugin.reply = this.reply
     if (Update_Plugin.getPlugin(Path.Plugin_Name)) {
-      if (this.e.msg.includes('强制')) {
+      if (/强制/.test(e.msg)) {
         Data.execute(Path.UC, 'git reset --hard')
       }
       await Update_Plugin.runUpdate(Path.Plugin_Name)
+      Data.refresh()
       if (Update_Plugin.isUp) {
-        this.reply('更新成功，请手动重启')
+        this.reply('更新UC-plugin成功，重启生效')
       }
     }
     return true
+  }
+
+  async refresh(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (/强制/.test(e.msg)) {
+      Data.execute(Path.UC_plugin_decrypt, 'git reset --hard')
+    }
+    Data.refresh()
+    return e.reply('刷新成功')
   }
 }

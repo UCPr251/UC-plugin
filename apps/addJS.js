@@ -35,17 +35,35 @@ export class UCAddJS extends plugin {
       const fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
       const filename = this.e.file.name
       if (Check.file(path.join(Path.apps, filename))) {
-        this.reply(`你已经安装过${filename}插件了~`)
+        this.e.filename = filename
+        this.e.fileUrl = fileUrl
         this.finish(this.setFnc)
-        return
+        this.setContext('makeSure')
+        return this.reply(`你已经安装过[UC]${filename}插件了，是否覆盖原插件？[是|否]`)
       }
       if (await Data.addJS(fileUrl, Path.apps, filename)) {
         this.reply(`操作成功，新增UC-plugin/apps/${filename}，重启后生效`)
-        Data.update()
+        Data.refresh()
       } else {
         this.reply(UCPr.error)
       }
       this.finish(this.setFnc)
     }
   }
+
+  async makeSure() {
+    if (this.e.msg === '是') {
+      const { fileUrl, filename } = this.getContext().makeSure
+      if (await Data.addJS(fileUrl, Path.apps, filename)) {
+        this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，重启后生效`)
+        Data.refresh()
+      } else {
+        this.reply(UCPr.error)
+      }
+      return this.finish('makeSure')
+    }
+    this.reply('操作已取消')
+    this.finish('makeSure')
+  }
+
 }

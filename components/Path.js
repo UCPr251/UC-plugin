@@ -11,7 +11,8 @@ const config = path.join(UC, 'config')
 const defSet = path.join(UC, 'defSet')
 const system = path.join(defSet, 'system')
 const servesyaml = path.join(system, 'serves.yaml')
-const decryptyaml = path.join(system, 'decrypt.yaml')
+const UC_plugin_decrypt = path.join(system, 'UC-plugin-decrypt')
+const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
 const bigjpg = path.join(resources, 'bigjpg')
 const configyaml = path.join(config, 'config.yaml')
@@ -49,7 +50,9 @@ const Path = {
   system,
   /** ./defSet/system/serves.yaml */
   servesyaml,
-  /** ./defSet/system/decrypt.yaml */
+  /** ./defSet/system/UC_plugin_decrypt */
+  UC_plugin_decrypt,
+  /** ./defSet/system/UC_plugin_decrypt/decrypt.yaml */
   decryptyaml,
   /** ./resources */
   resources,

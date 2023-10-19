@@ -10,7 +10,7 @@ const log = {
 
   /** 红色报错输出，同时增加报错日志 */
   error(...log) {
-    logger.error(chalk.red('[UC]' + JSON.stringify(log.join(), null, 2)))
+    logger.error('[UC]' + JSON.stringify(log.join(), null, 2))
     Data.error(log)
   },
 

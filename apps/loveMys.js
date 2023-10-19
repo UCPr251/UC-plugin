@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Path, Data, UCPr, Check, file } from '../components/index.js'
+import { Path, Data, UCPr, Check, file, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import { update } from '../../other/update.js'
 import path from 'path'
@@ -38,6 +38,14 @@ export class UCLoveMys extends plugin {
         }
       ]
     })
+    if (Check.floder(loveMys)) {
+      this.task = {
+        name: '刷新loveMys验证码统计',
+        fnc: this.refresh.bind(this),
+        cron: '0 0 0 * * ?'
+      }
+      this.redisData = '[UC]loveMysTokenQuery'
+    }
   }
 
   verify() {
@@ -88,28 +96,45 @@ export class UCLoveMys extends plugin {
     const { api, token } = file.YAMLreader(apiyaml)
     if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
     if (!api) return e.reply('请先注入api，#UC注入过码api加你的api')
-    return await e.reply(`剩余次数：${await times(api, token)}`)
+    const yes_times = Number(await Data.redisGet(this.redisData))
+    const now_times = await remainingTimes(api, token)
+    let todayUsed = yes_times - now_times
+    if (todayUsed < 0) {
+      todayUsed = 0
+      Data.redisSet(this.redisData, now_times)
+    }
+    return await e.reply(`剩余次数：${now_times}次\n今日已用${todayUsed}次`)
   }
 
-  async gitpull() {
+  async gitpull(e) {
     if (!this.verify()) return false
     let Update_Plugin = new update()
-    Update_Plugin.e = this.e
-    Update_Plugin.reply = this.reply
+    Update_Plugin.e = e
+    Update_Plugin.reply = e.reply
     if (Update_Plugin.getPlugin(Plugin_Name)) {
-      if (this.e.msg.includes('强制')) {
+      if (/强制/.test(e.msg)) {
         Data.execute(loveMys, 'git reset --hard')
       }
       await Update_Plugin.runUpdate(Plugin_Name)
       if (Update_Plugin.isUp) {
-        this.reply('更新过码插件成功，请手动重启')
+        this.reply('更新过码插件成功，重启生效')
       }
     }
     return true
   }
 
+  async refresh() {
+    const { api, token } = file.YAMLreader(apiyaml)
+    if (!api || !token) return false
+    const now_times = await remainingTimes(api, token)
+    if (UCPr.loveMysNotice && now_times <= UCPr.loveMysNotice) {
+      common.sendMsgTo(UCPr.Master[0], `主淫，过码次数只剩下${now_times}次了哦~`)
+    }
+    await Data.redisSet(this.redisData, now_times)
+  }
+
 }
 
-async function times(api, token) {
+async function remainingTimes(api, token) {
   return (await fetch(`${api}?token=${token}`).then(res => res.json())).times
 }

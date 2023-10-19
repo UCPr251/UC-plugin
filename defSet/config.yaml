@@ -8,6 +8,8 @@ priority: 251
 server: 2
 # Bot名称
 BotName:
+# 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
+loveMysNotice: 50
 # 是否仅主人可操作
 onlyMaster: false
 # 仅主人可操作时，对本拥有权限的管理的回复
@@ -25,14 +27,20 @@ BlivePush:
   isGroup: true
   # 私聊推送全局开关
   isPrivate: true
-  # 私聊订阅开关，关闭仅主人可私聊订阅
-  isPrivateSubscribe: false
-  # 是否允许群插件管理员订阅推送，关闭仅主人或群原生管理员可订阅
-  isA: true
-  # 是否允许群原生管理员订阅推送，关闭仅主人或插件群管理员可订阅
-  isGA: true
   # 推送检测间隔，单位分钟，不能小于1，不建议小于2，需要重启
   mins: 4
+  # 是否允许群聊使用，关闭仅主人可群聊使用
+  isG: true
+  # 是否允许私聊使用，关闭仅主人可私聊使用
+  isP: false
+  # 是否仅主人可使用
+  isM: false
+  # 是否允许群插件管理员使用，关闭仅主人或群原生管理员可使用
+  isA: true
+  # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
+  isGA: true
+  # 是否允许任何人使用，关闭仅主人或管理员可使用
+  isE: false
 
 # 放大图片配置
 bigjpg:
@@ -40,7 +48,7 @@ bigjpg:
   apiKey:
   # 放大风格，art和photo，代表卡通和照片，卡通图片放大效果最佳
   style: art
-  # 默认放大降噪级别，可选[-1, 0, 1, 2, 3]，代表[无，低，中，高，最高]
+  # 默认降噪级别，可选[-1, 0, 1, 2, 3]，代表[无，低，中，高，最高]
   noise: 3
   # 默认放大倍数，可选[1, 2, 3, 4]，代表[2倍，4倍，8倍，16倍]
   magnification: 1
@@ -48,20 +56,24 @@ bigjpg:
   limits: 3
   # 放大的图片是否自动保存，保存位置 resources/bigjpg
   isSave: false
-  # 是否仅允许主人使用
-  isM: false
-  # 是否允许群插件管理员使用
-  isA: true
-  # 是否允许群原生管理员使用
-  isGA: true
-  # 是否允许每个人使用
-  isE: true
   # 4倍限制，关闭仅允许主人放大4倍
   x4Limit: false
   # 8倍限制，关闭仅允许主人放大8倍
   x8Limit: false
   # 16倍限制，关闭仅允许主人放大16倍
   x16Limit: false
+  # 是否允许群聊使用，关闭仅主人可群聊使用
+  isG: true
+  # 是否允许私聊使用，关闭仅主人可私聊使用
+  isP: false
+  # 是否仅主人可使用
+  isM: false
+  # 是否允许群插件管理员使用，关闭仅主人或群原生管理员可使用
+  isA: true
+  # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
+  isGA: true
+  # 是否允许任何人使用，关闭仅主人或管理员可使用
+  isE: false
 
 # 刷屏检测配置
 DetecteFloodScreen:
