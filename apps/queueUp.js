@@ -104,13 +104,13 @@ export class UCQueueUp extends plugin {
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     const memberData = await common.getMemberObj(e.group)
-    const playersInfo = _.sortBy(info.joining)
+    const playersInfo = info.joining
       .map((player, index) => {
         let memInfo = memberData[player]
         let name = memInfo.card || memInfo.nickname
         return `${index + 1}、${name}（${player}）`
       })
-    const finishedInfo = _.sortBy(info.finished)
+    const finishedInfo = info.finished
       .map((player, index) => {
         let memInfo = memberData[player]
         let name = memInfo.card || memInfo.nickname
