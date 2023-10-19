@@ -24,7 +24,7 @@ export class UCQueueUp extends plugin {
           fnc: 'finishQueueUp'
         },
         {
-          reg: /^#?UC(开启|关闭)排队$/i,
+          reg: /^#?UC(开启|关闭|结束)排队$/i,
           fnc: 'OCQueueUp'
         },
         {
@@ -36,7 +36,7 @@ export class UCQueueUp extends plugin {
   }
 
   verify() {
-    const per = new Permission(this.e.sender.user_id)
+    const per = new Permission(this.e, {})
     if (per.judge()) return true
     return false
   }
@@ -65,11 +65,11 @@ export class UCQueueUp extends plugin {
     if (!info) return e.reply('本群尚未创建排队', true)
     if (!info.ing) return e.reply('本次排队已结束', true)
     if (Check.str(info.finished, userId)) return e.reply('你已经完成了本次排队哦', true)
-    const index = queueUpData.joining.indexOf(userId)
+    const index = info.joining.indexOf(userId)
     if (index > -1) return e.reply(`你已经报过名了哦~\n你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！`, true)
-    queueUpData.joining.push(userId)
+    info.joining.push(userId)
     savaData(queueUpData)
-    return e.reply(`排队成功！你当前位于第${queueUpData.joining.length}位`, true)
+    return e.reply(`排队成功！你当前位于第${info.joining.length}位`, true)
   }
 
   async finishQueueUp(e) {
@@ -139,7 +139,7 @@ async function init() {
 }
 
 function getData() {
-  file.JSONreader(Path.queueUpjson)
+  return file.JSONreader(Path.queueUpjson)
 }
 
 function savaData(data) {

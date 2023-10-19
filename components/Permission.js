@@ -66,9 +66,10 @@ class Permission {
   /** 是否有权限操作 */
   get isPer() {
     if (this.isBlack) return false
-    if (UCPr.onlyMaster && this.isMaster) return true
-    if (!this.isA) return false
-    if (this.isGA) return this.isAdmin || this.isGroupAdmin
+    if (UCPr.onlyMaster && !this.isMaster) return false
+    if (this.isMaster) return true
+    if (!this.isA && !this.isPow) return false
+    if (this.isPow && this.isGA) return true
     return this.isAdmin
   }
   /** reply回复 */
