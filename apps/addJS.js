@@ -1,5 +1,6 @@
 import { Path, Data, UCPr, Check } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
+import path from 'path'
 
 export class UCAddJS extends plugin {
   constructor() {
@@ -33,6 +34,11 @@ export class UCAddJS extends plugin {
     else {
       const fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
       const filename = this.e.file.name
+      if (Check.file(path.join(Path.apps, filename))) {
+        this.reply(`你已经安装过${filename}插件了~`)
+        this.finish(this.setFnc)
+        return
+      }
       if (await Data.addJS(fileUrl, Path.apps, filename)) {
         this.reply(`操作成功，新增UC-plugin/apps/${filename}，重启后生效`)
         Data.update()
