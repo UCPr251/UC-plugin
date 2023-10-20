@@ -21,7 +21,7 @@ export class UCQueueUp extends plugin {
           fnc: 'queueUp'
         },
         {
-          reg: /^#完成$/,
+          reg: /^#?完成$/,
           fnc: 'finishQueueUp'
         },
         {
@@ -81,7 +81,7 @@ export class UCQueueUp extends plugin {
     if (!e.at || !this.verify()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
-    if (!info || !info.ing) return e.reply('当前群无进行中的排队任务', true)
+    if (!info || !info.ing) return false
     const name = await common.getName(e.group_id, e.at)
     if (Check.str(info.finished, e.at)) return e.reply(`群员${name}（${e.at}）本次排队已完成`)
     const index = info.joining.indexOf(e.at)
