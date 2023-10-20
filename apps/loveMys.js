@@ -89,7 +89,8 @@ export class UCLoveMys extends plugin {
     }
     file.YAMLsaver(apiyaml, yamlData)
     e.reply(`注入${isApi ? 'Api' : 'Token'}成功`)
-    const times = await remainingTimes()
+    const { api, token } = file.YAMLreader(apiyaml)
+    const times = await remainingTimes(api, token)
     if (!Number(times)) return e.reply(`无效api或tk：${str}\n剩余次数${times}\n请检查注入的api或者tk是否有误`)
     Data.redisSet(this.redisData, times)
     return e.reply('剩余次数：' + times)
