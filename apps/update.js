@@ -46,7 +46,7 @@ export class UCUpdate extends plugin {
     if (/强制/.test(e.msg)) {
       Data.execute(Path.UC_plugin_decrypt, 'git reset --hard')
     }
-    Data.refresh()
-    return e.reply('刷新成功')
+    const output = Data.refresh()
+    return e.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))
   }
 }

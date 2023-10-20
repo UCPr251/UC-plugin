@@ -1,7 +1,9 @@
 import { ALLCONFIG, now_config } from './components/UCPr.js'
-import { UCPr, Path, file } from './components/index.js'
+import { UCPr, Path, file, Data } from './components/index.js'
 import path from 'path'
 import _ from 'lodash'
+
+Data.refresh()
 
 /**
  * 设置锅巴展示配置
@@ -49,7 +51,7 @@ let js = []
 if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
   const newCfg = [
     {
-      label: '【UC】B站直播推送设置',
+      label: `【UC】B站直播推送设置${Data.check('BlivePush') ? '' : '（您当前未购买此插件）'}`,
       component: 'Divider'
     },
     set('BlivePush.isGroup', '群聊推送开关', 'Switch',
@@ -67,7 +69,7 @@ if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
 if (file.existsSync(path.join(Path.apps, 'bigjpg.js'))) {
   const newCfg = [
     {
-      label: '【UC】放大图片设置',
+      label: `【UC】放大图片设置${Data.check('bigjpg') ? '' : '（您当前未购买此插件）'}`,
       component: 'Divider'
     },
     set('bigjpg.apiKey', 'ApiKey', 'Input'),
@@ -83,21 +85,21 @@ if (file.existsSync(path.join(Path.apps, 'bigjpg.js'))) {
       '默认降噪级别，可选[无，低，中，高，最高]',
       {
         options: [
-          { label: '无', value: -1 },
-          { label: '低', value: 0 },
-          { label: '中', value: 1 },
-          { label: '高', value: 2 },
-          { label: '最高', value: 3 }
+          { label: '无', value: 0 },
+          { label: '低', value: 1 },
+          { label: '中', value: 2 },
+          { label: '高', value: 3 },
+          { label: '最高', value: 4 }
         ]
       }),
     set('bigjpg.magnification', '默认放大倍数', 'Select',
       '默认放大倍数，可选[2倍，4倍，8倍，16倍]',
       {
         options: [
-          { label: '2倍', value: 1 },
-          { label: '4倍', value: 2 },
-          { label: '8倍', value: 3 },
-          { label: '16倍', value: 4 }
+          { label: '2倍', value: 2 },
+          { label: '4倍', value: 4 },
+          { label: '8倍', value: 8 },
+          { label: '16倍', value: 16 }
         ]
       }),
     set('bigjpg.limits', '每日放大数量限制', 'InputNumber',

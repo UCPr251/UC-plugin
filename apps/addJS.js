@@ -17,6 +17,7 @@ export class UCAddJS extends plugin {
       ]
     })
     this.setFnc = 'getFile'
+    this.setFnc2 = 'makeSure'
   }
 
   async addJS(e) {
@@ -38,7 +39,7 @@ export class UCAddJS extends plugin {
         this.e.filename = filename
         this.e.fileUrl = fileUrl
         this.finish(this.setFnc)
-        this.setContext('makeSure')
+        this.setContext(this.setFnc2)
         return this.reply(`你已经安装过[UC]${filename}插件了，是否覆盖原插件？[是|否]`)
       }
       if (await Data.addJS(fileUrl, Path.apps, filename)) {
@@ -60,10 +61,9 @@ export class UCAddJS extends plugin {
       } else {
         this.reply(UCPr.error)
       }
-      return this.finish('makeSure')
+      return this.finish(this.setFnc2)
     }
-    this.reply('操作已取消')
-    this.finish('makeSure')
+    Data.finish.call(this, undefined, this.setFnc2)
   }
 
 }

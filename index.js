@@ -9,7 +9,7 @@ log.purple(`-----${Path.Plugin_Name}载入中-----`)
 
 /** 适配UC-plugin */
 const jsfiles = file.readdirSync(Path.example, { type: '.js' })
-const list = ['blivepush', 'configset', 'bigjpg']
+const list = ['blivepush', 'configset']
 const dels = []
 for (let _file of jsfiles) {
     for (let js of list) {
@@ -53,7 +53,5 @@ if (status) {
     log.purple(`----${Path.Plugin_Name}载入成功----`)
     log.blue('-------------------')
 }
-
-setTimeout(Data.refresh, 2000)
 
 export { apps }

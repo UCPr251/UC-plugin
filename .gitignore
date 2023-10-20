@@ -7,10 +7,7 @@
 /.editorconfig
 /.eslintrc.cjs
 /defSet/system/UC-plugin-decrypt/
-/apps/*
-!/apps/update.js
-!/apps/Admin.js
-!/apps/addJS.js
-!/apps/configSet.js
-!/apps/loveMys.js
-!/apps/queueUp.js
+/apps/accredit.js
+/apps/test.js
+/apps/upload.js
+/resources/bigjpg
