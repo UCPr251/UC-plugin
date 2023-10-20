@@ -35,7 +35,7 @@ export class UCUpdate extends plugin {
       await Update_Plugin.runUpdate(Path.Plugin_Name)
       Data.refresh()
       if (Update_Plugin.isUp) {
-        this.reply('更新UC-plugin成功，重启生效')
+        this.reply('UC-plugin更新成功，重启生效')
       }
     }
     return true
