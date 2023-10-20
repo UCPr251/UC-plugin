@@ -89,8 +89,10 @@ export class UCQueueUp extends plugin {
     _.pull(info.joining, e.at)
     info.finished.push(e.at)
     savaData(queueUpData)
-    if (!info.joining[index]) return e.reply('所有排队任务已经完成了哦~')
-    return e.reply([segment.at(info.joining[index]), '排到你了哦！别错过了哦~'])
+    const len = info.joining.length
+    if (!len) return e.reply('所有排队任务已经完成了哦~')
+    const newIndex = index > len - 1 ? len - 1 : index
+    return e.reply([segment.at(info.joining[newIndex]), '排到你了哦！别错过了哦~'])
   }
 
   async OCQueueUp(e) {
