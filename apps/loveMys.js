@@ -17,7 +17,7 @@ export class UCLoveMys extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: /^#?UC过码帮助$/i,
+          reg: /^#?UC(过码|验证码?|yzm)帮助$/i,
           fnc: 'loveMysHelp'
         },
         {
@@ -29,11 +29,11 @@ export class UCLoveMys extends plugin {
           fnc: 'insertApiToken'
         },
         {
-          reg: /^#?UC(验证码?|yzm)查询$/i,
+          reg: /^#?UC(过码|验证码?|yzm)查询$/i,
           fnc: 'queryToken'
         },
         {
-          reg: /^#?UC更新过码$/i,
+          reg: /^#?UC更新(过码|验证码?|yzm)$/i,
           fnc: 'gitpull'
         }
       ]
