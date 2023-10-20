@@ -199,15 +199,15 @@ export class UCBLivePush extends plugin {
     savaData(type, data)
     // 删除无用redis数据
     const redisType = type === 'Group' ? this.GroupPushed : this.PrivatePushed
-    const pushed = await Data.redisGet(redisType, {})
+    const pushed = (await Data.redisGet(redisType, {})) || {}
     if (pushed[location_id]?.includes(room_id)) {
       _.pull(pushed[location_id], room_id)
       Data.redisSet(redisType, pushed)
       const useful1 = _.flatMap(pushed)
-      const _pushed = await Data.redisGet(type !== 'Group' ? this.GroupPushed : this.PrivatePushed, {})
+      const _pushed = (await Data.redisGet(type !== 'Group' ? this.GroupPushed : this.PrivatePushed, {})) || {}
       const useful2 = _.flatMap(_pushed)
       const useful = useful1.concat(useful2)
-      const info = await Data.redisGet(this.PushedInfo, {})
+      const info = (await Data.redisGet(this.PushedInfo, {})) || {}
       _.difference(Object.keys(info), useful).forEach(room => delete info[room])
       Data.redisSet(this.PushedInfo, info)
     }
@@ -272,13 +272,13 @@ export class UCBLivePush extends plugin {
         loc_list.forEach(loc => {
           loc_room[loc] = _.map(push_data[loc].room, 'room_id')
         })
-        const pushed = await Data.redisGet(isGroup ? this.GroupPushed : this.PrivatePushed, {})
+        const pushed = (await Data.redisGet(isGroup ? this.GroupPushed : this.PrivatePushed, {})) || {}
         for (const loc of loc_list) {
           for (const room of loc_room[loc]) {
             if (living.includes(room)) {
               if (pushed[loc]?.includes(room)) continue
               pushed[loc] = _.concat(pushed[loc] || [], room)
-              const info = await Data.redisGet(this.PushedInfo, {})
+              const info = (await Data.redisGet(this.PushedInfo, {})) || {}
               const msg = [
                 `主播：${info[room].uid}——开始直播啦！\n标题：${info[room].title}\n封面：`,
                 segment.image(info[room].cover),
@@ -295,7 +295,7 @@ export class UCBLivePush extends plugin {
               if (pushed[loc].length == 0) {
                 delete pushed[loc]
               }
-              const info = await Data.redisGet(this.PushedInfo, {})
+              const info = (await Data.redisGet(this.PushedInfo, {})) || {}
               const msg = [
                 `主播：${info[room].uid}——本次直播已结束\n标题：${info[room].title}\n封面：`,
                 segment.image(info[room].cover),
@@ -325,7 +325,7 @@ export class UCBLivePush extends plugin {
                   cover: data.live.cover,
                   start_time: UCDate.NowTime
                 }
-                const pushed_info = await Data.redisGet(this.PushedInfo, {})
+                const pushed_info = (await Data.redisGet(this.PushedInfo, {})) || {}
                 pushed_info[room] = info
                 Data.redisSet(this.PushedInfo, pushed_info)
                 await common.sleep(1)
@@ -337,7 +337,7 @@ export class UCBLivePush extends plugin {
                   delete pushed[loc]
                 }
                 ended.push(room)
-                const info = await Data.redisGet(this.PushedInfo, {})
+                const info = (await Data.redisGet(this.PushedInfo, {})) || {}
                 const msg = [
                   `主播：${info[room].uid}——本次直播已结束\n标题：${info[room].title}\n封面：`,
                   segment.image(info[room].cover),
@@ -355,7 +355,7 @@ export class UCBLivePush extends plugin {
         Data.redisSet(isGroup ? this.GroupPushed : this.PrivatePushed, pushed)
       }
     }
-    const info = await Data.redisGet(this.PushedInfo, {})
+    const info = (await Data.redisGet(this.PushedInfo, {})) || {}
     ended.forEach(room => delete info[room])
     Data.redisSet(this.PushedInfo, info)
     log.purple('BLivePush本次直播推送任务完毕')
@@ -370,7 +370,7 @@ export class UCBLivePush extends plugin {
     if (!data[location_id]) {
       return e.reply(`${type === 'Group' ? '群聊' : '私聊'}：${location_id}未订阅推送`)
     }
-    const pushed = await Data.redisGet(type === 'Group' ? this.GroupPushed : this.PrivatePushed, {})
+    const pushed = (await Data.redisGet(type === 'Group' ? this.GroupPushed : this.PrivatePushed, {})) || {}
     if (pushed[location_id]?.length > 0) {
       const info = await Data.redisGet(this.PushedInfo, {})
       for (const room of pushed[location_id]) {
