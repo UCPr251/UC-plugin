@@ -88,7 +88,11 @@ export class UCLoveMys extends plugin {
       }
     }
     file.YAMLsaver(apiyaml, yamlData)
-    return e.reply(`注入${isApi ? 'Api' : 'Token'}成功`)
+    e.reply(`注入${isApi ? 'Api' : 'Token'}成功`)
+    const times = await remainingTimes()
+    if (!Number(times)) return e.reply(`无效api或tk：${str}\n剩余次数${times}\n请检查注入的api或者tk是否有误`)
+    Data.redisSet(this.redisData, times)
+    return e.reply('剩余次数：' + times)
   }
 
   async queryToken(e) {
