@@ -25,7 +25,7 @@ const Admin = {
     const old = _.get(config, path)
     if (old) {
       if (old == operation) {
-        if (isReply) this.reply(`当前${cwd}配置中${path}属性已经是${operation}了`)
+        if (isReply) this.reply(`当前${cwd}配置中${path}已经是${operation}了`)
       } else {
         _.set(config, path, operation)
         file.YAMLsaver(_path, config)
