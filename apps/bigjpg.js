@@ -38,20 +38,19 @@ export class UCBigjpg extends plugin {
     const num = e.msg.match(/\d+/)?.[0]
     const isOpen = !/开启/.test(e.msg)
     if (num) {
-      Admin.changeCfg(`bigjpg.x${num}Limit`, isOpen)
+      Admin.set.call(this, `bigjpg.x${num}Limit`, isOpen, {})
     } else {
-      Admin.changeCfg('bigjpg.isM', !isOpen)
-      Admin.changeCfg('bigjpg.isE', isOpen)
+      Admin.set('bigjpg.isM', !isOpen, { reply: false })
+      Admin.set('bigjpg.isE', isOpen, { reply: false })
+      e.reply('操作成功', true)
     }
-    return e.reply('操作成功', true)
   }
 
   async SwitchMode(e) {
     const per = new Permission(e, { ...UCPr.bigjpg })
     if (!per.isMaster && !per.isAdmin) return per.judge(true)
     const isArt = /卡通/.test(e.msg)
-    Admin.changeCfg('bigjpg.style', isArt ? 'art' : 'photo')
-    return e.reply('操作成功', true)
+    Admin.set.call(this, 'bigjpg.style', isArt ? 'art' : 'photo', {})
   }
 
   async bigjpg(e) {

@@ -36,6 +36,10 @@ export class UCAdmin extends plugin {
         {
           reg: /^#?UC帮助$/i,
           fnc: 'UC_HELP'
+        },
+        {
+          reg: /^#?UC切换服务(1|2)$/i,
+          fnc: 'UC_SERVER'
         }
       ]
     })
@@ -127,6 +131,12 @@ export class UCAdmin extends plugin {
   }
 
   async UC_HELP(e) {
+  }
+
+  async UC_SERVER(e) {
+    if (!this.verify()) return false
+    const severChoice = /1/.test(e.msg) ? 1 : 2
+    Admin.set.call(this, 'server', severChoice, {})
   }
 
 }

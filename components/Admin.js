@@ -1,23 +1,41 @@
-import { Path, file, UCPr, Data } from './index.js'
+import { Path, file, UCPr, Data, log } from './index.js'
 import _ from 'lodash'
 
 /** 对config设置的Admin操作 */
 
 const Admin = {
   /**
-   * 修改config.yaml属性对应值
-   * @param {*} path 需要操作的元素
+   * 修改设置属性对应值
+   * @param {*} path 属性路径
    * @param {*} operation 修改值
-   * @returns {undefined|true|1} 操作结果code
+   * @param {Object} param2 optional
+   * @param {'config'|'permissionCfg'} [param2.cwd='config'] 需要修改的配置文件
+   * @param {boolean} [param2.isArrayeply=true] 是否回复
+   * @param {string} [param2.reply] 操作成功回复内容
    */
-  changeCfg(path, operation) {
-    const cfg = UCPr.config
-    const old = _.get(cfg, path)
-    if (old === undefined) return undefined
-    if (_.isEqual(old, operation)) return 1
-    _.set(cfg, path, operation)
-    file.YAMLsaver(Path.configyaml, cfg)
-    return true
+  set(path, operation, { cwd = 'config', isReply = true, reply = '操作成功' }) {
+    const config = UCPr[cwd]
+    if (!config) return false
+    let _path
+    if (cwd === 'config') {
+      _path = Path.configyaml
+    } else {
+      _path = Path.permissionyaml
+    }
+    const old = _.get(config, path)
+    if (old) {
+      if (old == operation) {
+        if (isReply) this.reply(`当前${cwd}配置中${path}属性已经是${operation}了`)
+      } else {
+        _.set(config, path, operation)
+        file.YAMLsaver(_path, config)
+        if (isReply) this.reply(reply)
+      }
+    } else {
+      const info = `操作失败：${cwd}配置中不存在${path}属性`
+      log.error(info)
+      if (isReply) this.reply(info)
+    }
   },
 
   /**
