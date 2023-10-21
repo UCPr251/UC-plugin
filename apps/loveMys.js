@@ -101,7 +101,7 @@ export class UCLoveMys extends plugin {
     const { api, token } = file.YAMLreader(apiyaml)
     if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
     if (!api) return e.reply('请先注入api，#UC注入过码api加你的api')
-    const yes_times = Number(await Data.redisGet(this.redisData)) || 0
+    const yes_times = await Data.redisGet(this.redisData, 0) || 0
     const now_times = await remainingTimes(api, token)
     let todayUsed = yes_times - now_times
     if (todayUsed < 0) {
