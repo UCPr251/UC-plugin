@@ -8,12 +8,12 @@ const help = `[UC]B站直播推送插件
 指令：
 #查询up123456
 #订阅直播654321
-#取消订阅654321
-#推送列表
-#关闭推送
+#取消订阅直播654321
+#直播推送列表
+#关闭直播推送
 #谁正在直播
-#开启推送艾特全员
-#清空推送缓存（故障用）
+#开启直播推送艾特全员
+#清空直播推送缓存（故障用）
 主人可在指令末尾加上群号指定操作该群
 注意uid≠直播间id，可通过uid#查询up+uid获取直播间id，手动获取：`
 const err_reply = `\n进入需要订阅的主播的直播间，
@@ -39,7 +39,7 @@ export class UCBLivePush extends plugin {
           permission: 'master'
         },
         {
-          reg: /^#?(UC)?(推送|订阅)(直播)?帮助$/i,
+          reg: /^#?(UC)?直播(推送|订阅)帮助$/i,
           fnc: 'bLiveHelp'
         },
         {
@@ -47,19 +47,19 @@ export class UCBLivePush extends plugin {
           fnc: 'bQueryUp'
         },
         {
-          reg: /^#?(UC)?订阅(直播|推送)(.*)/i,
+          reg: /^#?(UC)?订阅直播(.*)/i,
           fnc: 'bLiveSubscribe'
         },
         {
-          reg: /^#?(UC)?取消(订阅|推送)(直播)?(.*)/i,
+          reg: /^#?(UC)?(取消|删除)订阅直播(.*)/i,
           fnc: 'bLiveDelete'
         },
         {
-          reg: /^#?(UC)?(直播)?推送列表(.*)/i,
+          reg: /^#?(UC)?直播(推送|订阅)列表(.*)/i,
           fnc: 'bLiveList'
         },
         {
-          reg: /^#?(UC)?(开启|关闭)(直播)?推送(.*)/i,
+          reg: /^#?(UC)?(开启|关闭)直播推送(.*)/i,
           fnc: 'bLiveSwitch'
         },
         {
@@ -67,11 +67,11 @@ export class UCBLivePush extends plugin {
           fnc: 'bLiving'
         },
         {
-          reg: /^#?(UC)?(清除|清空)(直播)?推送缓存$/i,
+          reg: /^#?(UC)?(清除|清空)直播推送缓存$/i,
           fnc: 'bLiveClean'
         },
         {
-          reg: /^#?(UC)?(开启|关闭)(直播)?推送艾特全员(.*)/i,
+          reg: /^#?(UC)?(开启|关闭)直播推送艾特全员(.*)/i,
           fnc: 'bLiveAtall'
         }
       ]

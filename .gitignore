@@ -8,6 +8,7 @@
 /.eslintrc.cjs
 /defSet/system/UC-plugin-decrypt/
 /apps/accredit.js
+/apps/BdynamicPush.js
 /apps/test.js
 /apps/upload.js
 /resources/bigjpg
