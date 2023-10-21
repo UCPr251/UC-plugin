@@ -60,7 +60,7 @@ export class UCBigjpg extends plugin {
     if (!per.judge()) return false
     if (!per.isMaster && UCPr.bigjpg.limits) {
       let new_times = 0
-      const now_times = await Data.redisGet(this.redisData + e.sender.user_id, 0)
+      const now_times = await Data.redisGet(this.redisData + e.sender.user_id, 0) || 0
       if (now_times) {
         if (now_times >= UCPr.bigjpg.limits) {
           return e.reply(`你今天已经放大了${now_times}次了，明天再来吧~`)

@@ -15,12 +15,12 @@
 - 支持[锅巴配置](./guoba.support.js)
 - 适配[BlivePush](./apps/BlivePush.js)，支持锅巴
 - 新增[queueUp](./apps/queueUp.js)，可用与群内排队
-- 新增[loveMys.js](./apps/loveMys.js)`更新过码插件`功能
-- 适配[bigjpg.js](./apps/bigjpg.js)
+- 新增[loveMys](./apps/loveMys.js)`更新过码插件`功能
+- 适配[bigjpg](./apps/bigjpg.js)
 
 # 10-16
 
-- 新增[loveMys.js](./apps/loveMys.js)，指令管理该插件 token、api 等
+- 新增[loveMys](./apps/loveMys.js)，指令管理该插件 token、api 等
 
 # 10-13
 
