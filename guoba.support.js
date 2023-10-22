@@ -128,11 +128,11 @@ if (file.existsSync(path.join(Path.apps, 'bigjpg.js'))) {
     s('bigjpg.isSave', '是否自动保存图片', 'Switch',
       '放大的图片是否自动保存本地。路径UC-plugin/resources/bigjpg'),
     s('bigjpg.x4Limit', '4倍放大限制', 'Switch',
-      '4倍限制，关闭仅允许主人放大4倍'),
+      '4倍限制，开启仅允许主人放大4倍'),
     s('bigjpg.x8Limit', '8倍放大限制', 'Switch',
-      '8倍限制，关闭仅允许主人放大8倍'),
+      '8倍限制，开启仅允许主人放大8倍'),
     s('bigjpg.x16Limit', '16倍放大限制', 'Switch',
-      '16倍限制，关闭仅允许主人放大16倍'),
+      '16倍限制，开启仅允许主人放大16倍'),
     ...sPRO('bigjpg', '放大图片')
   ]
   js = js.concat(newCfg)
