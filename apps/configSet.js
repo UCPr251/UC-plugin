@@ -194,10 +194,11 @@ export class UCConfigSet extends plugin {
     if (!this.verify()) return false
     const newSet = /开启|启用/.test(e.msg)
     const operation = newSet ? '开启' : '关闭'
-    if (Cfg.disablePrivate == newSet) {
+    if (Cfg.disablePrivate === !newSet) {
       return e.reply(`私聊当前已处于${operation}状态`)
     }
-    Cfg.disablePrivate = newSet
+    Cfg.disablePrivate = !newSet
+    this.save()
     return e.reply(`已${operation}私聊，${newSet ? '现在大家都可以和我聊天啦!' : '现在我私聊只属于主人哦~'}`)
   }
 
