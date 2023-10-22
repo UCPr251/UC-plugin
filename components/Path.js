@@ -2,7 +2,9 @@ import path from 'node:path'
 
 const Plugin_Name = 'UC-plugin'
 const _path = process.cwd()
-const otheryaml = path.join(_path, 'config', 'config', 'other.yaml')
+const botConfig = path.join(_path, 'config', 'config')
+const otheryaml = path.join(botConfig, 'other.yaml')
+const groupyaml = path.join(botConfig, 'group.yaml')
 const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
@@ -38,6 +40,8 @@ const Path = {
   example,
   /** other.yaml */
   otheryaml,
+  /** group.yaml */
+  groupyaml,
   /** ../UC-plugin */
   UC,
   /** ../UC-plugin/apps */

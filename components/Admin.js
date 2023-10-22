@@ -9,7 +9,7 @@ const Admin = {
    * @param {*} path 属性路径
    * @param {*} operation 修改值
    * @param {Object} param2 optional
-   * @param {'config'|'permissionCfg'} [param2.cwd='config'] 需要修改的配置文件
+   * @param {'config'|'permission'} [param2.cwd='config'] 需要修改的配置文件
    * @param {boolean} [param2.isArrayeply=true] 是否回复
    * @param {string} [param2.reply] 操作成功回复内容
    */
@@ -46,7 +46,7 @@ const Admin = {
    */
   arr(type, userId, isAdd = true) {
     userId = _.concat([], userId).map(Number)
-    const config = UCPr.permissionCfg
+    const config = UCPr.permission
     if (isAdd) {
       config[type] = _.uniq(_.concat(config[type], userId))
     } else {
@@ -62,8 +62,8 @@ const Admin = {
    * @param {boolean|number} independent 是否独立，全局为false，独立为群号
    */
   Admin(userId, isAdd, independent = undefined) {
-    const permissionCfg = UCPr.permissionCfg
-    const Admin = permissionCfg.Admin
+    const permission = UCPr.permission
+    const Admin = permission.Admin
     const info = Admin[userId]
     if (isAdd) {
       if (independent === false) {
@@ -79,7 +79,7 @@ const Admin = {
         if (_.isEmpty(Admin[userId])) delete Admin[userId]
       }
     }
-    file.YAMLsaver(Path.permissionyaml, permissionCfg)
+    file.YAMLsaver(Path.permissionyaml, permission)
   },
 
   /** 获取管理列表 */

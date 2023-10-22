@@ -7,7 +7,7 @@ priority: 251
 # 选择服务
 server: 1
 # Bot名称
-BotName:
+BotName: 我
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 是否仅主人可操作
@@ -20,6 +20,23 @@ noPerReply: 无权限
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
 # api连接失败回复
 fetchErrReply: 服务连接失败，请稍后重试
+
+# 单独上下班配置
+switchBot:
+  # 开启Bot的回复，BotName会被替换为上面设置的BotName的值
+  openMsg: 好哒，BotName开始上班啦！
+  # 关闭Bot的回复，BotName会被替换为上面设置的BotName的值
+  closeMsg: BotName休息去啦~
+  # Bot上班的指令：插件中设置的BotName+下面的关键词即可触发，多个请用|间隔
+  openReg: 上班|工作
+  # Bot下班的指令：插件中设置的BotName+下面的关键词即可触发，多个请用|间隔
+  closeReg: 下班|休息
+  # 是否仅主人可使用
+  isM: false
+  # 是否允许群插件管理员使用，关闭仅主人或群原生管理员可使用
+  isA: true
+  # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
+  isGA: false
 
 # B站直播推送配置
 BlivePush:

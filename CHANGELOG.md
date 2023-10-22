@@ -1,3 +1,8 @@
+# 10-22
+
+- 新增[switchBot](./apps/switchBot.js)`群内开关Bot`，支持锅巴
+- 优化[锅巴支持](./guoba.support.js)
+
 # 10-20
 
 - 修改授权目录结构

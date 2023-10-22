@@ -77,7 +77,7 @@ export class UCBLivePush extends plugin {
       ]
     })
     this.task = {
-      cron: `0 */${parseInt(UCPr.BlivePush?.mins) || 4} * * * ?`,
+      cron: `0 */${parseInt(UCPr.BlivePush.mins) || 4} * * * ?`,
       name: 'B站直播检测',
       fnc: this.bLivePush.bind(this)
     }

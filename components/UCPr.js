@@ -10,13 +10,10 @@ const Plugin_Name = 'UC-plugin'
 /** config.yaml */
 let config = {}
 /** permission.yaml */
-let permissionCfg = {}
+let permission = {}
 
 /** 实时锅巴信息 */
 export let now_config = {}
-
-/** 实时全部配置信息 */
-export let ALLCONFIG = {}
 
 /** 将对象的纯粹对象属性转换为普通属性 */
 function transformObj(obj, ...property) {
@@ -32,8 +29,7 @@ function transformObj(obj, ...property) {
 
 /** 获取锅巴配置填充信息 */
 function getNewGuobaConfig() {
-  ALLCONFIG = _.merge({}, config, permissionCfg)
-  now_config = _.cloneDeep(ALLCONFIG)
+  now_config = _.merge({}, config, permission)
   now_config = transformObj(now_config, 'BlivePush', 'bigjpg', 'DetecteFloodScreen', 'recall')
   now_config.Master = _.sortBy(now_config.Master).join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
@@ -59,7 +55,7 @@ function getNewConfig(mode) {
         break
       }
       case 2: {
-        permissionCfg = getConfig(2)
+        permission = getConfig(2)
         file = 'permission.yaml'
         break
       }
@@ -70,7 +66,7 @@ function getNewConfig(mode) {
     return
   }
   config = getConfig(1)
-  permissionCfg = getConfig(2)
+  permission = getConfig(2)
 }
 
 function watch(path, mode) {
@@ -110,9 +106,9 @@ const UCPr = {
     return config
   },
 
-  /** permissionCfg.yaml */
-  get permissionCfg() {
-    return permissionCfg
+  /** permission.yaml */
+  get permission() {
+    return permission
   },
 
   /** 机器人配置 */
@@ -172,28 +168,28 @@ const UCPr = {
 
   /** 主人列表 */
   get Master() {
-    if (!this.isDefaultMaster) return this.permissionCfg.Master
-    return (Array.from(new Set(this.defaultCfg.masterQQ.concat(this.permissionCfg.Master)))).map(Number)
+    if (!this.isDefaultMaster) return this.permission.Master
+    return (Array.from(new Set(this.defaultCfg.masterQQ.concat(this.permission.Master)))).map(Number)
   },
 
   /** 管理对象 */
   get Admin() {
-    return this.permissionCfg.Admin
+    return this.permission.Admin
   },
 
   /** 管理列表 */
   get AdminArr() {
-    return (Object.keys(this.permissionCfg.Admin)).map(Number)
+    return (Object.keys(this.permission.Admin)).map(Number)
   },
 
   /** 黑名单列表 */
   get BlackQQ() {
-    return this.permissionCfg.BlackQQ ?? []
+    return this.permission.BlackQQ ?? []
   },
 
   /** 白名单列表 */
   get WhiteQQ() {
-    return this.permissionCfg.WhiteQQ ?? []
+    return this.permission.WhiteQQ ?? []
   },
 
   /** 是否输出日志 */
@@ -214,6 +210,11 @@ const UCPr = {
   /** 放大图片配置 */
   get bigjpg() {
     return this.config.bigjpg ?? {}
+  },
+
+  /** 开关Bot配置 */
+  get switchBot() {
+    return this.config.switchBot ?? {}
   }
 
 }
