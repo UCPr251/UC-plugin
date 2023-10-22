@@ -7,7 +7,7 @@ priority: 251
 # 选择服务
 server: 1
 # Bot名称
-BotName: 我
+BotName:
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 是否仅主人可操作
