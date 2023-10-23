@@ -68,6 +68,33 @@ if (file.existsSync(path.join(Path.apps, 'switchBot.js'))) {
   js = js.concat(newCfg)
 }
 
+if (file.existsSync(path.join(Path.apps, 'chuoyichuo.js'))) {
+  const newCfg = [
+    {
+      label: '【UC】戳一戳回复设置',
+      component: 'Divider'
+    },
+    s('chuoyichuo.isOpen', '是否开启戳一戳', 'Switch',
+      '是否启用UC戳一戳'),
+    s('chuoyichuo.isAutoSetCard', '被戳更新群名片', 'Switch',
+      '被戳是否自动更新群名片'),
+    s('chuoyichuo.groupCard', '更新群名片后缀', 'Input',
+      '开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数'),
+    s('chuoyichuo.textimg', '文本+图片概率', 'InputNumber',
+      '被戳回复文本+图片概率', { min: 0, max: 1 }),
+    s('chuoyichuo.chuoimg', '次数文本图片概率', 'InputNumber',
+      '被戳回复被戳次数+文本+图片概率，此概率独立于整体概率，意为触发文本+图片回复时又有多少概率在文本前加上被戳次数，可选0-1',
+      { min: 0, max: 1 }),
+    s('chuoyichuo.face', '头像表情包概率', 'InputNumber',
+      '被戳回复头像表情包概率', { min: 0, max: 1 }),
+    s('chuoyichuo.mute', '禁言概率', 'InputNumber',
+      '被戳禁言对方概率，剩下的就是反击概率', { min: 0, max: 1 }),
+    s('chuoyichuo.muteTime', '禁言时长', 'InputNumber',
+      '禁言的时长，单位分，0为不禁言', { min: 1 })
+  ]
+  js = js.concat(newCfg)
+}
+
 if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
   const newCfg = [
     {

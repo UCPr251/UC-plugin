@@ -11,3 +11,6 @@ BdynamicPush2:
   - room.php?_U_&uid=_U_
   - text
 bigjpg: null
+qiao:
+  - qiao.php?_U_&qq=_U_
+  - arrayBuffer

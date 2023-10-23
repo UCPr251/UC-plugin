@@ -17,6 +17,7 @@ const UC_plugin_decrypt = path.join(system, 'UC-plugin-decrypt')
 const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
 const bigjpg = path.join(resources, 'bigjpg')
+const chuoyichuo = path.join(resources, 'chuoyichuo')
 const configyaml = path.join(config, 'config.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
@@ -62,6 +63,8 @@ const Path = {
   resources,
   /** ./resources/bigjpg */
   bigjpg,
+  /** ./resources/chuoyichuo */
+  chuoyichuo,
   /** ./config/config.yaml */
   configyaml,
   /** ./config/permission.yaml */

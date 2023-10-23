@@ -1,6 +1,10 @@
+# 10-23
+
+- 适配[chuoyichuo](./apps/chuoyichuo.js)`戳一戳回复`插件，支持锅巴
+
 # 10-22
 
-- 新增[switchBot](./apps/switchBot.js)`群内开关Bot`，支持锅巴
+- 适配[switchBot](./apps/switchBot.js)`群内开关Bot`，支持锅巴
 - 优化[锅巴支持](./guoba.support.js)
 
 # 10-20

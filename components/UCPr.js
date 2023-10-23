@@ -30,7 +30,7 @@ function transformObj(obj, ...property) {
 /** 获取锅巴配置填充信息 */
 function getNewGuobaConfig() {
   now_config = _.merge({}, config, permission)
-  now_config = transformObj(now_config, 'BlivePush', 'bigjpg', 'DetecteFloodScreen', 'recall')
+  now_config = transformObj(now_config, 'BlivePush', 'bigjpg', 'DetecteFloodScreen', 'recall', 'chuoyichuo')
   now_config.Master = _.sortBy(now_config.Master).join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
   now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
@@ -215,6 +215,11 @@ const UCPr = {
   /** 开关Bot配置 */
   get switchBot() {
     return this.config.switchBot ?? {}
+  },
+
+  /** 戳一戳配置 */
+  get chuoyichuo() {
+    return this.config.chuoyichuo ?? {}
   }
 
 }

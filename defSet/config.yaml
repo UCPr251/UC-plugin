@@ -5,9 +5,9 @@ isDefaultMaster: true
 # 插件优先级
 priority: 251
 # 选择服务
-server: 1
+server: 2
 # Bot名称
-BotName:
+BotName: 纳西妲
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 是否仅主人可操作
@@ -37,6 +37,25 @@ switchBot:
   isA: true
   # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
   isGA: false
+
+# 戳一戳配置
+chuoyichuo:
+  # 是否开启UC戳一戳
+  isOpen: false
+  # 被戳是否自动更新群名片
+  isAutoSetCard: true
+  # 开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数
+  groupCard: 今日已被戳num次~
+  # 被戳回复文本+图片概率
+  textimg: 0.8
+  # 被戳回复被戳次数+文本+图片概率，此概率独立于整体概率，意为触发文本+图片回复时又有多少概率在文本前加上被戳次数，可选0-1
+  chuoimg: 0.2
+  # 被戳回复头像表情包概率
+  face: 0.1
+  # 被戳禁言对方概率，剩下的就是反击概率
+  mute: 0.05
+  # 禁言的时长，单位分，0为不禁言
+  muteTime: 2
 
 # B站直播推送配置
 BlivePush:
