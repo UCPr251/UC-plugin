@@ -84,8 +84,9 @@ export class UCBigjpg extends plugin {
     } else {
       this.e.per = this.getContext()._imgContext.per
       const Cfg = UCPr.bigjpg
-      const c = [Cfg.x4Limit, Cfg.x8Limit, Cfg.x16Limit]
-      if (!this.e.per.isMaster && c.every(v => v)) {
+      const isMaster = this.e.per.isMaster
+      const c = [Cfg.x4Limit && !isMaster, Cfg.x8Limit && !isMaster, Cfg.x16Limit && !isMaster]
+      if (c.every(v => v)) {
         this.e.magnification = 2
         this.setContext(this.setFnc3)
         return Data.finish.call(this, '当前已开启4、8、16倍放大限制，自动选择2倍放大\n请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高')
@@ -124,10 +125,10 @@ export class UCBigjpg extends plugin {
   }
 
   sendImage(buffer) {
-    const name = `${this.e.user_id}-${UCDate.NowTime}.png`
+    const name = `${this.e.sender.user_id}-${UCDate.NowTimeNum}.png`
     if (buffer.length > 5242880) {
       if (this.e.isGroup) {
-        this.e.reply([segment.at(this.e.user_id), '放大成功咯,图片较大将会直接发送文件，注意查收哦'])
+        this.e.reply([segment.at(this.e.sender.user_id), '放大成功咯,图片较大将会直接发送文件，注意查收哦'])
         this.e.group.fs.upload(buffer, undefined, name)
       } else {
         this.e.friend.sendFile(buffer, name)
