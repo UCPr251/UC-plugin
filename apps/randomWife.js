@@ -37,7 +37,7 @@ export class UCRandomWife extends plugin {
       ]
     })
     this.redisData = '[UC]randomwife'
-    this.redisData2 = 'today_wife_list'
+    this.redisData2 = '[UC]today_wife_list'
     this.setFnc = 'imgContent'
   }
 
