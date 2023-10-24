@@ -20,13 +20,8 @@ export class UCSwitchBot extends plugin {
     })
   }
 
-  verify() {
-    const per = new Permission(this.e, { ...UCPr.switchBot })
-    return per.judge()
-  }
-
   async openBot(e) {
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.switchBot)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (_.get(data, `${e.group_id}.enable`) === null) {
       return e.reply('当前已经是开启状态了哦~', true)
@@ -37,7 +32,7 @@ export class UCSwitchBot extends plugin {
   }
 
   async closeBot(e) {
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.switchBot)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (_.isEqual(_.get(data, `${e.group_id}.enable`), ['UC-switchBot'])) {
       return e.reply('当前已经是关闭状态了哦~', true)

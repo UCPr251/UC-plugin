@@ -40,7 +40,7 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
-  /** 今天剩余秒数 */
+  /** 今日剩余秒数 */
   get EXsecondes() {
     const EXtime = moment().add(1, 'days').format('YYYY-MM-DD 00:00:00')
     return -moment().diff(EXtime, 'seconds')

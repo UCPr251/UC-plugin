@@ -4,9 +4,9 @@ import { Check, UCPr } from './index.js'
 
 /** 权限判断 */
 class Permission {
-  constructor(e, { isG = true, isP = false, isM = false, isA = false, isGA = true, isE = false }) {
+  constructor(e, { isG = true, isP = false, isM = false, isA = false, isGA = false, isE = false }) {
     this.e = e
-    this.sender = e.sender
+    this.sender = this.e.sender
     this.id = this.sender.user_id
     this.isGroup = this.e.isGroup
     /** 是否允许私聊使用 */
@@ -101,7 +101,11 @@ class Permission {
     if (!this.isPer) return this.reply(UCPr.noPerReply)
     return true
   }
-
+  /** 默认权限验证 */
+  static verify(e, Cfg = {}) {
+    const per = new Permission(e, { ...Cfg })
+    return per.judge()
+  }
 }
 
 export default Permission

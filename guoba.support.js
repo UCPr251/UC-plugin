@@ -95,6 +95,21 @@ if (file.existsSync(path.join(Path.apps, 'chuoyichuo.js'))) {
   js = js.concat(newCfg)
 }
 
+if (file.existsSync(path.join(Path.apps, 'randomWife.js'))) {
+  const newCfg = [
+    {
+      label: '【UC】随机老婆设置',
+      component: 'Divider'
+    },
+    s('randomWife.isOpen', '是否开启', 'Switch',
+      '是否开启UC随机老婆'),
+    s('randomWife.wifeLimits', '每日老婆老婆限制', 'InputNumber',
+      '每日取老婆次数限制，包括主人', { min: 1 }),
+    ...sPRO('randomWife', '#添加/删除随机老婆', [false, false, true, true, true, true])
+  ]
+  js = js.concat(newCfg)
+}
+
 if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
   const newCfg = [
     {

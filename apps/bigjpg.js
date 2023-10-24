@@ -1,4 +1,4 @@
-import { Path, Check, Data, UCDate, UCPr, Permission, Admin } from '../components/index.js'
+import { Path, Check, Data, UCDate, UCPr, Permission, Admin, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import { segment } from 'icqq'
 
@@ -77,11 +77,13 @@ export class UCBigjpg extends plugin {
     Data.bigjpgRequest(e.img[0])
   }
 
-  _imgContext() {
+  async _imgContext() {
     if (Data.isCancel.call(this)) return false
-    if (!this.e.img) {
+    const url = await common.getPicUrl(this.e)
+    if (!url) {
       this.reply('请发送图片')
     } else {
+      this.e.url = url
       this.e.per = this.getContext()._imgContext.per
       const Cfg = UCPr.bigjpg
       const isMaster = this.e.per.isMaster
@@ -98,8 +100,8 @@ export class UCBigjpg extends plugin {
 
   _magnificationContext() {
     if (Data.isCancel.call(this, this.setFnc2)) return false
-    const { img, per } = this.getContext()._magnificationContext
-    this.e.img = img
+    const { url, per } = this.getContext()._magnificationContext
+    this.e.url = url
     this.e.magnification = parseInt(this.e.msg)
     if (isNaN(this.e.magnification) || !Check.str([2, 4, 8, 16], this.e.magnification)) {
       this.reply('无效参数，自动选择放大倍数：' + UCPr.bigjpg.magnification)
@@ -114,13 +116,13 @@ export class UCBigjpg extends plugin {
 
   _noiseContext() {
     if (Data.isCancel.call(this, this.setFnc3)) return false
-    const { img, magnification } = this.getContext()._noiseContext
+    const { url, magnification } = this.getContext()._noiseContext
     let noise = parseInt(this.e.msg)
     if (isNaN(noise) || !Check.str([0, 1, 2, 3, 4], noise)) {
       this.reply('无效参数，自动选择降噪系数：' + UCPr.bigjpg.noise)
       noise = UCPr.bigjpg.noise
     }
-    Data.bigjpgRequest.call(this, img[0], noise - 1, Math.log2(magnification))
+    Data.bigjpgRequest.call(this, url, noise - 1, Math.log2(magnification))
     Data.finish.call(this, `放大倍数：${magnification}\n降噪系数：${noise}\n正在放大图片…………\n可能需要较长时间，请耐心等待`, this.setFnc3)
   }
 

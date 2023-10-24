@@ -5,7 +5,7 @@ isDefaultMaster: true
 # 插件优先级
 priority: 251
 # 选择服务
-server: 2
+server: 1
 # Bot名称
 BotName: 纳西妲
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
@@ -56,6 +56,21 @@ chuoyichuo:
   mute: 0.05
   # 禁言的时长，单位分，0为不禁言
   muteTime: 2
+
+# 随机老婆配置
+randomWife:
+  # 是否开启UC随机老婆
+  isOpen: true
+  # 每日取老婆次数限制，包括主人
+  wifeLimits: 1
+  # 是否仅主人可使用#添加/删除随机老婆
+  isM: false
+  # 是否允许群插件管理员使用#添加/删除随机老婆
+  isA: true
+  # 是否允许群原生管理员使用#添加/删除随机老婆
+  isGA: true
+  # 是否允许任何人使用#添加/删除随机老婆
+  isE: false
 
 # B站直播推送配置
 BlivePush:

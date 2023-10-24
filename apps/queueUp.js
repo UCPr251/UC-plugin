@@ -42,8 +42,7 @@ export class UCQueueUp extends plugin {
 
   verify() {
     const per = new Permission(this.e, {})
-    if (per.judge()) return true
-    return false
+    return per.judge()
   }
 
   async setQueueUp(e) {

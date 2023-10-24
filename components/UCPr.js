@@ -15,22 +15,9 @@ let permission = {}
 /** 实时锅巴信息 */
 export let now_config = {}
 
-/** 将对象的纯粹对象属性转换为普通属性 */
-function transformObj(obj, ...property) {
-  for (const _property of property) {
-    for (const key in obj[_property]) {
-      obj[_property + '.' + key] = obj[_property][key]
-      delete obj[_property][key]
-    }
-    delete obj[_property]
-  }
-  return obj
-}
-
 /** 获取锅巴配置填充信息 */
 function getNewGuobaConfig() {
   now_config = _.merge({}, config, permission)
-  now_config = transformObj(now_config, 'BlivePush', 'bigjpg', 'DetecteFloodScreen', 'recall', 'chuoyichuo')
   now_config.Master = _.sortBy(now_config.Master).join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
   now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
@@ -220,6 +207,11 @@ const UCPr = {
   /** 戳一戳配置 */
   get chuoyichuo() {
     return this.config.chuoyichuo ?? {}
+  },
+
+  /** 随机老婆配置 */
+  get randomWife() {
+    return this.config.randomWife ?? {}
   }
 
 }

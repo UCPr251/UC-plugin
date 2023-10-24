@@ -5,23 +5,23 @@ import path from 'node:path'
 /** 文件读写 */
 const file = {
   /** 读取yaml */
-  YAMLreader(path) {
-    return yaml.parse(fs.readFileSync(path, 'utf8'))
+  YAMLreader(_path) {
+    return yaml.parse(fs.readFileSync(_path, 'utf8'))
   },
 
   /** 保存yaml */
-  YAMLsaver(path, newData) {
-    return fs.writeFileSync(path, yaml.stringify(newData), 'utf8')
+  YAMLsaver(_path, newData) {
+    return fs.writeFileSync(_path, yaml.stringify(newData), 'utf8')
   },
 
   /** 读取json */
-  JSONreader(path) {
-    return JSON.parse(fs.readFileSync(path, 'utf8'))
+  JSONreader(_path) {
+    return JSON.parse(fs.readFileSync(_path, 'utf8'))
   },
 
   /** 保存json */
-  JSONsaver(path, newData) {
-    return fs.writeFileSync(path, JSON.stringify(newData, null, 2), 'utf8')
+  JSONsaver(_path, newData) {
+    return fs.writeFileSync(_path, JSON.stringify(newData, null, 2), 'utf8')
   },
 
   /**
@@ -47,28 +47,28 @@ const file = {
   },
 
   /** 读取文件 */
-  readFileSync(path) {
-    return fs.readFileSync(path, 'utf8')
+  readFileSync(_path) {
+    return fs.readFileSync(_path, 'utf8')
   },
 
   /** 写入数据 */
-  writeFileSync(path, data) {
-    return fs.writeFileSync(path, data)
+  writeFileSync(_path, data) {
+    return fs.writeFileSync(_path, data)
   },
 
   /** 创建文件夹 */
-  mkdirSync(path, recursive) {
-    return fs.mkdirSync(path, { recursive })
+  mkdirSync(_path, recursive) {
+    return fs.mkdirSync(_path, { recursive })
   },
 
   /** 文件是否存在 */
-  existsSync(path) {
-    return fs.existsSync(path)
+  existsSync(_path) {
+    return fs.existsSync(_path)
   },
 
   /** 删除文件 */
-  unlinkSync(path) {
-    return fs.unlinkSync(path)
+  unlinkSync(_path) {
+    return fs.unlinkSync(_path)
   },
 
   /** 复制文件 */
@@ -77,18 +77,18 @@ const file = {
   },
 
   /** 文件信息 */
-  lstatSync(path) {
-    return fs.lstatSync(path)
+  lstatSync(_path) {
+    return fs.lstatSync(_path)
   },
 
   /** 创建可读流 */
-  createReadStream(path) {
-    return fs.createReadStream(path)
+  createReadStream(_path) {
+    return fs.createReadStream(_path)
   },
 
   /** 创建可写流 */
-  createWriteStream(path) {
-    return fs.createWriteStream(path)
+  createWriteStream(_path) {
+    return fs.createWriteStream(_path)
   }
 }
 

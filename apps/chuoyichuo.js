@@ -1,6 +1,5 @@
 import { Path, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
 import { segment } from 'icqq'
-import path from 'path'
 
 // 回复文字列表
 const textList = [
@@ -111,7 +110,7 @@ export class UCChuoyichuo extends plugin {
       const files = file.readdirSync(Path.chuoyichuo)
       const imgfile = files[Math.ceil(Math.random() * files.length)]
       await common.sleep(0.5)
-      return e.reply(segment.image(path.join(Path.chuoyichuo, imgfile)))
+      return e.reply(segment.image(Path.join(Path.chuoyichuo, imgfile)))
     }
     // 头像表情包
     if (randomNum < (Cfg.textimg + Cfg.face)) {

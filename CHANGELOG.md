@@ -1,3 +1,9 @@
+# 10-24
+
+- 适配[randomWife](./apps/randomWife.js)`随机二次元老婆`插件，附带老婆图库资源，支持锅巴
+- 优化[锅巴支持](./guoba.support.js)
+- 优化[bigjpg](./apps/bigjpg.js)，可放大`file`图片
+
 # 10-23
 
 - 适配[chuoyichuo](./apps/chuoyichuo.js)`戳一戳回复`插件，支持锅巴

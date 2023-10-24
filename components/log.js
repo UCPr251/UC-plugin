@@ -5,7 +5,7 @@ import { UCPr, Data } from './index.js'
 const log = {
   /** 普通红色 */
   red(...log) {
-    logger.info(chalk.red('[UC]' + log.join()))
+    logger.info(chalk.red('[UC]' + log.map(v => JSON.stringify(v, null, 2)).join('\n')))
   },
 
   /** 红色报错输出，同时增加报错日志 */

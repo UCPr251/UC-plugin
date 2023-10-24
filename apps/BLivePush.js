@@ -34,7 +34,7 @@ export class UCBLivePush extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: '^#?推送测试$',
+          reg: '^#?直播推送测试$',
           fnc: 'bLivePush',
           permission: 'master'
         },
@@ -89,14 +89,6 @@ export class UCBLivePush extends plugin {
     this.PushedInfo = '[UC]BLPushedInfo'
   }
 
-  verify() {
-    if (this.e.isGroup) {
-      const per = new Permission(this.e, { ...UCPr.BlivePush })
-      return per.judge()
-    }
-    return true
-  }
-
   async bLiveHelp(e) {
     return e.reply(help + err_reply)
   }
@@ -121,7 +113,7 @@ export class UCBLivePush extends plugin {
   }
 
   async bLiveSubscribe(e) {
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.BlivePush)) return false
     const [location_id, room_id, type] = await getIdType(e)
     if (!room_id) {
       return e.reply('请输入正确的直播间id')
@@ -173,7 +165,7 @@ export class UCBLivePush extends plugin {
   }
 
   async bLiveDelete(e) {
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.BlivePush)) return false
     const [location_id, room_id, type] = await getIdType(e)
     if (location_id.length < 5 || location_id.length > 10) {
       return e.reply('请输入正确的推送群号')
@@ -237,7 +229,7 @@ export class UCBLivePush extends plugin {
   async bLiveSwitch(e) {
     const regtest = e.msg.match(/推送(.*)/)[1]
     if (isNaN(regtest)) return false
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.BlivePush)) return false
     const [location_id, type] = await getIdType(e, false)
     const loc = type === 'Group' ? '群聊' : '私聊'
     if (!UCPr.BlivePush[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
@@ -398,7 +390,7 @@ export class UCBLivePush extends plugin {
   }
 
   async bLiveAtall(e) {
-    if (!this.verify()) return false
+    if (!Permission.verify(e, UCPr.BlivePush)) return false
     let [location_id, type] = await getIdType(e, false)
     if (type == 'Private') {
       if (e.sender.user_id === location_id) {

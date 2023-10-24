@@ -2,11 +2,10 @@
 import { Path, Data, UCPr, Check, file, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import { update } from '../../other/update.js'
-import path from 'path'
 
 const Plugin_Name = 'loveMys-plugin'
-const loveMys = path.join(Path.plugins, Plugin_Name)
-const apiyaml = path.join(loveMys, 'config', 'api.yaml')
+const loveMys = Path.join(Path.plugins, Plugin_Name)
+const apiyaml = Path.join(loveMys, 'config', 'api.yaml')
 
 export class UCLoveMys extends plugin {
   constructor() {

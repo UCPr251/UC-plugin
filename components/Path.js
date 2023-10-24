@@ -18,6 +18,7 @@ const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
 const bigjpg = path.join(resources, 'bigjpg')
 const chuoyichuo = path.join(resources, 'chuoyichuo')
+const wife = path.join(resources, 'wife')
 const configyaml = path.join(config, 'config.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
@@ -27,8 +28,9 @@ const BLPGroupjson = path.join(data, 'BLPGroup.json')
 const BLPPrivatejson = path.join(data, 'BLPPrivate.json')
 const queueUpjson = path.join(data, 'queueUp.json')
 
-/** 路径配置 */
+/** 路径配置，继承path */
 const Path = {
+  ...path,
   /** UCPr */
   Author: 'UCPr',
   /** UC-plugin */
@@ -65,6 +67,8 @@ const Path = {
   bigjpg,
   /** ./resources/chuoyichuo */
   chuoyichuo,
+  /** ./resources/wife */
+  wife,
   /** ./config/config.yaml */
   configyaml,
   /** ./config/permission.yaml */

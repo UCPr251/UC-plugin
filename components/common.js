@@ -133,6 +133,17 @@ const common = {
   async getName(groupId, userId) {
     const info = await Bot.getGroupMemberInfo(groupId, userId)
     return info.card || info.nickname
+  },
+
+  /** 获取图片下载url */
+  async getPicUrl(e) {
+    let url
+    if (e.img) {
+      url = e.img[0]
+    } else if (e.file && e.file.fid) {
+      url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
+    }
+    return url
   }
 }
 

@@ -1,6 +1,5 @@
 import { Path, Data, UCPr, Check } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
-import path from 'path'
 
 export class UCAddJS extends plugin {
   constructor() {
@@ -35,14 +34,14 @@ export class UCAddJS extends plugin {
     else {
       const fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
       const filename = this.e.file.name
-      if (Check.file(path.join(Path.apps, filename))) {
+      if (Check.file(Path.join(Path.apps, filename))) {
         this.e.filename = filename
         this.e.fileUrl = fileUrl
         this.finish(this.setFnc)
         this.setContext(this.setFnc2)
         return this.reply(`你已经安装过[UC]${filename}插件了，是否覆盖原插件？[是|否]`)
       }
-      if (await Data.addJS(fileUrl, Path.apps, filename)) {
+      if (await Data.download(fileUrl, Path.apps, filename)) {
         this.reply(`操作成功，新增UC-plugin/apps/${filename}，重启后生效`)
         Data.refresh()
       } else {
@@ -55,7 +54,7 @@ export class UCAddJS extends plugin {
   async makeSure() {
     if (this.e.msg === '是') {
       const { fileUrl, filename } = this.getContext().makeSure
-      if (await Data.addJS(fileUrl, Path.apps, filename)) {
+      if (await Data.download(fileUrl, Path.apps, filename)) {
         this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，重启后生效`)
         Data.refresh()
       } else {
