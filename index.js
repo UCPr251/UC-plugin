@@ -9,7 +9,7 @@ log.purple(`-----${Path.Plugin_Name}载入中-----`)
 
 /** 适配UC-plugin */
 const jsfiles = file.readdirSync(Path.example, { type: '.js' })
-const list = ['blivepush', 'configset']
+const list = ['blivepush', 'configset', 'randomWife']
 const dels = []
 for (let _file of jsfiles) {
     for (let js of list) {
