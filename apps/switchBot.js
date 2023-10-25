@@ -23,10 +23,13 @@ export class UCSwitchBot extends plugin {
   async openBot(e) {
     if (!Permission.verify(e, UCPr.switchBot)) return false
     const data = file.YAMLreader(Path.groupyaml)
-    if (_.get(data, `${e.group_id}.enable`) === null) {
+    if (!data[e.group_id] || !_.get(data, `${e.group_id}.enable`)) {
       return e.reply('当前已经是开启状态了哦~', true)
     }
-    _.set(data, `${e.group_id}.enable`, null)
+    delete data[e.group_id].enable
+    if (_.isEmpty(data[e.group_id])) {
+      delete data[e.group_id]
+    }
     file.YAMLsaver(Path.groupyaml, data)
     return e.reply(UCPr.switchBot.openMsg.replace('BotName', UCPr.BotName))
   }
