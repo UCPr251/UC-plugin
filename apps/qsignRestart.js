@@ -12,7 +12,7 @@ const host = '127.0.0.1'
 /** 监听port */
 const port = 801
 /** qsign路径 */
-const qsignPath = Path.join(Path.resolve(Path._path, '..'), 'unidbg-fetch-qsign')
+const qsignPath = Path.resolve(Path._path, '..', 'unidbg-fetch-qsign')
 /** qsign启动器名称 */
 const qsingRunner = '一键startAPI.bat'
 
