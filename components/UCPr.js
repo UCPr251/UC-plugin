@@ -153,6 +153,11 @@ const UCPr = {
     return this.config.fetchErrReply ?? '连接失败，请稍后重试'
   },
 
+  /** 是否开启Bot启动后开启签名自动重启 */
+  get qsignAutoRestart() {
+    return this.config.qsignAutoRestart ?? false
+  },
+
   /** 主人列表 */
   get Master() {
     if (!this.isDefaultMaster) return this.permission.Master

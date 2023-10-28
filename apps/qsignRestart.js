@@ -42,6 +42,10 @@ async function check() {
   }
 }
 
+if (UCPr.qsignAutoRestart) {
+  intervalId = setInterval(check, 60000)
+}
+
 export class UCQsignRestart extends plugin {
   constructor() {
     super({

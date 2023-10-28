@@ -20,6 +20,8 @@ noPerReply: 无权限
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
 # api连接失败回复
 fetchErrReply: 服务连接失败，请稍后重试
+# 是否开启Bot启动后开启签名自动重启
+qsignAutoRestart: false
 
 # 单独上下班配置
 switchBot:

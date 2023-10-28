@@ -234,7 +234,9 @@ export function supportGuoba() {
         s('noPowReply', 'Bot无权限回复', 'Input',
           'Bot权限不足无法执行操作时的回复'),
         s('fetchErrReply', '连接失败回复', 'Input',
-          'Api服务连接失败回复')
+          'Api服务连接失败回复'),
+        s('qsignAutoRestart', '签名自动重启', 'Switch',
+          '是否开启Bot启动后开启签名自动重启')
       ].concat(js),
 
       getConfigData() {
