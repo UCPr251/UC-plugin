@@ -81,7 +81,7 @@ export class UCQsignRestart extends plugin {
     if (Data.isCancel.call(this)) return false
     if (/确认/.test(this.e.msg)) {
       intervalId = setInterval(check, 60000)
-      Data.finish.call(this, '已开启签名自动重启，每一分钟检测一次签名状态，请确保路径等配置正确，并留意一分钟后控制台是否出现报错')
+      Data.finish.call(this, '已开启签名自动重启，每一分钟检测一次签名状态，请确保端口、路径等配置正确，并留意一分钟后控制台是否出现报错')
     }
   }
 }
