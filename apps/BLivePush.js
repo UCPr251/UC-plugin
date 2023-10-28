@@ -25,6 +25,9 @@ const BLive = 'https://live.bilibili.com/'
 
 await init()
 
+/** 全局变量，防止重复检测 */
+let ing = false
+
 export class UCBLivePush extends plugin {
   constructor() {
     super({
@@ -252,6 +255,8 @@ export class UCBLivePush extends plugin {
 
   async bLivePush() {
     if (!Data.check.call(this)) return false
+    if (ing) return false
+    ing = true
     log.purple('BLivePush开始进行直播推送')
     const living = []
     const ended = []
@@ -349,8 +354,9 @@ export class UCBLivePush extends plugin {
     }
     const info = (await Data.redisGet(this.PushedInfo, {})) || {}
     ended.forEach(room => delete info[room])
-    Data.redisSet(this.PushedInfo, info)
+    await Data.redisSet(this.PushedInfo, info)
     log.purple('BLivePush本次直播推送任务完毕')
+    ing = false
   }
 
   async bLiving(e) {
