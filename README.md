@@ -1,6 +1,12 @@
 <div align="center">
 
-# **UC-plugin(测试)**
+<p align="center">
+  <a href="https://mzh.moegirl.org.cn/%E4%BC%91%E6%AF%94%C2%B7%E5%A4%9A%E6%8B%89">
+    <img width="400" src="./resources/xiubi1.jpg" title="她真好看">
+  </a>
+</p>
+
+# [UC-plugin](https://gitee.com/UCPr251/UC-plugin)
 
 </div>
 
@@ -14,7 +20,19 @@
 git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
-## 配置插件
+:innocent:
+
+<!-- ## 插件功能
+
+- 可见#UC帮助（还没做emmmmm……）
+
+#### [群开关Bot](./apps/switchBot.js) -->
+
+<div align="center">
+
+</div>
+
+## 插件配置
 
 - 配置项太多，除了必要的插件系统管理，具体某个功能的配置（如直播推送、放大图片等）请统一到 **[锅巴](https://gitee.com/guoba-yunzai/guoba-plugin) → 插件管理 → UC-plugin → 配置** 进行配置的更改
 
@@ -24,9 +42,24 @@ git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 - 为方便统一开发插件和其他集成功能打造而成
 
+<details>
+<summary>PS</summary>
+
+~~给大家介绍一下，这是我老婆：~~:innocent:
+
+<p align="center">
+  <a href="https://www.bilibili.com/read/cv13428981?spm_id_from=333.999.0.0">
+    <img width="400" src="./resources/xiubi2.jpg" title="她真好看">
+  </a>
+</p>
+
+~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371?spm_id_from=333.337.0.0 "游戏人生")第 2 季啥时候才能出啊~~
+
+</details>
+
 #### 关于插件权限
 
-1. **插件主人**可以独立于**Bot 主人**，默认合并插件主人和 Bot 主人
+1. **插件主人**可以独立于**Bot主人**，默认合并插件主人和 Bot 主人
 2. 除**插件主人**外，还可独立设置**插件管理**，权限低于插件主人高于普通用户
 3. **插件管理**有两类：
    - **全局群管理**，在所有群都拥有插件的管理权限
@@ -43,9 +76,9 @@ git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
    此 6 个判断可针对具体某个功能生效，可在[**锅巴内**](#配置插件)进行修改，判断优先级：
 
-   - **是否主人>是否黑名单>是否全局仅主人>是否功能仅主人>是否允许群聊=是否允许私聊>是否允许任何人>是否允许插件管理员=是否允许群管理员**
+   - **是否主人 > 是否黑名单 > 是否全局仅主人 > 是否功能仅主人 > 是否允许群聊 = 是否允许私聊 > 是否允许任何人 > 是否允许插件管理员 = 是否允许群管理员**
 
-   若 6 个条件设置中有冲突项时，将会按照此准则得出结论
+   若6个条件设置中有冲突项时，将会按照此准则得出结论
 
 <div align="center">
 

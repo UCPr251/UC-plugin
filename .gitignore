@@ -6,9 +6,12 @@
 /system
 /.editorconfig
 /.eslintrc.cjs
+/.prettierignore
+/node_modules
 /defSet/system/UC-plugin-decrypt/
 /apps/accredit.js
 /apps/BdynamicPush.js
 /apps/test.js
 /apps/upload.js
+/apps/help.js
 /resources/bigjpg

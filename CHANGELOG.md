@@ -1,3 +1,7 @@
+# 10-28
+
+- 写一个[签名崩溃自动重启](./apps/qsignRestart.js)，emmm
+
 # 10-24
 
 - 适配[randomWife](./apps/randomWife.js)`随机二次元老婆`插件，附带老婆图库资源，支持锅巴
@@ -16,12 +20,12 @@
 # 10-20
 
 - 修改授权目录结构
-- 新增[loveMys](./apps/loveMys.js)`过码剩余次数自动查询`，每日零点自动查询，可用于统计当日 token 消耗
-- 新增[loveMys](./apps/loveMys.js)`过码次数预警提醒`，零点自动查询时，若剩余次数低于该值则自动提醒主人，0 则不提醒
+- 新增[loveMys](./apps/loveMys.js)`过码剩余次数自动查询`，每日零点自动查询，可用于统计当日token消耗
+- 新增[loveMys](./apps/loveMys.js)`过码次数预警提醒`，零点自动查询时，若剩余次数低于该值则自动提醒主人，0则不提醒
 - 升级[锅巴配置](./guoba.support.js)
 - 适配[bigjpg](./apps/bigjpg.js)锅巴配置
 - 基本完善[Permission.js](./components/Permission.js)权限判断
-- 修改[loveMys](./apps/loveMys.js)注入 tk 后`自动查询剩余次数`并返回
+- 修改[loveMys](./apps/loveMys.js)注入tk后`自动查询剩余次数`并返回
 - 更新[README.md](./README.md)，完善部分说明
 
 # 10-19
@@ -35,11 +39,11 @@
 
 # 10-16
 
-- 新增[loveMys](./apps/loveMys.js)，指令管理该插件 token、api 等
+- 新增[loveMys](./apps/loveMys.js)，指令管理该插件token、api等
 
 # 10-13
 
-- 新增[addJS](./apps/addJS.js)，可自动安装 js 至本插件
+- 新增[addJS](./apps/addJS.js)，可自动安装js至本插件
 - 继续完善底层
 
 # 10-7
