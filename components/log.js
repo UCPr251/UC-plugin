@@ -15,7 +15,12 @@ const log = {
 
   /** 红色报错输出，同时增加报错日志 */
   error(...log) {
-    logger.error('[UC]' + JSON.stringify(log.join(), null, 2))
+    logger.error('[UC]' + log.map(v => {
+      if (typeof v === 'string' || typeof v === 'number') {
+        return v
+      }
+      return JSON.stringify(v, null, 2)
+    }).join('\n'))
     Data.error(log)
   },
 
