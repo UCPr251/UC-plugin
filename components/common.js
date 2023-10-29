@@ -86,7 +86,7 @@ const common = {
       message
     }))
     /** 制作转发内容 */
-    forwardMsg = (await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id)).makeForwardMsg(forwardMsg)
+    forwardMsg = await (await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id)).makeForwardMsg(forwardMsg)
     /** 处理描述，icqq0.4.12及以上 */
     if (dec) {
       let detail = forwardMsg.data?.meta?.detail
