@@ -1,3 +1,7 @@
+# 10-29
+
+- 适配[vitsAI](./apps/vitsAI.js)`AI语音合成`
+
 # 10-28
 
 - 写一个[签名崩溃自动重启](./apps/qsignRestart.js)，emmm

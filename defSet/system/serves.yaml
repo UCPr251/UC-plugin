@@ -14,3 +14,6 @@ bigjpg: null
 qiao:
   - qiao.php?_U_&qq=_U_
   - arrayBuffer
+vitsAI:
+  - vits.php?_U_&speaker=_U_&msg=_U_
+  - arrayBuffer
