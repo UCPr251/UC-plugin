@@ -119,7 +119,7 @@ const common = {
 
   /** 踢出群员，需要管理权限 */
   async kickMember(groupId, userId) {
-    return await this.pickGroup(groupId).kickMember(userId)
+    return await (await this.pickGroup(groupId)).kickMember(userId)
   },
 
   /** 群员信息对象 */
