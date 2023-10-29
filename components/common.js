@@ -102,12 +102,6 @@ const common = {
     return obj.role === 'admin' || obj.role === 'owner'
   },
 
-  /** 判断Bot是否是管理员或群主 */
-  async botIsGroupAdmin(group) {
-    group = await this.pickGroup(group)
-    return group.is_admin || group.is_owner
-  },
-
   /** 获取群实例 */
   async pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
@@ -115,6 +109,12 @@ const common = {
       group = await Bot.pickGroup(group)
     }
     return group
+  },
+
+  /** 判断Bot是否是管理员或群主 */
+  async botIsGroupAdmin(group) {
+    group = await this.pickGroup(group)
+    return group.is_admin || group.is_owner
   },
 
   /** 踢出群员，需要管理权限 */
