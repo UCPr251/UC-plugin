@@ -138,7 +138,7 @@ const common = {
     let url
     if (e.img) {
       url = e.img[0]
-    } else if (e.file && e.file.fid) {
+    } else if (e.file?.fid) {
       url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
     }
     return url
