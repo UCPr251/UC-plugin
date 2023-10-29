@@ -35,10 +35,10 @@ async function check() {
     log.red('检测到签名已关闭，尝试再启动签名')
     exec(`start ${qsingRunner}`, { cwd: qsignPath })
     const time = UCDate.NowTime
-    await common.sleep(3)
+    await common.sleep(10)
     return await common.sendMsgTo(UCPr.Master[0], time + '\n自动重启签名成功', 'Private')
   } else {
-    log.whiteblod('签名正常运行ing')
+    log.whiteblod('签名运行ing')
   }
 }
 
