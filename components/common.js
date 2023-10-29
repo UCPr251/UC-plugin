@@ -104,13 +104,11 @@ const common = {
 
   /** 判断Bot是否是管理员或群主 */
   async botIsGroupAdmin(group) {
-    if (typeof group === 'number' || typeof group === 'string') {
-      if (!Number(group)) return false
-      group = await Bot.pickGroup(group)
-    }
+    group = this.pickGroup(group)
     return group.is_admin || group.is_owner
   },
 
+  /** 获取群实例 */
   async pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
       if (!Number(group)) return false
