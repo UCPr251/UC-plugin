@@ -104,7 +104,7 @@ const common = {
 
   /** 判断Bot是否是管理员或群主 */
   async botIsGroupAdmin(group) {
-    group = this.pickGroup(group)
+    group = await this.pickGroup(group)
     return group.is_admin || group.is_owner
   },
 
