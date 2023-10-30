@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "UC插件",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://gitee.com/UCPr251/UC-plugin"
