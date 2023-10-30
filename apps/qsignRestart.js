@@ -70,7 +70,7 @@ export class UCQsignRestart extends plugin {
       if (intervalId) {
         return e.reply('当前已经开启签名自动重启')
       }
-      this.setContext('verify')
+      this.setContext(this.setFnc)
       return e.reply(`请确认签名配置：\n监听host：${host}\n监听port：${port}\n签名路径：${qsignPath}\n签名启动器名称：${qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于UC-plugin/apps/qsignRestart.js中修改后重启\n\n确认开启？[确认|取消]`)
     } else {
       if (!intervalId) {
