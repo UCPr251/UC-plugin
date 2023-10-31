@@ -57,7 +57,7 @@ export class UCQsignRestart extends plugin {
           fnc: 'restart'
         },
         {
-          reg: /^#?(UC)?签名重启日志$/i,
+          reg: /^#?(UC)?签名重启(日志|记录)$/i,
           fnc: 'restartLog'
         }
       ]
