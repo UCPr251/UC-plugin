@@ -1,4 +1,4 @@
-import { Path, Check, Data, log, UCPr, UCDate, common } from '../components/index.js'
+import { Path, Check, Data, log, UCPr, UCDate } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import { exec } from 'child_process'
 import net from 'net'
@@ -34,9 +34,7 @@ async function check() {
   if (output) {
     log.red('检测到签名已关闭，尝试再启动签名')
     exec(`start ${qsingRunner}`, { cwd: qsignPath })
-    const time = UCDate.NowTime
-    await common.sleep(20)
-    return await common.sendMsgTo(UCPr.Master[0], time + '\n自动重启签名成功', 'Private')
+    addLog()
   } else {
     log.whiteblod('签名运行ing')
   }
@@ -55,12 +53,17 @@ export class UCQsignRestart extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: /^#?UC(开启|关闭)签名自动重启$/i,
+          reg: /^#?(UC)?(开启|关闭)签名自动重启$/i,
           fnc: 'restart'
+        },
+        {
+          reg: /^#?(UC)?签名重启日志$/i,
+          fnc: 'restartLog'
         }
       ]
     })
     this.setFnc = 'verify'
+    this.redisData = '[UC]restartLog'
   }
 
   async restart(e) {
@@ -88,4 +91,16 @@ export class UCQsignRestart extends plugin {
       Data.finish.call(this, '已开启签名自动重启，每一分钟检测一次签名状态，请确保端口、路径等配置正确，并留意一分钟后控制台是否出现报错')
     }
   }
+
+  async restartLog(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return false
+    const data = await Data.redisGet(this.redisData, []) || []
+    return e.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
+  }
+}
+
+async function addLog() {
+  const data = await Data.redisGet(this.redisData, []) || []
+  data.push(UCDate.NowTime)
+  Data.redisSet('[UC]restartLog', data, UCDate.EXsecondes)
 }
