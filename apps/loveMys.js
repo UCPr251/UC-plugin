@@ -32,7 +32,7 @@ export class UCLoveMys extends plugin {
           fnc: 'queryToken'
         },
         {
-          reg: /^#?UC更新(过码|验证码?|yzm)$/i,
+          reg: /^#?(UC)?更新(过码|验证码?|yzm)$/i,
           fnc: 'gitpull'
         }
       ]
