@@ -20,10 +20,27 @@ noPerReply: 无权限
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
 # api连接失败回复
 fetchErrReply: 服务连接失败，请稍后重试
-# 是否开启Bot启动后开启签名自动重启
-qsignAutoRestart: false
 
-# 单独上下班配置
+# qsign重启设置
+qsignRestart:
+  # 开启后Bot启动会自动开启签名重启检测
+  isAutoOpen: false
+  # 签名崩溃检测
+  switch1: true
+  # 签名异常检测
+  switch2: true
+  # 签名路径，不填则取默认路径
+  qsign: null
+  # 签名host
+  host: 127.0.0.1
+  # 签名port
+  port: 801
+  # 签名启动器名称
+  qsingRunner: 一键startAPI.bat
+  # 崩溃检测时间间隔，单位秒，不建议低于10
+  sleep: 60
+
+# 单独上下班设置
 switchBot:
   # 开启Bot的回复，BotName会被替换为上面设置的BotName的值
   openMsg: 好哒，BotName开始上班啦！
@@ -40,7 +57,7 @@ switchBot:
   # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
   isGA: false
 
-# 戳一戳配置
+# 戳一戳设置
 chuoyichuo:
   # 是否开启UC戳一戳
   isOpen: false
@@ -59,7 +76,7 @@ chuoyichuo:
   # 禁言的时长，单位分，0为不禁言
   muteTime: 2
 
-# 随机老婆配置
+# 随机老婆设置
 randomWife:
   # 是否开启UC随机老婆
   isOpen: true
@@ -74,7 +91,7 @@ randomWife:
   # 是否允许任何人使用#添加/删除随机老婆
   isE: false
 
-# B站直播推送配置
+# B站直播推送设置
 BlivePush:
   # 群聊推送全局开关
   isGroup: true
@@ -95,7 +112,7 @@ BlivePush:
   # 是否允许任何人使用，关闭仅主人或管理员可使用
   isE: false
 
-# 放大图片配置
+# 放大图片设置
 bigjpg:
   # 放大图片key
   apiKey:
@@ -128,7 +145,7 @@ bigjpg:
   # 是否允许任何人使用，关闭仅主人或管理员可使用
   isE: false
 
-# 刷屏检测配置
+# 刷屏检测设置
 DetecteFloodScreen:
   # 刷屏检测开关
   isOpen: true
@@ -147,7 +164,7 @@ DetecteFloodScreen:
   # 设置为踢人时是否自动拉黑
   kickAndBlack: true
 
-# 撤回、清屏配置
+# 撤回、清屏设置
 recall:
   # 允许获取的群聊天记录最大值，设置过大可能影响响应速度
   FILTER_MAX: 521

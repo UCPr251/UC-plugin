@@ -11,7 +11,7 @@ Data.refresh()
  * @param {string} label 展示名
  * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'} component 展示属性
  * @param {string} bottomHelpMessage 帮助信息
- * @param {object} componentProps 配置项, max, min等
+ * @param {object} componentProps 配置项, max, min, placeholder等
  * @param {object} optional 可选项
  */
 function s(field, label, component, bottomHelpMessage, componentProps = {}, optional = { required: false, helpMessage: undefined }) {
@@ -48,6 +48,30 @@ function sPRO(property, name, options = [true, true, true, true, true, true]) {
 }
 
 let js = []
+
+if (file.existsSync(path.join(Path.apps, 'qsignRestart.js'))) {
+  const newCfg = [
+    {
+      label: '【UC】签名自动重启设置',
+      component: 'Divider'
+    },
+    s('qsignRestart.isAutoOpen', '签名检测自动开启', 'Switch',
+      '开启后Bot启动时自动开启签名自动重启'),
+    s('qsignRestart.switch1', '签名崩溃检测', 'Switch',
+      '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'),
+    s('qsignRestart.switch2', '签名异常检测', 'Switch',
+      '签名异常检测，检测签名是否异常（包括崩溃），异常则尝试重启签名'),
+    s('qsignRestart.qsign', '签名路径', 'Input',
+      '签名启动器所在路径，不填则取默认路径',
+      { placeholder: Path.qsign }),
+    s('qsignRestart.host', '签名host', 'Input'),
+    s('qsignRestart.port', '签名port', 'InputNumber'),
+    s('qsignRestart.qsingRunner', '启动器名称', 'Input'),
+    s('qsignRestart.sleep', '崩溃检测间隔', 'InputNumber',
+      '崩溃检测时间间隔，单位秒，不建议低于10', { min: 10 })
+  ]
+  js = js.concat(newCfg)
+}
 
 if (file.existsSync(path.join(Path.apps, 'switchBot.js'))) {
   const newCfg = [
@@ -202,7 +226,7 @@ export function supportGuoba() {
           component: 'Divider'
         },
         s('Master', '插件主人', 'InputTextArea',
-          '拥有租管主人权限的QQ，多个请用中文逗号间隔'),
+          '拥有本插件主人权限的QQ，多个请用中文逗号间隔'),
         s('BlackQQ', '插件黑名单', 'InputTextArea',
           '插件拉黑QQ，无法使用本插件，多个请用中文逗号间隔'),
         s('WhiteQQ', '插件白名单', 'InputTextArea',

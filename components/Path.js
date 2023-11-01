@@ -2,7 +2,7 @@ import path from 'node:path'
 
 const Plugin_Name = 'UC-plugin'
 const _path = process.cwd()
-const errorlog = path.join(_path, 'logs', 'error.log')
+const qsign = path.resolve(_path, '..', 'unidbg-fetch-qsign')
 const botConfig = path.join(_path, 'config', 'config')
 const otheryaml = path.join(botConfig, 'other.yaml')
 const groupyaml = path.join(botConfig, 'group.yaml')
@@ -38,8 +38,8 @@ const Path = {
   Plugin_Name,
   /** 云崽工作目录路径 */
   _path,
-  /** 云崽/logs/error.log */
-  errorlog,
+  /** 签名默认路径 */
+  qsign,
   /** 云崽/plugins */
   plugins,
   /** 云崽/plugins/example */
