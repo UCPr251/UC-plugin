@@ -55,7 +55,7 @@ if (file.existsSync(path.join(Path.apps, 'qsignRestart.js'))) {
       label: '【UC】签名自动重启设置',
       component: 'Divider'
     },
-    s('qsignRestart.isAutoOpen', '签名检测自动开启', 'Switch',
+    s('qsignRestart.isAutoOpen', '签名自动重启', 'Switch',
       '开启后Bot启动时自动开启签名自动重启'),
     s('qsignRestart.switch1', '签名崩溃检测', 'Switch',
       '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'),
@@ -258,9 +258,7 @@ export function supportGuoba() {
         s('noPowReply', 'Bot无权限回复', 'Input',
           'Bot权限不足无法执行操作时的回复'),
         s('fetchErrReply', '连接失败回复', 'Input',
-          'Api服务连接失败回复'),
-        s('qsignAutoRestart', '签名自动重启', 'Switch',
-          '是否开启Bot启动后开启签名自动重启')
+          'Api服务连接失败回复')
       ].concat(js),
 
       getConfigData() {
