@@ -30,7 +30,7 @@ export class UCUpdate extends plugin {
     Update_Plugin.reply = this.reply
     if (Update_Plugin.getPlugin(Path.Plugin_Name)) {
       if (/强制/.test(e.msg)) {
-        Data.execute(Path.UC, 'git reset --hard')
+        Data.execSync('git reset --hard', Path.UC)
       }
       await Update_Plugin.runUpdate(Path.Plugin_Name)
       Data.refresh()
@@ -44,7 +44,7 @@ export class UCUpdate extends plugin {
   async refresh(e) {
     if (!Check.permission(e.sender.user_id, 2)) return false
     if (/强制/.test(e.msg)) {
-      Data.execute(Path.UC_plugin_decrypt, 'git reset --hard')
+      Data.execSync('git reset --hard', Path.UC_plugin_decrypt)
     }
     const output = Data.refresh()
     return e.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))

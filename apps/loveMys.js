@@ -68,7 +68,7 @@ export class UCLoveMys extends plugin {
   async installLoveMys(e) {
     if (!Check.permission(e.sender.user_id, 2)) return false
     if (Check.floder(loveMys)) return e.reply('你已安装该插件，无需再次安装')
-    Data.execute(Path.plugins, 'git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/')
+    Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
     return e.reply('安装成功，重启后生效')
   }
 
@@ -117,7 +117,7 @@ export class UCLoveMys extends plugin {
     Update_Plugin.reply = e.reply
     if (Update_Plugin.getPlugin(Plugin_Name)) {
       if (/强制/.test(e.msg)) {
-        Data.execute(loveMys, 'git reset --hard')
+        Data.execSync('git reset --hard', loveMys)
       }
       await Update_Plugin.runUpdate(Plugin_Name)
       if (Update_Plugin.isUp) {

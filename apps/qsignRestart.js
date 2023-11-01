@@ -1,12 +1,11 @@
-import { Path, Check, Data, log, UCPr, UCDate } from '../components/index.js'
+import { Path, Check, Data, log, UCPr, UCDate, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
-import { exec } from 'child_process'
-import net from 'net'
 
 /** 定时器变量，勿动 */
 let intervalId
 
 // 以下配置按自身情况修改
+
 /** 监听host */
 const host = '127.0.0.1'
 /** 监听port */
@@ -15,25 +14,16 @@ const port = 801
 const qsignPath = Path.resolve(Path._path, '..', 'unidbg-fetch-qsign')
 /** qsign启动器名称 */
 const qsingRunner = '一键startAPI.bat'
-
-async function checkPort(host, port) {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer()
-    server.once('error', () => resolve(false))
-    server.once('listening', () => {
-      server.close(() => {
-        resolve(true)
-      })
-    })
-    server.listen(port, host)
-  })
-}
+/** 签名检测时间间隔，单位秒，不建议低于10 */
+const sleep = 60
 
 async function check() {
-  const output = await checkPort(host, port)
+  const output = await Data.checkPort(port, host)
   if (output) {
     log.red('检测到签名已关闭，尝试再启动签名')
-    exec(`start ${qsingRunner}`, { cwd: qsignPath })
+    // killQsign()
+    // await common.sleep(1)
+    startQsign()
     addLog()
   } else {
     log.whiteblod('签名运行ing')
@@ -41,7 +31,7 @@ async function check() {
 }
 
 if (UCPr.qsignAutoRestart) {
-  intervalId = setInterval(check, 60000)
+  intervalId = setInterval(check, sleep * 1000)
 }
 
 export class UCQsignRestart extends plugin {
@@ -87,7 +77,7 @@ export class UCQsignRestart extends plugin {
   async verify() {
     if (Data.isCancel.call(this)) return false
     if (/确认/.test(this.e.msg)) {
-      intervalId = setInterval(check, 60000)
+      intervalId = setInterval(check, sleep * 1000)
       Data.finish.call(this, '已开启签名自动重启，每一分钟检测一次签名状态，请确保端口、路径等配置正确，并留意一分钟后控制台是否出现报错')
     }
   }
@@ -99,8 +89,16 @@ export class UCQsignRestart extends plugin {
   }
 }
 
+function startQsign() {
+  Data.exec(`start ${qsingRunner}`, qsignPath)
+}
+
+function killQsign() {
+  Data.killPort(port)
+}
+
 async function addLog() {
-  const data = await Data.redisGet(this.redisData, []) || []
+  const data = await Data.redisGet('[UC]restartLog', []) || []
   data.push(UCDate.NowTime)
   Data.redisSet('[UC]restartLog', data, UCDate.EXsecondes)
 }
