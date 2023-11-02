@@ -55,10 +55,12 @@ async function checkQsignPort() {
 const cfg = UCPr.qsignRestart
 
 if (cfg.isAutoOpen) {
-  if (cfg.switch1) intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
-  if (cfg.switch2) {
-    replaceReply()
-    isCheckMsg = true
+  if (Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
+    if (cfg.switch1) intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
+    if (cfg.switch2) {
+      replaceReply()
+      isCheckMsg = true
+    }
   }
 }
 
@@ -92,6 +94,9 @@ export class UCQsignRestart extends plugin {
     const isOpen = /开启/.test(e.msg)
     const cfg = UCPr.qsignRestart
     if (isOpen) {
+      if (!Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
+        return e.reply('请根据本地配置在锅巴，UC-plugin配置中修改签名启动器路径及名称')
+      }
       if (intervalId || isCheckMsg) {
         return e.reply('当前已经开启签名自动重启')
       }
