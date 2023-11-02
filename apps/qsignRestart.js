@@ -6,6 +6,7 @@ import lodash from 'lodash'
 
 /** 全局变量 */
 let intervalId, isCheckMsg, ing
+let count = 0
 
 const redisData = '[UC]restartLog'
 
@@ -27,13 +28,16 @@ async function addLog(msg = '') {
 async function checkMsg(msg) {
   if (ing || !isCheckMsg) return false
   if (/签名api异常/i.test(msg)) {
-    ing = true
-    log.red('检测到签名异常，尝试重启签名')
-    killQsign()
-    startQsign()
-    addLog('签名异常')
-    await common.sleep(120)
-    ing = false
+    if (++count >= 5) {
+      ing = true
+      log.red('检测到签名异常，尝试重启签名')
+      killQsign()
+      startQsign()
+      addLog('签名异常')
+      await common.sleep(120)
+      ing = false
+      count = 0
+    }
   }
 }
 
