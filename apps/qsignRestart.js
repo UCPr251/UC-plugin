@@ -32,7 +32,7 @@ async function checkMsg(msg) {
     killQsign()
     startQsign()
     addLog('签名异常')
-    await common.sleep(20)
+    await common.sleep(120)
     ing = false
   }
 }
@@ -45,7 +45,7 @@ async function checkQsignPort() {
     log.red('检测到签名已关闭，尝试启动签名')
     startQsign()
     addLog('签名关闭')
-    await common.sleep(20)
+    await common.sleep(120)
     ing = false
   } else {
     log.whiteblod('签名运行ing')
