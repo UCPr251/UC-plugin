@@ -156,7 +156,7 @@ const UCPr = {
   /** 主人列表 */
   get Master() {
     if (!this.isDefaultMaster) return this.permission.Master
-    return (Array.from(new Set(this.defaultCfg.masterQQ.concat(this.permission.Master)))).map(Number)
+    return _.uniq(this.defaultCfg.masterQQ.concat(this.permission.Master)).map(Number)
   },
 
   /** 管理对象 */
