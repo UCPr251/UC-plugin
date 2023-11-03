@@ -15,7 +15,7 @@ let permission = {}
 /** 实时锅巴信息 */
 export let now_config = {}
 
-/** 获取锅巴配置填充信息 */
+/** 获取锅巴设置填充信息 */
 function getNewGuobaConfig() {
   now_config = _.merge({}, config, permission)
   now_config.Master = _.sortBy(now_config.Master).join('，')
@@ -31,7 +31,7 @@ function getConfig(mode) {
   }
 }
 
-/** 更新配置 */
+/** 更新设置 */
 function getNewConfig(mode) {
   if (mode) {
     let file
@@ -48,7 +48,7 @@ function getNewConfig(mode) {
       }
       default: break
     }
-    logger.info(`[UC]修改配置文件${file}`)
+    logger.info(`[UC]修改设置文件${file}`)
     getNewGuobaConfig()
     return
   }
@@ -64,7 +64,7 @@ function watch(path, mode) {
 watch(Path.configyaml, 1)
 watch(Path.permissionyaml, 2)
 
-/** 系统配置信息 */
+/** 系统设置信息 */
 const UCPr = {
   /** UC-plugin */
   Plugin_Name,
@@ -98,7 +98,7 @@ const UCPr = {
     return permission
   },
 
-  /** 机器人配置 */
+  /** 机器人设置 */
   get defaultCfg() {
     return defaultCfg ?? {}
   },
@@ -189,34 +189,39 @@ const UCPr = {
     return Bot.uin ?? this.defaultCfg.qq
   },
 
-  /** 签名自动重启配置 */
+  /** 签名自动重启设置 */
   get qsignRestart() {
     return this.config.qsignRestart ?? {}
   },
 
-  /** 直播推送配置 */
+  /** 直播推送设置 */
   get BlivePush() {
     return this.config.BlivePush ?? {}
   },
 
-  /** 放大图片配置 */
+  /** 放大图片设置 */
   get bigjpg() {
     return this.config.bigjpg ?? {}
   },
 
-  /** 开关Bot配置 */
+  /** 开关Bot设置 */
   get switchBot() {
     return this.config.switchBot ?? {}
   },
 
-  /** 戳一戳配置 */
+  /** 戳一戳设置 */
   get chuoyichuo() {
     return this.config.chuoyichuo ?? {}
   },
 
-  /** 随机老婆配置 */
+  /** 随机老婆设置 */
   get randomWife() {
     return this.config.randomWife ?? {}
+  },
+
+  /** 随机群友设置 */
+  get randomMember() {
+    return this.config.randomMember ?? {}
   }
 
 }

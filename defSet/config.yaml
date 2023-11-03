@@ -91,6 +91,23 @@ randomWife:
   # 是否允许任何人使用#添加/删除随机老婆
   isE: false
 
+# 随机群友设置
+randomMember:
+  # 是否开启UC随机群友
+  isOpen: true
+  # 是否自动艾特随机到的群友
+  isAt: false
+  # 随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）
+  reply: 恭喜info成为天选之子！
+  # 是否仅主人可使用
+  isM: false
+  # 是否允许群插件管理员使用
+  isA: true
+  # 是否允许群原生管理员使用
+  isGA: true
+  # 是否允许任何人使用
+  isE: true
+
 # B站直播推送设置
 BlivePush:
   # 群聊推送全局开关

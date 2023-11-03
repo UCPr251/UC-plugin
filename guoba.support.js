@@ -1,6 +1,5 @@
 import { UCPr, Path, file, Data } from './components/index.js'
 import { now_config } from './components/UCPr.js'
-import path from 'path'
 import _ from 'lodash'
 
 Data.refresh()
@@ -49,7 +48,7 @@ function sPRO(property, name, options = [true, true, true, true, true, true]) {
 
 let js = []
 
-if (file.existsSync(path.join(Path.apps, 'qsignRestart.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'qsignRestart.js'))) {
   const newCfg = [
     {
       label: '【UC】签名自动重启设置',
@@ -73,7 +72,7 @@ if (file.existsSync(path.join(Path.apps, 'qsignRestart.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(path.join(Path.apps, 'switchBot.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'switchBot.js'))) {
   const newCfg = [
     {
       label: '【UC】指定群开关Bot设置',
@@ -92,7 +91,7 @@ if (file.existsSync(path.join(Path.apps, 'switchBot.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(path.join(Path.apps, 'chuoyichuo.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'chuoyichuo.js'))) {
   const newCfg = [
     {
       label: '【UC】戳一戳回复设置',
@@ -119,7 +118,7 @@ if (file.existsSync(path.join(Path.apps, 'chuoyichuo.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(path.join(Path.apps, 'randomWife.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'randomWife.js'))) {
   const newCfg = [
     {
       label: '【UC】随机老婆设置',
@@ -127,14 +126,31 @@ if (file.existsSync(path.join(Path.apps, 'randomWife.js'))) {
     },
     s('randomWife.isOpen', '是否开启', 'Switch',
       '是否开启UC随机老婆'),
-    s('randomWife.wifeLimits', '每日老婆老婆限制', 'InputNumber',
-      '每日取老婆次数限制，包括主人', { min: 1 }),
+    s('randomWife.wifeLimits', '老婆次数限制', 'InputNumber',
+      '每日随机老婆次数限制，包括主人', { min: 1 }),
     ...sPRO('randomWife', '#添加/删除随机老婆', [false, false, true, true, true, true])
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'randomMember.js'))) {
+  const newCfg = [
+    {
+      label: '【UC】随机群友设置',
+      component: 'Divider'
+    },
+    s('randomMember.isOpen', '是否开启', 'Switch',
+      '是否开启UC随机群友'),
+    s('randomMember.isAt', '是否自动艾特', 'Switch',
+      '是否自动艾特随机到的群友'),
+    s('randomMember.reply', '回复内容', 'Input',
+      '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）'),
+    ...sPRO('randomMember', '#随机群友', [false, false, true, true, true, true])
+  ]
+  js = js.concat(newCfg)
+}
+
+if (file.existsSync(Path.join(Path.apps, 'BlivePush.js'))) {
   const newCfg = [
     {
       label: `【UC】B站直播推送设置${Data.check('BlivePush') ? '' : '（您当前未购买此插件）'}`,
@@ -152,7 +168,7 @@ if (file.existsSync(path.join(Path.apps, 'BlivePush.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(path.join(Path.apps, 'bigjpg.js'))) {
+if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
   const newCfg = [
     {
       label: `【UC】放大图片设置${Data.check('bigjpg') ? '' : '（您当前未购买此插件）'}`,
@@ -199,12 +215,12 @@ if (file.existsSync(path.join(Path.apps, 'bigjpg.js'))) {
       '8倍限制，开启仅允许主人放大8倍'),
     s('bigjpg.x16Limit', '16倍放大限制', 'Switch',
       '16倍限制，开启仅允许主人放大16倍'),
-    ...sPRO('bigjpg', '放大图片')
+    ...sPRO('bigjpg', '#放大图片')
   ]
   js = js.concat(newCfg)
 }
 
-// if (file.existsSync(path.join(Path.apps, )))
+// if (file.existsSync(Path.join(Path.apps, )))
 
 export function supportGuoba() {
   return {
@@ -217,7 +233,7 @@ export function supportGuoba() {
       isV3: true,
       isV2: false,
       description: 'UC-plugin，为更多有趣的功能',
-      iconPath: path.join(Path.resources, 'xiubi.png')
+      iconPath: Path.join(Path.resources, 'xiubi.png')
     },
     configInfo: {
       schemas: [
