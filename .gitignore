@@ -4,6 +4,7 @@
 /config
 /test.js
 /system
+/tools
 /.editorconfig
 /.eslintrc.cjs
 /.prettierignore
