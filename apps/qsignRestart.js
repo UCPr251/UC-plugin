@@ -28,7 +28,7 @@ async function addLog(msg = '') {
 async function checkMsg(msg) {
   if (ing || !isCheckMsg) return false
   if (/签名api异常/i.test(msg)) {
-    if (++count >= 5) {
+    if (++count >= 3) {
       ing = true
       log.red('检测到签名异常，尝试重启签名')
       killQsign()
