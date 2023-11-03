@@ -17,12 +17,12 @@ const servesyaml = path.join(system, 'serves.yaml')
 const UC_plugin_decrypt = path.join(system, 'UC-plugin-decrypt')
 const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
-const bigjpg = path.join(resources, 'bigjpg')
 const chuoyichuo = path.join(resources, 'chuoyichuo')
 const wife = path.join(resources, 'wife')
 const configyaml = path.join(config, 'config.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
+const bigjpg = path.join(data, 'bigjpg')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
 const BLPGroupjson = path.join(data, 'BLPGroup.json')
@@ -66,8 +66,6 @@ const Path = {
   decryptyaml,
   /** ./resources */
   resources,
-  /** ./resources/bigjpg */
-  bigjpg,
   /** ./resources/chuoyichuo */
   chuoyichuo,
   /** ./resources/wife */
@@ -78,6 +76,8 @@ const Path = {
   permissionyaml,
   /** ./data */
   data,
+  /** ./data/bigjpg */
+  bigjpg,
   /** ./data/errorLog.json */
   errorLogjson,
   /** ./data/accredit.json */

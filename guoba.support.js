@@ -208,7 +208,7 @@ if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
       '每人每天放大次数限制，0为不限制，主人不受限',
       { min: 0 }),
     s('bigjpg.isSave', '是否自动保存图片', 'Switch',
-      '放大的图片是否自动保存本地。路径UC-plugin/resources/bigjpg'),
+      '放大的图片是否自动保存本地。保存路径：' + Path.bigjpg),
     s('bigjpg.x4Limit', '4倍放大限制', 'Switch',
       '4倍限制，开启仅允许主人放大4倍'),
     s('bigjpg.x8Limit', '8倍放大限制', 'Switch',
