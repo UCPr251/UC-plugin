@@ -28,5 +28,4 @@ export class UCRandomMember extends plugin {
     if (cfg.isAt) msg.unshift(segment.at(mem.user_id))
     return e.reply(msg)
   }
-
 }
