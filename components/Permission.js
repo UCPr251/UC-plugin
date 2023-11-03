@@ -71,9 +71,7 @@ class Permission {
     if (!this.isGroup) return false
     if (this.isGroupOwner) return false
     if (this.e.group.is_owner) return true
-    if (this.e.group.is_admin && !this.isGroupAdmin) {
-      return true
-    }
+    if (this.e.group.is_admin && !this.isGroupAdmin) return true
     return false
   }
   /** 是否有权限操作，判断优先级 主人>黑名单>全局仅主人>功能仅主人>允许群聊=允许私聊>允许任何人>允许插件管理员=允许群管理员 */
