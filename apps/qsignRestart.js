@@ -38,7 +38,7 @@ async function checkMsg(msg) {
       setTimeout(() => {
         ing = false
         errorTimes = 0
-      }, 120000)
+      }, 60000)
     }
   }
 }
@@ -51,7 +51,7 @@ async function checkQsignPort() {
     log.red('检测到签名已关闭，尝试启动签名')
     startQsign()
     addLog('签名关闭')
-    setTimeout(() => (ing = false), 120000)
+    setTimeout(() => (ing = false), 60000)
   } else {
     log.whiteblod('签名运行ing')
   }
