@@ -1,4 +1,4 @@
-import { Path, Check, Data, log, UCPr, UCDate, common } from '../components/index.js'
+import { Path, Check, Data, log, UCPr, UCDate } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import { segment } from 'icqq'
@@ -34,9 +34,10 @@ async function checkMsg(msg) {
       killQsign()
       startQsign()
       addLog('签名异常')
-      await common.sleep(120)
-      ing = false
-      count = 0
+      setTimeout(() => {
+        ing = false
+        count = 0
+      }, 120000)
     }
   }
 }
@@ -49,8 +50,7 @@ async function checkQsignPort() {
     log.red('检测到签名已关闭，尝试启动签名')
     startQsign()
     addLog('签名关闭')
-    await common.sleep(120)
-    ing = false
+    setTimeout(() => (ing = false), 120000)
   } else {
     log.whiteblod('签名运行ing')
   }
