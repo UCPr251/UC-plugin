@@ -73,7 +73,7 @@ export class UCQsignRestart extends plugin {
   constructor() {
     super({
       name: 'UC-qsignRestart',
-      dsc: '监听qsign端口自动重启',
+      dsc: '监听qsign端口和消息回复报错自动重启签名',
       event: 'message',
       priority: UCPr.priority,
       rule: [
