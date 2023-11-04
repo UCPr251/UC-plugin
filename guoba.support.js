@@ -51,7 +51,7 @@ let js = []
 if (file.existsSync(Path.join(Path.apps, 'qsignRestart.js'))) {
   const newCfg = [
     {
-      label: '【UC】签名自动重启设置',
+      label: '【UC】签名自动重启设置（修改后重启生效！）',
       component: 'Divider'
     },
     s('qsignRestart.isAutoOpen', '签名自动重启', 'Switch',
