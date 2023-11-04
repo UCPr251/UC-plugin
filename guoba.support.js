@@ -60,6 +60,8 @@ if (file.existsSync(Path.join(Path.apps, 'qsignRestart.js'))) {
       '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'),
     s('qsignRestart.switch2', '签名异常检测', 'Switch',
       '签名异常检测，检测签名是否异常（包括崩溃），异常则尝试重启签名'),
+    s('qsignRestart.errorTimes', '异常重启次数', 'InputNumber',
+      '签名异常次数大于等于该值时执行签名重启，避免高频重启，不建议低于3', { min: 1 }),
     s('qsignRestart.qsign', '签名路径', 'Input',
       '签名启动器所在路径，不填则取默认路径',
       { placeholder: Path.qsign }),
