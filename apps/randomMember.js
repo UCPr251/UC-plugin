@@ -1,5 +1,6 @@
 import { UCPr, Permission } from '../components/index.js'
 import { segment } from 'icqq'
+import _ from 'lodash'
 
 export class UCRandomMember extends plugin {
   constructor() {
@@ -22,8 +23,7 @@ export class UCRandomMember extends plugin {
     if (!cfg.isOpen) return false
     if (!Permission.verify(e, cfg)) return false
     const map = await e.group.getMemberMap()
-    const memberArr = Array.from(map.values())
-    const mem = memberArr[Math.ceil(Math.random() * memberArr.length)]
+    const mem = _.sample(Array.from(map.values()))
     const msg = [cfg.reply.replace('info', `${mem.nickname}（${mem.user_id}）`), segment.image(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${mem.user_id}`)]
     if (cfg.isAt) msg.unshift(segment.at(mem.user_id))
     return e.reply(msg)

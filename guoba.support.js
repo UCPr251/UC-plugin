@@ -10,7 +10,7 @@ Data.refresh()
  * @param {string} label 展示名
  * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'} component 展示属性
  * @param {string} bottomHelpMessage 帮助信息
- * @param {object} componentProps 配置项, max, min, placeholder等
+ * @param {object} componentProps 配置项：max, min, placeholder等
  * @param {object} optional 可选项
  */
 function s(field, label, component, bottomHelpMessage, componentProps = {}, optional = { required: false, helpMessage: undefined }) {

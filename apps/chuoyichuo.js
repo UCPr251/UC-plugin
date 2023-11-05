@@ -1,5 +1,6 @@
 import { Path, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
 import { segment } from 'icqq'
+import _ from 'lodash'
 
 // 回复文字列表
 const textList = [
@@ -102,13 +103,13 @@ export class UCChuoyichuo extends plugin {
     const randomNum = Math.random()
     // 回复文本+图片
     if (randomNum < Cfg.textimg) {
-      let replyMsg = textList[Math.ceil(Math.random() * textList.length)]
-      if (Cfg.chuoimg && Math.random() < Cfg.chuoimg) {
+      let replyMsg = _.sample(textList.length)
+      if (Cfg.chuoimg && randomNum / Cfg.textimg < Cfg.chuoimg) {
         replyMsg = `${UCPr.BotName}今天已经被戳${count}次了\n` + replyMsg
       }
       await e.reply(replyMsg)
       const files = file.readdirSync(Path.chuoyichuo)
-      const imgfile = files[Math.ceil(Math.random() * files.length)]
+      const imgfile = _.sample(files)
       await common.sleep(0.5)
       return e.reply(segment.image(Path.join(Path.chuoyichuo, imgfile)))
     }
@@ -118,7 +119,7 @@ export class UCChuoyichuo extends plugin {
     }
     // 禁言
     if (await common.botIsGroupAdmin(e.group) && randomNum < (Cfg.textimg + Cfg.face, Cfg.mute)) {
-      const mutetype = Math.ceil(Math.random() * 2)
+      const mutetype = _.sample([1, 2])
       if (mutetype === 1) {
         await e.reply('说了不要戳了！\n坏孩子要接受' + UCPr.BotName + '的惩罚！')
         await common.sleep(1)

@@ -61,8 +61,7 @@ export class UCRandomWife extends plugin {
     if (imgFiles.length == 0) {
       return e.reply('今日所有的老婆已经被娶完了哦，明天早点来吧！')
     }
-    const random_index = Math.floor(Math.random() * imgFiles.length)
-    const wife_img = imgFiles[random_index]
+    const wife_img = _.sample(imgFiles)
     data_wifes.push(wife_img)
     const wife_name = Path.parse(wife_img).name
     const new_data = {
