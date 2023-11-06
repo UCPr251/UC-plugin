@@ -31,7 +31,7 @@ qsignRestart:
   switch2: true
   # 签名异常次数大于等于该值时执行签名重启
   errorTimes: 3
-  # 签名路径，不填则取默认路径
+  # 签名启动器执行路径，不填则取默认路径
   qsign: null
   # 签名host
   host: 127.0.0.1

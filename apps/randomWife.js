@@ -76,7 +76,7 @@ export class UCRandomWife extends plugin {
       msg.unshift('\n')
       msg.unshift(segment.at(e.sender.user_id))
     }
-    return e.reply(msg)
+    return e.reply(msg, true)
   }
 
   async delWife(e) {
