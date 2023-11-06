@@ -64,7 +64,7 @@ const UCDate = {
   diffStr(start_time, end_time) {
     const { Y, M, D, h, m } = this.diff(start_time, end_time)
     const str = `${Y}年${M}个月${D}天${h}小时${m}分钟`
-    return str.slice(str.match(/[1-9]/)?.index || 0)
+    return str.slice(str.match(/[1-9]/)?.index ?? 0)
   },
 
   /**

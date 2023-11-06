@@ -1,4 +1,4 @@
-import { log, UCPr } from './index.js'
+import { log, UCPr, UCDate, file, Path } from './index.js'
 import _ from 'lodash'
 
 /** 常用方法 */
@@ -26,6 +26,38 @@ const common = {
         .catch((err) => {
           log.error('发送私聊消息错误' + err.message)
         })
+    }
+  },
+
+  /**
+   * 发送文件
+   * @param {*} e
+   * @param {Buffer|string} buffer buffer或路径
+   * @param {string} name 上传文件名
+   * @param {string} replyMsg 回复消息
+   */
+  async sendFile(e, buffer, name, replyMsg = '') {
+    if (!Buffer.isBuffer(buffer)) {
+      if (file.existsSync(buffer)) {
+        buffer = file.readFileSync(buffer, null)
+        if (!name) {
+          name = Path.parse(buffer).base
+        }
+      } else {
+        return false
+      }
+    } else if (!name) {
+      name = `${e.sender.user_id}-${UCDate.NowTimeNum}`
+    }
+    name = name.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
+    if (e.isGroup) {
+      await e.group.fs.upload(buffer, undefined, name)
+      await e.reply(replyMsg, false, { at: true })
+    } else if (e.friend) {
+      await e.friend.sendFile(buffer, name)
+      await e.reply(replyMsg, true)
+    } else {
+      return false
     }
   },
 
@@ -133,13 +165,21 @@ const common = {
     return info.card || info.nickname
   },
 
+  /** 获取文件下载url和文件名 */
+  async getFileUrl(e) {
+    if (!e.file?.fid) return null
+    const url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
+    if (!url) return null
+    return [url, e.file.name]
+  },
+
   /** 获取图片下载url */
   async getPicUrl(e) {
-    let url
+    let url = null
     if (e.img) {
       url = e.img[0]
-    } else if (e.file?.fid) {
-      url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
+    } else if (e.file) {
+      url = await this.getFileUrl(e)?.[0]
     }
     return url
   }

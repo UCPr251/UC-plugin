@@ -126,15 +126,10 @@ export class UCBigjpg extends plugin {
     Data.finish.call(this, `放大倍数：${magnification}\n降噪系数：${noise}\n正在放大图片…………\n可能需要较长时间，请耐心等待`, this.setFnc3)
   }
 
-  sendImage(buffer) {
+  async sendImage(buffer) {
     const name = `${this.e.sender.user_id}-${UCDate.NowTimeNum}.png`
     if (buffer.length > 5242880) {
-      if (this.e.isGroup) {
-        this.e.reply([segment.at(this.e.sender.user_id), '放大成功咯,图片较大将会直接发送文件，注意查收哦'])
-        this.e.group.fs.upload(buffer, undefined, name)
-      } else {
-        this.e.friend.sendFile(buffer, name)
-      }
+      await common.sendFile(this.e, buffer, name, '放大成功咯,图片较大将会直接发送文件，注意查收哦')
     } else {
       this.e.reply([segment.at(this.e.user_id), '放大成功咯'])
       this.e.reply(segment.image(buffer), true)

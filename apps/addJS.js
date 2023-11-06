@@ -1,4 +1,4 @@
-import { Path, Data, UCPr, Check } from '../components/index.js'
+import { Path, Data, UCPr, Check, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
 export class UCAddJS extends plugin {
@@ -32,8 +32,7 @@ export class UCAddJS extends plugin {
     if (!this.e.friend) return Data.finish.bind(this, '请先添加好友')
     if (!this.e.file) return this.reply('请发送js文件')
     else {
-      const fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
-      const filename = this.e.file.name
+      const [fileUrl, filename] = await common.getFileUrl(this.e)
       if (Check.file(Path.join(Path.apps, filename))) {
         this.e.filename = filename
         this.e.fileUrl = fileUrl

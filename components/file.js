@@ -28,17 +28,21 @@ const file = {
    * 获取文件夹内文件信息
    * @param {path} _path
    * @param {object} option
-   * @param {'.js'|'.yaml'|'.json'} option.type 筛选文件类型
+   * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'} option.type 筛选文件类型
    * @param {boolean} option.basename 只保留文件名
    * @returns {string[]}
    */
   readdirSync(_path, option = {
     type: null,
-    basename: false
+    basename: false,
+    withFileTypes: false
   }) {
-    let files = fs.readdirSync(_path)
+    let files = fs.readdirSync(_path, option)
     if (option.type) {
-      files = files.filter(file => path.extname(file).toLowerCase() === option.type)
+      if (!Array.isArray(option.type)) {
+        option.type = [option.type]
+      }
+      files = files.filter(file => option.type.includes(path.extname(file).toLowerCase()))
     }
     if (option.basename) {
       files = files.map(file => path.parse(file).name)
@@ -47,8 +51,8 @@ const file = {
   },
 
   /** 读取文件 */
-  readFileSync(_path) {
-    return fs.readFileSync(_path, 'utf8')
+  readFileSync(_path, encoding = 'utf8', flag) {
+    return fs.readFileSync(_path, { encoding, flag })
   },
 
   /** 写入数据 */
@@ -76,9 +80,14 @@ const file = {
     return fs.copyFileSync(orlFilePath, targetFilPath)
   },
 
-  /** 文件信息 */
+  /** 符号链接信息 */
   lstatSync(_path) {
     return fs.lstatSync(_path)
+  },
+
+  /** 文件信息 */
+  statSync(_path) {
+    return fs.statSync(_path)
   },
 
   /** 创建可读流 */
@@ -89,6 +98,42 @@ const file = {
   /** 创建可写流 */
   createWriteStream(_path) {
     return fs.createWriteStream(_path)
+  },
+
+  /**
+   * 搜索文件并返回数据
+   * @param {*} dir 搜索根目录
+   * @param {string} keywords 关键词
+   * @param {Object} option 可选参数
+   * @param {string|Array} option.type 文件类型
+   * @param {boolean} option.recursive 是否递归查找子文件夹
+   * @returns 搜索结果
+   */
+  searchFiles(dir, keywords, option = {
+    type: undefined,
+    recursive: false
+  }) {
+    const files = this.readdirSync(dir, option)
+    const searchResults = []
+    for (const file of files) {
+      const filePath = path.join(dir, file)
+      const stats = this.statSync(filePath)
+      if (stats.isFile()) {
+        if (new RegExp(keywords, 'i').test(file)) {
+          searchResults.push({
+            name: path.parse(file).name,
+            file,
+            ext: path.extname(file),
+            path: filePath
+          })
+        }
+      } else if (stats.isDirectory()) {
+        if (option.recursive) {
+          this.searchFiles(filePath, keywords)
+        }
+      }
+    }
+    return searchResults
   }
 }
 

@@ -9,6 +9,7 @@
 /.eslintrc.cjs
 /.prettierignore
 /node_modules
+/resources/novel
 /defSet/system/UC-plugin-decrypt/
 /apps/accredit.js
 /apps/BdynamicPush.js
@@ -16,3 +17,4 @@
 /apps/vitsAI.js
 /apps/upload.js
 /apps/help.js
+/apps/searchNovel.js
