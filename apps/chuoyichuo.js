@@ -103,7 +103,7 @@ export class UCChuoyichuo extends plugin {
     const randomNum = Math.random()
     // 回复文本+图片
     if (randomNum < Cfg.textimg) {
-      let replyMsg = _.sample(textList.length)
+      let replyMsg = _.sample(textList)
       if (Cfg.chuoimg && randomNum / Cfg.textimg < Cfg.chuoimg) {
         replyMsg = `${UCPr.BotName}今天已经被戳${count}次了\n` + replyMsg
       }
