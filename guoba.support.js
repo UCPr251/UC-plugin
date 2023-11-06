@@ -145,6 +145,8 @@ if (file.existsSync(Path.join(Path.apps, 'randomMember.js'))) {
       '是否开启UC随机群友'),
     s('randomMember.isAt', '是否自动艾特', 'Switch',
       '是否自动艾特随机到的群友'),
+    s('randomMember.keyWords', '触发指令', 'Input',
+      '触发指令，#你设置的值 就可以触发该插件，修改后直接生效'),
     s('randomMember.reply', '回复内容', 'Input',
       '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）'),
     ...sPRO('randomMember', '#随机群友', [false, false, true, true, true, true])

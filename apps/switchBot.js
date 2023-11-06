@@ -9,11 +9,11 @@ export class UCSwitchBot extends plugin {
       event: 'message.group',
       priority: UCPr.priority,
       rule: [{
-        reg: `^#?${UCPr.BotName}(${UCPr.switchBot.openReg})$`,
+        reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.openReg ?? '上班|工作'})$`,
         fnc: 'openBot'
       },
       {
-        reg: `^#?${UCPr.BotName}(${UCPr.switchBot.closeReg})$`,
+        reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.closeReg ?? '下班|休息'})$`,
         fnc: 'closeBot'
       }
       ]

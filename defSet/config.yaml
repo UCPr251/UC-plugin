@@ -99,6 +99,8 @@ randomMember:
   isOpen: true
   # 是否自动艾特随机到的群友
   isAt: false
+  # 触发指令，#你设置的值 就可以触发该插件，修改后直接生效
+  keyWords: 随机群友
   # 随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）
   reply: 恭喜info成为天选之子！
   # 是否仅主人可使用
