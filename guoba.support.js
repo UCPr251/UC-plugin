@@ -48,6 +48,31 @@ function sPRO(property, name, options = [true, true, true, true, true, true]) {
 
 let js = []
 
+if (file.existsSync(Path.join(Path.apps, 'searchNovel.js'))) {
+  const newCfg = [
+    {
+      label: '【UC】小说 · 搜索',
+      component: 'Divider'
+    },
+    s('searchNovel.recallMsg', '消息撤回间隔', 'InputNumber',
+      '小说序号选择信息撤回时间间隔，单位秒，0则不撤回'),
+    s('searchNovel.novelPath', '小说资源路径', 'Input',
+      '本地小说资源绝对路径，不填写则取默认值', { placeholder: Path.join(Path.resources, 'novel') }),
+    ...sPRO('searchNovel.search', '#搜小说'),
+    {
+      label: '【UC】小说 · 添加',
+      component: 'Divider'
+    },
+    ...sPRO('searchNovel.add', '#增加小说'),
+    {
+      label: '【UC】小说 · 删除',
+      component: 'Divider'
+    },
+    ...sPRO('searchNovel.del', '#删')
+  ]
+  js = js.concat(newCfg)
+}
+
 if (file.existsSync(Path.join(Path.apps, 'qsignRestart.js'))) {
   const newCfg = [
     {
