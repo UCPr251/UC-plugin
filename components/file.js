@@ -149,7 +149,6 @@ const file = {
         }
       }
     }
-    console.log(_.flatMap(searchLevelArr).length)
     return _.flatMap(searchLevelArr.map(arr => _.sortBy(arr, 'name.length')))
   }
 
