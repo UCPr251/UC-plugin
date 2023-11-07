@@ -102,7 +102,8 @@ const common = {
     return forwardMsg
   },
 
-  /** 无需e的转发消息制作
+  /**
+   * 无需e的转发消息制作
    * @param {'Group'|'Private'} [type]
    */
   async makeforwardMsg(msg, id = UCPr.rentGroup, type = 'Group', dec = undefined) {

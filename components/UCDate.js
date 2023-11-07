@@ -117,7 +117,8 @@ const UCDate = {
   },
 
   /**
-   * @description 单位换算→天数，示例：daysCount('2', '月')
+   * @description 单位换算→天数
+   * @example daysCount('2', '月')
    * @param {string} count 倍数/系数，如20
    * @param {string} unit 计量单位
    */
@@ -149,14 +150,13 @@ const UCDate = {
     return `${formattedyear}-${formattedMonth}-${formattedDay}`
   },
 
-  /** 汉字时长转纯数字 */
+  /** 简单汉字时长转天数 */
   calculateTime(date) {
     if (isNaN(date.slice(-1))) { // 非纯数字
-      const numStrMatch = date.match(Numreg)// 三 三十
-      if (!numStrMatch) {
+      const numStr = date.match(Numreg)?.[0] // 三 三十
+      if (!numStr) {
         return false
       }
-      const numStr = numStrMatch[0] // 三 三十
       let unit = date.slice(-1)
       if (numStr == date) { // 三 != 三月 ； 三十 == 三十
         unit = '天'
