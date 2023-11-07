@@ -45,7 +45,7 @@ const Admin = {
    * @param {boolean} isAdd 增删
    */
   arr(type, userId, isAdd = true) {
-    userId = _.concat([], userId).map(Number)
+    userId = _.castArray(userId).map(Number)
     const config = UCPr.permission
     if (isAdd) {
       config[type] = _.uniq(_.concat(config[type], userId))

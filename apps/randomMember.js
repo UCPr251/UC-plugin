@@ -11,7 +11,7 @@ export class UCRandomMember extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: new RegExp(`^#*${UCPr.randomMember?.keyWords?.trim() ?? '随机群友'}$`, 'i'),
+          reg: new RegExp(`^#*${UCPr.randomMember?.keyWords?.trim() || '随机群友'}$`, 'i'),
           fnc: 'randomMember'
         }
       ]

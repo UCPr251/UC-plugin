@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
 import path from 'node:path'
+import _ from 'lodash'
 
 /** 文件读写 */
 const file = {
@@ -37,12 +38,11 @@ const file = {
     basename: false,
     withFileTypes: false
   }) {
+    if (!this.existsSync(_path)) return []
     let files = fs.readdirSync(_path, option)
     if (option.type) {
-      if (!Array.isArray(option.type)) {
-        option.type = [option.type]
-      }
-      files = files.filter(file => option.type.includes(path.extname(file).toLowerCase()))
+      const type = _.castArray(option.type)
+      files = files.filter(file => type.includes(path.extname(file).toLowerCase()))
     }
     if (option.basename) {
       files = files.map(file => path.parse(file).name)
@@ -70,8 +70,19 @@ const file = {
     return fs.existsSync(_path)
   },
 
-  /** 删除文件 */
-  unlinkSync(_path) {
+  /** (批量)删除文件 */
+  unlinkSync(_path, ...filesArr) {
+    if (!_.isEmpty(filesArr)) {
+      const deleted = []
+      filesArr.forEach(_file => {
+        const filePath = path.join(_path, _file)
+        if (this.existsSync(filePath)) {
+          this.unlinkSync(filePath)
+          deleted.push(_file)
+        }
+      })
+      return deleted
+    }
     return fs.unlinkSync(_path)
   },
 
@@ -101,10 +112,9 @@ const file = {
   },
 
   /**
-   * 搜索文件并返回数据
+   * 搜索文件并返回文件数据数组，优先排序：匹配度高→文件名短
    * @param {*} dir 搜索根目录
-   * @param {string} keywords 关键词
-   * @param {Object} option 可选参数
+   * @param {string|Array} keywords 关键词
    * @param {string|Array} option.type 文件类型
    * @param {boolean} option.recursive 是否递归查找子文件夹
    * @returns 搜索结果
@@ -113,17 +123,23 @@ const file = {
     type: undefined,
     recursive: false
   }) {
+    /** 下标越小匹配度越高 */
+    const searchLevelArr = []
     const files = this.readdirSync(dir, option)
-    const searchResults = []
-    for (const file of files) {
-      const filePath = path.join(dir, file)
+    for (const i in keywords) searchLevelArr[i] = []
+    const len = keywords.length
+    const reg = new RegExp(_.castArray(keywords).join('|'), 'gi')
+    for (const _file of files) {
+      const filePath = path.join(dir, _file)
       const stats = this.statSync(filePath)
       if (stats.isFile()) {
-        if (new RegExp(keywords, 'i').test(file)) {
-          searchResults.push({
-            name: path.parse(file).name,
-            file,
-            ext: path.extname(file),
+        const matchLevel = _file.match(reg)?.length
+        if (matchLevel) {
+          const level = len - matchLevel
+          searchLevelArr[level < 0 ? 0 : level].push({
+            name: path.parse(_file).name,
+            file: _file,
+            ext: path.extname(_file),
             path: filePath
           })
         }
@@ -133,8 +149,10 @@ const file = {
         }
       }
     }
-    return searchResults
+    console.log(_.flatMap(searchLevelArr).length)
+    return _.flatMap(searchLevelArr.map(arr => _.sortBy(arr, 'name.length')))
   }
+
 }
 
 export default file
