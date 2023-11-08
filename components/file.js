@@ -70,20 +70,26 @@ const file = {
     return fs.existsSync(_path)
   },
 
-  /** (批量)删除文件 */
+  /**
+   * (批量)删除文件，返回删除文件name
+   * 支持一目录多文件 或 _path多文件路径数组
+   */
   unlinkSync(_path, ...filesArr) {
-    if (!_.isEmpty(filesArr)) {
+    if (_.isArray(_path)) {
       const deleted = []
-      filesArr.forEach(_file => {
-        const filePath = path.join(_path, _file)
-        if (this.existsSync(filePath)) {
-          this.unlinkSync(filePath)
-          deleted.push(_file)
+      _path.forEach(__path => {
+        if (this.existsSync(__path)) {
+          deleted.push(this.unlinkSync(__path))
         }
       })
       return deleted
     }
-    return fs.unlinkSync(_path)
+    if (!_.isEmpty(filesArr)) {
+      const filesPath = filesArr.map(_file => path.join(_path, _file))
+      return this.unlinkSync(filesPath)
+    }
+    fs.unlinkSync(_path)
+    return path.parse(_path).name
   },
 
   /** 复制文件 */
@@ -113,25 +119,26 @@ const file = {
 
   /**
    * 搜索文件并返回文件数据数组，优先排序：匹配度高→文件名短
-   * @param {*} dir 搜索根目录
+   * @param {string|Array} dirs 搜索根目录
    * @param {string|Array} keywords 关键词
    * @param {string|Array} option.type 文件类型
    * @param {boolean} option.recursive 是否递归查找子文件夹
-   * @returns 搜索结果
+   * @param {boolean} [isSort=true] 是否排序
+   * @returns {Promise<object[]|Array[]>} 搜索结果
    */
-  searchFiles(dir, keywords, option = {
+  async searchFiles(dirs, keywords, option = {
     type: undefined,
     recursive: false
-  }) {
+  }, isSort = true) {
     /** 下标越小匹配度越高 */
-    const searchLevelArr = []
-    const files = this.readdirSync(dir, option)
+    let searchLevelArr = []
     for (const i in keywords) searchLevelArr[i] = []
     const len = keywords.length
+    if (option.type) option.type = _.castArray(option.type)
     const reg = new RegExp(_.castArray(keywords).join('|'), 'gi')
-    for (const _file of files) {
+    const processFile = async (dir, _file) => {
       const filePath = path.join(dir, _file)
-      const stats = this.statSync(filePath)
+      const stats = await fs.promises.stat(filePath)
       if (stats.isFile()) {
         const matchLevel = _file.match(reg)?.length
         if (matchLevel) {
@@ -143,13 +150,28 @@ const file = {
             path: filePath
           })
         }
-      } else if (stats.isDirectory()) {
-        if (option.recursive) {
-          this.searchFiles(filePath, keywords)
-        }
+      } else if (stats.isDirectory() && option.recursive) {
+        const results = await this.searchFiles(filePath, keywords, option, false)
+        searchLevelArr = _.zipWith(searchLevelArr, results, (a1, a2) => [...a1, ...a2])
       }
     }
-    return _.flatMap(searchLevelArr.map(arr => _.sortBy(arr, 'name.length')))
+    const processDir = async (dir) => {
+      let files = await fs.promises.readdir(dir, { withFileTypes: true })
+      if (option.type) {
+        files = files.filter(file => {
+          const ext = path.parse(file.name).ext
+          if (ext === '') return true
+          if (option.type.includes(ext)) return true
+          return false
+        })
+      }
+      const filePromises = files.map((file) => processFile(dir, file.name))
+      await Promise.all(filePromises)
+    }
+    const dirPromises = _.castArray(dirs).map((dir) => processDir(dir))
+    await Promise.all(dirPromises)
+    if (!isSort) return searchLevelArr
+    return _.flatMap(searchLevelArr.map((arr) => _.sortBy(arr, 'name.length')))
   }
 
 }

@@ -21,6 +21,7 @@ function getNewGuobaConfig() {
   now_config.Master = _.sortBy(now_config.Master).join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
   now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
+  now_config.searchNovel.novelPath = now_config.searchNovel?.novelPath?.join('\n')
 }
 
 function getConfig(mode) {

@@ -88,21 +88,33 @@ class Permission {
     return this.isAdmin
   }
   /** reply回复 */
-  reply(msg) {
-    this.e.reply(msg, true)
+  reply(msg, option = {
+    quote: true,
+    at: false,
+    recallMsg: 0
+  }) {
+    this.e.reply(msg, option.quote ?? true, option)
     return false
   }
   /** 默认权限管理判断 */
-  judge(ok = false) {
-    if (ok) return this.reply(UCPr.noPerReply)
-    if (UCPr.onlyMaster && this.isAdmin) return this.reply(UCPr.onlyMasterReply)
-    if (!this.isPer) return this.reply(UCPr.noPerReply)
+  judge(option = {
+    quote: true,
+    at: false,
+    recallMsg: 0
+  }, judge = false) {
+    if (judge) return this.reply(UCPr.noPerReply, option)
+    if (UCPr.onlyMaster && this.isAdmin) return this.reply(UCPr.onlyMasterReply, option)
+    if (!this.isPer) return this.reply(UCPr.noPerReply, option)
     return true
   }
   /** 默认权限验证 */
-  static verify(e, Cfg = {}) {
+  static verify(e, Cfg = {}, option = {
+    quote: true,
+    at: false,
+    recallMsg: 0
+  }) {
     const per = new Permission(e, { ...Cfg })
-    return per.judge()
+    return per.judge(option)
   }
 }
 

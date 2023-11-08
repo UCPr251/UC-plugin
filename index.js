@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 import { Path, Data, log, file, common, UCPr } from './components/index.js'
-import path from 'path'
 
 const files = await Data.init()
 
@@ -14,13 +13,15 @@ const dels = []
 for (let _file of jsfiles) {
     for (let js of list) {
         if (_file.toLowerCase().startsWith(js)) {
-            file.unlinkSync(path.join(Path.example, _file))
+            file.unlinkSync(Path.join(Path.example, _file))
             dels.push(_file)
         }
     }
 }
 if (dels.length > 0) {
-    common.sendMsgTo(UCPr.Master[0], `检测到UC-plugin旧版js插件：${dels.join('，')}，已自动删除`, 'Private')
+    const msg = `检测到UC-plugin旧版js插件：${dels.join('，')}，已自动删除`
+    log.warn(msg)
+    common.sendMsgTo(UCPr.Master[0], msg, 'Private')
 }
 
 let ret = []

@@ -13,7 +13,7 @@ const common = {
    * 发送消息
    * @param {number} loc 位置id，如群号、Q号
    * @param {Array} msg 要发送的消息
-   * @param {'Group' | 'Private'} type 群聊订阅则为Group，私聊订阅则为Private
+   * @param {'Group' | 'Private'} type
    */
   async sendMsgTo(loc, msg, type) {
     if (type === 'Group') {
@@ -35,8 +35,15 @@ const common = {
    * @param {Buffer|string} buffer buffer或路径
    * @param {string} name 上传文件名
    * @param {string} replyMsg 回复消息
+   * @param {{ quote: boolean; at: boolean; recallMsg: number; }} [option] 继承reply的参数
    */
-  async sendFile(e, buffer, name, replyMsg = '') {
+  async sendFile(e, buffer, name, replyMsg = '', option = {
+    quote: false,
+    at: true,
+    recallMsg: 0
+  }) {
+    const { quote, ...data } = option
+    if (data.at === undefined) data.at = true
     if (!Buffer.isBuffer(buffer)) {
       if (file.existsSync(buffer)) {
         buffer = file.readFileSync(buffer, null)
@@ -52,10 +59,10 @@ const common = {
     name = name.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
     if (e.isGroup) {
       await e.group.fs.upload(buffer, undefined, name)
-      await e.reply(replyMsg, false, { at: true })
+      await e.reply(replyMsg, quote, data)
     } else if (e.friend) {
       await e.friend.sendFile(buffer, name)
-      await e.reply(replyMsg, true)
+      await e.reply(replyMsg, quote, data)
     } else {
       return false
     }

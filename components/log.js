@@ -13,6 +13,11 @@ const log = {
     }).join('\n')))
   },
 
+  /** 警告信息 */
+  warn(...log) {
+    logger.warn('[UC]' + log.join())
+  },
+
   /** 红色报错输出，同时增加报错日志 */
   error(...log) {
     logger.error('[UC]' + log.map(v => {
@@ -28,6 +33,13 @@ const log = {
   purple(...log) {
     if (UCPr.log) {
       logger.info(logger.magenta('[UC]' + log.join()))
+    }
+  },
+
+  /** 普通黄色 */
+  yellow(...log) {
+    if (UCPr.log) {
+      logger.info(chalk.yellow('[UC]' + log.join()))
     }
   },
 

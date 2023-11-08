@@ -25,9 +25,14 @@ numMap.set('九', 9)
 /** 对日期的处理操作 */
 const UCDate = {
 
+  /** 获取指定天数后的时间，2023-07-31 03:57:00 */
+  getTime(days) {
+    return moment().add(parseInt(days), 'days').format('YYYY-MM-DD HH:mm:ss')
+  },
+
   /** 当前日期时间：2023-07-31 03:57:00 */
   get NowTime() {
-    return moment().format('YYYY-MM-DD HH:mm:ss')
+    return this.getTime()
   },
 
   /** 当前日期时间数字串：20230731035700 */
@@ -40,10 +45,20 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
+  /** 获取指定天数后的[日期, 时间] [2023-07-31, 03:57:00] */
+  getdate_time(days) {
+    return this.getTime(days).split(' ')
+  },
+
+  /** 今日距指定天数剩余秒数，0为今日已过秒数 */
+  getEXsecondes(days) {
+    const EXtime = moment().add(parseInt(days), 'days').format('YYYY-MM-DD 00:00:00')
+    return -moment().diff(EXtime, 'seconds')
+  },
+
   /** 今日剩余秒数 */
   get EXsecondes() {
-    const EXtime = moment().add(1, 'days').format('YYYY-MM-DD 00:00:00')
-    return -moment().diff(EXtime, 'seconds')
+    return this.getEXsecondes(1)
   },
 
   /** 计算时间差值，返回{ Y, M, D, h, m, s } */

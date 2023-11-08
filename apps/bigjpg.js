@@ -34,7 +34,7 @@ export class UCBigjpg extends plugin {
 
   async Switch(e) {
     const per = new Permission(e, { ...UCPr.bigjpg })
-    if (!per.isMaster && !per.isAdmin) return per.judge(true)
+    if (!per.isMaster && !per.isAdmin) return per.judge(undefined, true)
     const num = e.msg.match(/\d+/)?.[0]
     const isOpen = !/开启/.test(e.msg)
     if (num) {
@@ -48,7 +48,7 @@ export class UCBigjpg extends plugin {
 
   async SwitchMode(e) {
     const per = new Permission(e, { ...UCPr.bigjpg })
-    if (!per.isMaster && !per.isAdmin) return per.judge(true)
+    if (!per.isMaster && !per.isAdmin) return per.judge(undefined, true)
     const isArt = /卡通/.test(e.msg)
     Admin.set.call(this, 'bigjpg.style', isArt ? 'art' : 'photo', {})
   }
