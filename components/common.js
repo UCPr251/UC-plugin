@@ -59,10 +59,10 @@ const common = {
     name = name.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
     if (e.isGroup) {
       await e.group.fs.upload(buffer, undefined, name)
-      await e.reply(replyMsg, quote, data)
+      if (replyMsg) await e.reply('\n' + replyMsg, quote, data)
     } else if (e.friend) {
       await e.friend.sendFile(buffer, name)
-      await e.reply(replyMsg, quote, data)
+      if (replyMsg) await e.reply('\n' + replyMsg, quote, data)
     } else {
       return false
     }
