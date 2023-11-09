@@ -57,18 +57,6 @@ async function checkQsignPort() {
   }
 }
 
-const cfg = UCPr.qsignRestart
-
-if (cfg.isAutoOpen) {
-  if (Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
-    if (cfg.switch1) intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
-    if (cfg.switch2) {
-      replaceReply()
-      isCheckMsg = true
-    }
-  }
-}
-
 export default class UCQsignRestart extends plugin {
   constructor() {
     super({
@@ -92,6 +80,19 @@ export default class UCQsignRestart extends plugin {
       ]
     })
     this.setFnc = 'verify'
+  }
+
+  init() {
+    const cfg = UCPr.qsignRestart
+    if (cfg.isAutoOpen) {
+      if (Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
+        if (cfg.switch1) intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
+        if (cfg.switch2) {
+          replaceReply()
+          isCheckMsg = true
+        }
+      }
+    }
   }
 
   async restart(e) {

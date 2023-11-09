@@ -2,8 +2,6 @@ import { Path, Check, Data, UCDate, UCPr, Permission, Admin, common } from '../c
 import plugin from '../../../lib/plugins/plugin.js'
 import { segment } from 'icqq'
 
-Check.floder(Path.bigjpg, true)
-
 export default class UCBigjpg extends plugin {
   constructor() {
     super({
@@ -30,6 +28,10 @@ export default class UCBigjpg extends plugin {
     this.setFnc = '_imgContext'
     this.setFnc2 = '_magnificationContext'
     this.setFnc3 = '_noiseContext'
+  }
+
+  init() {
+    Check.floder(Path.bigjpg, true)
   }
 
   async Switch(e) {

@@ -8,8 +8,6 @@ const err_reply = `请于${Path.wife}中添加图片，
 
 let wifesList
 
-Check.floder(Path.wife, true)
-
 export default class UCRandomWife extends plugin {
   constructor() {
     super({
@@ -39,6 +37,10 @@ export default class UCRandomWife extends plugin {
     this.redisData = '[UC]randomwife'
     this.redisData2 = '[UC]today_wife_list'
     this.setFnc = 'imgContent'
+  }
+
+  init() {
+    Check.floder(Path.wife, true)
   }
 
   async randomwife(e) {

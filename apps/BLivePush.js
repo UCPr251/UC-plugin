@@ -23,8 +23,6 @@ const err_reply = `\n进入需要订阅的主播的直播间，
 点击主播头像，房间号即为直播间id`
 const BLive = 'https://live.bilibili.com/'
 
-await init()
-
 /** 全局变量，防止重复检测 */
 let ing = false
 
@@ -90,6 +88,15 @@ export default class UCBLivePush extends plugin {
     this.PrivatePushed = '[UC]P_BLivePushed'
     /** 直播间信息 */
     this.PushedInfo = '[UC]BLPushedInfo'
+  }
+
+  init() {
+    if (!Check.file(Path.BLPGroupjson)) {
+      file.JSONsaver(Path.BLPGroupjson, {})
+    }
+    if (!Check.file(Path.BLPPrivatejson)) {
+      file.JSONsaver(Path.BLPPrivatejson, {})
+    }
   }
 
   async bLiveHelp(e) {
@@ -420,15 +427,6 @@ export default class UCBLivePush extends plugin {
     return e.reply(`成功${mode ? '开启' : '关闭'}群聊${location_id}的直播推送艾特全员`)
   }
 
-}
-
-async function init() {
-  if (!Check.file(Path.BLPGroupjson)) {
-    file.JSONsaver(Path.BLPGroupjson, {})
-  }
-  if (!Check.file(Path.BLPPrivatejson)) {
-    file.JSONsaver(Path.BLPPrivatejson, {})
-  }
 }
 
 function getData(type) {

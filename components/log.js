@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { UCPr, Data } from './index.js'
 
 function getFncChain(error) {
-  const callerName = error.stack.split('\n').slice(1, -2)
+  const callerName = error.stack.split('\n').slice(2, -2)
   const fncChain = callerName.map(line => {
     const sp = line.trim().split(' ')
     const fncName = sp[1].split('.').at(-1)
@@ -12,7 +12,7 @@ function getFncChain(error) {
     const fncLine = name.slice(extIndex + 2).match(/\d+/)[0]
     return `[${fncFile}.${fncName}:${fncLine}]`
   })
-  return fncChain.join('←')
+  return '←' + fncChain.join('←')
 }
 
 /** 输出调试日志 */
@@ -35,7 +35,7 @@ const log = {
         const error = new Error()
         ext = getFncChain(error)
       }
-      logger.yellow('[UC][debug]' + ext + log)
+      this.yellow('[debug]' + ext + log)
     }
   },
 

@@ -89,15 +89,17 @@ class Permission {
   }
   /** reply回复 */
   reply(msg, option = {
+    isReply: true,
     quote: true,
     at: false,
     recallMsg: 0
   }) {
-    this.e.reply(msg, option.quote ?? true, option)
+    if (option.isReply !== false) this.e.reply(msg, option.quote ?? true, option)
     return false
   }
   /** 默认权限管理判断 */
   judge(option = {
+    isReply: true,
     quote: true,
     at: false,
     recallMsg: 0
@@ -109,6 +111,7 @@ class Permission {
   }
   /** 默认权限验证 */
   static verify(e, Cfg = {}, option = {
+    isReply: true,
     quote: true,
     at: false,
     recallMsg: 0

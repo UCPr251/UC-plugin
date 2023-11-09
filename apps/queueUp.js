@@ -2,8 +2,6 @@ import { Path, Check, common, file, UCPr, Permission } from '../components/index
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-await init()
-
 export default class UCQueueUp extends plugin {
   constructor() {
     super({
@@ -38,6 +36,12 @@ export default class UCQueueUp extends plugin {
         }
       ]
     })
+  }
+
+  init() {
+    if (!Check.file(Path.queueUpjson)) {
+      file.JSONsaver(Path.queueUpjson, {})
+    }
   }
 
   verify() {
@@ -160,12 +164,6 @@ export default class UCQueueUp extends plugin {
     return e.reply(replyMsg)
   }
 
-}
-
-async function init() {
-  if (!Check.file(Path.queueUpjson)) {
-    file.JSONsaver(Path.queueUpjson, {})
-  }
 }
 
 function getData() {

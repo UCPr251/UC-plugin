@@ -13,8 +13,6 @@ function getNewCfg() {
 
 Data.watch(Path.otheryaml, getNewCfg)
 
-getNewCfg()
-
 const helptext =
   `[UC]configset.js支持指令修改config/other.yaml中所有内容
 正则匹配规则如下：
@@ -81,6 +79,7 @@ export default class UCConfigSet extends plugin {
         }
       ]
     })
+    this.init = getNewCfg
   }
 
   save() {
@@ -133,7 +132,7 @@ export default class UCConfigSet extends plugin {
     else type = 8
     const numMatch = e.msg.match(/\d+/g)
     const len = Number(arrTemp[type]?.length)
-    log.red(len, numMatch)
+    log.debug(len, numMatch)
     if (numMatch.length > 1) {
       if (!isAdd && numMatch.every(num => num.length < len)) {
         const dels = []
