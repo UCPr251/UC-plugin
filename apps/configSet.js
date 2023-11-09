@@ -31,7 +31,7 @@ const helptext =
 单次指令间隔参数可批量操作
 `
 
-export class UCConfigSet extends plugin {
+export default class UCConfigSet extends plugin {
   constructor() {
     super({
       name: 'UC-configset',

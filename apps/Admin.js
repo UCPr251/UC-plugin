@@ -5,7 +5,7 @@ map.set(0, '无权限')
 map.set(1, '管理权限')
 map.set(2, '主人权限')
 
-export class UCAdmin extends plugin {
+export default class UCAdmin extends plugin {
   constructor() {
     super({
       name: 'UC-admin',

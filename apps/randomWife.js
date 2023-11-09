@@ -10,7 +10,7 @@ let wifesList
 
 Check.floder(Path.wife, true)
 
-export class UCRandomWife extends plugin {
+export default class UCRandomWife extends plugin {
   constructor() {
     super({
       name: 'UC-randomWife',
@@ -43,8 +43,8 @@ export class UCRandomWife extends plugin {
 
   async randomwife(e) {
     if (!UCPr.randomWife.isOpen) return false
-    const userData = await Data.redisGet(this.redisData + e.sender.user_id)
-    const data_wifes = await Data.redisGet(this.redisData2, []) || []
+    const userData = await Data.redisGet(this.redisData + e.sender.user_id, {})
+    const data_wifes = await Data.redisGet(this.redisData2, [])
     let now_times = userData.now_times ?? 0
     if (userData) {
       if (now_times >= UCPr.randomWife.wifeLimits) {

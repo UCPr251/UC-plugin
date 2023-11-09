@@ -2,7 +2,7 @@ import { UCPr, Permission } from '../components/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-export class UCRandomMember extends plugin {
+export default class UCRandomMember extends plugin {
   constructor() {
     super({
       name: 'UC-randomMember',

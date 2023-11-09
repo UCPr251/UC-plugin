@@ -1,7 +1,7 @@
 import { log, UCPr, UCDate, file, Path } from './index.js'
 import _ from 'lodash'
 
-/** 常用方法 */
+/** 常用api */
 const common = {
 
   /** 休眠函数 */
@@ -29,41 +29,138 @@ const common = {
     }
   },
 
+  /** sender是否是管理员或群主 */
+  isGroupAdmin(e) {
+    return e.sender?.role === 'admin' || e.sender?.role === 'owner'
+  },
+
+  /** 获取群实例 */
+  async pickGroup(group) {
+    if (typeof group === 'number' || typeof group === 'string') {
+      if (!Number(group)) return false
+      group = await Bot.pickGroup(group)
+    }
+    return group
+  },
+
+  /** Bot是否是管理员或群主 */
+  async botIsGroupAdmin(group) {
+    group = await this.pickGroup(group)
+    return group.is_admin || group.is_owner
+  },
+
+  /** 指定群踢出群员 */
+  async kickMember(groupId, userId) {
+    return await (await this.pickGroup(groupId)).kickMember(userId)
+  },
+
+  /** 群员信息对象 */
+  async getMemberObj(group) {
+    return Object.fromEntries(await (await this.pickGroup(group)).getMemberMap())
+  },
+
+  /** 返回群用户昵称 */
+  async getName(groupId, userId) {
+    const info = await Bot.getGroupMemberInfo(groupId, userId)
+    return info.card || info.nickname
+  },
+
+  /** 获取文件下载url和文件名 */
+  async getFileUrl(e) {
+    if (!e.file?.fid) return null
+    const url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
+    if (!url) return null
+    return [url, e.file.name]
+  },
+
+  /** 获取图片下载url */
+  async getPicUrl(e) {
+    let url = null
+    if (e.img) {
+      url = e.img[0]
+    } else if (e.file) {
+      url = await this.getFileUrl(e)?.[0]
+    }
+    return url
+  },
+
+  /** 获取文件message_id，顺序 */
+  getFileMid(data = []) {
+    if (!data) return []
+    const fileMessage = _.filter(data, info => info.message[0].type === 'file')
+    return _.map(fileMessage, 'message_id')
+  },
+
+  /** 删除群文件 */
+  async rmGroupFile(group, fids) {
+    group = await this.pickGroup(group)
+    if (!await this.botIsGroupAdmin(group)) {
+      log.debug(`无群${group.gid}管理权限，删除文件取消`)
+      return false
+    }
+    fids = _.castArray(fids)
+    fids.forEach(fid => group.fs.rm(fid))
+    return true
+  },
+
   /**
    * 发送文件
    * @param {*} e
    * @param {Buffer|string} buffer buffer或路径
    * @param {string} name 上传文件名
    * @param {string} replyMsg 回复消息
-   * @param {{ quote: boolean; at: boolean; recallMsg: number; }} [option] 继承reply的参数
+   * @param {{ quote: boolean; at: boolean; recallMsg: number; recallFile: number }} [option] 继承reply的参数
    */
   async sendFile(e, buffer, name, replyMsg = '', option = {
     quote: false,
     at: true,
-    recallMsg: 0
+    recallMsg: 0,
+    recallFile: 0
   }) {
-    const { quote, ...data } = option
+    const { quote, recallFile, ...data } = option
     if (data.at === undefined) data.at = true
     if (!Buffer.isBuffer(buffer)) {
       if (file.existsSync(buffer)) {
-        buffer = file.readFileSync(buffer, null)
         if (!name) {
           name = Path.parse(buffer).base
         }
+        buffer = file.readFileSync(buffer, null)
       } else {
+        log.debug('指定路径不存在：' + buffer)
         return false
       }
     } else if (!name) {
       name = `${e.sender.user_id}-${UCDate.NowTimeNum}`
     }
-    name = name.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
+    name = file.formatFilename(name)
     if (e.isGroup) {
-      await e.group.fs.upload(buffer, undefined, name)
-      if (replyMsg) await e.reply('\n' + replyMsg, quote, data)
+      const fileStat = await e.group.fs.upload(buffer, undefined, name, (percentage) => {
+        log.debug(`上传群${e.group_id}文件${name}，进度：${parseInt(percentage)}%`)
+      })
+      if (replyMsg) e.reply('\n' + replyMsg, quote, data)
+      if (recallFile) {
+        const fid = fileStat?.fid
+        setTimeout(() => {
+          log.debug('撤回群文件' + fid)
+          e.group.fs.rm(fid)
+        }, recallFile)
+        return fid
+      }
     } else if (e.friend) {
-      await e.friend.sendFile(buffer, name)
-      if (replyMsg) await e.reply('\n' + replyMsg, quote, data)
+      await e.friend.sendFile(buffer, name, (percentage) => {
+        log.debug(`发送好友${e.sender.user_id}文件${name}，进度：${parseInt(percentage)}%`)
+      })
+      e.reply(replyMsg, quote, data)
+      if (recallFile) {
+        const msgData = await e.friend.getChatHistory(undefined, 3)
+        const mid = this.getFileMid(msgData).pop()
+        setTimeout(() => {
+          log.debug('撤回好友文件' + mid)
+          e.friend.recallMsg(mid)
+        }, recallFile)
+      }
     } else {
+      log.debug('非群或好友，取消发送文件')
       return false
     }
   },
@@ -135,61 +232,6 @@ const common = {
       }
     }
     return forwardMsg
-  },
-
-  /** 判断是否是管理员或群主 */
-  isGroupAdmin(obj) {
-    return obj.role === 'admin' || obj.role === 'owner'
-  },
-
-  /** 获取群实例 */
-  async pickGroup(group) {
-    if (typeof group === 'number' || typeof group === 'string') {
-      if (!Number(group)) return false
-      group = await Bot.pickGroup(group)
-    }
-    return group
-  },
-
-  /** 判断Bot是否是管理员或群主 */
-  async botIsGroupAdmin(group) {
-    group = await this.pickGroup(group)
-    return group.is_admin || group.is_owner
-  },
-
-  /** 踢出群员，需要管理权限 */
-  async kickMember(groupId, userId) {
-    return await (await this.pickGroup(groupId)).kickMember(userId)
-  },
-
-  /** 群员信息对象 */
-  async getMemberObj(group) {
-    return Object.fromEntries(await (await common.pickGroup(group)).getMemberMap())
-  },
-
-  /** 返回群用户昵称 */
-  async getName(groupId, userId) {
-    const info = await Bot.getGroupMemberInfo(groupId, userId)
-    return info.card || info.nickname
-  },
-
-  /** 获取文件下载url和文件名 */
-  async getFileUrl(e) {
-    if (!e.file?.fid) return null
-    const url = await e[e.isGroup ? 'group' : 'friend']?.getFileUrl(e.file.fid)
-    if (!url) return null
-    return [url, e.file.name]
-  },
-
-  /** 获取图片下载url */
-  async getPicUrl(e) {
-    let url = null
-    if (e.img) {
-      url = e.img[0]
-    } else if (e.file) {
-      url = await this.getFileUrl(e)?.[0]
-    }
-    return url
   }
 }
 

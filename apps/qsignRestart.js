@@ -69,7 +69,7 @@ if (cfg.isAutoOpen) {
   }
 }
 
-export class UCQsignRestart extends plugin {
+export default class UCQsignRestart extends plugin {
   constructor() {
     super({
       name: 'UC-qsignRestart',

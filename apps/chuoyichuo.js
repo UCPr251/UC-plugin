@@ -79,7 +79,7 @@ const textList = [
   '哎，疼疼疼!',
   '你还戳……']
 
-export class UCChuoyichuo extends plugin {
+export default class UCChuoyichuo extends plugin {
   constructor() {
     super({
       name: 'UC-chuoyichuo',

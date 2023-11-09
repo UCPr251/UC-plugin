@@ -28,7 +28,7 @@ await init()
 /** 全局变量，防止重复检测 */
 let ing = false
 
-export class UCBLivePush extends plugin {
+export default class UCBLivePush extends plugin {
   constructor() {
     super({
       name: 'UC-BlivePush',

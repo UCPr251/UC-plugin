@@ -21,7 +21,7 @@ function getNewGuobaConfig() {
   now_config.Master = _.sortBy(now_config.Master).join('，')
   now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
   now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
-  if (now_config.searchNovel?.novelPath) {
+  if (now_config.searchNovel?.novelPath) { // 搜小说分支内容
     now_config.searchNovel.novelPath = now_config.searchNovel.novelPath.join('\n')
   }
 }
@@ -185,6 +185,11 @@ const UCPr = {
   /** 是否输出日志 */
   get log() {
     return this.config.log ?? true
+  },
+
+  /** 是否输出debug日志 */
+  get debugLog() {
+    return this.config.debugLog ?? false
   },
 
   /** 机器人qq */

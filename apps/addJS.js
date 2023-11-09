@@ -1,7 +1,7 @@
 import { Path, Data, UCPr, Check, common } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
-export class UCAddJS extends plugin {
+export default class UCAddJS extends plugin {
   constructor() {
     super({
       name: 'UC-addJS',

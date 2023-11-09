@@ -3,7 +3,7 @@ import { Path, Data, UCPr, Check } from '../components/index.js'
 import { update } from '../../other/update.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
-export class UCUpdate extends plugin {
+export default class UCUpdate extends plugin {
   constructor() {
     super({
       name: 'UC-update',

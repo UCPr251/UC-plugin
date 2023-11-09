@@ -48,6 +48,7 @@ function sPRO(property, name, options = [true, true, true, true, true, true]) {
 
 let js = []
 
+// 搜小说分支内容
 if (file.existsSync(Path.join(Path.apps, 'searchNovel.js'))) {
   const newCfg = [
     {
@@ -58,6 +59,10 @@ if (file.existsSync(Path.join(Path.apps, 'searchNovel.js'))) {
       '小说序号选择信息撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
     s('searchNovel.recallNoticeMsg', '其他消息撤回间隔', 'InputNumber',
       '索引消息以外的消息的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
+    s('searchNovel.recallFileG', '群聊文件撤回间隔', 'InputNumber',
+      '群聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
+    s('searchNovel.recallFileP', '私聊文件撤回间隔', 'InputNumber',
+      '私聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0, max: 119 }),
     s('searchNovel.overtime', '超时时间', 'InputNumber',
       '超时时间，单位秒，#搜小说 后超过该时间不操作则自动取消操作', { min: 10 }),
     s('searchNovel.cd', '冷却时间', 'InputNumber',

@@ -117,6 +117,11 @@ const file = {
     return fs.createWriteStream(_path)
   },
 
+  /** 格式化目录/文件名 */
+  formatFilename(oriName) {
+    return oriName.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
+  },
+
   /**
    * 搜索文件并返回文件数据数组，优先排序：匹配度高→文件名短
    * @param {string|Array} dirs 搜索根目录

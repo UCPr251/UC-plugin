@@ -18,6 +18,7 @@ for (let _file of jsfiles) {
         }
     }
 }
+
 if (dels.length > 0) {
     const msg = `检测到UC-plugin旧版js插件：${dels.join('，')}，已自动删除`
     log.warn(msg)
@@ -30,17 +31,17 @@ files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}`)))
 
 ret = await Promise.allSettled(ret)
 
-let apps = {}
+const apps = {}
 let status = true
-for (let i in files) {
-    let name = files[i].replace('.js', '')
+for (const i in files) {
+    const name = files[i].replace('.js', '')
     if (ret[i].status !== 'fulfilled') {
         logger.error(`载入插件错误：${logger.red(name)}`)
         logger.error(ret[i].reason)
         status = false
         continue
     }
-    apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
+    apps[name] = ret[i].value.default
 }
 
 if (status) {

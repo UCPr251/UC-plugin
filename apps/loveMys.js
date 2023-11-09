@@ -7,7 +7,7 @@ const Plugin_Name = 'loveMys-plugin'
 const loveMys = Path.join(Path.plugins, Plugin_Name)
 const apiyaml = Path.join(loveMys, 'config', 'api.yaml')
 
-export class UCLoveMys extends plugin {
+export default class UCLoveMys extends plugin {
   constructor() {
     super({
       name: 'UC-loveMys',

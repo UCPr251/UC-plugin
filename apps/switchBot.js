@@ -1,7 +1,7 @@
 import { Path, file, UCPr, Permission } from '../components/index.js'
 import _ from 'lodash'
 
-export class UCSwitchBot extends plugin {
+export default class UCSwitchBot extends plugin {
   constructor() {
     super({
       name: 'UC-switchBot',

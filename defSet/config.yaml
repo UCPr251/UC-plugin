@@ -1,5 +1,7 @@
 # 是否输出日志
 log: true
+# 是否输出debug日志
+debugLog: false
 # 插件主人是否和机器人主人合并，不影响管理设置
 isDefaultMaster: true
 # 插件优先级

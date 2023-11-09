@@ -4,7 +4,7 @@ import _ from 'lodash'
 
 await init()
 
-export class UCQueueUp extends plugin {
+export default class UCQueueUp extends plugin {
   constructor() {
     super({
       name: 'UC-queueUp',

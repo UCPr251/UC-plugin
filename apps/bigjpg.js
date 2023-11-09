@@ -4,7 +4,7 @@ import { segment } from 'icqq'
 
 Check.floder(Path.bigjpg, true)
 
-export class UCBigjpg extends plugin {
+export default class UCBigjpg extends plugin {
   constructor() {
     super({
       name: 'UC-bigjpg',
