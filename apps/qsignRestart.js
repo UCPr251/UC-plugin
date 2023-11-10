@@ -152,7 +152,6 @@ function replaceReply() {
   loader.reply = function (e) {
     if (e.reply) {
       e.replyNew = e.reply
-
       /**
        * @param msg 发送的消息
        * @param quote 是否引用回复
@@ -161,12 +160,9 @@ function replaceReply() {
        */
       e.reply = async (msg = '', quote = false, data = {}) => {
         if (!msg) return false
-
         /** 禁言中 */
         if (e.isGroup && e?.group?.mute_left > 0) return false
-
         let { recallMsg = 0, at = '' } = data
-
         if (at && e.isGroup) {
           let text = ''
           if (e?.sender?.card) {
@@ -183,14 +179,12 @@ function replaceReply() {
             }
             text = lodash.truncate(text, { length: 10 })
           }
-
           if (Array.isArray(msg)) {
             msg = [segment.at(at, text), ...msg]
           } else {
             msg = [segment.at(at, text), msg]
           }
         }
-
         let msgRes
         try {
           msgRes = await e.replyNew(msg, quote)
@@ -201,12 +195,9 @@ function replaceReply() {
           }
           logger.error(`发送消息错误:${msg}`)
           logger.error(err)
-
           // 改动
           checkMsg(err.message)
-
         }
-
         // 频道一下是不是频道
         if (!e.isGuild && recallMsg > 0 && msgRes?.message_id) {
           if (e.isGroup) {
@@ -215,7 +206,6 @@ function replaceReply() {
             setTimeout(() => e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
           }
         }
-
         this.count(e, msg)
         return msgRes
       }

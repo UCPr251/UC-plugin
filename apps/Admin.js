@@ -8,7 +8,7 @@ map.set(2, '主人权限')
 export default class UCAdmin extends plugin {
   constructor() {
     super({
-      name: 'UC-admin',
+      name: 'UC-Admin',
       dsc: 'UC插件管理系统',
       event: 'message',
       priority: UCPr.priority,

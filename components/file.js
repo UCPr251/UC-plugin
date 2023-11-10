@@ -26,7 +26,7 @@ const file = {
   },
 
   /**
-   * 获取文件夹内文件信息
+   * 获取文件夹内文件名数组
    * @param {path} _path
    * @param {object} option
    * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'} option.type 筛选文件类型

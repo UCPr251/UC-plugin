@@ -31,6 +31,10 @@ files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}`)))
 
 ret = await Promise.allSettled(ret)
 
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toLowerCase() + str.slice(1)
+}
+
 const apps = {}
 let status = true
 for (const i in files) {
