@@ -52,13 +52,17 @@ export default class UCReloadApps extends plugin {
         log.yellow('新增插件：' + jsName)
         await loadApp(newAppPath)
         apps.push(jsName)
+        const watch = Data.watch(newAppPath, reloadApp.bind(loader, newAppPath))
+        watcher[jsName] = watch
         await common.sleep(500)
       })
       watch.on('unlink', (delAppPath) => {
         const jsName = Path.basename(delAppPath)
-        log.yellow('卸载插件：' + jsName)
+        log.yellow('删除插件：' + jsName)
         delApp(delAppPath)
         delTask(jsName)
+        watcher[jsName].close()
+        delete watcher[jsName]
         Data.remove(apps, jsName)
       })
       const plugins = loader.priority.map(v => v.name).filter(name => name.startsWith('UC'))
