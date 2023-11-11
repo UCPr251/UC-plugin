@@ -42,19 +42,19 @@ const Check = {
     return false
   },
 
-  /** 检查用户权限  */
+  /** 检查用户权限 */
   permission(userId, need = undefined) {
-    if (need) {
-      const permission = this.permission(userId)
+    if (this.e) {
+      return Check.permission(this.e.sender.user_id ?? this.e.user_id, userId)
+    }
+    if (need !== undefined) {
+      const permission = Check.permission(userId)
       if (UCPr.onlyMaster && permission < 2) return false
       if (permission >= need) return true
       return false
     }
-    if (Check.str(UCPr.Master, userId)) {
-      return 2
-    } else if (this.str(UCPr.AdminArr, userId)) {
-      return 1
-    }
+    if (Check.str(UCPr.Master, userId)) return 2
+    else if (Check.str(UCPr.AdminArr, userId)) return 1
     return 0
   },
 

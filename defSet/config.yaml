@@ -2,6 +2,8 @@
 log: true
 # 是否输出debug日志
 debugLog: false
+# 开发环境使用，热更新app
+isWatch: false
 # 插件主人是否和机器人主人合并，不影响管理设置
 isDefaultMaster: true
 # 插件优先级

@@ -17,7 +17,7 @@ export default class UCRandomWife extends plugin {
       priority: UCPr.priority,
       rule: [
         {
-          reg: /^#?(娶|随机|今日)(二次元)?(老婆|wife)$/i,
+          reg: /^#?(娶|随机|今日)(二次元)?(老婆|纸片人|wife)$/i,
           fnc: 'randomwife'
         },
         {
@@ -29,7 +29,7 @@ export default class UCRandomWife extends plugin {
           fnc: 'delWife'
         },
         {
-          reg: /^#?(增加|加|新增)(随机)?老婆(.+)/,
+          reg: /^#?(增加|加|新增|上传)(随机)?老婆(.+)/,
           fnc: 'addWife'
         }
       ]

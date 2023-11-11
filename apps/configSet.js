@@ -278,7 +278,7 @@ function hy(num, type) {
       return `主人列表中已存在${num}`
     case 2:// 删除主人
       if (Check.str(Cfg.masterQQ, num)) {
-        Data.del_str(Cfg.masterQQ, num)
+        Data.remove(Cfg.masterQQ, num)
         reply = `删除成功，${num}已从主人列表中删除`
         break
       }
@@ -292,7 +292,7 @@ function hy(num, type) {
       return `群${num}已经在小黑屋名单里啦！`
     case 4:// 解黑群
       if (Check.str(Cfg.blackGroup, num)) {
-        Data.del_str(Cfg.blackGroup, num)
+        Data.remove(Cfg.blackGroup, num)
         reply = `解黑成功，${num}已从群聊黑名单列表里移除！`
         break
       }
@@ -306,7 +306,7 @@ function hy(num, type) {
       return `用户${num}已经在小黑屋名单里啦！`
     case 6:// 解黑
       if (Check.str(Cfg.blackQQ, num)) {
-        Data.del_str(Cfg.blackQQ, num)
+        Data.remove(Cfg.blackQQ, num)
         reply = `解黑成功，${num}已从小黑屋里放出来了！`
         break
       }
@@ -320,14 +320,14 @@ function hy(num, type) {
       return `${num}群已经在白名单列表里啦！`
     case 8:// 删除白名单群
       if (Check.str(Cfg.whiteGroup, num)) {
-        Data.del_str(Cfg.whiteGroup, num)
+        Data.remove(Cfg.whiteGroup, num)
         reply = `删除成功，${num}已从群聊白名单列表里删除！`
         break
       }
       return `群号白名单列表里没有群${num}`
     case 9:// 删除私聊通行字符串
       if (Check.str(Cfg.disableAdopt, num)) {
-        Data.del_str(Cfg.disableAdopt, num)
+        Data.remove(Cfg.disableAdopt, num)
         reply = `成功删除私聊通行字符串【${num}】`
         break
       }

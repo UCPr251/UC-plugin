@@ -29,6 +29,8 @@ const file = {
    * 获取文件夹内文件名数组
    * @param {path} _path
    * @param {object} option
+   * @param {string|Array} option.removes 要排除的文件的全名
+   * @param {boolean} option.withFileTypes 同时读取文件types，true则不会筛选类型或只保留文件名
    * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'} option.type 筛选文件类型
    * @param {boolean} option.basename 只保留文件名
    * @returns {string[]}
@@ -36,10 +38,20 @@ const file = {
   readdirSync(_path, option = {
     type: null,
     basename: false,
+    removes: null,
     withFileTypes: false
   }) {
     if (!this.existsSync(_path)) return []
     let files = fs.readdirSync(_path, option)
+    if (option.removes) {
+      const removes = _.castArray(option.removes)
+      if (option.withFileTypes) {
+        removes.forEach(remove => _.remove(files, file => file.name == remove))
+      } else {
+        removes.forEach(remove => _.remove(files, file => file == remove))
+      }
+    }
+    if (option.withFileTypes) return files
     if (option.type) {
       const type = _.castArray(option.type)
       files = files.filter(file => type.includes(path.extname(file).toLowerCase()))

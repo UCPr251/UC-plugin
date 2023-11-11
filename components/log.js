@@ -29,6 +29,11 @@ const log = {
     }).join('\n')))
   },
 
+  /** 全局logger.mark方法 */
+  mark(...log) {
+    logger.mark('[UC]' + log.join())
+  },
+
   /** debug */
   debug(log, chain = true) {
     if (UCPr.debugLog) {

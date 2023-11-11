@@ -29,7 +29,7 @@ let ing = false
 export default class UCBLivePush extends plugin {
   constructor() {
     super({
-      name: 'UC-BlivePush',
+      name: 'UC-BLivePush',
       dsc: 'B站直播推送',
       event: 'message',
       priority: UCPr.priority,
@@ -78,8 +78,8 @@ export default class UCBLivePush extends plugin {
       ]
     })
     this.task = {
-      cron: `0 */${parseInt(UCPr.BlivePush.mins) || 4} * * * ?`,
       name: 'B站直播检测',
+      cron: `0 */${parseInt(UCPr.BlivePush.mins) || 4} * * * ?`,
       fnc: this.bLivePush.bind(this)
     }
     /** 群聊已推送 */
