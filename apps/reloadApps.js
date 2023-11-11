@@ -91,7 +91,7 @@ export default class UCReloadApps extends plugin {
 
   async reloadApps(e) {
     if (!Check.permission(e.sender.user_id, 2)) return e.reply('你想做甚？！', true, { at: true })
-    if (apps.length > 1) return e.reply('当前已处于开发模式，无需手动重载')
+    if (apps.length > 1) return e.reply('当前已处于开发模式，无需手动重载插件')
     const num = await reloadApps(false)
     return e.reply(`成功重载${num}个UC插件`)
   }
