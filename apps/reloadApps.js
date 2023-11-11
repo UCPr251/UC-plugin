@@ -2,7 +2,7 @@ import { Path, Check, file, UCPr, log, Data, common } from '../components/index.
 import loader from '../../../lib/plugins/loader.js'
 import _ from 'lodash'
 
-let apps = [], tasks = {}, watcher = {}, timer
+let apps = ['reloadApps.js'], tasks = {}, watcher = {}, timer
 
 export default class UCReloadApps extends plugin {
   constructor() {
@@ -12,6 +12,14 @@ export default class UCReloadApps extends plugin {
       event: 'message',
       priority: UCPr.priority,
       rule: [
+        {
+          reg: /^#?UC开发者?(模式|环境)$/i,
+          fnc: 'developer'
+        },
+        {
+          reg: /^#?UC重载插件$/i,
+          fnc: 'reloadApps'
+        },
         {
           reg: /^#?UC(一|总)览$/i,
           fnc: 'generalView'
@@ -38,15 +46,8 @@ export default class UCReloadApps extends plugin {
   }
 
   async init(mode) {
-    if (mode || UCPr.config.isWatch) {
-      const _apps = file.readdirSync(Path.apps, { type: '.js', removes: 'reloadApps.js' })
-      for (const app of _apps) {
-        const appPath = Path.join(Path.apps, app)
-        await loadApp(appPath)
-        apps.push(app)
-        const watch = Data.watch(appPath, reloadApp.bind(loader, appPath))
-        watcher[app] = watch
-      }
+    if (UCPr.config.isWatch || mode) {
+      await reloadApps()
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
         const jsName = Path.basename(newAppPath)
         log.yellow('新增插件：' + jsName)
@@ -71,15 +72,34 @@ export default class UCReloadApps extends plugin {
     }
   }
 
-  async generalView(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
-    if (!UCPr.config.isWatch) return e.reply('当前非开发环境')
+  getGeneralView() {
     let msg = '【UC开发环境总览】\n'
-    msg += `总计载入${apps.length + 1}个功能\n`
+    msg += `总计载入${apps.length}个功能\n`
     msg += `总计载入${Object.keys(tasks).length}个定时任务\n`
     msg += `总计监听${Object.keys(watcher).length}个js\n`
     msg += `Bot总计${loader.priority.length}个插件`
     log.yellow(msg)
+    return msg
+  }
+
+  async developer(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return e.reply('你想做甚？！', true, { at: true })
+    await this.init(true)
+    const msg = this.getGeneralView()
+    return e.reply('成功进入UC开发者模式\n' + msg)
+  }
+
+  async reloadApps(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return e.reply('你想做甚？！', true, { at: true })
+    if (apps.length > 1) return e.reply('当前已处于开发模式，无需手动重载')
+    const num = await reloadApps(false)
+    return e.reply(`成功重载${num}个UC插件`)
+  }
+
+  async generalView(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (apps.length === 1) return e.reply('当前非开发环境')
+    const msg = this.getGeneralView()
     return e.reply(msg)
   }
 
@@ -111,6 +131,20 @@ export default class UCReloadApps extends plugin {
     log.red(`Bot总计：${loader.priority.length}个插件`)
   }
 
+}
+
+async function reloadApps(isWatch = true) {
+  const _apps = file.readdirSync(Path.apps, { type: '.js', removes: 'reloadApps.js' })
+  for (const app of _apps) {
+    const appPath = Path.join(Path.apps, app)
+    await reloadApp(appPath)
+    if (isWatch) {
+      apps.push(app)
+      const watch = Data.watch(appPath, reloadApp.bind(loader, appPath))
+      watcher[app] = watch
+    }
+  }
+  return _apps.length
 }
 
 async function loadApp(appPath) {

@@ -48,11 +48,7 @@ for (const i in files) {
         continue
     }
     count++
-    if (!ret[i].value.default) {
-        apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
-        continue
-    }
-    apps[name] = ret[i].value.default
+    apps[name] = ret[i].value.default ?? ret[i].value[Object.keys(ret[i].value)[0]]
 }
 
 if (status) {
