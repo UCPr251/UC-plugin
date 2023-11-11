@@ -32,7 +32,7 @@ const helptext =
 export default class UCConfigSet extends plugin {
   constructor() {
     super({
-      name: 'UC-configset',
+      name: 'UC-configSet',
       dsc: '指令修改config/other.yaml',
       event: 'message',
       priority: UCPr.priority,
