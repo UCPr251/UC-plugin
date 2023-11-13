@@ -345,8 +345,6 @@ export function supportGuoba() {
           }
           if (property === 'searchNovel.novelPath') {
             value = value.split('\n').map(path => path.trim())
-            _.set(newCfg.config, property, value)
-            continue
           }
           _.set(newCfg.config, property, value)
         }
