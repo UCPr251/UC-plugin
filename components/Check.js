@@ -1,4 +1,5 @@
-import { file, UCPr } from './index.js'
+import file from './file.js'
+import UCPr from './UCPr.js'
 
 /** 检查操作 */
 const Check = {

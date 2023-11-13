@@ -1,4 +1,4 @@
-import { Check, Data, common, Admin, UCPr } from '../components/index.js'
+import { Check, Data, common, Admin, UCPr, Path } from '../components/index.js'
 
 const map = new Map()
 map.set(0, '无权限')
@@ -120,7 +120,7 @@ export default class UCAdmin extends plugin {
       Data.delErrorLog()
       return e.reply('删除成功')
     }
-    const errorLog = Data.getErrorLogArr()
+    const errorLog = Data.getLogArr(Path.errorLogjson, { num: 30 })
     if (!errorLog) return e.reply('当前无错误日志哦~')
     const replyMsg = await common.makeForwardMsg(e, errorLog, '错误日志')
     return e.reply(replyMsg, false)

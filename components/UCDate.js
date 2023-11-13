@@ -25,29 +25,54 @@ numMap.set('九', 9)
 /** 对日期的处理操作 */
 const UCDate = {
 
-  /** 获取指定天数后的时间，2023-07-31 03:57:00 */
+  /** 获取指定天数后的时间，精确到秒，2012-04-25 00:02:51 */
   getTime(days) {
     return moment().add(parseInt(days), 'days').format('YYYY-MM-DD HH:mm:ss')
   },
 
-  /** 当前日期时间：2023-07-31 03:57:00 */
+  /** 获取指定天数后的时间，精确到毫秒，2012-04-25 00:02:51:520 */
+  getTimeMS(days) {
+    return moment().add(parseInt(days), 'days').format('YYYY-MM-DD HH:mm:ss:SSS')
+  },
+
+  /** 当前日期时间，精确到秒：2012-04-25 00:02:51 */
   get NowTime() {
     return this.getTime()
   },
 
-  /** 当前日期时间数字串：20230731035700 */
+  /** 当前日期时间，精确到毫秒：2012-04-25 00:02:51:520 */
+  get NowTimeMS() {
+    return this.getTimeMS()
+  },
+
+  /** 当前日期时间数字串，精确到秒：20120425000251 */
   get NowTimeNum() {
     return moment().format('YYYYMMDDHHmmss')
   },
 
-  /** 当前[日期, 时间]，[年-月-日, 时:分:秒] */
+  /** 当前日期时间数字串，精确到毫秒：20120425000251520 */
+  get NowTimeNumMS() {
+    return moment().format('YYYYMMDDHHmmssSSS')
+  },
+
+  /** 当前[日期, 时间]，精确到秒，[年-月-日, 时:分:秒] */
   get date_time() {
     return this.NowTime.split(' ')
   },
 
-  /** 获取指定天数后的[日期, 时间] [2023-07-31, 03:57:00] */
+  /** 当前[日期, 时间]，精确到毫秒，[年-月-日, 时:分:秒:毫秒] */
+  get date_timeMS() {
+    return this.NowTimeMS.split(' ')
+  },
+
+  /** 获取指定天数后的[日期, 时间]，精确到秒，[2012-04-25, 00:02:51] */
   getdate_time(days) {
     return this.getTime(days).split(' ')
+  },
+
+  /** 获取指定天数后的[日期, 时间]，精确到毫秒，[2012-04-25, 00:02:51:520] */
+  getdate_timeMS(days) {
+    return this.getTimeMS(days).split(' ')
   },
 
   /** 今日距指定天数剩余秒数，0为今日已过秒数 */
@@ -82,11 +107,26 @@ const UCDate = {
     return str.slice(str.match(/[1-9]/)?.index ?? 0)
   },
 
+  /** 获取指定日期(默认当日)到截止日期的天数 */
+  getDueDays(deadline, startDate = undefined) {
+    return moment(deadline).diff(moment(startDate), 'days')
+  },
+
+  /**
+   * 计算新日期
+   * @param {number} days 加的时长，负则为减
+   * @param {string} startDate 开始日期，无则为当前日期
+   * @returns {string} 新日期
+   */
+  calculateDDL(days, startDate = undefined) {
+    return moment(startDate).add(days, 'days').format('YYYY-MM-DD')
+  },
+
   /**
    * 汉语数字转阿拉伯数字
    * @author 椰羊
    */
-  translateChinaNum(s_123) {
+  transformChineseNum(s_123) {
     if (!s_123 && s_123 != 0) return s_123
     if (s_123 == '零') return 0
     if (/^\d+$/.test(s_123)) return Number(s_123)
@@ -151,22 +191,23 @@ const UCDate = {
    * @param {string} date 日期如8-1
    * @returns 格式化后的日期
    */
-  formatMonthDay(date) {
-    date = date.replace(/年|月|日/g, '-')
+  formatTime(date) {
+    if (!date) return NaN
+    date = date.replace(/年|月/g, '-').replace('日', '')
     const dateArr = date.split('-')
     const len = dateArr.length
     if (len < 2 || len > 3) {
       return NaN
     }
-    const [year, month, day] = len == 3 ? dateArr : ['2023', ...dateArr]
-    const formattedyear = (len == 2 && month < 8) ? '2024' : year.padStart(4, '20')
+    const [year, month, day] = len === 3 ? dateArr : ['2023', ...dateArr]
+    const formattedyear = (len === 2 && month < 11) ? '2024' : year.padStart(4, '20')
     const formattedMonth = month.padStart(2, '0')
     const formattedDay = day.padStart(2, '0')
     return `${formattedyear}-${formattedMonth}-${formattedDay}`
   },
 
   /** 简单汉字时长转天数 */
-  calculateTime(date) {
+  transformChineseDate(date) {
     if (isNaN(date.slice(-1))) { // 非纯数字
       const numStr = date.match(Numreg)?.[0] // 三 三十
       if (!numStr) {
@@ -176,7 +217,7 @@ const UCDate = {
       if (numStr == date) { // 三 != 三月 ； 三十 == 三十
         unit = '天'
       }
-      const count = this.translateChinaNum(numStr)
+      const count = this.transformChineseNum(numStr)
       return this.daysCount(count, unit) // 3*30，最终加的时间
     }
     return parseInt(date)

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable lines-between-class-members */
-import { Check, UCPr } from './index.js'
+import Check from './Check.js'
+import UCPr from './UCPr.js'
 
 /** 权限判断 */
 class Permission {

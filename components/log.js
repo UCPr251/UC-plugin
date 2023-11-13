@@ -35,7 +35,7 @@ const log = {
   },
 
   /** debug */
-  debug(log, chain = true) {
+  debug(log, chain = false) {
     if (UCPr.debugLog) {
       let ext = ''
       if (chain) {

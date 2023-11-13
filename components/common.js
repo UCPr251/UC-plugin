@@ -95,7 +95,7 @@ const common = {
   async rmGroupFile(group, fids) {
     group = await this.pickGroup(group)
     if (!await this.botIsGroupAdmin(group)) {
-      log.debug(`无群${group.gid}管理权限，删除文件取消`)
+      log.debug(`[common.rmGroupFile]无群${group.gid}管理权限，删除文件取消`)
       return false
     }
     fids = _.castArray(fids)
@@ -117,6 +117,7 @@ const common = {
     recallMsg: 0,
     recallFile: 0
   }) {
+    log.debug('[common.sendFile]发送文件' + name + '，消息撤回：' + option.recallMsg + '，文件撤回：' + option.recallFile)
     const { quote, recallFile, ...data } = option
     if (data.at === undefined) data.at = true
     if (!Buffer.isBuffer(buffer)) {
@@ -126,7 +127,7 @@ const common = {
         }
         buffer = file.readFileSync(buffer, null)
       } else {
-        log.debug('指定路径不存在：' + buffer)
+        log.debug('[common.sendFile]指定路径不存在：' + buffer)
         return false
       }
     } else if (!name) {
@@ -135,32 +136,32 @@ const common = {
     name = file.formatFilename(name)
     if (e.isGroup) {
       const fileStat = await e.group.fs.upload(buffer, undefined, name, (percentage) => {
-        log.debug(`上传群${e.group_id}文件${name}，进度：${parseInt(percentage)}%`)
+        log.debug(`[common.sendFile]上传群${e.group_id}文件${name}，进度：${parseInt(percentage)}%`)
       })
       if (replyMsg) e.reply('\n' + replyMsg, quote, data)
       if (recallFile) {
         const fid = fileStat?.fid
         setTimeout(() => {
-          log.debug('撤回群文件' + fid)
+          log.debug('[common.sendFile]撤回群文件' + fid)
           e.group.fs.rm(fid)
-        }, recallFile)
+        }, recallFile * 1000)
         return fid
       }
     } else if (e.friend) {
       await e.friend.sendFile(buffer, name, (percentage) => {
-        log.debug(`发送好友${e.sender.user_id}文件${name}，进度：${parseInt(percentage)}%`)
+        log.debug(`[common.sendFile]发送好友${e.sender.user_id}文件${name}，进度：${parseInt(percentage)}%`)
       })
       e.reply(replyMsg, quote, data)
       if (recallFile) {
         const msgData = await e.friend.getChatHistory(undefined, 3)
         const mid = this.getFileMid(msgData).pop()
         setTimeout(() => {
-          log.debug('撤回好友文件' + mid)
+          log.debug('[common.sendFile]撤回好友文件' + mid)
           e.friend.recallMsg(mid)
-        }, recallFile)
+        }, recallFile * 1000)
       }
     } else {
-      log.debug('非群或好友，取消发送文件')
+      log.debug('[common.sendFile]非群或好友，取消发送文件')
       return false
     }
   },

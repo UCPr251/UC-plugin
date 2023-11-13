@@ -1,12 +1,13 @@
+import path from 'node:path'
 import fs from 'node:fs'
 import yaml from 'yaml'
-import path from 'node:path'
 import _ from 'lodash'
 
 /** 文件读写 */
 const file = {
   /** 读取yaml */
   YAMLreader(_path) {
+    if (!this.existsSync(_path)) return null
     return yaml.parse(fs.readFileSync(_path, 'utf8'))
   },
 
@@ -17,6 +18,7 @@ const file = {
 
   /** 读取json */
   JSONreader(_path) {
+    if (!this.existsSync(_path)) return null
     return JSON.parse(fs.readFileSync(_path, 'utf8'))
   },
 
