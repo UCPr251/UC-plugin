@@ -21,6 +21,10 @@ export default class UCReloadApps extends plugin {
           fnc: 'reloadApps'
         },
         {
+          reg: /^#?UC卸载插件(.+)/i,
+          fnc: 'unlinkApps'
+        },
+        {
           reg: /^#?UC(一|总)览$/i,
           fnc: 'generalView'
         },
@@ -96,6 +100,16 @@ export default class UCReloadApps extends plugin {
     return e.reply(`成功重载${num}个UC插件`)
   }
 
+  async unlinkApps(e) {
+    if (!Check.permission(e.sender.user_id, 2)) return e.reply('你想做甚？！', true, { at: true })
+    if (apps.length > 1) return e.reply('当前已处于开发模式，无需指令卸载插件')
+    const jsName = e.msg.match(/卸载插件(.*)/)[1]
+    const appPath = Path.join(Path.apps, jsName + '.js')
+    if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
+    delApp(appPath)
+    return e.reply(`成功卸载${jsName}插件`)
+  }
+
   async generalView(e) {
     if (!Check.permission(e.sender.user_id, 2)) return false
     if (apps.length === 1) return e.reply('当前非开发环境')
@@ -135,13 +149,13 @@ export default class UCReloadApps extends plugin {
 
 async function reloadApps(isWatch = true) {
   const _apps = file.readdirSync(Path.apps, { type: '.js', removes: 'reloadApps.js' })
-  for (const app of _apps) {
-    const appPath = Path.join(Path.apps, app)
+  for (const _app of _apps) {
+    const appPath = Path.join(Path.apps, _app)
     await reloadApp(appPath)
     if (isWatch) {
-      apps.push(app)
+      apps.push(_app)
       const watch = Data.watch(appPath, reloadApp.bind(loader, appPath))
-      watcher[app] = watch
+      watcher[_app] = watch
     }
   }
   return _apps.length
