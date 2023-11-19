@@ -1,29 +1,10 @@
 /* eslint-disable indent */
-import { Path, Data, log, file, common, UCPr } from './components/index.js'
+import { Path, Data, log, UCPr } from './components/index.js'
 
 let files = await Data.init()
 
 log.blue('---------------------')
 log.purple(`-------${Path.Plugin_Name}载入中--------`)
-
-/** 适配UC-plugin */
-const jsfiles = file.readdirSync(Path.example, { type: '.js' })
-const list = ['blivepush', 'configset', 'randomwife', 'vits语音', 'randommember']
-const dels = []
-for (let _file of jsfiles) {
-    for (let js of list) {
-        if (_file.toLowerCase().startsWith(js)) {
-            file.unlinkSync(Path.join(Path.example, _file))
-            dels.push(_file)
-        }
-    }
-}
-
-if (dels.length > 0) {
-    const msg = `检测到UC-plugin旧版js插件：${dels.join('，')}，已自动删除`
-    log.warn(msg)
-    common.sendMsgTo(UCPr.Master[0], msg, 'Private')
-}
 
 let ret = []
 
