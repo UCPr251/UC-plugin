@@ -29,7 +29,7 @@ export default class Permission {
   }
   /** 发送者昵称 */
   get name() {
-    return this.sender.card || this.sender.nickname
+    return this.sender?.card || this.sender?.nickname
   }
   /** 群号 */
   get groupId() {
@@ -55,11 +55,11 @@ export default class Permission {
   }
   /** 是否群管理员 */
   get isGroupAdmin() {
-    return this.sender.role === 'admin'
+    return this.sender?.role === 'admin'
   }
   /** 是否群拥有者 */
   get isGroupOwner() {
-    return this.sender.role === 'owner'
+    return this.sender?.role === 'owner'
   }
   /** 是否有群管理权限 */
   get isPow() {
