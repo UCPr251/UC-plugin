@@ -51,7 +51,12 @@ export default class UCRandomWife extends UCPlugin {
     if (userData) {
       if (now_times >= UCPr.randomWife.wifeLimits) {
         const msg = [`你已经取过老婆了哦\n你今天的老婆是：\n${userData.wife_name}`]
-        msg.push(segment.image(Path.join(Path.wife, userData.wife_img)))
+        const imgPath = Path.get('wife', userData.wife_img)
+        if (!Check.file(imgPath)) {
+          msg.push(`\n[${userData.wife_name}]图片已被删除`)
+        } else {
+          msg.push(segment.image(imgPath))
+        }
         msg.push('\n老婆虽好，可不要贪多哦~')
         return e.reply(msg, true)
       }
