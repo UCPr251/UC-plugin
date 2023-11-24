@@ -14,13 +14,14 @@ export default class UCPlugin extends plugin {
       rule = []
     } = cfg
     super({ name, dsc, event, priority, rule })
-    if (!e || !e.sender) return
+    if (!e) return
     /** Client */
     this.e = e
     /** e.sender */
     this.sender = this.e.sender
     /** 用户id */
-    this.userId = this.sender.user_id
+    this.userId = this.sender.user_id ?? this.e.user_id
+    if (!this.userId) return
     /** 空cfg权限实例 */
     this.P = this.permission()
     /** 是否主人 */
