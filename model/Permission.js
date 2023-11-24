@@ -7,7 +7,7 @@ export default class Permission {
   constructor(e, { isG = true, isP = false, isM = false, isA = false, isGA = false, isE = false }) {
     this.e = e
     this.sender = this.e.sender
-    this.id = this.sender.user_id
+    this.id = this.sender?.user_id ?? this.e.user_id
     this.isGroup = this.e.isGroup
     /** 是否允许私聊使用 */
     this.isP = isP
