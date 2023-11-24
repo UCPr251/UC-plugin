@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/help/help.css" />
+  <link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+  <div class="container" id="container" style="background-color: {{backgroupColor}};">
+    <div class="head-box", style="background-image: url({{headImg}});">
+      <div class="id-text">UC-plugin</div>
+    </div>
+    {{each helpData val}}
+    <!-- 每个帮助大类盒子 -->
+    <div class="data-box" style="background-color: {{val.color}};">
+      <!-- 帮助大类的标题 -->
+      <div class="tab-lable">{{val.group}}</div>
+      <div class="list">
+        {{each val.list item}}
+        {{if item.interval}}
+        <div class="item" style="background-color: rgb(251, 234, 251);">
+        {{else}}
+        <div class="item" style="background-color: rgb(234, 251, 251);">
+        {{/if}}
+          <!-- 随机图标 -->
+          <div class="icon" style="background-position: {{item.x}}px {{item.y}}px"></div>
+          <!-- 帮助的小标题 -->
+          <div class="title">
+            <!-- 帮助内容 -->
+            <div class="text">{{item.title}}</div>
+            <!-- 帮助描述 -->
+            <div class="dec">{{item.desc}}</div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+    <div class="logo">Created By Miao-Yunzai && UC-plugin {{updateTime}}</div>
+  </div>
+</body>
+
+</html>

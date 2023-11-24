@@ -1,0 +1,105 @@
+@font-face {
+  font-family: "SourceHanSansCN-Heavy";
+  src: url("../../fonts/SourceHanSansCN-Heavy.otf");
+}
+body {
+  font-family: "SourceHanSansCN-Heavy";
+  transform: scale(1);
+  width: 1320px;
+}
+.container {
+  background-image: url("../../img/cfg-bg.jpg");
+  background-color: #000;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: 1400px auto;
+  width: 1320px;
+}
+.head-box {
+  padding: 36px 20px;
+  position: relative;
+}
+.head-box .title {
+  font-size: 72px;
+  font-style: italic;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 -3px 2px #ff0000, /*上*/
+              2px -2px 2px #46ff00, /*右上*/
+              3px 0 2px #32003c, /*右*/
+              2px 2px 2px #ffffff, /*右下*/
+              0 3px 2px #ffd500, /*下*/
+              -2px 2px 2px #ee00ff, /*左下*/
+              -3px 0 2px #0021ff, /*左*/
+              -2px -2px 2px #000000; /*左上*/
+}
+.cfg-box {
+  border-radius: 80px;
+  margin: 40px 0;
+  padding: 10px 30px;
+  overflow: hidden;
+  background: #f5f5f5;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+  background: rgba(35, 38, 57, 0.8);
+}
+.cfg-group {
+  color: #ceb78b;
+  font-size: 48px;
+  font-weight: normal;
+  padding: 20px 40px;
+}
+.cfg-li {
+  border-radius: 36px;
+  min-height: 72px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  margin-right: 42px;
+  background: rgba(203, 196, 190, 0);
+}
+.cfg-line {
+  color: #4e5769;
+  line-height: 72px;
+  padding-left: 40px;
+  font-weight: normal;
+  font-size: 40px;
+  border-radius: 32px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  background: url("../../img/cfg-index.jpg") right top #cbc4be no-repeat;
+  background-size: auto 72px;
+}
+.cfg-hint {
+  font-size: 30px;
+  font-weight: normal;
+  color: rgba(68, 84, 105, 0.8);
+  margin-top: 5px;
+  margin-bottom: -5px;
+}
+.cfg-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 72px;
+  width: 320px;
+  text-align: center;
+  line-height: 72px;
+  font-size: 32px;
+  color: #495366;
+  font-weight: bold;
+  border-radius: 0 32px 32px 0;
+}
+.status-off {
+  color: #a62929;
+}
+.cfg-desc {
+  font-size: 30px;
+  color: #cbc4be;
+  margin: 10px 0 10px 40px;
+}
+.logo {
+  font-size: 36px;
+  text-align: center;
+  line-height: 120px;
+  color: #daba7e;
+}

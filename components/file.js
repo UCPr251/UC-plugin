@@ -33,7 +33,7 @@ const file = {
    * @param {object} option
    * @param {string|Array} option.removes 要排除的文件的全名
    * @param {boolean} option.withFileTypes 同时读取文件types，true则不会筛选类型或只保留文件名
-   * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'} option.type 筛选文件类型
+   * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'|'.png'} option.type 筛选文件类型
    * @param {boolean} option.basename 只保留文件名
    * @returns {string[]}
    */

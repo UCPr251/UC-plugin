@@ -1,5 +1,6 @@
+/* eslint-disable brace-style */
 import { Path, Check, Data, common, file, UCPr, log } from '../components/index.js'
-import plugin from '../../../lib/plugins/plugin.js'
+import { UCPlugin } from '../model/index.js'
 import _ from 'lodash'
 
 /** 全局变量Cfg */
@@ -29,13 +30,12 @@ const helptext =
 单次指令间隔参数可批量操作
 `
 
-export default class UCConfigSet extends plugin {
-  constructor() {
+export default class UCConfigSet extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-configSet',
       dsc: '指令修改config/other.yaml',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?config帮助$/i,
@@ -86,8 +86,8 @@ export default class UCConfigSet extends plugin {
     file.YAMLsaver(Path.otheryaml, Cfg)
   }
 
-  verify() {
-    if (!Check.permission(this.e.sender.user_id, 2)) {
+  _verify() {
+    if (!this.isMaster) {
       this.reply(UCPr.noPerReply)
       return false
     }
@@ -99,7 +99,7 @@ export default class UCConfigSet extends plugin {
   }
 
   async autoFriend(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const newSet = Number(/开启|启用/.test(e.msg))
     const operation = newSet ? '开启' : '关闭'
     if (Cfg.autoFriend == newSet) {
@@ -110,7 +110,7 @@ export default class UCConfigSet extends plugin {
   }
 
   async autoQuit(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const num = parseInt(e.msg.match(/\d+/)[0])
     Cfg.autoQuit = num
     this.save()
@@ -118,50 +118,53 @@ export default class UCConfigSet extends plugin {
   }
 
   async BWset(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     let type = 0
     const msg = e.msg
     const isAdd = /拉|加/.test(e.msg)
-    if (/增加/.test(msg)) type = 1
-    else if (/删除/.test(msg)) type = 2
-    else if (/拉黑群/.test(msg)) type = 3
-    else if (/解黑群/.test(msg)) type = 4
-    else if (/拉黑/.test(msg)) type = 5
-    else if (/解黑/.test(msg)) type = 6
-    else if (/加白/.test(msg)) type = 7
-    else type = 8
+    let mode
+    if (/增加/.test(msg)) { type = 1; mode = '主人' }
+    else if (/删除/.test(msg)) { type = 2; mode = '主人' }
+    else if (/拉黑群/.test(msg)) { type = 3; mode = '黑名单群' }
+    else if (/解黑群/.test(msg)) { type = 4; mode = '黑名单群' }
+    else if (/拉黑/.test(msg)) { type = 5; mode = '黑名单用户' }
+    else if (/解黑/.test(msg)) { type = 6; mode = '黑名单用户' }
+    else if (/加白/.test(msg)) { type = 7; mode = '白名单群' }
+    else { type = 8; mode = '白名单群' }
     const numMatch = e.msg.match(/\d+/g)
-    const len = Number(arrTemp[type]?.length)
-    log.debug(len, numMatch)
+    const len = arrTemp[type]?.length
+    log.debug(len)
+    log.debug(numMatch)
     if (numMatch.length > 1) {
+      let arr = []
       if (!isAdd && numMatch.every(num => num.length < len)) {
-        const dels = []
         for (let num of numMatch) {
           let _num = arrTemp[type][num - 1]
           if (hy(_num, type)) {
-            dels.push(_num)
+            arr.push(_num)
           }
         }
-        this.save()
-        return e.reply(`type${type}删除操作成功：\n` + Data.makeArrStr(dels))
       } else {
-        const filterNum = numMatch.filter(num => num.length >= 5 && num.length <= 10)
-        if (_.isEmpty(filterNum)) {
+        arr = numMatch.filter(num => num.length >= 5 && num.length <= 10).map(Number)
+        if (_.isEmpty(arr)) {
           return e.reply('无有效参数')
         }
-        for (let num of filterNum) {
+        for (let num of arr) {
           hy(num, type)
         }
-        this.save()
-        return e.reply(`type${type}${isAdd ? '添加' : '删除'}操作成功：\n` + Data.makeArrStr(filterNum))
       }
+      this.save()
+      return e.reply(`批量${isAdd ? '添加' : '删除'}${mode}成功：\n` + Data.makeArrStr(arr))
     }
     const num = Number(numMatch[0])
-    return e.reply(hy.call(this, num, type))
+    if (hy.call(this, num, type)) {
+      return e.reply(`${isAdd ? '添加' : '删除'}${mode}操作成功：\n` + num)
+    }
+    return e.reply(`操作失败，${mode}中${isAdd ? '已' : '不'}存在：${num}`)
   }
 
   async disableAdopt(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const isAdd = /增加/.test(e.msg)
     const len = Number(arrTemp[9]?.length)
     const str = e.msg.match(/通行字符串(.*)/)[1].trim()
@@ -190,7 +193,7 @@ export default class UCConfigSet extends plugin {
   }
 
   async disablePrivate(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const newSet = /开启|启用/.test(e.msg)
     const operation = newSet ? '开启' : '关闭'
     if (Cfg.disablePrivate === !newSet) {
@@ -202,7 +205,7 @@ export default class UCConfigSet extends plugin {
   }
 
   async disableMsg(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const str = e.msg.match(/回复(.*)/)[1]
     Cfg.disableMsg = str
     const status = Cfg.disablePrivate ? '开启' : '关闭'
@@ -211,7 +214,7 @@ export default class UCConfigSet extends plugin {
   }
 
   async dataList(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const msg = []
     const operate = (arr, num) => {
       msg.push(Data.makeArrStr(arr))
@@ -267,74 +270,67 @@ export default class UCConfigSet extends plugin {
 }
 
 function hy(num, type) {
-  let reply = '1'
+  num = parseInt(num)
+  if (!num) return false
   switch (type) {
     case 1:// 增加主人
       if (!Check.str(Cfg.masterQQ, num)) {
         Cfg.masterQQ.push(num)
-        reply = `添加成功，${num}已加入主人列表`
         break
       }
-      return `主人列表中已存在${num}`
+      return false
     case 2:// 删除主人
       if (Check.str(Cfg.masterQQ, num)) {
         Data.remove(Cfg.masterQQ, num)
-        reply = `删除成功，${num}已从主人列表中删除`
         break
       }
-      return `主人列表里没有${num}`
+      return false
     case 3:// 拉黑群
       if (!Check.str(Cfg.blackGroup, num)) {
         Cfg.blackGroup.push(num)
-        reply = `拉黑成功，群${num}已被关进小黑屋！`
         break
       }
-      return `群${num}已经在小黑屋名单里啦！`
+      return false
     case 4:// 解黑群
       if (Check.str(Cfg.blackGroup, num)) {
         Data.remove(Cfg.blackGroup, num)
-        reply = `解黑成功，${num}已从群聊黑名单列表里移除！`
         break
       }
-      return `群聊黑名单列表里没有群${num}`
+      return false
     case 5:// 拉黑
       if (!Check.str(Cfg.blackQQ, num)) {
         Cfg.blackQQ.push(num)
-        reply = `拉黑成功，用户${num}已被关进小黑屋！`
         break
       }
-      return `用户${num}已经在小黑屋名单里啦！`
+      return false
     case 6:// 解黑
       if (Check.str(Cfg.blackQQ, num)) {
         Data.remove(Cfg.blackQQ, num)
-        reply = `解黑成功，${num}已从小黑屋里放出来了！`
         break
       }
-      return `小黑屋名单里没有用户${num}`
+      return false
     case 7:// 增加白名单群
       if (!Check.str(Cfg.whiteGroup, num)) {
         Cfg.whiteGroup.push(num)
-        reply = `添加成功，${num}已添加至群聊白名单列表！`
         break
       }
-      return `${num}群已经在白名单列表里啦！`
+      return false
     case 8:// 删除白名单群
       if (Check.str(Cfg.whiteGroup, num)) {
         Data.remove(Cfg.whiteGroup, num)
-        reply = `删除成功，${num}已从群聊白名单列表里删除！`
         break
       }
-      return `群号白名单列表里没有群${num}`
+      return false
     case 9:// 删除私聊通行字符串
       if (Check.str(Cfg.disableAdopt, num)) {
         Data.remove(Cfg.disableAdopt, num)
-        reply = `成功删除私聊通行字符串【${num}】`
         break
       }
       return false
     default:
-      return '未知错误'
+      log.error('[configSet]未知错误')
+      return false
   }
   this?.save()
-  return reply
+  return true
 }

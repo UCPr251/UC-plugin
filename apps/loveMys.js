@@ -1,19 +1,18 @@
 /* eslint-disable new-cap */
 import { Path, Data, UCPr, Check, file, common } from '../components/index.js'
-import plugin from '../../../lib/plugins/plugin.js'
 import { update } from '../../other/update.js'
+import { UCPlugin } from '../model/index.js'
 
 const Plugin_Name = 'loveMys-plugin'
-const loveMys = Path.join(Path.plugins, Plugin_Name)
+const loveMys = Path.get('plugins', Plugin_Name)
 const apiyaml = Path.join(loveMys, 'config', 'api.yaml')
 
-export default class UCLoveMys extends plugin {
-  constructor() {
+export default class UCLoveMys extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-loveMys',
       dsc: '安装loveMys等',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?UC(过码|验证码?|yzm)帮助$/i,
@@ -47,8 +46,8 @@ export default class UCLoveMys extends plugin {
     }
   }
 
-  verify() {
-    if (!Check.permission(this.e.sender.user_id, 2)) return false
+  _verify() {
+    if (!this.isMaster) return false
     if (!Check.floder(loveMys)) {
       this.reply('请先安装loveMys插件，指令：#UC安装过码')
       return false
@@ -66,14 +65,14 @@ export default class UCLoveMys extends plugin {
   }
 
   async installLoveMys(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     if (Check.floder(loveMys)) return e.reply('你已安装该插件，无需再次安装')
     Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
     return e.reply('安装成功，重启后生效')
   }
 
   async insertApiToken(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const yamlData = file.YAMLreader(apiyaml)
     const isApi = /api/i.test(e.msg)
     const str = e.msg.match(/注入过码(?:api|tk)(.*)/)[1].trim()
@@ -96,7 +95,7 @@ export default class UCLoveMys extends plugin {
   }
 
   async queryToken(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     const { api, token } = file.YAMLreader(apiyaml)
     if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
     if (!api) return e.reply('请先注入api，#UC注入过码api加你的api')
@@ -111,7 +110,7 @@ export default class UCLoveMys extends plugin {
   }
 
   async gitpull(e) {
-    if (!this.verify()) return false
+    if (!this._verify()) return false
     let Update_Plugin = new update()
     Update_Plugin.e = e
     Update_Plugin.reply = e.reply

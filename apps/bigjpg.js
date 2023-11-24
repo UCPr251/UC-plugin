@@ -1,26 +1,17 @@
-import { Path, Check, Data, UCDate, UCPr, Permission, Admin, common } from '../components/index.js'
-import plugin from '../../../lib/plugins/plugin.js'
+import { Path, Check, Data, UCDate, UCPr, common } from '../components/index.js'
+import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 
-export default class UCBigjpg extends plugin {
-  constructor() {
+export default class UCBigjpg extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-bigjpg',
       dsc: 'AI无损放大图片',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?(UC)?放大图片$/i,
           fnc: 'bigjpg'
-        },
-        {
-          reg: /^#(UC)?(开启|关闭)放大(图片)?((4|8|16)倍)?$/,
-          fnc: 'Switch'
-        },
-        {
-          reg: /^#?(UC)?放大图片切换(卡通|图片)$/i,
-          fnc: 'SwitchMode'
         }
       ]
     })
@@ -34,30 +25,10 @@ export default class UCBigjpg extends plugin {
     Check.floder(Path.bigjpg, true)
   }
 
-  async Switch(e) {
-    const per = new Permission(e, { ...UCPr.bigjpg })
-    if (!per.isMaster && !per.isAdmin) return per.judge(undefined, true)
-    const num = e.msg.match(/\d+/)?.[0]
-    const isOpen = !/开启/.test(e.msg)
-    if (num) {
-      Admin.set.call(this, `bigjpg.x${num}Limit`, isOpen, {})
-    } else {
-      Admin.set('bigjpg.isM', !isOpen, { reply: false })
-      Admin.set('bigjpg.isE', isOpen, { reply: false })
-      e.reply('操作成功', true)
-    }
-  }
-
-  async SwitchMode(e) {
-    const per = new Permission(e, { ...UCPr.bigjpg })
-    if (!per.isMaster && !per.isAdmin) return per.judge(undefined, true)
-    const isArt = /卡通/.test(e.msg)
-    Admin.set.call(this, 'bigjpg.style', isArt ? 'art' : 'photo', {})
-  }
-
   async bigjpg(e) {
-    if (!Data.check.call(this)) return false
-    const per = new Permission(e, { ...UCPr.bigjpg })
+    if (!this.check) return false
+    if (!UCPr.bigjpg.isOpen) return false
+    const per = this.permission(UCPr.bigjpg)
     if (!per.judge()) return false
     if (!per.isMaster && UCPr.bigjpg.limits) {
       let new_times = 0
@@ -80,7 +51,7 @@ export default class UCBigjpg extends plugin {
   }
 
   async _imgContext() {
-    if (Data.isCancel.call(this)) return false
+    if (this.isCancel()) return false
     const url = await common.getPicUrl(this.e)
     if (!url) {
       this.reply('请发送图片')
@@ -89,35 +60,35 @@ export default class UCBigjpg extends plugin {
       this.e.per = this.getContext()._imgContext.per
       const Cfg = UCPr.bigjpg
       const isMaster = this.e.per.isMaster
-      const c = [Cfg.x4Limit && !isMaster, Cfg.x8Limit && !isMaster, Cfg.x16Limit && !isMaster]
-      if (c.every(v => v)) {
+      const c = [Cfg.x4 || isMaster, Cfg.x8 || isMaster, Cfg.x16 || isMaster]
+      if (c.every(v => !v)) {
         this.e.magnification = 2
         this.setContext(this.setFnc3)
-        return Data.finish.call(this, '当前已开启4、8、16倍放大限制，自动选择2倍放大\n请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高')
+        return this.finishReply('当前未开启4、8、16倍放大，自动选择2倍放大\n请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高')
       }
       this.setContext(this.setFnc2)
-      Data.finish.call(this, `请选择放大倍数：2${c[0] ? '' : ', 4'}${c[1] ? '' : ', 8'}${c[2] ? '' : ', 16'}`)
+      this.finishReply(`请选择放大倍数：2${c[0] ? ', 4' : ''}${c[1] ? ', 8' : ''}${c[2] ? ', 16' : ''}`)
     }
   }
 
   _magnificationContext() {
-    if (Data.isCancel.call(this, this.setFnc2)) return false
+    if (this.isCancel(this.setFnc2)) return false
     const { url, per } = this.getContext()._magnificationContext
     this.e.url = url
     this.e.magnification = parseInt(this.e.msg)
     if (isNaN(this.e.magnification) || !Check.str([2, 4, 8, 16], this.e.magnification)) {
       this.reply('无效参数，自动选择放大倍数：' + UCPr.bigjpg.magnification)
       this.e.magnification = UCPr.bigjpg.magnification
-    } else if (!per.isMaster && UCPr.bigjpg[`x${this.e.magnification}Limit`]) {
+    } else if (!per.isMaster && !UCPr.bigjpg[`x${this.e.magnification}`]) {
       this.reply(`当前未开启${this.e.magnification}倍放大哦~`)
-      return this.finish(this.setFnc2)
+    } else {
+      this.setContext(this.setFnc3)
+      this.finishReply('请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高', this.setFnc2)
     }
-    this.setContext(this.setFnc3)
-    Data.finish.call(this, '请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高', this.setFnc2)
   }
 
   _noiseContext() {
-    if (Data.isCancel.call(this, this.setFnc3)) return false
+    if (this.isCancel(this.setFnc3)) return false
     const { url, magnification } = this.getContext()._noiseContext
     let noise = parseInt(this.e.msg)
     if (isNaN(noise) || !Check.str([0, 1, 2, 3, 4], noise)) {
@@ -125,7 +96,7 @@ export default class UCBigjpg extends plugin {
       noise = UCPr.bigjpg.noise
     }
     Data.bigjpgRequest.call(this, url, noise - 1, Math.log2(magnification))
-    Data.finish.call(this, `放大倍数：${magnification}\n降噪系数：${noise}\n正在放大图片…………\n可能需要较长时间，请耐心等待`, this.setFnc3)
+    this.finishReply(`放大倍数：${magnification}\n降噪系数：${noise}\n正在放大图片…………\n可能需要较长时间，请耐心等待`, this.setFnc3)
   }
 
   async sendImage(buffer) {

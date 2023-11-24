@@ -46,7 +46,7 @@ const Check = {
   /** 检查用户权限 */
   permission(userId, need = undefined) {
     if (this.e) {
-      return Check.permission(this.e.sender.user_id ?? this.e.user_id, userId)
+      return Check.permission(this.e.sender.user_id, userId)
     }
     if (need !== undefined) {
       const permission = Check.permission(userId)
@@ -59,15 +59,25 @@ const Check = {
     return 0
   },
 
-  /** 检查对方是否有该群管理权限 */
-  target(userId, groupId, only = false) {
-    if (only && !this.str(UCPr.Master, userId)) return false
-    if (!this.str(UCPr.AdminArr, userId)) return false
-    if (only && UCPr.onlyMaster) return false
+  /** 只检查是否拥有该群管理权限，不判断其他 */
+  target(userId, groupId) {
+    if (this.e) {
+      return Check.target(this.e.sender.user_id, this.e.group_id)
+    }
+    if (!userId || !groupId) return false
+    if (!Check.str(UCPr.AdminArr, userId)) return false
     const permission = UCPr.Admin[userId]
     if (permission === false) return true
-    if (this.str(permission, groupId)) return true
+    if (Check.str(permission, groupId)) return true
     return false
+  },
+
+  /** 检查是否是黑名单 */
+  black(userId) {
+    if (this.e) {
+      return Check.black(this.e.sender.user_id)
+    }
+    return Check.str(UCPr.BlackQQ, userId)
   }
 
 }

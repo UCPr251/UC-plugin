@@ -1,27 +1,29 @@
-import { Path, file, UCPr, Permission } from '../components/index.js'
+import { Path, file, UCPr } from '../components/index.js'
+import { UCPlugin } from '../model/index.js'
 import _ from 'lodash'
 
-export default class UCSwitchBot extends plugin {
-  constructor() {
+export default class UCSwitchBot extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-switchBot',
       dsc: '指定群开关Bot',
       event: 'message.group',
-      priority: UCPr.priority,
-      rule: [{
-        reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})$`,
-        fnc: 'openBot'
-      },
-      {
-        reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})$`,
-        fnc: 'closeBot'
-      }
+      rule: [
+        {
+          reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})$`,
+          fnc: 'openBot'
+        },
+        {
+          reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})$`,
+          fnc: 'closeBot'
+        }
       ]
     })
   }
 
   async openBot(e) {
-    if (!Permission.verify(e, UCPr.switchBot)) return false
+    if (!this.verify(UCPr.switchBot)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (!data[e.group_id] || !_.get(data, `${e.group_id}.enable`)) {
       return e.reply('当前已经是开启状态了哦~', true)
@@ -35,7 +37,7 @@ export default class UCSwitchBot extends plugin {
   }
 
   async closeBot(e) {
-    if (!Permission.verify(e, UCPr.switchBot)) return false
+    if (!this.verify(UCPr.switchBot)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (_.isEqual(_.get(data, `${e.group_id}.enable`), ['UC-switchBot'])) {
       return e.reply('当前已经是关闭状态了哦~', true)

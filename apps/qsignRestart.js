@@ -1,6 +1,6 @@
 import { Path, Check, Data, log, UCPr, UCDate } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
-import plugin from '../../../lib/plugins/plugin.js'
+import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 import lodash from 'lodash'
 
@@ -57,13 +57,12 @@ async function checkQsignPort() {
   }
 }
 
-export default class UCQsignRestart extends plugin {
-  constructor() {
+export default class UCQsignRestart extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-qsignRestart',
       dsc: '监听qsign端口和消息回复报错自动重启签名',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?(UC)?(开启|关闭)签名自动重启$/i,
@@ -96,7 +95,7 @@ export default class UCQsignRestart extends plugin {
   }
 
   async restart(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     const isOpen = /开启/.test(e.msg)
     const cfg = UCPr.qsignRestart
     if (isOpen) {
@@ -119,7 +118,7 @@ export default class UCQsignRestart extends plugin {
   }
 
   async verify() {
-    if (Data.isCancel.call(this)) return false
+    if (this.isCancel()) return false
     const cfg = UCPr.qsignRestart
     if (/确认|确定/.test(this.e.msg)) {
       const choices = []
@@ -132,18 +131,18 @@ export default class UCQsignRestart extends plugin {
         isCheckMsg = true
         choices.push('签名异常检测')
       }
-      Data.finish.call(this, `已开启${choices.join('、')}，\n可通过#签名重启记录 查看今日签名重启记录`)
+      this.finishReply(`已开启${choices.join('、')}，\n可通过#签名重启记录 查看今日签名重启记录`)
     }
   }
 
   async restartLog(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     const data = await Data.redisGet(redisData, []) || []
     return e.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
   }
 
-  async test(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+  async test() {
+    if (!this.isMaster) return false
     checkMsg('签名api异常')
   }
 }

@@ -1,5 +1,5 @@
-import { Path, Check, Data, UCDate, common, file, UCPr, Permission } from '../components/index.js'
-import plugin from '../../../lib/plugins/plugin.js'
+import { Path, Check, Data, UCDate, common, file, UCPr } from '../components/index.js'
+import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -8,13 +8,13 @@ const err_reply = `请于${Path.wife}中添加图片，
 
 let wifesList
 
-export default class UCRandomWife extends plugin {
-  constructor() {
+export default class UCRandomWife extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-randomWife',
       dec: '随机二次元老婆',
       event: 'message.group',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?(娶|随机|今日)(二次元)?(老婆|纸片人|wife)$/i,
@@ -83,7 +83,7 @@ export default class UCRandomWife extends plugin {
 
   async delWife(e) {
     if (!UCPr.randomWife.isOpen) return false
-    if (!Permission.verify(e, UCPr.randomWife)) return false
+    if (!this.verify(UCPr.randomWife.del)) return false
     let wifeName = e.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
     if (!wifesList) {
       wifesList = getWifes()
@@ -128,7 +128,7 @@ export default class UCRandomWife extends plugin {
 
   async addWife(e) {
     if (!UCPr.randomWife.isOpen) return false
-    if (!Permission.verify(e, UCPr.randomWife)) return false
+    if (!this.verify(UCPr.randomWife.add)) return false
     const wifeName = e.msg.match(/老婆(.*)/)[1]
     const wifes = getWifes(true)
     if (Check.str(wifes, wifeName)) {
@@ -145,12 +145,12 @@ export default class UCRandomWife extends plugin {
   }
 
   async imgContent() {
-    if (Data.isCancel.call(this)) return false
+    if (this.isCancel()) return false
     const url = await common.getPicUrl(this.e)
     if (!url) return this.reply('请发送图片或取消')
     const wifeName = this.getContext()[this.setFnc].wifeName
     await Data.download(url, Path.wife, wifeName + '.png')
-    Data.finish.call(this, '新增随机老婆成功：' + wifeName)
+    this.finishReply('新增随机老婆成功：' + wifeName)
   }
 
 }

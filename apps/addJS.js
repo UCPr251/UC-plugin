@@ -1,13 +1,12 @@
 import { Path, Data, UCPr, Check, common } from '../components/index.js'
-import plugin from '../../../lib/plugins/plugin.js'
+import { UCPlugin } from '../model/index.js'
 
-export default class UCAddJS extends plugin {
-  constructor() {
+export default class UCAddJS extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-addJS',
       dsc: '安装新的插件',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?UC安装插件$/i,
@@ -20,7 +19,7 @@ export default class UCAddJS extends plugin {
   }
 
   async addJS(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     if (e.isGroup) return e.reply('请私聊安装')
     this.setContext(this.setFnc, false, 60)
     e.reply('请在60s内发送js文件')
@@ -28,12 +27,12 @@ export default class UCAddJS extends plugin {
   }
 
   async getFile() {
-    if (Data.isCancel.call(this)) return false
-    if (!this.e.friend) return Data.finish.bind(this, '请先添加好友')
+    if (this.isCancel()) return false
+    if (!this.e.friend) return this.finishReply('请先添加好友')
     if (!this.e.file) return this.reply('请发送js文件')
     else {
       const [fileUrl, filename] = await common.getFileUrl(this.e)
-      if (Check.file(Path.join(Path.apps, filename))) {
+      if (Check.file(Path.get('apps', filename))) {
         this.e.filename = filename
         this.e.fileUrl = fileUrl
         this.finish(this.setFnc)
@@ -61,7 +60,7 @@ export default class UCAddJS extends plugin {
       }
       return this.finish(this.setFnc2)
     }
-    Data.finish.call(this, undefined, this.setFnc2)
+    this.finishReply(this, undefined, this.setFnc2)
   }
 
 }

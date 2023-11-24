@@ -1,5 +1,5 @@
+import { UCPr, Data, common } from './index.js'
 import chalk from 'chalk'
-import { UCPr, Data } from './index.js'
 
 function getFncChain(error) {
   const callerName = error.stack.split('\n').slice(2, -2)
@@ -21,17 +21,12 @@ function getFncChain(error) {
 const log = {
   /** 普通红色 */
   red(...log) {
-    logger.info(chalk.red('[UC]' + log.map(v => {
-      if (typeof v === 'string' || typeof v === 'number') {
-        return v
-      }
-      return JSON.stringify(v, null, 2)
-    }).join('\n')))
+    logger.info(chalk.red('[UC]' + common.toString(log, true, '，')))
   },
 
   /** 全局logger.mark方法 */
   mark(...log) {
-    logger.mark('[UC]' + log.join())
+    logger.mark('[UC]' + common.toString(log, true, '，'))
   },
 
   /** debug */
@@ -42,25 +37,20 @@ const log = {
         const error = new Error()
         ext = getFncChain(error)
       }
-      this.yellow('[debug]' + ext + log)
+      this.yellow('[debug]' + ext + common.toString(log))
     }
   },
 
   /** 警告信息 */
   warn(...log) {
-    logger.warn('[UC]' + log.join())
+    logger.warn(chalk.yellow('[UC]' + common.toString(log, true)))
   },
 
   /** 红色报错输出，同时增加报错日志 */
   error(...log) {
     const error = new Error()
     const fncChain = getFncChain(error)
-    log = fncChain + log.map(v => {
-      if (typeof v === 'string' || typeof v === 'number') {
-        return v
-      }
-      return JSON.stringify(v, null, 2)
-    }).join('\n')
+    log = fncChain + common.toString(log, true)
     logger.error('[UC][error]←' + log)
     Data.error(log)
   },
@@ -68,40 +58,40 @@ const log = {
   /** 普通紫色 */
   purple(...log) {
     if (UCPr.log) {
-      logger.info(logger.magenta('[UC]' + log.join()))
+      logger.info(logger.magenta('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 普通黄色 */
   yellow(...log) {
     if (UCPr.log) {
-      logger.info(chalk.yellow('[UC]' + log.join()))
+      logger.info(chalk.yellow('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 普通蓝色 */
   blue(...log) {
     if (UCPr.log) {
-      logger.info(chalk.blue('[UC]' + log.join()))
+      logger.info(chalk.blue('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 蓝色加粗 */
   bluebold(...log) {
-    logger.info(chalk.blue.bold('[UC]' + log.join()))
+    logger.info(chalk.blue.bold('[UC]' + common.toString(log, true, '，')))
   },
 
   /** 普通白色 */
   white(...log) {
     if (UCPr.log) {
-      logger.info('[UC]' + log.join())
+      logger.info('[UC]' + common.toString(log, true, ''))
     }
   },
 
   /** 白色加粗 */
   whiteblod(...log) {
     if (UCPr.log) {
-      logger.info(chalk.bold('[UC]' + log.join()))
+      logger.info(chalk.bold('[UC]' + common.toString(log, true, '，')))
     }
   }
 }

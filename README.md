@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://mzh.moegirl.org.cn/%E4%BC%91%E6%AF%94%C2%B7%E5%A4%9A%E6%8B%89">
-    <img width="400" src="./resources/xiubi1.jpg" title="她真好看">
+    <img width="400" src="./resources/img/xiubi1.jpg" title="她真好看">
   </a>
 </p>
 
@@ -32,9 +32,16 @@ git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 </div>
 
+## 插件帮助
+
+- 详见 **#UC帮助**
+- **UC帮助** 为动态帮助图，会根据当前[插件配置](#插件配置)、[用户权限](#关于插件权限)等自动调整帮助图展示项
+- > 比如主人未开启或触发指令的用户没有使用权限的功能，将不会在帮助图中进行展示，可在插件配置项中开关、设置功能，详见[插件配置](#插件配置)
+
 ## 插件配置
 
-- 配置项太多，除了必要的插件系统管理，具体某个功能的配置（如直播推送、放大图片等）请统一到 **[锅巴](https://gitee.com/guoba-yunzai/guoba-plugin) → 插件管理 → UC-plugin → 配置** 进行配置的更改
+- 配置项较多，可通过 **#UC设置** 查看、更改
+- 受图片展示限制，**#UC设置** 图中部分设置不会进行完整展示，建议在 **[锅巴](https://gitee.com/guoba-yunzai/guoba-plugin) → 插件管理 → UC-plugin → 配置** 进行配置的查看和更改
 
 ## 插件须知
 
@@ -49,7 +56,7 @@ git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 <p align="center">
   <a href="https://www.bilibili.com/read/cv13428981?spm_id_from=333.999.0.0">
-    <img width="400" src="./resources/xiubi2.jpg" title="她真好看">
+    <img width="400" src="./resources/img/xiubi2.jpg" title="她真好看">
   </a>
 </p>
 

@@ -1,19 +1,24 @@
+import { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo } from './components/Admin.js'
 import { UCPr, Path, file, Data } from './components/index.js'
-import { now_config } from './components/UCPr.js'
+import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
 
 Data.refresh()
-
+/** field前缀 */
+let prefix = ''
 /**
  * 设置锅巴展示配置
  * @param {property} field 属性名
  * @param {string} label 展示名
- * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'} component 展示属性
+ * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'|'InputPassword'} component 展示值属性
  * @param {string} bottomHelpMessage 帮助信息
  * @param {object} componentProps 配置项：max, min, placeholder等
  * @param {object} optional 可选项
  */
 function s(field, label, component, bottomHelpMessage, componentProps = {}, optional = { required: false, helpMessage: undefined }) {
+  if (prefix) {
+    field = prefix + field
+  }
   let display = {
     field,
     label,
@@ -23,23 +28,12 @@ function s(field, label, component, bottomHelpMessage, componentProps = {}, opti
   }
   return _.merge(display, optional)
 }
-const judgePriority = '权限判断优先级：主人>黑名单>全局仅主人>功能仅主人>允许群聊=允许私聊>允许任何人>允许插件管理员=允许群管理员'
-const judgeProperty = ['isG', 'isP', 'isM', 'isA', 'isGA', 'isE']
-const judgeInfo = ['允许群聊使用', '允许私聊使用', '仅主人', '允许插件管理', '允许群管理', '允许任何人']
-const judgeHelpInfo = [
-  '是否允许群聊使用，关闭仅主人可群聊使用',
-  '是否允许私聊使用，关闭仅主人可私聊使用',
-  '是否仅允许主人使用',
-  '是否允许群插件管理员使用，关闭仅主人或群原生管理员可使用',
-  '是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用',
-  '是否允许任何人使用，关闭仅主人或管理员可使用'
-]
 
-function sPRO(property, name, options = [true, true, true, true, true, true]) {
+function sPRO(name, _prefix = '', options = [true, true, true, true, true, true], name_prefix = '') {
   const info = []
   for (let i in judgeProperty) {
     if (!options[i]) continue
-    info.push(s(property + '.' + judgeProperty[i], judgeInfo[i], 'Switch',
+    info.push(s(_prefix + judgeProperty[i], name_prefix + judgeInfo[i], 'Switch',
       judgeHelpInfo[i] + name, {},
       { helpMessage: judgePriority }))
   }
@@ -49,179 +43,189 @@ function sPRO(property, name, options = [true, true, true, true, true, true]) {
 let js = []
 
 // 搜小说分支内容
-if (file.existsSync(Path.join(Path.apps, 'searchNovel.js'))) {
+if (file.existsSync(Path.get('apps', 'searchNovel.js'))) {
+  prefix = 'searchNovel.'
   const newCfg = [
     {
       label: '【UC】小说 · 基础设置',
       component: 'Divider'
     },
-    s('searchNovel.recallIndexMsg', '索引消息撤回间隔', 'InputNumber',
+    s('recallIndexMsg', '索引消息撤回间隔', 'InputNumber',
       '小说序号选择信息撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('searchNovel.recallNoticeMsg', '其他消息撤回间隔', 'InputNumber',
+    s('recallNoticeMsg', '其他消息撤回间隔', 'InputNumber',
       '索引消息以外的消息的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('searchNovel.recallFileG', '群聊文件撤回间隔', 'InputNumber',
+    s('recallFileG', '群聊文件撤回间隔', 'InputNumber',
       '群聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('searchNovel.recallFileP', '私聊文件撤回间隔', 'InputNumber',
+    s('recallFileP', '私聊文件撤回间隔', 'InputNumber',
       '私聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0, max: 119 }),
-    s('searchNovel.overtime', '超时时间', 'InputNumber',
+    s('overtime', '超时时间', 'InputNumber',
       '超时时间，单位秒，#搜小说 后超过该时间不操作则自动取消操作', { min: 10 }),
-    s('searchNovel.cd', '冷却时间', 'InputNumber',
+    s('cd', '冷却时间', 'InputNumber',
       '#搜小说 冷却时间，单位秒，主人不受限', { min: 10 }),
-    s('searchNovel.cdReply', '冷却中回复', 'Input',
+    s('cdReply', '冷却中回复', 'Input',
       'cd中回复，对主人以外的处于cd中的用户再次#搜小说 时的回复'),
-    s('searchNovel.novelPath', '小说资源路径', 'InputTextArea',
+    s('novelPath', '小说资源路径', 'InputTextArea',
       '本地小说资源绝对路径，多个请回车间隔'),
     {
       label: '【UC】小说 · 搜索权限',
       component: 'Divider'
     },
-    ...sPRO('searchNovel.search', '#搜小说'),
+    ...sPRO('#搜小说', 'search.', undefined, '搜索 · '),
     {
       label: '【UC】小说 · 上传权限',
       component: 'Divider'
     },
-    ...sPRO('searchNovel.add', '#增加小说'),
+    ...sPRO('#上传小说', 'add.', undefined, '上传 · '),
     {
       label: '【UC】小说 · 删除权限',
       component: 'Divider'
     },
-    ...sPRO('searchNovel.del', '#删')
+    ...sPRO('#删', 'del.', undefined, '删除 · ')
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'qsignRestart.js'))) {
+if (file.existsSync(Path.get('apps', 'qsignRestart.js'))) {
+  prefix = 'qsignRestart.'
   const newCfg = [
     {
       label: '【UC】签名自动重启设置（修改后重启生效！）',
       component: 'Divider'
     },
-    s('qsignRestart.isAutoOpen', '签名自动重启', 'Switch',
+    s('isAutoOpen', '签名自动重启', 'Switch',
       '开启后Bot启动时自动开启签名自动重启'),
-    s('qsignRestart.switch1', '签名崩溃检测', 'Switch',
+    s('switch1', '签名崩溃检测', 'Switch',
       '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'),
-    s('qsignRestart.switch2', '签名异常检测', 'Switch',
+    s('switch2', '签名异常检测', 'Switch',
       '签名异常检测，检测签名是否异常（包括崩溃），异常则尝试重启签名'),
-    s('qsignRestart.errorTimes', '异常重启次数', 'InputNumber',
-      '签名异常次数大于等于该值时执行签名重启，避免高频重启，不建议低于3', { min: 1 }),
-    s('qsignRestart.qsign', '签名路径', 'Input',
+    s('errorTimes', '异常重启次数', 'InputNumber',
+      '签名异常次数大于等于该值时执行签名重启，避免高频重启，不建议低于2', { min: 1 }),
+    s('qsign', '签名路径', 'Input',
       '签名启动器执行路径，不填则取默认路径',
       { placeholder: Path.qsign }),
-    s('qsignRestart.host', '签名host', 'Input'),
-    s('qsignRestart.port', '签名port', 'InputNumber'),
-    s('qsignRestart.qsingRunner', '启动器名称', 'Input'),
-    s('qsignRestart.sleep', '崩溃检测间隔', 'InputNumber',
+    s('host', '签名host', 'Input'),
+    s('port', '签名port', 'InputNumber'),
+    s('qsingRunner', '启动器名称', 'Input'),
+    s('sleep', '崩溃检测间隔', 'InputNumber',
       '崩溃检测时间间隔，单位秒，不建议低于10', { min: 10 })
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'switchBot.js'))) {
+if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
+  prefix = 'switchBot.'
   const newCfg = [
     {
       label: '【UC】指定群开关Bot设置',
       component: 'Divider'
     },
-    s('switchBot.openMsg', '开启Bot回复', 'Input',
+    s('openReg', '开启触发词', 'Input',
+      '让Bot上班的指令：BotName+关键词即可触发，多个用|间隔'),
+    s('closeReg', '关闭触发词', 'Input',
+      '让Bot下班的指令：BotName+关键词即可触发，多个用|间隔'),
+    s('openMsg', '开启Bot回复', 'Input',
       '开启Bot的回复，BotName会被替换为上面设置的BotName的名称'),
-    s('switchBot.closeMsg', '关闭Bot回复', 'Input',
+    s('closeMsg', '关闭Bot回复', 'Input',
       '关闭Bot的回复，BotName会被替换为上面设置的BotName的名称'),
-    s('switchBot.openReg', '开启触发词', 'Input',
-      '让Bot上班的指令：BotName+关键词即可触发，多个请用|间隔'),
-    s('switchBot.closeReg', '关闭触发词', 'Input',
-      '让Bot下班的指令：BotName+关键词即可触发，多个请用|间隔'),
-    ...sPRO('switchBot', '群开关Bot', [false, false, true, true, true, false])
+    ...sPRO('群开关Bot', '', [false, false, true, true, true, false])
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'chuoyichuo.js'))) {
+if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
+  prefix = 'chuoyichuo.'
   const newCfg = [
     {
       label: '【UC】戳一戳回复设置',
       component: 'Divider'
     },
-    s('chuoyichuo.isOpen', '是否开启戳一戳', 'Switch',
+    s('isOpen', '是否开启戳一戳', 'Switch',
       '是否启用UC戳一戳'),
-    s('chuoyichuo.isAutoSetCard', '被戳更新群名片', 'Switch',
+    s('isAutoSetCard', '被戳更新群名片', 'Switch',
       '被戳是否自动更新群名片'),
-    s('chuoyichuo.groupCard', '更新群名片后缀', 'Input',
+    s('groupCard', '更新群名片后缀', 'Input',
       '开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数'),
-    s('chuoyichuo.textimg', '文本+图片概率', 'InputNumber',
+    s('textimg', '文本+图片概率', 'InputNumber',
       '被戳回复文本+图片概率', { min: 0, max: 1 }),
-    s('chuoyichuo.chuoimg', '次数文本图片概率', 'InputNumber',
+    s('chuoimg', '次数+图片概率', 'InputNumber',
       '被戳回复被戳次数+文本+图片概率，此概率独立于整体概率，意为触发文本+图片回复时又有多少概率在文本前加上被戳次数，可选0-1',
       { min: 0, max: 1 }),
-    s('chuoyichuo.face', '头像表情包概率', 'InputNumber',
+    s('face', '头像表情包概率', 'InputNumber',
       '被戳回复头像表情包概率', { min: 0, max: 1 }),
-    s('chuoyichuo.mute', '禁言概率', 'InputNumber',
+    s('mute', '禁言概率', 'InputNumber',
       '被戳禁言对方概率，剩下的就是反击概率', { min: 0, max: 1 }),
-    s('chuoyichuo.muteTime', '禁言时长', 'InputNumber',
+    s('muteTime', '禁言时长', 'InputNumber',
       '禁言的时长，单位分，0为不禁言', { min: 1 })
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'randomWife.js'))) {
+if (file.existsSync(Path.get('apps', 'randomWife.js'))) {
+  prefix = 'randomWife.'
   const newCfg = [
     {
       label: '【UC】随机老婆设置',
       component: 'Divider'
     },
-    s('randomWife.isOpen', '是否开启', 'Switch',
+    s('isOpen', '是否开启', 'Switch',
       '是否开启UC随机老婆'),
-    s('randomWife.wifeLimits', '老婆次数限制', 'InputNumber',
+    s('wifeLimits', '老婆次数限制', 'InputNumber',
       '每日随机老婆次数限制，包括主人', { min: 1 }),
-    ...sPRO('randomWife', '#添加/删除随机老婆', [false, false, true, true, true, true])
+    ...sPRO('#上传随机老婆', 'add.', [false, false, true, true, true, true], '上传 · '),
+    ...sPRO('#删除随机老婆', 'del.', [false, false, true, true, true, true], '删除 · ')
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'randomMember.js'))) {
+if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
+  prefix = 'randomMember.'
   const newCfg = [
     {
       label: '【UC】随机群友设置',
       component: 'Divider'
     },
-    s('randomMember.isOpen', '是否开启', 'Switch',
+    s('isOpen', '是否开启', 'Switch',
       '是否开启UC随机群友'),
-    s('randomMember.isAt', '是否自动艾特', 'Switch',
+    s('isAt', '是否自动艾特', 'Switch',
       '是否自动艾特随机到的群友'),
-    s('randomMember.keyWords', '触发指令', 'Input',
-      '触发指令，#你设置的值 就可以触发该插件，修改后直接生效，英语字母大小写都可以触发'),
-    s('randomMember.reply', '回复内容', 'Input',
+    s('keyWords', '触发指令', 'Input',
+      '触发指令，#你设置的值 就可以触发该功能，修改后直接生效，英语字母大小写都可以触发'),
+    s('reply', '回复内容', 'Input',
       '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）'),
-    ...sPRO('randomMember', '#随机群友', [false, false, true, true, true, true])
+    ...sPRO('#随机群友', '', [false, false, true, true, true, true])
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'BlivePush.js'))) {
+if (file.existsSync(Path.get('apps', 'BlivePush.js'))) {
+  prefix = 'BlivePush.'
   const newCfg = [
     {
       label: `【UC】B站直播推送设置${Data.check('BlivePush') ? '' : '（您当前未购买此插件）'}`,
       component: 'Divider'
     },
-    s('BlivePush.isGroup', '群聊推送开关', 'Switch',
+    s('isGroup', '群聊推送开关', 'Switch',
       '群聊推送全局开关，关闭不再推送群聊'),
-    s('BlivePush.isPrivate', '私聊推送开关', 'Switch',
+    s('isPrivate', '私聊推送开关', 'Switch',
       '私聊推送全局开关，关闭不再推送私聊'),
-    s('BlivePush.mins', '推送检测间隔', 'InputNumber',
+    s('mins', '推送检测间隔', 'InputNumber',
       '推送检测间隔，单位分钟，不建议小于4',
       { min: 2 }),
-    ...sPRO('BlivePush', '直播推送')
+    ...sPRO('订阅推送')
   ]
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
+if (file.existsSync(Path.get('apps', 'bigjpg.js'))) {
+  prefix = 'bigjpg.'
   const newCfg = [
     {
       label: `【UC】放大图片设置${Data.check('bigjpg') ? '' : '（您当前未购买此插件）'}`,
       component: 'Divider'
     },
-    s('bigjpg.apiKey', 'ApiKey', 'Input'),
-    s('bigjpg.style', '放大图片风格', 'Select',
+    s('isOpen', '放大图片开关', 'Switch'),
+    s('apiKey', 'ApiKey', 'InputPassword'),
+    s('style', '放大图片风格', 'Select',
       '可选卡通和照片，对于卡通图片放大效果最佳',
       {
         options: [
@@ -229,7 +233,7 @@ if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
           { label: '照片', value: 'photo' }
         ]
       }),
-    s('bigjpg.noise', '默认降噪程度', 'Select',
+    s('noise', '默认降噪程度', 'Select',
       '默认降噪级别，可选[无，低，中，高，最高]',
       {
         options: [
@@ -240,7 +244,7 @@ if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
           { label: '最高', value: 4 }
         ]
       }),
-    s('bigjpg.magnification', '默认放大倍数', 'Select',
+    s('magnification', '默认放大倍数', 'Select',
       '默认放大倍数，可选[2倍，4倍，8倍，16倍]',
       {
         options: [
@@ -250,23 +254,25 @@ if (file.existsSync(Path.join(Path.apps, 'bigjpg.js'))) {
           { label: '16倍', value: 16 }
         ]
       }),
-    s('bigjpg.limits', '每日放大数量限制', 'InputNumber',
+    s('limits', '每日放大数量限制', 'InputNumber',
       '每人每天放大次数限制，0为不限制，主人不受限',
       { min: 0 }),
-    s('bigjpg.isSave', '是否自动保存图片', 'Switch',
+    s('isSave', '是否自动保存图片', 'Switch',
       '放大的图片是否自动保存本地。保存路径：' + Path.bigjpg),
-    s('bigjpg.x4Limit', '4倍放大限制', 'Switch',
-      '4倍限制，开启仅允许主人放大4倍'),
-    s('bigjpg.x8Limit', '8倍放大限制', 'Switch',
-      '8倍限制，开启仅允许主人放大8倍'),
-    s('bigjpg.x16Limit', '16倍放大限制', 'Switch',
-      '16倍限制，开启仅允许主人放大16倍'),
-    ...sPRO('bigjpg', '#放大图片')
+    s('x4', '4倍放大', 'Switch',
+      '4倍，关闭仅允许主人放大4倍'),
+    s('x8', '8倍放大', 'Switch',
+      '8倍，关闭仅允许主人放大8倍'),
+    s('x16', '16倍放大', 'Switch',
+      '16倍，关闭仅允许主人放大16倍'),
+    ...sPRO('#放大图片')
   ]
   js = js.concat(newCfg)
 }
 
 // if (file.existsSync(Path.join(Path.apps, )))
+
+prefix = ''
 
 export function supportGuoba() {
   return {
@@ -279,7 +285,7 @@ export function supportGuoba() {
       isV3: true,
       isV2: false,
       description: 'UC-plugin，为更多有趣的功能',
-      iconPath: Path.join(Path.resources, 'xiubi.png')
+      iconPath: Path.get('img', 'xiubi.png')
     },
     configInfo: {
       schemas: [
@@ -299,6 +305,8 @@ export function supportGuoba() {
           '开发环境下使用，热更新app，重启生效'),
         s('isDefaultMaster', '合并主人', 'Switch',
           '是否合并插件主人和机器人主人，不影响管理员设置'),
+        s('onlyMaster', '仅主人可操作', 'Switch',
+          '开启后仅主人可操作本插件'),
         s('priority', '插件优先级', 'InputNumber',
           '本插件优先级，修改后重启生效'),
         s('server', '连接服务', 'Select',
@@ -314,8 +322,6 @@ export function supportGuoba() {
         s('loveMysNotice', '过码次数预警值', 'InputNumber',
           '每日0点自动检测过码剩余次数，低于该值则提醒主人，0则不提醒',
           { min: 0 }),
-        s('onlyMaster', '仅主人可操作', 'Switch',
-          '开启后仅主人可操作本插件'),
         s('onlyMasterReply', '仅主人回复', 'Input',
           '开启仅主人后，对原本拥有管理权限的插件管理员的回复'),
         s('noPerReply', '用户无权限回复', 'Input',
@@ -327,7 +333,7 @@ export function supportGuoba() {
       ].concat(js),
 
       getConfigData() {
-        return now_config
+        return guoba_config
       },
 
       setConfigData(data, { Result }) {

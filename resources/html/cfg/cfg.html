@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="{{pluResPath}}/html/cfg/cfg.css"/>
+  <link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+  <div class="container" id="container">
+    <div class="head-box">
+      <!-- 标题文字 -->
+      <div class="title">UC-plugin系统设置</div>
+    </div>
+    <!-- 遍历每一个cfg组 cfgGroup -->
+    {{each cfgData cfgGroup cfgGroupKey}}
+    <div class="cfg-box">
+      <!-- 每个组的小标题 -->
+      <div class="cfg-group">{{cfgGroup.title}}</div>
+      <ul class="cfg-ul">
+        <!-- 遍历组的每个详细内容 cfgValue -->
+        {{each cfgGroup.cfg cfgValue cfgKey}}
+        <li class="cfg-li">
+          <div class="cfg-line">
+            <!-- 某个设置的title -->
+            {{cfgValue.title}}
+            <!-- 该设置的修改指令 -->
+            <span class="cfg-hint"> #UC设置{{cfgGroupKey}}{{cfgKey}}
+              {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
+            </span>
+            <!-- 该设置的当前状态 -->
+            {{if cfgValue.type !== 'switch'}}
+            <div class="cfg-status">{{cfgValue.value}}</div>
+            {{else}}
+            {{if cfgValue.value}}
+            <div class="cfg-status">已开启</div>
+            {{else}}
+            <div class="cfg-status status-off">已关闭</div>
+            {{/if}}
+            {{/if}}
+          </div>
+          <!-- 该设置的描述内容 -->
+          {{if cfgValue.desc}}
+          <div class="cfg-desc">{{cfgValue.desc}}</div>
+          {{/if}}
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/each}}
+    <div class="logo">Created By Miao-Yunzai && UC-plugin {{updateTime}}</div>
+  </div>
+</body>
+
+</html>

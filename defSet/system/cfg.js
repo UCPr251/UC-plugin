@@ -1,0 +1,510 @@
+import { Data, Path, Check } from '../../components/index.js'
+import { judgeInfo } from '../../components/Admin.js'
+import _ from 'lodash'
+
+/**
+ * 对#UC设置 的每一项进行设置
+ * @param {path} path config中的path，定位设置
+ * @param {string} title 展示的小标题，仅展示
+ * @param {string} desc 功能描述，仅展示
+ * @param {'num'|'input'|'switch'|'power'|'select'} [type='switch'] 指令修改value类型，数据处理分类
+ * @param {string} def 默认值
+ * @param {Function} input 对输入值的处理函数
+ * @param {{}} [optional={}] 额外条件
+ */
+function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
+  if (prefix) {
+    path = prefix + path
+  }
+  if (typeof def === 'string') {
+    def = _.truncate(def, { length: 8 })
+  }
+  if (type === 'select') {
+    def = input.join('/')
+    input = (str) => input[_.findKey(input, (value) => value == str)]
+  }
+  return _.merge({
+    path,
+    title,
+    desc,
+    type,
+    def,
+    input
+  }, optional)
+}
+/**
+ * 对UC功能权限的设置
+ * @param {string} [name='使用'] 权限名，仅展示，默认为“使用”，组装为：设置类name权限
+ * @param {string} [def=''] 默认值
+ * @param {string} [_prefix=''] 权限path前缀，组装为：prefix_prefix
+ * @param {Array} options 可配置项数组['群聊', '私聊', '仅主人', '插件管理', '群管理', '任何人']
+ * @returns {}
+ */
+function sPRO(name = '使用', def = '', _prefix = '', options = [0, 1, 2, 3, 4, 5]) {
+  const property = name + '权限'
+  return {
+    ...s(
+      _prefix,
+      property,
+      property + '判断，1开0关，分别代表：' + options.map(i => judgeInfo[i]).join('、'),
+      'power',
+      def
+    ),
+    options
+  }
+}
+
+/** path前缀 */
+let prefix = ''
+
+const 系统 = {
+  /** 一个设置组的标题 */
+  title: '系统——UC插件系统设置',
+  /** 一个设置组的各个单独设置 */
+  cfg: {
+    开发环境: s(
+      'isWatch',
+      '开发环境',
+      '用于开发环境的功能，可热更新app，如果有需要可以开启'
+    ),
+    日志: s(
+      'log',
+      '系统日志',
+      '是否在控制台输出UC插件普通日志'
+    ),
+    调试日志: s(
+      'debugLog',
+      '系统调试日志',
+      '是否在控制台输出UC插件调试日志'
+    ),
+    合并主人: s(
+      'isDefaultMaster',
+      '合并插件主人',
+      '插件主人是否和机器人主人合并，不影响插件管理员设置'
+    ),
+    全局仅主人: s(
+      'onlyMaster',
+      '仅主人可操作',
+      '是否仅主人可操作UC插件'
+    ),
+    优先级: s(
+      'priority',
+      '插件优先级',
+      'UC插件优先级，优先级越小越优先响应，可为任意整数',
+      'num',
+      251,
+      (num) => parseInt(/-?\d+/.exec(num)?.[0])
+    ),
+    服务: s(
+      'server',
+      'api服务',
+      '插件api服务的服务器，建议1，如遇api网络问题可以尝试切换',
+      'num',
+      1,
+      (num) => parseInt(num.match(/[12]/)?.[0])
+    ),
+    机器人自称: s(
+      'BotName',
+      '机器人自称',
+      'UC插件的机器人自称，用于个别时候的机器人回复或开关Bot的指令等',
+      'input',
+      '纳西妲'
+    ),
+    过码提醒: s(
+      'loveMysNotice',
+      '过码剩余提醒',
+      '每日零点loveMys（如果有）剩余过码次数小于等于该值时自动提醒主人，0则不提醒',
+      'num',
+      50
+    ),
+    仅主人回复: s(
+      'onlyMasterReply',
+      '仅主人回复',
+      '仅主人可操作时，对本拥有权限的管理员的回复',
+      'input',
+      '当前仅允许主人操作'
+    ),
+    用户无权限回复: s(
+      'noPerReply',
+      '用户无权限回复',
+      '用户无权限进行某操作时，机器人的回复',
+      'input',
+      '无权限'
+    ),
+    机器人无权限回复: s(
+      'noPowReply',
+      '无权限回复',
+      '机器人无权限进行某操作时，机器人的回复',
+      'input',
+      '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
+    ),
+    连接失败回复: s(
+      'fetchErrReply',
+      '连接失败回复',
+      'api服务连接失败时机器人的回复',
+      'input',
+      '服务连接失败，请稍后重试'
+    )
+  }
+}
+
+const cfgData = { '': 系统 }
+
+if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
+  prefix = 'qsignRestart.'
+  cfgData.签名 = {
+    title: '签名——签名自动重启设置，重启生效',
+    cfg: {
+      自动重启: s(
+        'isAutoOpen',
+        '自动开启签名重启',
+        '启动Bot后是否自动开启签名重启检测'
+      ),
+      崩溃检测: s(
+        'switch1',
+        '签名崩溃检测',
+        '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'
+      ),
+      异常检测: s(
+        'switch2',
+        '签名异常检测',
+        '签名异常检测，检测签名是否异常（包括崩溃），异常则尝试重启签名'
+      ),
+      异常重启次数: s(
+        'errorTimes',
+        '签名异常重启次数',
+        '签名异常次数大于等于该值时执行签名重启，避免高频重启，不建议低于2',
+        'num',
+        3
+      ),
+      路径: s(
+        'qsign',
+        '签名路径',
+        '签名启动器执行路径，不填则取默认路径',
+        'input',
+        Path.qsign,
+        undefined,
+        {
+          value: Path.qsign.slice(0, 13) + '...'
+        }
+      ),
+      host: s(
+        'host',
+        '签名host',
+        '签名的host，默认127.0.0.1',
+        'input',
+        '127.0.0.1'
+      ),
+      port: s(
+        'port',
+        '签名port',
+        '签名的port，默认801',
+        'num',
+        801
+      ),
+      启动器名称: s(
+        'qsingRunner',
+        '启动器名称',
+        '签名启动器的全称，插件会通过启动器启动签名，默认一键startAPI.bat',
+        'input',
+        '一键startAPI.bat'
+      ),
+      检测间隔: s(
+        'sleep',
+        '签名崩溃检测间隔',
+        '崩溃检测时间间隔，单位秒，不建议低于10',
+        'num',
+        60,
+        (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'switchBot.js'))) {
+  prefix = 'switchBot.'
+  cfgData.开关Bot = {
+    title: '开关Bot——指定群开关Bot设置',
+    cfg: {
+      开启触发词: s(
+        'openReg',
+        '开启机器人触发词',
+        '让Bot上班的指令：BotName+关键词即可触发，多个用|间隔',
+        'input',
+        '上班|工作'
+      ),
+      关闭触发词: s(
+        'closeReg',
+        '关闭机器人触发词',
+        '让Bot下班的指令：BotName+关键词即可触发，多个用|间隔',
+        'input',
+        '下班|休息'
+      ),
+      开启回复: s(
+        'openMsg',
+        '开启机器人回复',
+        '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
+        'input',
+        '好哒，BotName开始上班啦！'
+      ),
+      关闭回复: s(
+        'closeMsg',
+        '关闭机器人回复',
+        '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
+        'input',
+        'BotName休息去啦~'
+      ),
+      权限: sPRO('开关', '010', '', [2, 3, 4])
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
+  prefix = 'chuoyichuo.'
+  cfgData.戳一戳 = {
+    title: '戳一戳——群聊戳一戳回复设置',
+    cfg: {
+      '': s(
+        'isOpen',
+        '戳一戳开关',
+        '是否启用UC戳一戳'
+      ),
+      更新群名片: s(
+        'isAutoSetCard',
+        '被戳更新群名片',
+        '被戳是否自动更新群名片'
+      ),
+      群名片后缀: s(
+        'groupCard',
+        '群名片后缀',
+        '更新群名片后缀内容，num会被替换为当前被戳次数',
+        'input',
+        '今日已被戳num次~'
+      ),
+      文本图片概率: s(
+        'textimg',
+        '文本+图片概率',
+        '被戳回复文本+图片的概率，可选0-1',
+        'num',
+        0.8,
+        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+      ),
+      次数图片概率: s(
+        'chuoimg',
+        '次数+图片概率',
+        '触发文本+图片回复时在文本前加上被戳次数的概率，独立于其他概率，可选0-1',
+        'num',
+        0.2,
+        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+      ),
+      头像表情包概率: s(
+        'face',
+        '头像表情包概率',
+        '被戳回复头像表情包概率，可选0-1',
+        'num',
+        0.1,
+        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+      ),
+      禁言概率: s(
+        'mute',
+        '被戳禁言概率',
+        '被戳禁言对方概率，可选0-1。1-(文本图片+表情包+禁言)即为反击概率',
+        'num',
+        0.05,
+        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+      ),
+      禁言时长: s(
+        'muteTime',
+        '禁言时长',
+        '禁言的时长，单位分，0为不禁言',
+        'num',
+        2
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'randomWife.js'))) {
+  prefix = 'randomWife.'
+  cfgData.随机老婆 = {
+    title: '随机老婆',
+    cfg: {
+      '': s(
+        'isOpen',
+        '随机老婆开关',
+        '是否开启UC随机老婆'
+      ),
+      次数限制: s(
+        'wifeLimits',
+        '每日老婆限制',
+        '每日随机老婆次数限制，包括主人',
+        'num',
+        1,
+        (num) => Math.max(1, num.match(/\d+/)?.[0])
+      ),
+      上传权限: sPRO(
+        '上传',
+        '0110',
+        'add.',
+        [2, 3, 4, 5]
+      ),
+      删除权限: sPRO(
+        '删除',
+        '0100',
+        'del.',
+        [2, 3, 4, 5]
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'randomMember.js'))) {
+  prefix = 'randomMember.'
+  cfgData.随机群友 = {
+    title: '随机群友',
+    cfg: {
+      '': s(
+        'isOpen',
+        '随机群友开关',
+        '是否开启UC随机群友'
+      ),
+      艾特: s(
+        'isAt',
+        '是否自动艾特',
+        '是否自动艾特随机到的群友'
+      ),
+      指令: s(
+        'keyWords',
+        '触发指令',
+        '#加你设置的触发指令 就可以触发该功能，不区分字母大小写',
+        'input',
+        '随机群友'
+      ),
+      回复: s(
+        'reply',
+        '回复内容',
+        '随机群友回复内容，info会被替换为：群友昵称（QQ）',
+        'input',
+        '恭喜info成为天选之子！'
+      ),
+      权限: sPRO(
+        undefined,
+        '0111',
+        '',
+        [2, 3, 4, 5]
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
+  prefix = 'BlivePush.'
+  cfgData.直播推送 = {
+    title: '直播推送',
+    cfg: {
+      群聊: s(
+        'isGroup',
+        '群聊推送开关',
+        '群聊推送全局开关，关闭不再推送群聊'
+      ),
+      私聊: s(
+        'isPrivate',
+        '私聊推送开关',
+        '私聊推送全局开关，关闭不再推送私聊'
+      ),
+      检测间隔: s(
+        'mins',
+        '推送检测间隔',
+        '推送检测间隔，单位分钟，不建议小于4',
+        'num',
+        4,
+        (num) => Math.max(2, num.match(/\d+/)?.[0])
+      ),
+      权限: sPRO(
+        '订阅',
+        '100110'
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
+  prefix = 'bigjpg.'
+  cfgData.放大图片 = {
+    title: '放大图片',
+    cfg: {
+      '': s(
+        'isOpen',
+        '放大图片开关',
+        '是否开启UC放大图片'
+      ),
+      apikey: s(
+        'apiKey',
+        'ApiKey',
+        '用于放大图片服务的密钥',
+        'input',
+        '*****',
+        undefined,
+        { value: '请在锅巴查看' }
+      ),
+      风格: s(
+        'style',
+        '放大风格',
+        '可选卡通和照片，对于卡通图片放大效果最佳',
+        'select',
+        '',
+        ['art', 'photo']
+      ),
+      默认降噪: s(
+        'noise',
+        '默认降噪程度',
+        '默认降噪级别，可选0-4，分别代表[无，低，中，高，最高]',
+        'select',
+        '',
+        [0, 1, 2, 3, 4]
+      ),
+      默认放大: s(
+        'magnification',
+        '默认放大倍数',
+        '默认放大倍数，可选2、4、8、16',
+        'select',
+        '',
+        [2, 4, 8, 16]
+      ),
+      次数限制: s(
+        'limits',
+        '每日放大数量限制',
+        '每人每天放大次数限制，0为不限制，主人不受限',
+        'num',
+        3
+      ),
+      保存本地: s(
+        'isSave',
+        '自动保存图片',
+        '放大的图片是否自动保存本地。保存路径：' + Path.bigjpg
+      ),
+      四倍: s(
+        'x4',
+        '4倍开关',
+        '4倍放大开关，关闭仅允许主人放大4倍'
+      ),
+      八倍: s(
+        'x8',
+        '8倍开关',
+        '8倍放大开关，关闭仅允许主人放大8倍'
+      ),
+      十六倍: s(
+        'x16',
+        '16倍开关',
+        '16倍放大开关，关闭仅允许主人放大16倍'
+      ),
+      权限: sPRO(
+        '放大',
+        '100110'
+      )
+    }
+  }
+}
+
+/** #UC设置信息 */
+export default cfgData

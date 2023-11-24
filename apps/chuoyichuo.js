@@ -79,13 +79,13 @@ const textList = [
   '哎，疼疼疼!',
   '你还戳……']
 
-export default class UCChuoyichuo extends plugin {
-  constructor() {
+export default class UCChuoyichuo extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-chuoyichuo',
       dsc: '戳一戳回复',
-      event: 'notice.group.poke',
-      priority: UCPr.priority
+      event: 'notice.group.poke'
     })
     this.redisData = '[UC]chuoyichuo'
   }
@@ -111,7 +111,7 @@ export default class UCChuoyichuo extends plugin {
       const files = file.readdirSync(Path.chuoyichuo)
       const imgfile = _.sample(files)
       await common.sleep(0.5)
-      return e.reply(segment.image(Path.join(Path.chuoyichuo, imgfile)))
+      return e.reply(segment.image(Path.get('chuoyichuo', imgfile)))
     }
     // 头像表情包
     if (randomNum < (Cfg.textimg + Cfg.face)) {

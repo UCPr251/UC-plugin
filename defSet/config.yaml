@@ -1,33 +1,33 @@
-# 是否输出日志
-log: true
-# 是否输出debug日志
-debugLog: false
-# 开发环境使用，热更新app
+# 用于开发环境的功能，可热更新app，如果有需要可以开启
 isWatch: false
-# 插件主人是否和机器人主人合并，不影响管理设置
+# 是否输出UC插件日志
+log: true
+# 是否输出UC插件debug日志
+debugLog: false
+# 插件主人是否和机器人主人合并，不影响插件管理员设置
 isDefaultMaster: true
-# 插件优先级
+# 是否仅主人可操作UC插件
+onlyMaster: false
+# UC插件优先级，优先级越小越优先响应，可为任意整数
 priority: 251
-# 选择服务
+# 插件api服务的服务器，建议1，如遇api网络问题可以尝试切换
 server: 1
-# Bot名称
+# UC插件的机器人自称，用于个别时候的机器人回复或开关Bot的指令等
 BotName: 纳西妲
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
-# 是否仅主人可操作
-onlyMaster: false
-# 仅主人可操作时，对本拥有权限的管理的回复
+# 仅主人可操作时，对本拥有权限的管理员的回复
 onlyMasterReply: 当前仅允许主人操作
-# 用户无权限回复
+# 用户无权限进行某操作时，机器人的回复
 noPerReply: 无权限
-# Bot无权限回复
+# 机器人无权限进行某操作时，机器人的回复
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
-# api连接失败回复
+# api服务连接失败时机器人的回复
 fetchErrReply: 服务连接失败，请稍后重试
 
 # qsign重启设置
 qsignRestart:
-  # 开启后Bot启动会自动开启签名重启检测
+  # 启动Bot后是否自动开启签名重启检测，开启此项后重启生效
   isAutoOpen: false
   # 签名崩溃检测
   switch1: true
@@ -88,14 +88,26 @@ randomWife:
   isOpen: true
   # 每日取老婆次数限制，包括主人
   wifeLimits: 1
-  # 是否仅主人可使用#添加/删除随机老婆
-  isM: false
-  # 是否允许群插件管理员使用#添加/删除随机老婆
-  isA: true
-  # 是否允许群原生管理员使用#添加/删除随机老婆
-  isGA: true
-  # 是否允许任何人使用#添加/删除随机老婆
-  isE: false
+  # 增加随机老婆权限
+  add:
+    # 是否仅主人可使用#上传随机老婆
+    isM: false
+    # 是否允许群插件管理员使用#上传随机老婆
+    isA: true
+    # 是否允许群原生管理员使用#上传随机老婆
+    isGA: true
+    # 是否允许任何人使用#上传随机老婆
+    isE: false
+  # 删除随机老婆权限
+  del:
+    # 是否仅主人可使用#删除随机老婆
+    isM: false
+    # 是否允许群插件管理员使用#删除随机老婆
+    isA: true
+    # 是否允许群原生管理员使用#删除随机老婆
+    isGA: false
+    # 是否允许任何人使用#删除随机老婆
+    isE: false
 
 # 随机群友设置
 randomMember:
@@ -139,6 +151,8 @@ BlivePush:
 
 # 放大图片设置
 bigjpg:
+  # 是否开启UC放大图片
+  isOpen: true
   # 放大图片key
   apiKey:
   # 放大风格，art和photo，代表卡通和照片，卡通图片放大效果最佳
@@ -151,12 +165,12 @@ bigjpg:
   limits: 3
   # 放大的图片是否自动保存，保存位置 resources/bigjpg
   isSave: false
-  # 4倍限制，关闭仅允许主人放大4倍
-  x4Limit: false
-  # 8倍限制，关闭仅允许主人放大8倍
-  x8Limit: false
-  # 16倍限制，关闭仅允许主人放大16倍
-  x16Limit: false
+  # 4倍，关闭仅允许主人放大4倍
+  x4: true
+  # 8倍，关闭仅允许主人放大8倍
+  x8: true
+  # 16倍，关闭仅允许主人放大16倍
+  x16: true
   # 是否允许群聊使用，关闭仅主人可群聊使用
   isG: true
   # 是否允许私聊使用，关闭仅主人可私聊使用

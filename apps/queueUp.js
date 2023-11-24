@@ -1,14 +1,14 @@
-import { Path, Check, common, file, UCPr, Permission } from '../components/index.js'
+import { Path, Check, common, file, UCPr } from '../components/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-export default class UCQueueUp extends plugin {
-  constructor() {
+export default class UCQueueUp extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-queueUp',
       dsc: '群内排队',
       event: 'message.group',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?UC创建排队$/i,
@@ -42,11 +42,6 @@ export default class UCQueueUp extends plugin {
     if (!Check.file(Path.queueUpjson)) {
       file.JSONsaver(Path.queueUpjson, {})
     }
-  }
-
-  verify() {
-    const per = new Permission(this.e, {})
-    return per.judge()
   }
 
   async setQueueUp(e) {

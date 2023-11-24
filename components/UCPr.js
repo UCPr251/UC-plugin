@@ -1,8 +1,6 @@
 import defaultCfg from '../../../lib/config/config.js'
+import { Data, Path, file, log } from './index.js'
 import UCfetch from '../defSet/system/serve.js'
-import chokidar from 'chokidar'
-import file from './file.js'
-import Path from './Path.js'
 import _ from 'lodash'
 
 const Plugin_Name = 'UC-plugin'
@@ -13,23 +11,32 @@ let config = {}
 let permission = {}
 
 /** 实时锅巴信息 */
-export let now_config = {}
+let guoba_config = {}
+/** 帮助图html填充数据 */
+let helpData = []
+/** 设置图html填充数据 */
+let cfgData = {}
 
-/** 获取锅巴设置填充信息 */
+export { guoba_config, helpData, cfgData }
+
+/** 更新锅巴设置填充信息 */
 function getNewGuobaConfig() {
-  now_config = _.merge({}, config, permission)
-  now_config.Master = _.sortBy(now_config.Master).join('，')
-  now_config.BlackQQ = _.sortBy(now_config.BlackQQ).join('，')
-  now_config.WhiteQQ = _.sortBy(now_config.WhiteQQ).join('，')
-  if (now_config.searchNovel?.novelPath) { // 搜小说分支内容
-    now_config.searchNovel.novelPath = now_config.searchNovel.novelPath.join('\n')
+  guoba_config = _.merge({}, config, permission)
+  guoba_config.Master = _.sortBy(guoba_config.Master).join('，')
+  guoba_config.BlackQQ = _.sortBy(guoba_config.BlackQQ).join('，')
+  guoba_config.WhiteQQ = _.sortBy(guoba_config.WhiteQQ).join('，')
+  if (guoba_config.searchNovel?.novelPath) { // 搜小说分支内容
+    guoba_config.searchNovel.novelPath = guoba_config.searchNovel.novelPath.join('\n')
   }
 }
 
+/** 1：congfig.yaml，2：permission.yaml，3：help.js，4：cfg.js */
 function getConfig(mode) {
   switch (mode) {
     case 1: return file.YAMLreader(Path.configyaml)
     case 2: return file.YAMLreader(Path.permissionyaml)
+    case 3: return import(`file:///${Path.helpjs}?${Date.now()}`)
+    case 4: return import(`file:///${Path.cfgjs}?${Date.now()}`)
     default: return {}
   }
 }
@@ -42,32 +49,35 @@ function getNewConfig(mode) {
       case 1: {
         config = getConfig(1)
         file = 'config.yaml'
+        getNewGuobaConfig()
         break
       }
       case 2: {
         permission = getConfig(2)
         file = 'permission.yaml'
+        getNewGuobaConfig()
+        break
+      }
+      case 3: {
+        getConfig(3).then(res => (helpData = res.default))
+        file = 'help.js'
+        break
+      }
+      case 4: {
+        getConfig(4).then(res => (cfgData = res.default))
+        file = 'cfg.js'
         break
       }
       default: break
     }
-    logger.info(`[UC]修改设置文件${file}`)
-    getNewGuobaConfig()
+    log.whiteblod(`修改设置文件${file}`)
     return
   }
   config = getConfig(1)
   permission = getConfig(2)
 }
 
-function watch(path, mode) {
-  const watcher = chokidar.watch(path)
-  watcher.on('change', () => getNewConfig(mode))
-}
-
-watch(Path.configyaml, 1)
-watch(Path.permissionyaml, 2)
-
-/** 系统设置信息 */
+/** 系统数据 */
 const UCPr = {
   /** UC-plugin */
   Plugin_Name,
@@ -75,11 +85,18 @@ const UCPr = {
   Author: 'UCPr',
   /** 错误回复 */
   error: '未知错误，请查看错误日志',
-
   /** 初始化数据 */
   init: () => {
     getNewConfig()
     getNewGuobaConfig()
+    Data.watch(Path.configyaml, () => getNewConfig(1))
+    Data.watch(Path.permissionyaml, () => getNewConfig(2))
+    getNewConfig(3)
+    getNewConfig(4)
+    if (UCPr.isWatch) {
+      Data.watch(Path.helpjs, () => getNewConfig(3))
+      Data.watch(Path.cfgjs, () => getNewConfig(4))
+    }
   },
 
   /**
@@ -119,6 +136,11 @@ const UCPr = {
   /** 仅主人可操作时，对本拥有权限的管理的回复 */
   get onlyMasterReply() {
     return this.config.onlyMasterReply ?? '当前仅主人可操作'
+  },
+
+  /** 开发模式使用，热更新apps等数据 */
+  get isWatch() {
+    return this.config.isWatch ?? false
   },
 
   /** 插件优先级 */

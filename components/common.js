@@ -1,10 +1,10 @@
-import { log, UCPr, UCDate, file, Path } from './index.js'
+import { log, UCDate, file, Path } from './index.js'
+import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import _ from 'lodash'
 
 /** 常用api */
 const common = {
-
-  /** 休眠函数 */
+  /** 休眠函数，单位秒 */
   async sleep(seconds) {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000))
   },
@@ -27,6 +27,13 @@ const common = {
           log.error('发送私聊消息错误' + err.message)
         })
     }
+  },
+
+  /** 转换为字符串 */
+  toString(value, every = false, sep = '\n') {
+    if (every && _.isArray(value)) return value.map(v => this.toString(v)).join(sep)
+    if (_.isPlainObject(value)) return JSON.stringify(value, null, 2)
+    return _.toString(value)
   },
 
   /** sender是否是管理员或群主 */
@@ -95,12 +102,18 @@ const common = {
   async rmGroupFile(group, fids) {
     group = await this.pickGroup(group)
     if (!await this.botIsGroupAdmin(group)) {
-      log.debug(`[common.rmGroupFile]无群${group.gid}管理权限，删除文件取消`)
+      log.mark(`[common.rmGroupFile]无群${group.gid}管理权限，删除文件取消`)
       return false
     }
-    fids = _.castArray(fids)
-    fids.forEach(fid => group.fs.rm(fid))
+    _.castArray(fids).forEach(fid => group.fs.rm(fid))
     return true
+  },
+
+  /** 渲染图片并发送 */
+  async render(e, data, cfg = { quote: false, recallMsg: 0, at: false }) {
+    if (!e || !data) return log.warn('[common.render]图片渲染输入格式错误')
+    const base64 = await puppeteer.screenshot(data.tempPath ?? Path.Plugin_Name, data)
+    return await e.reply(base64, cfg.quote, cfg)
   },
 
   /**
@@ -209,9 +222,10 @@ const common = {
 
   /**
    * 无需e的转发消息制作
+   * @param {number} id 群号或Q号
    * @param {'Group'|'Private'} [type]
    */
-  async makeforwardMsg(msg, id = UCPr.rentGroup, type = 'Group', dec = undefined) {
+  async makeforwardMsg(msg, id, type = 'Group', dec = undefined) {
     let nickname = Bot.nickname
     const user_id = Bot.uin
     const userInfo = {

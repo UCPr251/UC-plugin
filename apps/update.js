@@ -1,15 +1,12 @@
-/* eslint-disable new-cap */
-import { Path, Data, UCPr, Check } from '../components/index.js'
+import { Path, Data } from '../components/index.js'
 import { update } from '../../other/update.js'
-import plugin from '../../../lib/plugins/plugin.js'
 
-export default class UCUpdate extends plugin {
-  constructor() {
+export default class UCUpdate extends UCPlugin {
+  constructor(e) {
     super({
+      e,
       name: 'UC-update',
       dsc: '更新UC-plugin',
-      event: 'message',
-      priority: UCPr.priority,
       rule: [
         {
           reg: /^#?UC(强制)?更新$/i,
@@ -24,7 +21,7 @@ export default class UCUpdate extends plugin {
   }
 
   async update(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     let Update_Plugin = new update()
     Update_Plugin.e = e
     Update_Plugin.reply = this.reply
@@ -42,7 +39,7 @@ export default class UCUpdate extends plugin {
   }
 
   async refresh(e) {
-    if (!Check.permission(e.sender.user_id, 2)) return false
+    if (!this.isMaster) return false
     if (/强制/.test(e.msg)) {
       Data.execSync('git reset --hard', Path.UC_plugin_decrypt)
     }

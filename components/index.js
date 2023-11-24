@@ -8,6 +8,5 @@ import Admin from './Admin.js'
 import file from './file.js'
 import log from './log.js'
 import UCPr from './UCPr.js'
-import Permission from './permission.js'
 
-export { Path, Check, Data, UCDate, common, Admin, file, log, UCPr, Permission }
+export { Path, Check, Data, UCDate, common, Admin, file, log, UCPr }
