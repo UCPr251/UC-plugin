@@ -20,7 +20,7 @@ export default class UCPlugin extends plugin {
     /** e.sender */
     this.sender = this.e.sender
     /** 用户id */
-    this.userId = this.sender.user_id ?? this.e.user_id
+    this.userId = this.sender?.user_id ?? this.e.user_id
     if (!this.userId) return
     /** 空cfg权限实例 */
     this.P = this.permission()
