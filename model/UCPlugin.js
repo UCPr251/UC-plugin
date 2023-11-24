@@ -14,7 +14,7 @@ export default class UCPlugin extends plugin {
       rule = []
     } = cfg
     super({ name, dsc, event, priority, rule })
-    if (!e) return
+    if (!e || !e.sender) return
     /** Client */
     this.e = e
     /** e.sender */
