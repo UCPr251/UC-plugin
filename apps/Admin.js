@@ -229,7 +229,7 @@ export default class UCAdmin extends UCPlugin {
         }
       }
       // 等等更健康
-      await common.sleep(0.2)
+      await common.sleep(0.12)
     }
     const data = Cfg.get(e)
     if (!data) return

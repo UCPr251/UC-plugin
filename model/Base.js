@@ -1,4 +1,4 @@
-import { Path, file, Check } from '../components/index.js'
+import { Path, file, Check, UCDate } from '../components/index.js'
 import Permission from './Permission.js'
 
 export default class Base {
@@ -43,6 +43,7 @@ export default class Base {
       pluResPath: this.pluResPath,
       imgType: 'jpeg',
       quality: 95,
+      nowTime: UCDate.NowTime,
       updateTime: this.updateTime
     }
   }

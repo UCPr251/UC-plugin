@@ -2,6 +2,7 @@
 
 - 修改[锅巴支持](./guoba.support.js)逻辑，为[UC群管](./apps/groupAdmin/)做准备
 - 修改[Admin](./apps/Admin.js)`#UC设置`，为[UC群管](./apps/groupAdmin/)做准备
+- 帮助图、设置图logo处同时显示当前时间
 
 # 11-24
 

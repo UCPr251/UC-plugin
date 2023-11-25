@@ -19,20 +19,7 @@ const judgeHelpInfo = [
 
 export { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo }
 
-let tempData = {
-  config: {
-    timer: null,
-    data: null
-  },
-  GAconfig: {
-    timer: null,
-    data: null
-  },
-  permission: {
-    timer: null,
-    data: null
-  }
-}
+let tempData = { config: {}, GAconfig: {}, permission: {} }
 
 /** 对config设置的Admin操作 */
 const Admin = {
