@@ -1,4 +1,4 @@
-import { Path, file, UCPr, Data, log } from './index.js'
+import { Path, file, UCPr, Data, log, common } from './index.js'
 import _ from 'lodash'
 
 /** 权限判断优先级说明 */
@@ -19,6 +19,21 @@ const judgeHelpInfo = [
 
 export { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo }
 
+let tempData = {
+  config: {
+    timer: null,
+    data: null
+  },
+  GAconfig: {
+    timer: null,
+    data: null
+  },
+  permission: {
+    timer: null,
+    data: null
+  }
+}
+
 /** 对config设置的Admin操作 */
 const Admin = {
 
@@ -37,33 +52,41 @@ const Admin = {
   },
 
   /**
+   * 防抖保存设置文件，主要用于系统循环多次调用Admin.config，后覆盖前
+   * @param {'config'|'GAconfig'|'permission'} [cfg='config'] 需要修改的配置文件
+   * @param {Object} data 新数据
+   */
+  saver(cfg, data) {
+    if (!tempData[cfg].timer) {
+      tempData[cfg].data = data
+    } else {
+      clearTimeout(tempData[cfg].timer)
+      tempData[cfg].data = _.merge(tempData[cfg].data, data)
+    }
+    tempData[cfg].timer = setTimeout(() => file.YAMLsaver(Path[`${cfg}yaml`], tempData[cfg].data), 100)
+  },
+
+  /**
    * 修改设置属性对应值
    * @param {*} path 属性路径
    * @param {*} operation 修改值
-   * @param {'config'|'permission'} [param2.cwd='config'] 需要修改的配置文件
-   * @param {boolean} [param2.isReply=true] 是否回复，默认true
-   * @param {string} [param2.reply] 操作成功回复内容
+   * @param {'config'|'GAconfig'|'permission'} [cfg='config'] 需要修改的配置文件
    */
-  set(path, operation, option = { cwd: 'config', isReply: true, reply: '操作成功' }) {
-    const { cwd = 'config', isReply = true, reply = '操作成功' } = option
-    log.debug(`修改${cwd}文件${path}为` + operation)
-    const config = UCPr[cwd]
-    if (!config) return false
-    const _path = Path[`${cwd}yaml`]
+  config(path, operation, cfg = 'config') {
+    const config = UCPr[cfg]
+    if (!config) return log.error('[Admin.config]错误参数：', path, cfg)
     const old = _.get(config, path)
     if (old !== undefined) {
-      if (old == operation) {
-        if (isReply) this.reply?.(`当前${cwd}配置中${path}已经是${operation}了`)
-      } else {
+      if (!_.isEqual(old, operation)) {
+        log.debug(`修改${cfg}文件${path}为` + common.toString(operation))
         _.set(config, path, operation)
-        file.YAMLsaver(_path, config)
-        if (isReply) this.reply?.(reply)
+        this.saver(cfg, config)
+        return true
       }
     } else {
-      const info = `操作失败：${cwd}配置中不存在${path}属性`
-      log.error(info)
-      if (isReply) this.reply?.(info)
+      log.error(`操作失败：${cfg}配置中不存在${path}属性`)
     }
+    return false
   },
 
   /**
@@ -72,7 +95,7 @@ const Admin = {
    * @param {boolean} isAdd
    * @param {boolean|number} independent 是否独立，全局为false，独立为群号
    */
-  ADadmin(userId, isAdd, independent) {
+  admin(userId, isAdd, independent) {
     log.debug(`[Admin][ADadmin]用户${userId}${isAdd ? '加' : '减'}${independent || '全局'}管理`)
     const permission = UCPr.permission
     if (!permission.Admin) permission.Admin = {}
@@ -97,7 +120,7 @@ const Admin = {
         return false
       }
     }
-    file.YAMLsaver(Path.permissionyaml, permission)
+    this.saver('permission', permission)
     return true
   },
 
@@ -107,7 +130,7 @@ const Admin = {
    * @param {string|Array} userId 操作的用户
    * @param {boolean} isAdd 增删
    */
-  arr(type, userId, isAdd = true) {
+  permission(type, userId, isAdd = true) {
     userId = _.castArray(userId).map(Number)
     const config = UCPr.permission
     if (isAdd) {
@@ -115,7 +138,7 @@ const Admin = {
     } else {
       config[type] = _.difference(config[type], userId)
     }
-    file.YAMLsaver(Path.permissionyaml, config)
+    this.saver('permission', config)
   }
 
 }

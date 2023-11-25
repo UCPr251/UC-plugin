@@ -1,13 +1,13 @@
-/data
 /.vs
 /.vscode
-/config
-/test.js
-/system
-/tools
-/.editorconfig
 /.eslintrc.cjs
+/.editorconfig
 /.prettierignore
+/config
+/data
+/tools
+/system
+/test.js
 /node_modules
 /defSet/system/UC-plugin-decrypt/
 /apps/accredit.js
@@ -16,3 +16,5 @@
 /apps/vitsAI.js
 /apps/upload.js
 /apps/searchNovel.js
+/apps/RASubsystem
+/apps/groupAdmin

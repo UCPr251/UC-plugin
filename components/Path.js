@@ -10,6 +10,7 @@ const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
 const apps = path.join(UC, 'apps')
+const groupAdmin = path.join(apps, 'groupAdmin')
 const config = path.join(UC, 'config')
 const defSet = path.join(UC, 'defSet')
 const system = path.join(defSet, 'system')
@@ -23,6 +24,7 @@ const img = path.join(resources, 'img')
 const chuoyichuo = path.join(resources, 'chuoyichuo')
 const wife = path.join(resources, 'wife')
 const configyaml = path.join(config, 'config.yaml')
+const GAconfigyaml = path.join(config, 'GAconfig.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
 const bigjpg = path.join(data, 'bigjpg')
@@ -64,6 +66,8 @@ const Path = {
   UC,
   /** ../UC-plugin/apps */
   apps,
+  /** ../UC-plugin/apps/groupAdmin */
+  groupAdmin,
   /** ./config */
   config,
   /** ./defSet */
@@ -90,6 +94,8 @@ const Path = {
   wife,
   /** ./config/config.yaml */
   configyaml,
+  /** ./config/GAconfig.yaml */
+  GAconfigyaml,
   /** ./config/permission.yaml */
   permissionyaml,
   /** ./data */
@@ -100,11 +106,11 @@ const Path = {
   errorLogjson,
   /** ./data/accredit.json */
   accreditjson,
-  /** 直播推送群聊数据 */
+  /** ./data/BLPGroup.json */
   BLPGroupjson,
-  /** 直播推送私聊数据 */
+  /** ./data/BLPPrivate.json */
   BLPPrivatejson,
-  /** 群内排队 */
+  /** ./data/queueUp.json */
   queueUpjson
 }
 

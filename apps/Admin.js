@@ -76,13 +76,13 @@ export default class UCAdmin extends UCPlugin {
     const isAdd = /设置|加/.test(e.msg)
     if (Array.isArray(userId)) {
       const filter = userId.filter(user => isAdd ^ Check.str(UCPr[type], user))
-      Admin.arr(type, filter, isAdd)
+      Admin.permission(type, filter, isAdd)
       return e.reply(`操作成功：批量${isAdd ? '添加' : '删除'}${filter.length}个${name}`)
     }
     if (isAdd === Check.str(UCPr[type], userId)) {
       return e.reply(`${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
-    Admin.arr(type, userId, isAdd)
+    Admin.permission(type, userId, isAdd)
     return e.reply(`操作成功，${name}新增用户<${userId}>`)
   }
 
@@ -116,11 +116,11 @@ export default class UCAdmin extends UCPlugin {
       if (!isAdd && info === undefined) return e.reply(`操作失败，<${userId}>没有管理权限，无需删除`)
     }
     if (e.isPrivate && groupId === undefined && !isAdd) {
-      Admin.ADadmin(userId, isAdd, false)
+      Admin.admin(userId, isAdd, false)
       return e.reply(`成功删除管理<${userId}>`)
     }
     const independent = global ? false : Number(groupId)
-    if (Admin.ADadmin(userId, isAdd, independent)) {
+    if (Admin.admin(userId, isAdd, independent)) {
       return e.reply(`成功${isAdd ? '设置' : '删除'}UC插件${`群${groupId}` || '全局'}管理：<${userId}>`)
     }
     return e.reply(UCPr.error)
@@ -214,7 +214,7 @@ export default class UCAdmin extends UCPlugin {
           const numMatch = str3.match(/0|1/g)
           if (numMatch && numMatch.length === setData.options?.length) {
             for (const i in numMatch) {
-              Admin.set(setData.path + judgeProperty[setData.options[i]], numMatch[i] === '1', { isReply: false })
+              Admin.config(setData.path + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
             }
           }
         } else {
@@ -225,11 +225,11 @@ export default class UCAdmin extends UCPlugin {
           }
         }
         if (operation !== undefined) {
-          Admin.set(setData.path, operation, { isReply: false })
+          Admin.config(setData.path, operation, setData.cfg)
         }
       }
       // 等等更健康
-      await common.sleep(0.1)
+      await common.sleep(0.2)
     }
     const data = Cfg.get(e)
     if (!data) return

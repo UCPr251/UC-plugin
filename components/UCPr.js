@@ -1,5 +1,5 @@
+import { Data, Path, file } from './index.js'
 import defaultCfg from '../../../lib/config/config.js'
-import { Data, Path, file, log } from './index.js'
 import UCfetch from '../defSet/system/serve.js'
 import _ from 'lodash'
 
@@ -7,6 +7,8 @@ const Plugin_Name = 'UC-plugin'
 
 /** config.yaml */
 let config = {}
+/** GAconfig.yaml */
+let GAconfig = {}
 /** permission.yaml */
 let permission = {}
 
@@ -19,14 +21,20 @@ let cfgData = {}
 
 export { guoba_config, helpData, cfgData }
 
+/** 排序、转换 */
+function transform(path) {
+  guoba_config.permission[path] = _.sortBy(guoba_config.permission[path]).join('，')
+}
+
 /** 更新锅巴设置填充信息 */
 function getNewGuobaConfig() {
-  guoba_config = _.merge({}, config, permission)
-  guoba_config.Master = _.sortBy(guoba_config.Master).join('，')
-  guoba_config.BlackQQ = _.sortBy(guoba_config.BlackQQ).join('，')
-  guoba_config.WhiteQQ = _.sortBy(guoba_config.WhiteQQ).join('，')
-  if (guoba_config.searchNovel?.novelPath) { // 搜小说分支内容
-    guoba_config.searchNovel.novelPath = guoba_config.searchNovel.novelPath.join('\n')
+  guoba_config = _.cloneDeep({ config, GAconfig, permission })
+  transform('Master')
+  transform('BlackQQ')
+  transform('WhiteQQ')
+  // 搜小说分支内容
+  if (guoba_config.config.searchNovel?.novelPath) {
+    guoba_config.config.searchNovel.novelPath = guoba_config.config.searchNovel.novelPath.join('\n')
   }
 }
 
@@ -35,8 +43,9 @@ function getConfig(mode) {
   switch (mode) {
     case 1: return file.YAMLreader(Path.configyaml)
     case 2: return file.YAMLreader(Path.permissionyaml)
-    case 3: return import(`file:///${Path.helpjs}?${Date.now()}`)
-    case 4: return import(`file:///${Path.cfgjs}?${Date.now()}`)
+    case 3: return file.YAMLreader(Path.GAconfigyaml)
+    case 4: return import(`file:///${Path.helpjs}?${Date.now()}`)
+    case 5: return import(`file:///${Path.cfgjs}?${Date.now()}`)
     default: return {}
   }
 }
@@ -59,12 +68,18 @@ function getNewConfig(mode) {
         break
       }
       case 3: {
-        getConfig(3).then(res => (helpData = res.default))
-        file = 'help.js'
+        GAconfig = getConfig(3)
+        file = 'GAconfig.js'
+        getNewGuobaConfig()
         break
       }
       case 4: {
-        getConfig(4).then(res => (cfgData = res.default))
+        getConfig(4).then(res => (helpData = res.default))
+        file = 'help.js'
+        break
+      }
+      case 5: {
+        getConfig(5).then(res => (cfgData = res.default))
         file = 'cfg.js'
         break
       }
@@ -75,6 +90,10 @@ function getNewConfig(mode) {
   }
   config = getConfig(1)
   permission = getConfig(2)
+  GAconfig = getConfig(3)
+  getConfig(4).then(res => (helpData = res.default))
+  getConfig(5).then(res => (cfgData = res.default))
+  getNewGuobaConfig()
 }
 
 /** 系统数据 */
@@ -88,14 +107,12 @@ const UCPr = {
   /** 初始化数据 */
   init: () => {
     getNewConfig()
-    getNewGuobaConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))
     Data.watch(Path.permissionyaml, () => getNewConfig(2))
-    getNewConfig(3)
-    getNewConfig(4)
+    Data.watch(Path.GAconfigyaml, () => getNewConfig(3))
     if (UCPr.isWatch) {
-      Data.watch(Path.helpjs, () => getNewConfig(3))
-      Data.watch(Path.cfgjs, () => getNewConfig(4))
+      Data.watch(Path.helpjs, () => getNewConfig(4))
+      Data.watch(Path.cfgjs, () => getNewConfig(5))
     }
   },
 
@@ -111,6 +128,11 @@ const UCPr = {
   /** config.yaml */
   get config() {
     return config
+  },
+
+  /** GAconfig.yaml */
+  get GAconfig() {
+    return GAconfig
   },
 
   /** permission.yaml */

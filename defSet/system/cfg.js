@@ -24,6 +24,7 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
     input = (str) => input[_.findKey(input, (value) => value == str)]
   }
   return _.merge({
+    cfg,
     path,
     title,
     desc,
@@ -56,6 +57,8 @@ function sPRO(name = '使用', def = '', _prefix = '', options = [0, 1, 2, 3, 4,
 
 /** path前缀 */
 let prefix = ''
+/** 指定cfg文件 */
+let cfg = 'config'
 
 const 系统 = {
   /** 一个设置组的标题 */
@@ -148,7 +151,22 @@ const 系统 = {
   }
 }
 
+cfg = 'GAconfig'
+
+const 群管 = {
+  title: '群管——UC群管系统设置',
+  cfg: {
+    '': s(
+      'isOpen',
+      '群管开关',
+      '是否开启UC群管系统'
+    )
+  }
+}
+
 const cfgData = { '': 系统 }
+
+cfg = 'config'
 
 if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'

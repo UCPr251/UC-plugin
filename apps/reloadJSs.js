@@ -58,7 +58,7 @@ export default class UCReloadJSs extends UCPlugin {
   async init(mode) {
     if (UCPr.isWatch || mode) {
       ing = true
-      await reloadJSs()
+      await reloadJSs(Path.apps)
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
         const jsName = Path.basename(newAppPath)
         log.yellow('新增插件：' + jsName)
@@ -107,7 +107,7 @@ export default class UCReloadJSs extends UCPlugin {
     if (ing) return e.reply('当前已处于开发模式，无需手动重载插件')
     const jsName = e.msg.match(/重载插件(.*)/)[1].trim() + '.js'
     if (jsName === '.js') {
-      const num = await reloadJSs(false)
+      const num = await reloadJSs(Path.apps, false)
       return e.reply(`成功重载${num}个UC插件`)
     }
     const jsPath = Path.get('apps', jsName)
@@ -181,11 +181,12 @@ export default class UCReloadJSs extends UCPlugin {
 
 /**
  * 重载除reloadJSs.js以外全部JS
+ * @param {string} path 重载插件路径
  * @param {boolean} [isWatch=true] 重载后是否监听，默认监听
  * @returns 重载JS个数
  */
-async function reloadJSs(isWatch = true) {
-  const _JSs = file.readdirSync(Path.apps, { type: '.js', removes: 'reloadJSs.js' })
+async function reloadJSs(path, isWatch = true) {
+  const _JSs = file.readdirSync(path, { type: '.js', removes: 'reloadJSs.js' })
   for (const _JS of _JSs) {
     const jsPath = Path.get('apps', _JS)
     await reloadJS(jsPath)

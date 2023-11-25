@@ -18,7 +18,7 @@ export default class UCPlugin extends plugin {
     /** Client */
     this.e = e
     /** e.sender */
-    this.sender = this.e.sender
+    this.sender = this.e?.sender
     /** 用户id */
     this.userId = this.sender?.user_id ?? this.e.user_id
     if (!this.userId) return

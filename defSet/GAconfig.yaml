@@ -1,0 +1,34 @@
+# 是否开启UC群管功能
+isOpen: true
+
+# 刷屏检测设置
+DetecteFloodScreen:
+  # 刷屏检测开关
+  isOpen: true
+  # 刷屏触发数量
+  judgeNum: 10
+  # 是否警告，达到(刷屏数量-2)时提醒
+  isWarn: true
+  # 警告的回复内容
+  warnText: 不要刷屏哦~
+  # 惩罚方式：mute 或者 kick
+  punishMode: mute
+  # 触发惩罚的回复内容
+  punishText: 天降正义！
+  # 设置为禁言的禁言时长，单位分钟
+  muteTime: 5
+  # 设置为踢人时是否自动拉黑
+  kickAndBlack: true
+
+# 撤回、清屏设置
+recall:
+  # 允许获取的群聊天记录最大值，设置过大可能影响响应速度
+  FILTER_MAX: 521
+  # 清屏不指定数量时默认撤回数量
+  clearNum: 10
+  # 允许清屏数量的最大值
+  RECALL_MAX: 100
+  # 允许指定单人撤回的最大值
+  PERSONAL_MAX: 20
+  # 批量撤回群消息的间隔时间，单位秒
+  intervalTime: 0.5

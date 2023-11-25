@@ -1,3 +1,8 @@
+# 11-26
+
+- 修改[锅巴支持](./guoba.support.js)逻辑，为[UC群管](./apps/groupAdmin/)做准备
+- 修改[Admin](./apps/Admin.js)`#UC设置`，为[UC群管](./apps/groupAdmin/)做准备
+
 # 11-24
 
 - 完善[#UC帮助](./model/Help.js)和[#UC设置](./model/Cfg.js)

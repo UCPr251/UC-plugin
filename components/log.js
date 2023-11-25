@@ -53,6 +53,7 @@ const log = {
     log = fncChain + common.toString(log, true)
     logger.error('[UC][error]←' + log)
     Data.error(log)
+    return false
   },
 
   /** 普通紫色 */

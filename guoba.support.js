@@ -1,9 +1,11 @@
-import { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo } from './components/Admin.js'
-import { UCPr, Path, file, Data } from './components/index.js'
+import Admin, { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo } from './components/Admin.js'
+import { Path, file, Data } from './components/index.js'
 import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
 
 Data.refresh()
+/** config前缀 */
+let cfgPrefix = 'config.'
 /** field前缀 */
 let prefix = ''
 /**
@@ -16,9 +18,7 @@ let prefix = ''
  * @param {object} optional 可选项
  */
 function s(field, label, component, bottomHelpMessage, componentProps = {}, optional = { required: false, helpMessage: undefined }) {
-  if (prefix) {
-    field = prefix + field
-  }
+  field = cfgPrefix + prefix + field
   let display = {
     field,
     label,
@@ -37,7 +37,7 @@ function sPRO(name, _prefix = '', options = [true, true, true, true, true, true]
       judgeHelpInfo[i] + name, {},
       { helpMessage: judgePriority }))
   }
-  return _.flatMap(info)
+  return info
 }
 
 let js = []
@@ -274,6 +274,18 @@ if (file.existsSync(Path.get('apps', 'bigjpg.js'))) {
 
 prefix = ''
 
+cfgPrefix = 'permission.'
+const permission = [
+  s('Master', 'UC插件主人', 'InputTextArea',
+    '拥有本插件主人权限的QQ，多个请用中文逗号间隔'),
+  s('BlackQQ', 'UC插件黑名单', 'InputTextArea',
+    '插件拉黑QQ，无法使用本插件，多个请用中文逗号间隔'),
+  s('WhiteQQ', 'UC插件白名单', 'InputTextArea',
+    '插件加白QQ，暂时没什么b用，多个请用中文逗号间隔')
+]
+
+cfgPrefix = 'config.'
+
 export function supportGuoba() {
   return {
     pluginInfo: {
@@ -293,12 +305,7 @@ export function supportGuoba() {
           label: '【UC】系统设置',
           component: 'Divider'
         },
-        s('Master', '插件主人', 'InputTextArea',
-          '拥有本插件主人权限的QQ，多个请用中文逗号间隔'),
-        s('BlackQQ', '插件黑名单', 'InputTextArea',
-          '插件拉黑QQ，无法使用本插件，多个请用中文逗号间隔'),
-        s('WhiteQQ', '插件白名单', 'InputTextArea',
-          '插件加白QQ，暂时没什么b用，多个请用中文逗号间隔'),
+        ...permission,
         s('log', '普通日志输出', 'Switch', '是否输出普通日志'),
         s('debugLog', '调试日志输出', 'Switch', '是否输出调试日志'),
         s('isWatch', '开发环境', 'Switch',
@@ -337,30 +344,22 @@ export function supportGuoba() {
       },
 
       setConfigData(data, { Result }) {
-        const newCfg = {}
-        const cfgArr = ['config', 'permission']
-        cfgArr.forEach(cfg => (newCfg[cfg] = _.cloneDeep(UCPr[cfg])))
+        let changed = false
         for (let [property, value] of Object.entries(data)) {
-          if (property === 'Master' || property === 'WhiteQQ' || property === 'BlackQQ') {
+          const [cfg, ...ret] = property.split('.')
+          const path = ret.join('.')
+          if (!path) continue
+          _.set(guoba_config, property, value)
+          if (path === 'Master' || path === 'WhiteQQ' || path === 'BlackQQ') {
             value = _.sortBy(value
               .split('，')
               .filter(num => num.length >= 7 && num.length <= 10)
               .map(Number))
-            _.set(newCfg.permission, property, value)
-            continue
-          }
-          if (property === 'searchNovel.novelPath') {
+          } else if (path === 'searchNovel.novelPath') {
             value = value.split('\n').map(path => path.trim())
           }
-          _.set(newCfg.config, property, value)
+          if (Admin.config(path, value, cfg)) changed = true
         }
-        let changed = false
-        cfgArr.forEach(cfg => {
-          if (!_.isEqual(newCfg[cfg], UCPr[cfg])) {
-            changed = true
-            file.YAMLsaver(Path[`${cfg}yaml`], newCfg[cfg])
-          }
-        })
         if (changed) return Result.ok({}, '保存成功~')
         return Result.ok({}, '什么都没变哦~')
       }
