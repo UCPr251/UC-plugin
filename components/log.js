@@ -51,7 +51,7 @@ const log = {
     const error = new Error()
     const fncChain = getFncChain(error)
     log = fncChain + common.toString(log, true)
-    logger.error('[UC][error]←' + log)
+    logger.error(chalk.red('[UC][error]←' + log))
     Data.error(log)
     return false
   },
