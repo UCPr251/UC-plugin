@@ -31,7 +31,7 @@ const log = {
 
   /** debug */
   debug(log, chain = false) {
-    if (UCPr.debugLog) {
+    if (UCPr.debugLog || UCPr.isWatch) {
       let ext = ''
       if (chain) {
         const error = new Error()

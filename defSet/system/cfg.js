@@ -78,7 +78,7 @@ const 系统 = {
     调试日志: s(
       'debugLog',
       '系统调试日志',
-      '是否在控制台输出UC插件调试日志'
+      '是否在控制台输出UC插件调试日志。开发者模式下，会强制开启调试日志'
     ),
     合并主人: s(
       'isDefaultMaster',
@@ -290,7 +290,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
       更新群名片: s(
         'isAutoSetCard',
         '被戳更新群名片',
-        '被戳是否自动更新群名片'
+        '被戳是否自动更新群名片：BotName|后缀'
       ),
       群名片后缀: s(
         'groupCard',

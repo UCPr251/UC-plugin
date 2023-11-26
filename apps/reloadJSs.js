@@ -237,6 +237,10 @@ async function unloadJs(jsPath) {
   const name = 'UC-' + Path.parse(jsPath).name
   const del = Data.remove(loader.priority, name, 'name')[0]
   if (del) {
+    if (name === 'UC-qsignRestart' && UCPr.temp.intervalId) {
+      log.blue('清除签名崩溃检测计时器')
+      clearTimeout(UCPr.temp.intervalId)
+    }
     log.purple('[卸载插件]' + '名称：' + del.name ?? '无', '优先级：' + del.priority ?? '无')
     const jsName = Path.basename(jsPath)
     await cancelTask(jsPath)

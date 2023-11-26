@@ -19,7 +19,7 @@ export default class Help extends Base {
   }
 
   getData() {
-    let data = _.cloneDeep(helpData)
+    let data = _.cloneDeep(helpData.filter(group => _.get(UCPr, group.swh, true)))
     const power = this.power
     let iconNum = 0
     for (const i in data) {

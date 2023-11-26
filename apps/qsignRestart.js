@@ -5,7 +5,7 @@ import { segment } from 'icqq'
 import lodash from 'lodash'
 
 /** 全局变量 */
-let intervalId, isCheckMsg, ing
+let isCheckMsg, ing
 /** 异常次数计数 */
 let errorTimes = 0
 
@@ -85,7 +85,7 @@ export default class UCQsignRestart extends UCPlugin {
     const cfg = UCPr.qsignRestart
     if (cfg.isAutoOpen) {
       if (Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
-        if (cfg.switch1) intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
+        if (cfg.switch1) UCPr.temp.intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
         if (cfg.switch2) {
           replaceReply()
           isCheckMsg = true
@@ -102,16 +102,16 @@ export default class UCQsignRestart extends UCPlugin {
       if (!Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
         return e.reply('请根据本地配置在锅巴，UC-plugin配置中修改签名启动器路径及名称')
       }
-      if (intervalId || isCheckMsg) {
+      if (UCPr.temp.intervalId || isCheckMsg) {
         return e.reply('当前已经开启签名自动重启')
       }
       this.setContext(this.setFnc)
       return e.reply(`请确认签名配置：\n监听host：${cfg.host}\n监听port：${cfg.port}\n签名路径：${cfg.qsign || Path.qsign}\n签名启动器名称：${cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
     } else {
-      if (!intervalId && !isCheckMsg) {
+      if (!UCPr.temp.intervalId && !isCheckMsg) {
         return e.reply('当前未启动签名自动重启')
       }
-      if (cfg.switch1) clearInterval(intervalId)
+      if (cfg.switch1) clearInterval(UCPr.temp.intervalId)
       if (cfg.switch2) isCheckMsg = false
       return e.reply('已关闭签名自动重启，将不再自动重启签名')
     }
@@ -123,7 +123,7 @@ export default class UCQsignRestart extends UCPlugin {
     if (/确认|确定/.test(this.e.msg)) {
       const choices = []
       if (cfg.switch1) {
-        intervalId = setInterval(checkQsignPort, cfg.sleep * 1000)
+        UCPr.temp.intervalId = setInterval(checkQsignPort, cfg.sleep * 1000)
         choices.push('签名崩溃检测')
       }
       if (cfg.switch2) {

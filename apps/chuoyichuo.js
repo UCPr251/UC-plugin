@@ -104,7 +104,7 @@ export default class UCChuoyichuo extends UCPlugin {
     // 回复文本+图片
     if (randomNum < Cfg.textimg) {
       let replyMsg = _.sample(textList)
-      if (Cfg.chuoimg && randomNum / Cfg.textimg < Cfg.chuoimg) {
+      if (count > 10 && Cfg.chuoimg && randomNum / Cfg.textimg < Cfg.chuoimg) {
         replyMsg = `${UCPr.BotName}今天已经被戳${count}次了\n` + replyMsg
       }
       await e.reply(replyMsg)

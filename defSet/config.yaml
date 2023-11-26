@@ -1,6 +1,6 @@
 # 用于开发环境的功能，可热更新app，如果有需要可以开启
 isWatch: false
-# 是否输出UC插件日志
+# 是否输出UC插件日志。开发者模式下，会强制开启调试日志
 log: true
 # 是否输出UC插件debug日志
 debugLog: false

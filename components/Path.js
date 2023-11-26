@@ -27,6 +27,7 @@ const configyaml = path.join(config, 'config.yaml')
 const GAconfigyaml = path.join(config, 'GAconfig.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
+const QA = path.join(data, 'QA')
 const bigjpg = path.join(data, 'bigjpg')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
@@ -39,7 +40,7 @@ const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'data'|'resources'|'img'|'example'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'data'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
@@ -100,6 +101,8 @@ const Path = {
   permissionyaml,
   /** ./data */
   data,
+  /** ./data/QA */
+  QA,
   /** ./data/bigjpg */
   bigjpg,
   /** ./data/errorLog.json */

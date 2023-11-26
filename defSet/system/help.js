@@ -71,6 +71,14 @@ const helpData = [
       )
     ]
   },
+  // {
+  //   group: 'UC群管',
+  //   require: 1,
+  //   swh: 'GAconfig.isOpen',
+  //   list: [
+
+  //   ]
+  // },
   {
     group: 'UC工具',
     require: 1,

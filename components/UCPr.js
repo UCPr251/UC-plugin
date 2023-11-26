@@ -125,6 +125,12 @@ const UCPr = {
     return await UCfetch.call(this, urlCode, parameters)
   },
 
+  /** 挂载临时数据，实现数据共享 */
+  temp: {
+    /** 签名崩溃检测计时器 */
+    intervalId: null
+  },
+
   /** config.yaml */
   get config() {
     return config
