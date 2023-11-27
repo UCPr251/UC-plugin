@@ -16,8 +16,16 @@
 
 云崽根目录运行
 
+- 使用Gitee
+
 ```Bash
 git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
+```
+
+- 使用Github
+
+```Bash
+git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
 :innocent:
