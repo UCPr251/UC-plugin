@@ -7,6 +7,7 @@
 </p>
 
 # [UC-plugin](https://gitee.com/UCPr251/UC-plugin)
+(1.0.0备份分支)
 
 </div>
 
@@ -19,22 +20,16 @@
 - 使用Gitee
 
 ```Bash
-git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
+git clone -b bak1.0.0 https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
 - 使用Github
 
 ```Bash
-git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
+git clone -b bak1.0.0 https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
 :innocent:
-
-<!-- ## 插件功能
-
-- 可见#UC帮助（还没做emmmmm……）
-
-#### [群开关Bot](./apps/switchBot.js) -->
 
 <div align="center">
 

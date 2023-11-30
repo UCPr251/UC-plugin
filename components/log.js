@@ -44,6 +44,7 @@ const log = {
   /** 警告信息 */
   warn(...log) {
     logger.warn(chalk.yellow('[UC]' + common.toString(log, true)))
+    return false
   },
 
   /** 红色报错输出，同时增加报错日志 */
