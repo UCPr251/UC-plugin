@@ -1,4 +1,4 @@
-import { Path, Check, Data, UCDate, common, file, UCPr } from '../components/index.js'
+import { Path, Check, Data, UCDate, common, file } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
@@ -44,12 +44,12 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async randomwife(e) {
-    if (!UCPr.randomWife.isOpen) return false
+    if (!this.config.randomWife.isOpen) return false
     const userData = await Data.redisGet(this.redisData + e.sender.user_id, {})
     const data_wifes = await Data.redisGet(this.redisData2, [])
     let now_times = userData.now_times ?? 0
     if (userData) {
-      if (now_times >= UCPr.randomWife.wifeLimits) {
+      if (now_times >= this.config.randomWife.wifeLimits) {
         const msg = [`你已经取过老婆了哦\n你今天的老婆是：\n${userData.wife_name}`]
         const imgPath = Path.get('wife', userData.wife_img)
         if (!Check.file(imgPath)) {
@@ -87,8 +87,8 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async delWife(e) {
-    if (!UCPr.randomWife.isOpen) return false
-    if (!this.verify(UCPr.randomWife.del)) return false
+    if (!this.config.randomWife.isOpen) return false
+    if (!this.verify(this.config.randomWife.del)) return false
     let wifeName = e.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
     if (!wifesList) {
       wifesList = getWifes()
@@ -114,7 +114,7 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async randomWifeList(e) {
-    if (!UCPr.randomWife.isOpen) return false
+    if (!this.config.randomWife.isOpen) return false
     let wifes = getWifes()
     wifesList = wifes
     if (_.isEmpty(wifes)) {
@@ -132,8 +132,8 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async addWife(e) {
-    if (!UCPr.randomWife.isOpen) return false
-    if (!this.verify(UCPr.randomWife.add)) return false
+    if (!this.config.randomWife.isOpen) return false
+    if (!this.verify(this.config.randomWife.add)) return false
     const wifeName = e.msg.match(/老婆(.*)/)[1]
     const wifes = getWifes(true)
     if (Check.str(wifes, wifeName)) {

@@ -47,7 +47,7 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   _verify() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     if (!Check.floder(loveMys)) {
       this.reply('请先安装loveMys插件，指令：#UC安装过码')
       return false
@@ -65,7 +65,7 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   async installLoveMys(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     if (Check.floder(loveMys)) return e.reply('你已安装该插件，无需再次安装')
     Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
     return e.reply('安装成功，重启后生效')
@@ -131,7 +131,7 @@ export default class UCLoveMys extends UCPlugin {
     if (!api || !token) return false
     const now_times = await remainingTimes(api, token)
     if (UCPr.loveMysNotice && now_times <= UCPr.loveMysNotice) {
-      common.sendMsgTo(UCPr.Master[0], `主淫，过码次数只剩下${now_times}次了哦~`)
+      common.sendMsgTo(UCPr.GlobalMaster[0], `主淫，过码次数只剩下${now_times}次了哦~`)
     }
     await Data.redisSet(this.redisData, now_times)
   }

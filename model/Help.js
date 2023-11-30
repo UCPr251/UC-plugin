@@ -1,4 +1,4 @@
-import { helpData } from '../components/UCPr.js'
+import { CFG } from '../components/UCPr.js'
 import { Data, UCPr, file, log } from '../components/index.js'
 import Base from './Base.js'
 import _ from 'lodash'
@@ -19,7 +19,7 @@ export default class Help extends Base {
   }
 
   getData() {
-    let data = _.cloneDeep(helpData.filter(group => _.get(UCPr, group.swh, true)))
+    let data = _.cloneDeep(CFG.helpData.filter(group => _.get(UCPr, group.swh, true)))
     const power = this.power
     let iconNum = 0
     for (const i in data) {
@@ -32,7 +32,7 @@ export default class Help extends Base {
         if (typeof require === 'number') {
           return power >= require
         }
-        const per = this.permission(require)
+        const per = this.Permission(require)
         log.debug(`[Help.getData]判断用户${per.userId} ${require}权限：${per.isPer}`)
         return per.isPer
       })

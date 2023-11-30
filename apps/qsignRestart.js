@@ -95,7 +95,7 @@ export default class UCQsignRestart extends UCPlugin {
   }
 
   async restart(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const isOpen = /开启/.test(e.msg)
     const cfg = UCPr.qsignRestart
     if (isOpen) {
@@ -136,13 +136,13 @@ export default class UCQsignRestart extends UCPlugin {
   }
 
   async restartLog(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const data = await Data.redisGet(redisData, []) || []
     return e.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
   }
 
   async test() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     checkMsg('签名api异常')
   }
 }

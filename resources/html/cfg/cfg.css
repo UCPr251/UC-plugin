@@ -20,7 +20,7 @@ body {
   position: relative;
 }
 .head-box .title {
-  font-size: 72px;
+  font-size: 66px;
   font-style: italic;
   letter-spacing: 4px;
   color: rgba(255, 255, 255, 0.8);
@@ -75,6 +75,12 @@ body {
   color: rgba(68, 84, 105, 0.8);
   margin-top: 5px;
   margin-bottom: -5px;
+}
+.cfg-hint-lock {
+  font-size: 30px;
+  font-weight: normal;
+  color: rgba(68, 84, 105, 0.8);
+  position: relative;
 }
 .cfg-status {
   position: absolute;

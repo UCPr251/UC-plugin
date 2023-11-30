@@ -12,6 +12,7 @@ const UC = path.join(plugins, Plugin_Name)
 const apps = path.join(UC, 'apps')
 const groupAdmin = path.join(apps, 'groupAdmin')
 const config = path.join(UC, 'config')
+const groupCfg = path.join(config, 'groupCfg')
 const defSet = path.join(UC, 'defSet')
 const system = path.join(defSet, 'system')
 const helpjs = path.join(system, 'help.js')
@@ -25,6 +26,7 @@ const chuoyichuo = path.join(resources, 'chuoyichuo')
 const wife = path.join(resources, 'wife')
 const configyaml = path.join(config, 'config.yaml')
 const GAconfigyaml = path.join(config, 'GAconfig.yaml')
+const lockyaml = path.join(config, 'lock.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
 const QA = path.join(data, 'QA')
@@ -40,7 +42,7 @@ const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'data'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
@@ -71,6 +73,8 @@ const Path = {
   groupAdmin,
   /** ./config */
   config,
+  /** ./config/groupCfg */
+  groupCfg,
   /** ./defSet */
   defSet,
   /** ./defSet/system */
@@ -95,6 +99,8 @@ const Path = {
   wife,
   /** ./config/config.yaml */
   configyaml,
+  /** ./config/lock.yaml */
+  lockyaml,
   /** ./config/GAconfig.yaml */
   GAconfigyaml,
   /** ./config/permission.yaml */

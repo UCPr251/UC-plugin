@@ -41,7 +41,7 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
  * @param {Array} options 可配置项数组['群聊', '私聊', '仅主人', '插件管理', '群管理', '任何人']
  * @returns {}
  */
-function sPRO(name = '使用', def = '', _prefix = '', options = [0, 1, 2, 3, 4, 5]) {
+function sPRO(name = '使用', def = '', _prefix = 'use', options = [0, 1, 2, 3, 4, 5]) {
   const property = name + '权限'
   return {
     ...s(
@@ -63,6 +63,8 @@ let cfg = 'config'
 const 系统 = {
   /** 一个设置组的标题 */
   title: '系统——UC插件系统设置',
+  /** 仅限全局主人 */
+  GM: true,
   /** 一个设置组的各个单独设置 */
   cfg: {
     开发环境: s(
@@ -172,6 +174,7 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'
   cfgData.签名 = {
     title: '签名——签名自动重启设置，重启生效',
+    GM: true,
     cfg: {
       自动重启: s(
         'isAutoOpen',
@@ -272,7 +275,7 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
         'input',
         'BotName休息去啦~'
       ),
-      权限: sPRO('开关', '010', '', [2, 3, 4])
+      权限: sPRO('开关', '010', 'use', [2, 3, 4])
     }
   }
 }
@@ -363,13 +366,13 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
       上传权限: sPRO(
         '上传',
         '0110',
-        'add.',
+        'add',
         [2, 3, 4, 5]
       ),
       删除权限: sPRO(
         '删除',
         '0100',
-        'del.',
+        'del',
         [2, 3, 4, 5]
       )
     }
@@ -394,7 +397,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
       指令: s(
         'keyWords',
         '触发指令',
-        '#加你设置的触发指令 就可以触发该功能，不区分字母大小写',
+        '#加触发指令 就可以触发该功能，不区分字母大小写',
         'input',
         '随机群友'
       ),
@@ -408,7 +411,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
       权限: sPRO(
         undefined,
         '0111',
-        '',
+        'use',
         [2, 3, 4, 5]
       )
     }
@@ -440,7 +443,8 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
       ),
       权限: sPRO(
         '订阅',
-        '100110'
+        '100110',
+        'use'
       )
     }
   }
@@ -518,7 +522,8 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
       ),
       权限: sPRO(
         '放大',
-        '100110'
+        '100110',
+        'use'
       )
     }
   }

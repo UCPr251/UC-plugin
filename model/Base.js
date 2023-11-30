@@ -12,14 +12,14 @@ export default class Base {
   }
 
   /** 获取用户权限实例 */
-  permission(cfg = {}) {
+  Permission(cfg = {}) {
     return Permission.get(this.e, cfg)
   }
 
   /** 用户权限等级 */
   get power() {
-    if (Check.permission.call(this, 2)) return 2
-    if (Check.target.call(this)) return 1
+    if (Check.globalLevel.call(this, 2)) return 2
+    if (Check.Admin.call(this)) return 1
     return 0
   }
 

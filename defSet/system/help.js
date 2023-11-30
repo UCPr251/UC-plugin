@@ -23,23 +23,35 @@ const helpData = [
     list: [
       s(
         '#UC(加|删)删除主人',
-        '添加/删除UC插件主人'
+        '加删UC指定用户指定群主人'
+      ),
+      s(
+        '#UC全局(加|删)删除主人',
+        '加删UC全局插件主人'
       ),
       s(
         '#UC(加|删)管理',
-        '添加UC指定用户指定群管理'
+        '加删UC指定用户指定群管理'
       ),
       s(
         '#UC全局(加|删)管理',
-        '添加UC全局插件管理员'
+        '加删UC全局插件管理员'
+      ),
+      s(
+        '#UC(加|删)黑名单',
+        '加删UC指定用户指定群黑名单'
+      ),
+      s(
+        '#UC全局(加|删)黑名单',
+        '加删UC全局插件黑名单'
       ),
       s(
         '#UC(主人|管理)列表',
         '查看所有UC插件管理/主人'
       ),
       s(
-        '#UC(黑|白)名单列表',
-        '查看所有UC插件黑/白名单'
+        '#UC黑名单列表',
+        '查看所有UC插件黑名单'
       ),
       s(
         '#UC查',
@@ -116,12 +128,12 @@ const helpData = [
       s(
         `#${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})`,
         '群内开启Bot',
-        'switchBot'
+        'switchBot.use'
       ),
       s(
         `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
         '群内关闭Bot',
-        'switchBot'
+        'switchBot.use'
       )
     ]
   },
@@ -216,7 +228,7 @@ const helpData = [
       s(
         `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
         '随机挑选一名幸运群友',
-        'randomMember',
+        'randomMember.use',
         'randomMember.isOpen'
       ),
       s(
@@ -296,7 +308,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
       s(
         '#订阅直播',
         '订阅B站直播间开播推送',
-        'BlivePush'
+        'BlivePush.use'
       ),
       s(
         '#直播推送列表',
@@ -313,7 +325,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
       s(
         '#开启/关闭直播推送艾特全员',
         '推送时是否艾特全员(群聊)',
-        'BlivePush'
+        'BlivePush.use'
       ),
       s(
         '#清空直播推送缓存',
@@ -329,7 +341,7 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('bigjpg')) {
     s(
       '#放大图片',
       'AI无损放大图片',
-      'bigjpg',
+      'bigjpg.use',
       'bigjpg.isOpen'
     )
   )

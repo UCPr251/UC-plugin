@@ -11,7 +11,7 @@
   <div class="container" id="container">
     <div class="head-box">
       <!-- 标题文字 -->
-      <div class="title">UC-plugin系统设置</div>
+      <div class="title">UC-plugin{{if isGlobal}}全局{{else}}群{{groupId}}{{/if}}系统设置</div>
     </div>
     <!-- 遍历每一个cfg组 cfgGroup -->
     {{each cfgData cfgGroup cfgGroupKey}}
@@ -26,23 +26,25 @@
             <!-- 某个设置的title -->
             {{cfgValue.title}}
             <!-- 该设置的修改指令 -->
-            <span class="cfg-hint"> #UC设置{{cfgGroupKey}}{{cfgKey}}
-              {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
-            </span>
+            {{if cfgValue.lock}}
+              <span class="cfg-hint-lock"> （已锁定） </span>
+            {{else}}
+                <span class="cfg-hint"> #UC设置{{cfgGroupKey}}{{cfgKey}}
+                  {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
+                </span>
+            {{/if}}
             <!-- 该设置的当前状态 -->
             {{if cfgValue.type !== 'switch'}}
-            <div class="cfg-status">{{cfgValue.value}}</div>
+              <div class="cfg-status">{{cfgValue.value}}</div>
+            {{else if cfgValue.value}}
+              <div class="cfg-status">已开启</div>
             {{else}}
-            {{if cfgValue.value}}
-            <div class="cfg-status">已开启</div>
-            {{else}}
-            <div class="cfg-status status-off">已关闭</div>
-            {{/if}}
+              <div class="cfg-status status-off">已关闭</div>
             {{/if}}
           </div>
           <!-- 该设置的描述内容 -->
           {{if cfgValue.desc}}
-          <div class="cfg-desc">{{cfgValue.desc}}</div>
+            <div class="cfg-desc">{{cfgValue.desc}}</div>
           {{/if}}
         </li>
         {{/each}}

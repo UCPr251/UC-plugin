@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Path, Check, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
+import UCPlugin from '../model/UCPlugin.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -106,7 +107,7 @@ export default class UCBlivePush extends UCPlugin {
     const uid = e.msg.match(/\d+/)[0]
     const data = await getUpInfo.call(this, uid)
     if (data === false) return false
-    if (data === null) return e.reply(UCPr.fetchErrReply)
+    if (data === null) return e.reply(this.fetchErrReply)
     const [nickname, face_url, fans, fan_sign, room] = data
     let msg = [`B站用户${uid}不存在！`]
     if (nickname) {
@@ -122,7 +123,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveSubscribe(e) {
-    if (!this.verify(UCPr.BlivePush)) return false
+    if (!this.verify(this.config.BlivePush)) return false
     const [location_id, room_id, type] = await getIdType(e)
     if (!room_id) {
       return e.reply('请输入正确的直播间id')
@@ -136,14 +137,14 @@ export default class UCBlivePush extends UCPlugin {
     if (info && Check.str(info.room, room_id)) {
       return e.reply(`订阅失败，${loc}：${location_id}已订阅直播间：${room_id}`)
     }
-    const up_data = await getLiveData(room_id)
-    if (!up_data) return e.reply(UCPr.fetchErrReply)
+    const up_data = await this.fetch('BlivePush1', room_id)
+    if (!up_data) return e.reply(this.fetchErrReply)
     const nickname = up_data.data.up.uid
     if (!up_data.data?.up?.uid) {
       let msg = [`订阅失败，直播间id：${room_id}不存在`]
       const up_info = await getUpInfo.call(this, room_id)
       if (up_info === false) return false
-      if (up_info === null) return e.reply(UCPr.fetchErrReply)
+      if (up_info === null) return e.reply(this.fetchErrReply)
       const [nickname, face_url, fans, fan_sign, room] = up_info
       if (room) {
         msg.push(`\n自动搜索uid为${room_id}的B站用户\n昵称：${nickname}`)
@@ -174,7 +175,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveDelete(e) {
-    if (!this.verify(UCPr.BlivePush)) return false
+    if (!this.verify(this.config.BlivePush)) return false
     const [location_id, room_id, type] = await getIdType(e)
     if (location_id.length < 5 || location_id.length > 10) {
       return e.reply('请输入正确的推送群号')
@@ -231,17 +232,17 @@ export default class UCBlivePush extends UCPlugin {
     const title = `${loc}：${location_id}直播推送订阅列表：\n\n`
     let reply = title + Data.makeArrStr(data[location_id].room.map(v => `${v.nickname}-${v.room_id}`))
     if (type === 'Group') reply += `\n${data[location_id].atAll ? '已' : '未'}开启直播推送艾特全员`
-    reply += `\n\n直播推送当前处于${UCPr.BlivePush[`is${type}`] && data[location_id].push ? '开启' : '关闭'}状态`
+    reply += `\n\n直播推送当前处于${this.config.BlivePush[`is${type}`] && data[location_id].push ? '开启' : '关闭'}状态`
     return e.reply(reply)
   }
 
   async bLiveSwitch(e) {
-    if (!this.verify(UCPr.BlivePush)) return false
+    if (!this.verify(this.config.BlivePush)) return false
     const regtest = e.msg.match(/推送(.*)/)[1]
     if (isNaN(regtest)) return false
     const [location_id, type] = await getIdType(e, false)
     const loc = type === 'Group' ? '群聊' : '私聊'
-    if (!UCPr.BlivePush[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
+    if (!this.config.BlivePush[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
     const data = getData(type)
     if (!data[location_id]) {
       return e.reply(`${loc}：${location_id}未订阅直播间，订阅直播间自动开启推送`)
@@ -309,7 +310,7 @@ export default class UCBlivePush extends UCPlugin {
               await common.sleep(1)
               continue
             }
-            const data = (await getLiveData(room))?.data
+            const data = (await this.fetch('BlivePush1', room))?.data
             if (!data || !data.live) continue
             if (Object.prototype.hasOwnProperty.call(data.live, 'video')) {
               if (!pushed[loc]?.includes(room)) {
@@ -394,7 +395,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveClean(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     redis.del(this.PushedInfo)
     redis.del(this.GroupPushed)
     redis.del(this.PrivatePushed)
@@ -402,7 +403,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveAtall(e) {
-    if (!this.verify(UCPr.BlivePush)) return false
+    if (!this.verify(this.config.BlivePush)) return false
     let [location_id, type] = await getIdType(e, false)
     if (type == 'Private') {
       if (e.sender.user_id === location_id) {
@@ -416,7 +417,7 @@ export default class UCBlivePush extends UCPlugin {
     }
     const mode = /开启/.test(e.msg)
     if (mode && !await common.botIsGroupAdmin(location_id)) {
-      return e.reply(UCPr.noPowReply + '\n群聊：' + location_id)
+      return e.reply(this.noPowReply + '\n群聊：' + location_id)
     }
     data[location_id].atAll = mode
     savaData(type, data)
@@ -436,10 +437,6 @@ function savaData(type, data) {
   return file.JSONsaver(Path[`BLP${type}json`], data)
 }
 
-function getLiveData(room_id) {
-  return UCPr.fetch('BlivePush1', room_id)
-}
-
 function getUpInfo(uid) {
   return Data.getUpInfo.call(this, uid)
 }
@@ -449,7 +446,7 @@ async function getIdType(e, isRoom = true) {
   const type = e.isGroup ? 'Group' : 'Private'
   const user = e.sender.user_id
   const self = e.group_id || user
-  const isAppoint = numMatch && Check.permission(user, 2)
+  const isAppoint = numMatch && this.GM
   if (!isRoom) {
     const location_id = isAppoint ? numMatch[0] : self
     return [location_id, type]

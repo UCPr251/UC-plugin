@@ -1,5 +1,9 @@
 # 是否开启UC群管功能
-isOpen: true
+isOpen: false
+# 进退群欢迎，非真值则为关闭
+WM:
+  welcome: 欢迎info小伙伴进群~\n群里有很多大佬给你透哦~
+  mourn: info退群了~
 
 # 刷屏检测设置
 DetecteFloodScreen:

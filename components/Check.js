@@ -3,7 +3,7 @@ import UCPr from './UCPr.js'
 
 /** 检查操作 */
 const Check = {
-  /** 检查、创建文件夹 */
+  /** 检查、递归创建文件夹 */
   floder(path, mode = false) {
     if (!file.existsSync(path)) {
       if (mode) {
@@ -25,10 +25,11 @@ const Check = {
     return true
   },
 
-  /** 查找数组指定内容 */
-  str(oriVal, newVal) {
-    for (let i = oriVal.length - 1; i >= 0; i--) {
-      if (oriVal[i] == newVal) {
+  /** 查找数组指定元素 */
+  str(arr, value) {
+    if (!Array.isArray(arr) || value === undefined) return false
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] == value) {
         return true
       }
     }
@@ -43,41 +44,102 @@ const Check = {
     return false
   },
 
-  /** 检查用户权限 */
-  permission(userId, need = undefined) {
+  /**
+   * @returns {Set<6>}
+   */
+  levelSet(userId, groupId) {
     if (this.e) {
-      return Check.permission(this.e.sender.user_id, userId)
+      return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
     }
-    if (need !== undefined) {
-      const permission = Check.permission(userId)
-      if (UCPr.onlyMaster && permission < 2) return false
-      if (permission >= need) return true
-      return false
+    const level = new Set()
+    if (Check.str(UCPr.GlobalMaster, userId)) level.add(4)
+    if (Check.str(UCPr.permission.Master[userId], groupId)) level.add(3)
+    if (Check.str(UCPr.GlobalAdmin, userId)) level.add(2)
+    if (Check.str(UCPr.permission.Admin[userId], groupId)) level.add(1)
+    if (Check.str(UCPr.permission.BlackQQ[userId], groupId)) level.add(-1)
+    if (Check.str(UCPr.GlobalBlackQQ, userId)) level.add(-2)
+    return level
+  },
+
+  /**
+   * 检查用户权限等级，不判断其他
+   * 返回权限等级绝对值最大值(黑名单优先)
+   * @returns {number|boolean}
+   * 全局主人：4
+   * 群主人：3
+   * 全局管理：2
+   * 群管理：1
+   * 普通用户：0
+   * 群黑名单：-1
+   * 全局黑名单：-2
+   */
+  level(userId, groupId, right) {
+    if (this.e) {
+      return Check.level(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
     }
-    if (Check.str(UCPr.Master, userId)) return 2
-    else if (Check.str(UCPr.AdminArr, userId)) return 1
+    if (!userId) return 0
+    if (right !== undefined) {
+      return Check.level(userId, groupId) >= right
+    }
+    const levelSet = Check.levelSet(userId, groupId)
+    if (levelSet.has(4)) return 4
+    if (levelSet.has(3)) return 3
+    if (levelSet.has(-2)) return -2
+    if (levelSet.has(2)) return 2
+    if (levelSet.has(-1)) return -1
+    if (levelSet.has(1)) return 1
     return 0
   },
 
-  /** 只检查是否拥有该群管理权限，不判断其他 */
-  target(userId, groupId) {
+  /** 检查用户全局权限，不判断其他 */
+  globalLevel(userId, right = undefined) {
+    log.debug(`[Check.globalLevel]检查用户全局权限${userId}，${right}`)
     if (this.e) {
-      return Check.target(this.e.sender.user_id, this.e.group_id)
+      return Check.globalLevel(this.e.sender?.user_id ?? this.e.user_id, userId)
     }
-    if (!userId || !groupId) return false
-    if (!Check.str(UCPr.AdminArr, userId)) return false
-    const permission = UCPr.Admin[userId]
-    if (permission === false) return true
-    if (Check.str(permission, groupId)) return true
+    if (!userId) return false
+    if (right !== undefined) {
+      return Check.globalLevel(userId) >= right
+    }
+    if (Check.str(UCPr.GlobalMaster, userId)) return 4
+    if (Check.str(UCPr.GlobalBlackQQ, userId)) return -2
+    if (Check.str(UCPr.GlobalAdmin, userId)) return 2
+    return 0
+  },
+
+  /**
+   * 检查群权限，不判断其他
+   * @param {'Admin'|'Master'|'BlackQQ'} type 检测cfg类型
+   * @param {number} userId
+   * @param {number} groupId
+   * @returns {boolean}
+   */
+  GroupPermission(type, userId, groupId) {
+    log.debug(`[Check.GroupPermission]检查用户群权限${type}，${userId}，${groupId}`)
+    if (this.e) {
+      return Check.GroupPermission(type, this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
+    }
+    if (!userId) return false
+    if (Check.str(UCPr[`Global${type}`], userId)) return true
+    if (!groupId) return false
+    const cfg = UCPr[type][userId]
+    if (cfg && Check.str(cfg, groupId)) return true
     return false
   },
 
+  /** 检查用户群管理权限，不判断其他 */
+  Admin(userId, groupId) {
+    return Check.GroupPermission.call(this, 'Admin', userId, groupId)
+  },
+
+  /** 检查用户群主人权限，不判断其他 */
+  Master(userId, groupId) {
+    return Check.GroupPermission.call(this, 'Master', userId, groupId)
+  },
+
   /** 检查是否是黑名单 */
-  black(userId) {
-    if (this.e) {
-      return Check.black(this.e.sender.user_id)
-    }
-    return Check.str(UCPr.BlackQQ, userId)
+  BlackQQ(userId, groupId) {
+    return Check.GroupPermission.call(this, 'BlackQQ', userId, groupId)
   }
 
 }

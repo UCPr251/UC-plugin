@@ -1,4 +1,5 @@
-import { Path, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
+import { Path, Data, UCDate, common, file, log } from '../components/index.js'
+import UCPlugin from '../model/UCPlugin.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -91,21 +92,21 @@ export default class UCChuoyichuo extends UCPlugin {
   }
 
   async accept(e) {
-    if (!UCPr.chuoyichuo.isOpen) return false
-    if (e.target_id !== UCPr.qq) return false
+    if (!this.config.chuoyichuo.isOpen) return false
+    if (e.target_id !== this.qq) return false
     log.whiteblod('戳一戳生效')
     let count = await Data.redisGet(this.redisData + e.group_id, 0) || 0
     Data.redisSet(this.redisData + e.group_id, ++count, UCDate.EXsecondes)
-    const Cfg = UCPr.chuoyichuo
+    const Cfg = this.config.chuoyichuo
     if (Cfg.isAutoSetCard) {
-      e.group.setCard(UCPr.qq, `${UCPr.BotName}|${Cfg.groupCard.replace('num', count)}`)
+      e.group.setCard(this.qq, `${this.BotName}|${Cfg.groupCard.replace('num', count)}`)
     }
     const randomNum = Math.random()
     // 回复文本+图片
     if (randomNum < Cfg.textimg) {
       let replyMsg = _.sample(textList)
       if (count > 10 && Cfg.chuoimg && randomNum / Cfg.textimg < Cfg.chuoimg) {
-        replyMsg = `${UCPr.BotName}今天已经被戳${count}次了\n` + replyMsg
+        replyMsg = `${this.BotName}今天已经被戳${count}次了\n` + replyMsg
       }
       await e.reply(replyMsg)
       const files = file.readdirSync(Path.chuoyichuo)
@@ -115,13 +116,13 @@ export default class UCChuoyichuo extends UCPlugin {
     }
     // 头像表情包
     if (randomNum < (Cfg.textimg + Cfg.face)) {
-      return e.reply(segment.image(Buffer.from(await UCPr.fetch('qiao', e.operator_id))), true)
+      return e.reply(segment.image(Buffer.from(await this.fetch('qiao', e.operator_id))), true)
     }
     // 禁言
     if (await common.botIsGroupAdmin(e.group) && randomNum < (Cfg.textimg + Cfg.face, Cfg.mute)) {
       const mutetype = _.sample([1, 2])
       if (mutetype === 1) {
-        await e.reply('说了不要戳了！\n坏孩子要接受' + UCPr.BotName + '的惩罚！')
+        await e.reply('说了不要戳了！\n坏孩子要接受' + this.BotName + '的惩罚！')
         await common.sleep(1)
         await e.group.muteMember(e.operator_id, Cfg.muteTime * 60)
         await common.sleep(2)

@@ -26,10 +26,10 @@ function s(field, label, component, bottomHelpMessage, componentProps = {}, opti
     bottomHelpMessage,
     componentProps
   }
-  return _.merge(display, optional)
+  return _.merge({}, display, optional)
 }
 
-function sPRO(name, _prefix = '', options = [true, true, true, true, true, true], name_prefix = '') {
+function sPRO(name, _prefix = 'use.', options = [true, true, true, true, true, true], name_prefix = '') {
   const info = []
   for (let i in judgeProperty) {
     if (!options[i]) continue
@@ -41,49 +41,6 @@ function sPRO(name, _prefix = '', options = [true, true, true, true, true, true]
 }
 
 let js = []
-
-// 搜小说分支内容
-if (file.existsSync(Path.get('apps', 'searchNovel.js'))) {
-  prefix = 'searchNovel.'
-  const newCfg = [
-    {
-      label: '【UC】小说 · 基础设置',
-      component: 'Divider'
-    },
-    s('recallIndexMsg', '索引消息撤回间隔', 'InputNumber',
-      '小说序号选择信息撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('recallNoticeMsg', '其他消息撤回间隔', 'InputNumber',
-      '索引消息以外的消息的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('recallFileG', '群聊文件撤回间隔', 'InputNumber',
-      '群聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0 }),
-    s('recallFileP', '私聊文件撤回间隔', 'InputNumber',
-      '私聊发送文件的撤回时间间隔，单位秒，0则不撤回', { min: 0, max: 119 }),
-    s('overtime', '超时时间', 'InputNumber',
-      '超时时间，单位秒，#搜小说 后超过该时间不操作则自动取消操作', { min: 10 }),
-    s('cd', '冷却时间', 'InputNumber',
-      '#搜小说 冷却时间，单位秒，主人不受限', { min: 10 }),
-    s('cdReply', '冷却中回复', 'Input',
-      'cd中回复，对主人以外的处于cd中的用户再次#搜小说 时的回复'),
-    s('novelPath', '小说资源路径', 'InputTextArea',
-      '本地小说资源绝对路径，多个请回车间隔'),
-    {
-      label: '【UC】小说 · 搜索权限',
-      component: 'Divider'
-    },
-    ...sPRO('#搜小说', 'search.', undefined, '搜索 · '),
-    {
-      label: '【UC】小说 · 上传权限',
-      component: 'Divider'
-    },
-    ...sPRO('#上传小说', 'add.', undefined, '上传 · '),
-    {
-      label: '【UC】小说 · 删除权限',
-      component: 'Divider'
-    },
-    ...sPRO('#删', 'del.', undefined, '删除 · ')
-  ]
-  js = js.concat(newCfg)
-}
 
 if (file.existsSync(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'
@@ -127,7 +84,7 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
       '开启Bot的回复，BotName会被替换为上面设置的BotName的名称'),
     s('closeMsg', '关闭Bot回复', 'Input',
       '关闭Bot的回复，BotName会被替换为上面设置的BotName的名称'),
-    ...sPRO('群开关Bot', '', [false, false, true, true, true, false])
+    ...sPRO('群开关Bot', undefined, [false, false, true, true, true, false])
   ]
   js = js.concat(newCfg)
 }
@@ -192,7 +149,7 @@ if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
       '触发指令，#你设置的值 就可以触发该功能，修改后直接生效，英语字母大小写都可以触发'),
     s('reply', '回复内容', 'Input',
       '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）'),
-    ...sPRO('#随机群友', '', [false, false, true, true, true, true])
+    ...sPRO('#随机群友', undefined, [false, false, true, true, true, true])
   ]
   js = js.concat(newCfg)
 }
@@ -276,12 +233,12 @@ prefix = ''
 
 cfgPrefix = 'permission.'
 const permission = [
-  s('Master', 'UC插件主人', 'InputTextArea',
-    '拥有本插件主人权限的QQ，多个请用中文逗号间隔'),
-  s('BlackQQ', 'UC插件黑名单', 'InputTextArea',
-    '插件拉黑QQ，无法使用本插件，多个请用中文逗号间隔'),
-  s('WhiteQQ', 'UC插件白名单', 'InputTextArea',
-    '插件加白QQ，暂时没什么b用，多个请用中文逗号间隔')
+  s('GlobalMaster', 'UC全局主人', 'InputTextArea',
+    '拥有本插件全局主人权限的QQ，多个请用中文逗号间隔'),
+  s('GlobalAdmin', 'UC全局管理', 'InputTextArea',
+    '拥有本插件全局群管理权限的QQ，多个请用中文逗号间隔'),
+  s('GlobalBlackQQ', 'UC全局黑名单', 'InputTextArea',
+    '插件全局拉黑QQ，无法使用本插件，多个请用中文逗号间隔')
 ]
 
 cfgPrefix = 'config.'
@@ -349,7 +306,7 @@ export function supportGuoba() {
           const [cfg, ...ret] = property.split('.')
           const path = ret.join('.')
           if (!path) continue
-          _.set(guoba_config, property, value)
+          _.set(guoba_config, property, value) // 同步数据
           if (path === 'Master' || path === 'WhiteQQ' || path === 'BlackQQ') {
             value = _.sortBy(value
               .split('，')
@@ -358,9 +315,12 @@ export function supportGuoba() {
           } else if (path === 'searchNovel.novelPath') {
             value = value.split('\n').map(path => path.trim())
           }
-          if (Admin.config(path, value, cfg)) changed = true
+          if (Admin.globalCfg(path, value, cfg)) changed = true
         }
-        if (changed) return Result.ok({}, '保存成功~')
+        if (changed) {
+          Data.refreshLock()
+          return Result.ok({}, '保存成功~')
+        }
         return Result.ok({}, '什么都没变哦~')
       }
     }

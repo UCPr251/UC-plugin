@@ -3,23 +3,24 @@ import defaultCfg from '../../../lib/config/config.js'
 import UCfetch from '../defSet/system/serve.js'
 import _ from 'lodash'
 
-const Plugin_Name = 'UC-plugin'
-
-/** config.yaml */
-let config = {}
-/** GAconfig.yaml */
-let GAconfig = {}
-/** permission.yaml */
-let permission = {}
+/** 各配置数据 */
+export const CFG = {
+  /** config.yaml */
+  config: {},
+  /** GAconfig.yaml */
+  GAconfig: {},
+  /** permission.yaml */
+  permission: {},
+  /** lock.yaml */
+  lock: {},
+  /** 帮助图html填充数据 */
+  helpData: [],
+  /** 设置图html填充数据 */
+  cfgData: {}
+}
 
 /** 实时锅巴信息 */
-let guoba_config = {}
-/** 帮助图html填充数据 */
-let helpData = []
-/** 设置图html填充数据 */
-let cfgData = {}
-
-export { guoba_config, helpData, cfgData }
+export let guoba_config = {}
 
 /** 排序、转换 */
 function transform(path) {
@@ -28,92 +29,86 @@ function transform(path) {
 
 /** 更新锅巴设置填充信息 */
 function getNewGuobaConfig() {
+  const { config, GAconfig, permission } = CFG
   guoba_config = _.cloneDeep({ config, GAconfig, permission })
-  transform('Master')
-  transform('BlackQQ')
-  transform('WhiteQQ')
-  // 搜小说分支内容
-  if (guoba_config.config.searchNovel?.novelPath) {
-    guoba_config.config.searchNovel.novelPath = guoba_config.config.searchNovel.novelPath.join('\n')
-  }
+  transform('GlobalMaster')
+  transform('GlobalAdmin')
+  transform('GlobalBlackQQ')
 }
 
-/** 1：congfig.yaml，2：permission.yaml，3：help.js，4：cfg.js */
+const cfgMap = new Map()
+cfgMap.set(1, 'config.yaml')
+cfgMap.set(2, 'GAconfig.yaml')
+cfgMap.set(3, 'permission.yaml')
+cfgMap.set(4, 'lock.yaml')
+cfgMap.set(5, 'help.js')
+cfgMap.set(6, 'cfg.js')
+
+/** 更新设置数据 */
 function getConfig(mode) {
-  switch (mode) {
-    case 1: return file.YAMLreader(Path.configyaml)
-    case 2: return file.YAMLreader(Path.permissionyaml)
-    case 3: return file.YAMLreader(Path.GAconfigyaml)
-    case 4: return import(`file:///${Path.helpjs}?${Date.now()}`)
-    case 5: return import(`file:///${Path.cfgjs}?${Date.now()}`)
-    default: return {}
+  const sp = cfgMap.get(mode).split('.')
+  const key = sp.join('')
+  if (mode <= 4) {
+    CFG[sp[0]] = file.YAMLreader(Path[key])
+  } else {
+    import(`file:///${Path[key]}?${Date.now()}`).then(res => (CFG[`${sp[0]}Data`] = res.default))
   }
 }
 
 /** 更新设置 */
 function getNewConfig(mode) {
   if (mode) {
-    let file
-    switch (mode) {
-      case 1: {
-        config = getConfig(1)
-        file = 'config.yaml'
-        getNewGuobaConfig()
-        break
-      }
-      case 2: {
-        permission = getConfig(2)
-        file = 'permission.yaml'
-        getNewGuobaConfig()
-        break
-      }
-      case 3: {
-        GAconfig = getConfig(3)
-        file = 'GAconfig.js'
-        getNewGuobaConfig()
-        break
-      }
-      case 4: {
-        getConfig(4).then(res => (helpData = res.default))
-        file = 'help.js'
-        break
-      }
-      case 5: {
-        getConfig(5).then(res => (cfgData = res.default))
-        file = 'cfg.js'
-        break
-      }
-      default: break
-    }
-    log.whiteblod(`修改设置文件${file}`)
+    getConfig(mode)
+    if (mode <= 3) getNewGuobaConfig()
+    log.whiteblod(`修改设置文件${cfgMap.get(mode)}`)
     return
   }
-  config = getConfig(1)
-  permission = getConfig(2)
-  GAconfig = getConfig(3)
-  getConfig(4).then(res => (helpData = res.default))
-  getConfig(5).then(res => (cfgData = res.default))
+  for (const i of _.range(1, 7)) getConfig(i)
   getNewGuobaConfig()
 }
+
+/** 群配置 */
+const groupConfig = {}
 
 /** 系统数据 */
 const UCPr = {
   /** UC-plugin */
-  Plugin_Name,
+  Plugin_Name: 'UC-plugin',
   /** UCPr */
   Author: 'UCPr',
-  /** 错误回复 */
-  error: '未知错误，请查看错误日志',
   /** 初始化数据 */
   init: () => {
     getNewConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))
-    Data.watch(Path.permissionyaml, () => getNewConfig(2))
-    Data.watch(Path.GAconfigyaml, () => getNewConfig(3))
-    if (UCPr.isWatch) {
-      Data.watch(Path.helpjs, () => getNewConfig(4))
-      Data.watch(Path.cfgjs, () => getNewConfig(5))
+    Data.watch(Path.GAconfigyaml, () => getNewConfig(2))
+    Data.watch(Path.permissionyaml, () => getNewConfig(3))
+    Data.watch(Path.lockyaml, () => getNewConfig(4))
+    const yamls = file.readdirSync(Path.groupCfg, { type: '.yaml' })
+    const { config, GAconfig } = CFG
+    for (const yaml of yamls) {
+      const yamlPath = Path.get('groupCfg', yaml)
+      const newYamlData = file.YAMLreader(yamlPath)
+      const name = Path.parse(yaml).name
+      groupConfig[name] = newYamlData
+      Data.watch(yamlPath, () => {
+        groupConfig[name] = file.YAMLreader(yamlPath)
+        log.whiteblod(`修改设置文件${yaml}`)
+      })
+      // 合并新增配置
+      const newData = _.merge({}, { config, GAconfig }, newYamlData)
+      if (!_.isEqual(newYamlData, newData)) {
+        file.YAMLsaver(yaml, newData)
+      }
     }
+    Data.watchDir(Path.groupCfg, (yaml) => {
+      groupConfig[Path.parse(yaml).name] = file.YAMLreader(yaml)
+      Data.watch(yaml, () => (groupConfig[Path.parse(yaml).name] = file.YAMLreader(yaml)))
+    })
+    if (UCPr.isWatch) {
+      Data.watch(Path.helpjs, () => getNewConfig(5))
+      Data.watch(Path.cfgjs, () => getNewConfig(6))
+    }
+    UCPr.temp.status = true
   },
 
   /**
@@ -127,28 +122,40 @@ const UCPr = {
 
   /** 挂载临时数据，实现数据共享 */
   temp: {
+    /** 状态 */
+    status: false,
+    /** UC监听项 */
+    watcher: {},
     /** 签名崩溃检测计时器 */
     intervalId: null
   },
 
+  /** 群配置 */
+  groupConfig,
+
   /** config.yaml */
   get config() {
-    return config
+    return CFG.config || {}
   },
 
   /** GAconfig.yaml */
   get GAconfig() {
-    return GAconfig
+    return CFG.GAconfig || {}
   },
 
   /** permission.yaml */
   get permission() {
-    return permission
+    return CFG.permission || {}
+  },
+
+  /** lock.yaml */
+  get lock() {
+    return CFG.lock || {}
   },
 
   /** 机器人设置 */
   get defaultCfg() {
-    return defaultCfg ?? {}
+    return defaultCfg || {}
   },
 
   /** 是否合并机器人主人和插件主人 */
@@ -159,11 +166,6 @@ const UCPr = {
   /** 是否仅主人可操作 */
   get onlyMaster() {
     return this.config.onlyMaster ?? false
-  },
-
-  /** 仅主人可操作时，对本拥有权限的管理的回复 */
-  get onlyMasterReply() {
-    return this.config.onlyMasterReply ?? '当前仅主人可操作'
   },
 
   /** 开发模式使用，热更新apps等数据 */
@@ -181,7 +183,7 @@ const UCPr = {
     return this.config.server ?? 1
   },
 
-  /** Bot名称 */
+  /** 设置的Bot名称 */
   get BotName() {
     return this.config.BotName || Bot.nickname
   },
@@ -189,6 +191,11 @@ const UCPr = {
   /** 过码剩余次数提醒预警值 */
   get loveMysNotice() {
     return this.config.loveMysNotice ?? 50
+  },
+
+  /** 仅主人可操作时，对本拥有权限的管理的回复 */
+  get onlyMasterReply() {
+    return this.config.onlyMasterReply ?? '当前仅主人可操作'
   },
 
   /** 用户无权限回复 */
@@ -206,30 +213,35 @@ const UCPr = {
     return this.config.fetchErrReply ?? '连接失败，请稍后重试'
   },
 
-  /** 主人列表 */
+  /** 指定群主人对象 */
   get Master() {
-    if (!this.isDefaultMaster) return this.permission.Master
-    return _.uniq(this.defaultCfg.masterQQ.concat(this.permission.Master)).map(Number)
+    return this.permission.Master ?? {}
   },
 
-  /** 管理对象 */
+  /** 全局主人列表 */
+  get GlobalMaster() {
+    if (!this.isDefaultMaster) return this.permission.GlobalMaster
+    return _.uniq(this.defaultCfg.masterQQ.concat(this.permission.GlobalMaster)).map(Number)
+  },
+
+  /** 指定群管理对象 */
   get Admin() {
-    return this.permission.Admin
+    return this.permission.Admin ?? {}
   },
 
-  /** 管理列表 */
-  get AdminArr() {
-    return (Object.keys(this.permission.Admin)).map(Number)
+  /** 全局管理列表 */
+  get GlobalAdmin() {
+    return this.permission.GlobalAdmin ?? []
+  },
+
+  /** 黑名单对象 */
+  get BlackQQ() {
+    return this.permission.BlackQQ ?? {}
   },
 
   /** 黑名单列表 */
-  get BlackQQ() {
-    return this.permission.BlackQQ ?? []
-  },
-
-  /** 白名单列表 */
-  get WhiteQQ() {
-    return this.permission.WhiteQQ ?? []
+  get GlobalBlackQQ() {
+    return this.permission.GlobalBlackQQ ?? []
   },
 
   /** 是否输出日志 */

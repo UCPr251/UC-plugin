@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import { Path, Data, log, UCPr } from './components/index.js'
+import { Path, Data, log, UCPr, file } from './components/index.js'
 import UCPlugin from './model/UCPlugin.js'
 
 /** UC插件类 */
@@ -8,6 +8,10 @@ global.UCPlugin = UCPlugin
 global.log = log
 
 let files = await Data.init()
+
+if (Array.isArray(UCPr.permission.GlobalMaster)) {
+    file.copyFileSync(Path.get('defSet', 'permission.yaml'), Path.get('config', 'permission.yaml'))
+}
 
 log.blue('---------------------')
 log.purple(`-------${Path.Plugin_Name}载入中--------`)

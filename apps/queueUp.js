@@ -1,4 +1,4 @@
-import { Path, Check, common, file, UCPr } from '../components/index.js'
+import { Path, Check, common, file } from '../components/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -69,7 +69,7 @@ export default class UCQueueUp extends UCPlugin {
     if (!info.ing) return e.reply('本次排队已结束', true)
     if (Check.str(info.finished, userId)) return e.reply('你已经完成了本次排队哦', true)
     const index = info.joining.indexOf(userId)
-    if (index > -1) return e.reply(`你已经报过名了哦~\n你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！`, true)
+    if (index > -1) return e.reply(`你已经报过名了哦~\n你当前位于第${index + 1}位，和${this.BotName}一起耐心等待吧！`, true)
     info.joining.push(userId)
     savaData(queueUpData)
     return e.reply(`排队成功！你当前位于第${info.joining.length}位`, true)
@@ -154,7 +154,7 @@ export default class UCQueueUp extends UCPlugin {
     const index = info.joining.indexOf(e.sender.user_id)
     let replyMsg = '排队队列\n\n' + playersInfo.join('\n')
     if (index > -1) {
-      replyMsg += `\n\n你当前位于第${index + 1}位，和${UCPr.BotName}一起耐心等待吧！`
+      replyMsg += `\n\n你当前位于第${index + 1}位，和${this.BotName}一起耐心等待吧！`
     }
     return e.reply(replyMsg)
   }

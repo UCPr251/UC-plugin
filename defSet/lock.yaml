@@ -1,0 +1,21 @@
+config:
+  randomMember:
+    keyWords: null
+  BlivePush:
+    mins: null
+    isGroup: null
+    isPrivate: null
+  switchBot:
+    openReg: null
+    closeReg: null
+  randomWife:
+    add:
+      isM: false
+      isA: true
+      isGA: true
+      isE: false
+    del:
+      isM: false
+      isA: true
+      isGA: true
+      isE: false

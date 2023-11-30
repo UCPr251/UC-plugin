@@ -1,4 +1,5 @@
 import { UCPr } from '../components/index.js'
+import UCPlugin from '../model/UCPlugin.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -19,7 +20,7 @@ export default class UCRandomMember extends UCPlugin {
   }
 
   async randomMember(e) {
-    const cfg = UCPr.randomMember
+    const cfg = this.config.randomMember
     if (!cfg.isOpen) return false
     if (!this.verify(cfg)) return false
     const map = await e.group.getMemberMap()

@@ -1,5 +1,5 @@
 /* eslint-disable brace-style */
-import { Path, Check, Data, common, file, UCPr, log } from '../components/index.js'
+import { Path, Check, Data, common, file, log } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
 import _ from 'lodash'
 
@@ -87,8 +87,8 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   _verify() {
-    if (!this.isMaster) {
-      this.reply(UCPr.noPerReply)
+    if (!this.GM) {
+      this.reply(this.noPerReply)
       return false
     }
     return true

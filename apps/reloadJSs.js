@@ -1,4 +1,5 @@
 import { Path, Check, file, UCPr, log, Data, common } from '../components/index.js'
+import UCPlugin from '../model/UCPlugin.js'
 import loader from '../../../lib/plugins/loader.js'
 
 let JSs = ['reloadJSs.js'], tasks = {}, watcher = {}, ing = false, timer
@@ -39,7 +40,7 @@ export default class UCReloadJSs extends UCPlugin {
           fnc: 'tasks'
         },
         {
-          reg: /^#?UC监听项$/i,
+          reg: /^#?UC插件监听$/i,
           fnc: 'watcher'
         },
         {
@@ -95,7 +96,7 @@ export default class UCReloadJSs extends UCPlugin {
   }
 
   async developer(e) {
-    if (!this.isMaster) return e.reply('你想做甚？！', true, { at: true })
+    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
     if (ing) return e.reply('当前已处于开发模式，请勿重复开启')
     await this.init(true)
     const msg = this.getGeneralView()
@@ -103,7 +104,7 @@ export default class UCReloadJSs extends UCPlugin {
   }
 
   async reloadJSs(e) {
-    if (!this.isMaster) return e.reply('你想做甚？！', true, { at: true })
+    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
     if (ing) return e.reply('当前已处于开发模式，无需手动重载插件')
     const jsName = e.msg.match(/重载插件(.*)/)[1].trim() + '.js'
     if (jsName === '.js') {
@@ -117,7 +118,7 @@ export default class UCReloadJSs extends UCPlugin {
   }
 
   async unloadJS(e) {
-    if (!this.isMaster) return e.reply('你想做甚？！', true, { at: true })
+    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
     const jsName = e.msg.match(/卸载插件(.*)/)[1].trim() + '.js'
     const appPath = Path.get('apps', jsName)
     if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
@@ -127,7 +128,7 @@ export default class UCReloadJSs extends UCPlugin {
   }
 
   async unlinkJS(e) {
-    if (!this.isMaster) return e.reply('你想做甚？！', true, { at: true })
+    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
     const jsName = e.msg.match(/删除插件(.*)/)[1].trim() + '.js'
     const appPath = Path.get('apps', jsName)
     if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
@@ -137,42 +138,42 @@ export default class UCReloadJSs extends UCPlugin {
   }
 
   async generalView(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     if (JSs.length === 1) return e.reply('当前非开发环境')
     const msg = this.getGeneralView()
     return e.reply(msg)
   }
 
   async JSs() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const msg = JSs.join('\n')
     log.yellow(msg)
     log.red(`总计${JSs.length}个功能`)
   }
 
   async tasks() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const msg = Object.keys(tasks).join('\n')
     log.yellow(msg)
     log.red(`总计${Object.keys(tasks).length}个定时任务`)
   }
 
   async watcher() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const msg = Object.keys(watcher).join('\n')
     log.yellow(msg)
     log.red(`总计监听${Object.keys(watcher).length}个js`)
   }
 
   async viewloaderPlugin() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     const names = loader.priority.map(v => v.name)
     names.forEach(name => log.yellow(name))
     log.red(`Bot总计：${loader.priority.length}个插件`)
   }
 
   async viewloaderTask() {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     loader.task.forEach(v => log.yellow(`定时任务：${v.name}，cron：${v.cron}`))
     log.red(`Bot总计：${loader.task.length}个定时任务`)
   }

@@ -3,6 +3,7 @@
 /.eslintrc.cjs
 /.editorconfig
 /.prettierignore
+/init.js
 /config
 /data
 /tools
@@ -17,5 +18,4 @@
 /apps/upload.js
 /apps/searchNovel.js
 /apps/QA.js
-/apps/RASubsystem
 /apps/groupAdmin

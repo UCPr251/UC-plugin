@@ -21,7 +21,7 @@ export default class UCUpdate extends UCPlugin {
   }
 
   async update(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     let Update_Plugin = new update()
     Update_Plugin.e = e
     Update_Plugin.reply = this.reply
@@ -39,7 +39,7 @@ export default class UCUpdate extends UCPlugin {
   }
 
   async refresh(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     if (/强制/.test(e.msg)) {
       Data.execSync('git reset --hard', Path.UC_plugin_decrypt)
     }

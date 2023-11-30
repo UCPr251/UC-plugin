@@ -1,4 +1,4 @@
-import { Path, Data, UCPr, Check, common } from '../components/index.js'
+import { Path, Data, Check, common } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
 
 export default class UCAddJS extends UCPlugin {
@@ -19,7 +19,7 @@ export default class UCAddJS extends UCPlugin {
   }
 
   async addJS(e) {
-    if (!this.isMaster) return false
+    if (!this.GM) return false
     if (e.isGroup) return e.reply('请私聊安装')
     this.setContext(this.setFnc, false, 60)
     e.reply('请在60s内发送js文件')
@@ -43,7 +43,7 @@ export default class UCAddJS extends UCPlugin {
         this.reply(`操作成功，新增UC-plugin/apps/${filename}，重启后生效`)
         Data.refresh()
       } else {
-        this.reply(UCPr.error)
+        this.reply(this.errorReply)
       }
       this.finish(this.setFnc)
     }
@@ -56,7 +56,7 @@ export default class UCAddJS extends UCPlugin {
         this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，重启后生效`)
         Data.refresh()
       } else {
-        this.reply(UCPr.error)
+        this.reply(this.errorReply)
       }
       return this.finish(this.setFnc2)
     }
