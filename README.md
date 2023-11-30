@@ -7,6 +7,7 @@
 </p>
 
 # [UC-plugin](https://gitee.com/UCPr251/UC-plugin)
+(开发分支)
 
 </div>
 
@@ -19,13 +20,13 @@
 - 使用Gitee
 
 ```Bash
-git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
+git clone -b dev https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
 - 使用Github
 
 ```Bash
-git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
+git clone -b dev https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 ```
 
 :innocent:
