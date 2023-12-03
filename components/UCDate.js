@@ -140,26 +140,26 @@ const UCDate = {
     if (/^\d+$/.test(s_123)) return Number(s_123)
     let split = ''
     split = s_123.split('亿')
-    let s_1_23 = split.length > 1 ? split : ['', s_123]
-    let s_23 = s_1_23[1]
-    let s_1 = s_1_23[0]
+    const s_1_23 = split.length > 1 ? split : ['', s_123]
+    const s_23 = s_1_23[1]
+    const s_1 = s_1_23[0]
     split = s_23.split('万')
-    let s_2_3 = split.length > 1 ? split : ['', s_23]
-    let s_2 = s_2_3[0]
-    let s_3 = s_2_3[1]
+    const s_2_3 = split.length > 1 ? split : ['', s_23]
+    const s_2 = s_2_3[0]
+    const s_3 = s_2_3[1]
     let arr = [s_1, s_2, s_3]
     arr = arr.map(item => {
       let result = ''
       result = item.replace('零', '')
-      let reg = new RegExp(`[${Array.from(numMap.keys()).join('')}]`, 'g')
+      const reg = new RegExp(`[${Array.from(numMap.keys()).join('')}]`, 'g')
       result = result.replace(reg, substring => {
         return numMap.get(substring)
       })
       let temp
       temp = /\d(?=千)/.exec(result)
-      let num1 = temp ? temp[0] : '0'
+      const num1 = temp ? temp[0] : '0'
       temp = /\d(?=百)/.exec(result)
-      let num2 = temp ? temp[0] : '0'
+      const num2 = temp ? temp[0] : '0'
       temp = /\d?(?=十)/.exec(result)
       let num3
       if (temp === null) {
@@ -170,7 +170,7 @@ const UCDate = {
         num3 = temp[0]
       }
       temp = /\d$/.exec(result)
-      let num4 = temp ? temp[0] : '0'
+      const num4 = temp ? temp[0] : '0'
       return num1 + num2 + num3 + num4
     })
     if (parseInt(arr.join('')) == 0) { // 非汉语数字

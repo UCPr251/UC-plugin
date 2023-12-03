@@ -1,6 +1,8 @@
 import { Path, Check, UCDate, UCPr } from '../components/index.js'
 import Permission from './Permission.js'
 
+const letters = '0123456789ABCDEF'
+
 export default class Base {
   constructor(e = {}) {
     this.e = e
@@ -43,7 +45,6 @@ export default class Base {
 
   /** 随机颜色 */
   getRandomColor() {
-    const letters = '0123456789ABCDEF'
     let color = '#'
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)]
@@ -53,7 +54,6 @@ export default class Base {
 
   /** 随机浅色系颜色 */
   getRandomLightColor() {
-    const letters = '0123456789ABCDEF'
     let color = '#'
     for (let i = 0; i < 3; i++) {
       const randomValue = Math.floor(Math.random() * 8)

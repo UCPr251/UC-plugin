@@ -190,7 +190,7 @@ const common = {
     let nickname = isBot ? Bot.nickname : e.sender.nickname
     const user_id = isBot ? Bot.uin : e.sender.user_id
     if (e.isGroup && isBot) {
-      let info = await Bot.getGroupMemberInfo(e.group_id, Bot.uin)
+      const info = await Bot.getGroupMemberInfo(e.group_id, Bot.uin)
       nickname = info.card || info.nickname
     }
     const userInfo = {
@@ -212,7 +212,7 @@ const common = {
     }
     /** 处理描述，icqq0.4.12及以上 */
     if (dec) {
-      let detail = forwardMsg.data?.meta?.detail
+      const detail = forwardMsg.data?.meta?.detail
       if (detail) {
         detail.news = [{ text: dec }]
       }
@@ -226,7 +226,7 @@ const common = {
    * @param {'Group'|'Private'} [type]
    */
   async makeforwardMsg(msg, id, type = 'Group', dec = undefined) {
-    let nickname = Bot.nickname
+    const nickname = Bot.nickname
     const user_id = Bot.uin
     const userInfo = {
       user_id,
@@ -241,7 +241,7 @@ const common = {
     forwardMsg = await (await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id)).makeForwardMsg(forwardMsg)
     /** 处理描述，icqq0.4.12及以上 */
     if (dec) {
-      let detail = forwardMsg.data?.meta?.detail
+      const detail = forwardMsg.data?.meta?.detail
       if (detail) {
         detail.news = [{ text: dec }]
       }
