@@ -1,4 +1,4 @@
-import { Path, file, Check, UCDate, UCPr } from '../components/index.js'
+import { Path, Check, UCDate, UCPr } from '../components/index.js'
 import Permission from './Permission.js'
 
 export default class Base {
@@ -21,18 +21,9 @@ export default class Base {
     return Permission.get(this.e, cfg)
   }
 
-  /** 更新日志数据 */
-  get changlogData() {
-    return file.readFileSync(Path.join(Path.UC, 'CHANGELOG.md'))
-  }
-
+  /** 群配置 */
   get groupCFG() {
     return UCPr.groupCFG(this.groupId)
-  }
-
-  /** 插件最近更新日期 */
-  get updateTime() {
-    return this.changlogData.match(/\d{1,2}-\d{1,2}/)[0]
   }
 
   /** 基础截图数据 */
@@ -46,7 +37,7 @@ export default class Base {
       imgType: 'jpeg',
       quality: 95,
       nowTime: UCDate.NowTime,
-      updateTime: this.updateTime
+      version: UCPr.version
     }
   }
 

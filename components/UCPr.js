@@ -151,6 +151,16 @@ const UCPr = {
     return _.merge({}, groupCFG[groupId], CFG.lock)
   },
 
+  /** package.json */
+  get package() {
+    return file.JSONreader(Path.get('UC', 'package.json'))
+  },
+
+  /** UC插件版本 */
+  get version() {
+    return this.package.version ?? '2.0.0'
+  },
+
   /** 默认所有全局配置 */
   get defaultCFG() {
     const { config, GAconfig } = CFG
