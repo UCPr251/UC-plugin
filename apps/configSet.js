@@ -6,7 +6,7 @@ import _ from 'lodash'
 /** 全局变量Cfg */
 let Cfg = {}
 /** 全局变量arrTemp */
-let arrTemp = {}
+const arrTemp = {}
 
 function getNewCfg() {
   Cfg = file.YAMLreader(Path.otheryaml)
@@ -87,6 +87,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   _verify() {
+    if (this.B) return false
     if (!this.GM) {
       this.reply(this.noPerReply)
       return false
@@ -138,8 +139,8 @@ export default class UCConfigSet extends UCPlugin {
     if (numMatch.length > 1) {
       let arr = []
       if (!isAdd && numMatch.every(num => num.length < len)) {
-        for (let num of numMatch) {
-          let _num = arrTemp[type][num - 1]
+        for (const num of numMatch) {
+          const _num = arrTemp[type][num - 1]
           if (hy(_num, type)) {
             arr.push(_num)
           }
@@ -149,7 +150,7 @@ export default class UCConfigSet extends UCPlugin {
         if (_.isEmpty(arr)) {
           return e.reply('无有效参数')
         }
-        for (let num of arr) {
+        for (const num of arr) {
           hy(num, type)
         }
       }
@@ -171,8 +172,8 @@ export default class UCConfigSet extends UCPlugin {
     if (Array.prototype.every.call(str, num => num <= len)) {
       const numMatch = str.match(/\d+/g)
       const strs = []
-      for (let num of numMatch) {
-        let _str = arrTemp[9]?.[num - 1]
+      for (const num of numMatch) {
+        const _str = arrTemp[9]?.[num - 1]
         if (_str && hy(_str, 9)) {
           strs.push(_str)
         }

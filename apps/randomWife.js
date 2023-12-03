@@ -15,6 +15,7 @@ export default class UCRandomWife extends UCPlugin {
       name: 'UC-randomWife',
       dec: '随机二次元老婆',
       event: 'message.group',
+      Cfg: 'config.randomWife',
       rule: [
         {
           reg: /^#?(娶|随机|今日)(二次元)?(老婆|纸片人|wife)$/i,
@@ -44,12 +45,13 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async randomwife(e) {
-    if (!this.config.randomWife.isOpen) return false
+    if (!this.verifyLevel()) return false
+    if (!this.Cfg.isOpen) return false
     const userData = await Data.redisGet(this.redisData + e.sender.user_id, {})
     const data_wifes = await Data.redisGet(this.redisData2, [])
     let now_times = userData.now_times ?? 0
     if (userData) {
-      if (now_times >= this.config.randomWife.wifeLimits) {
+      if (now_times >= this.Cfg.wifeLimits) {
         const msg = [`你已经取过老婆了哦\n你今天的老婆是：\n${userData.wife_name}`]
         const imgPath = Path.get('wife', userData.wife_img)
         if (!Check.file(imgPath)) {
@@ -87,8 +89,8 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async delWife(e) {
-    if (!this.config.randomWife.isOpen) return false
-    if (!this.verify(this.config.randomWife.del)) return false
+    if (!this.Cfg.isOpen) return false
+    if (!this.verifyPermission(this.Cfg.del)) return false
     let wifeName = e.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
     if (!wifesList) {
       wifesList = getWifes()
@@ -114,7 +116,8 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async randomWifeList(e) {
-    if (!this.config.randomWife.isOpen) return false
+    if (!this.Cfg.isOpen) return false
+    if (!this.verifyLevel()) return false
     let wifes = getWifes()
     wifesList = wifes
     if (_.isEmpty(wifes)) {
@@ -132,8 +135,8 @@ export default class UCRandomWife extends UCPlugin {
   }
 
   async addWife(e) {
-    if (!this.config.randomWife.isOpen) return false
-    if (!this.verify(this.config.randomWife.add)) return false
+    if (!this.Cfg.isOpen) return false
+    if (!this.verifyPermission(this.Cfg.add)) return false
     const wifeName = e.msg.match(/老婆(.*)/)[1]
     const wifes = getWifes(true)
     if (Check.str(wifes, wifeName)) {

@@ -58,12 +58,12 @@ const common = {
 
   /** 指定群踢出群员 */
   async kickMember(groupId, userId) {
-    return await (await this.pickGroup(groupId)).kickMember(userId)
+    return await (await this.pickGroup(groupId)).kickMember?.(userId)
   },
 
   /** 群员信息对象 */
   async getMemberObj(group) {
-    return Object.fromEntries(await (await this.pickGroup(group)).getMemberMap())
+    return Object.fromEntries(await (await this.pickGroup(group)).getMemberMap?.() ?? new Map())
   },
 
   /** 返回群用户昵称 */

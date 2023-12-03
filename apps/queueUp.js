@@ -1,4 +1,5 @@
 import { Path, Check, common, file } from '../components/index.js'
+import UCPlugin from '../model/UCPlugin.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -11,7 +12,7 @@ export default class UCQueueUp extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?UC创建排队$/i,
+          reg: /^#?(UC)?创建排队$/i,
           fnc: 'setQueueUp'
         },
         {
@@ -19,15 +20,15 @@ export default class UCQueueUp extends UCPlugin {
           fnc: 'queueUp'
         },
         {
-          reg: /^#?完成$/,
+          reg: /^#?(UC)?完成$/,
           fnc: 'finishQueueUp'
         },
         {
-          reg: /^#?UC(开启|关闭|结束)排队$/i,
+          reg: /^#?(UC)?(开启|关闭|结束)排队$/i,
           fnc: 'OCQueueUp'
         },
         {
-          reg: /^#?UC排队信息$/i,
+          reg: /^#?(UC)?排队信息$/i,
           fnc: 'getQueueUpInfo'
         },
         {
@@ -45,7 +46,7 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async setQueueUp(e) {
-    if (!this.verify()) return false
+    if (!this.verifyPermission()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (info && info.ing) return e.reply('上次排队尚未结束，请先结束再创建', true)
@@ -59,8 +60,9 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async queueUp(e) {
+    if (!this.verifyLevel()) return false
     let userId = e.sender.user_id
-    if (e.at && this.verify()) {
+    if (e.at && this.verifyPermission()) {
       userId = e.at
     }
     const queueUpData = getData()
@@ -76,7 +78,7 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async finishQueueUp(e) {
-    if (!e.at || !this.verify()) return false
+    if (!e.at || !this.verifyPermission()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (!info || !info.ing) return false
@@ -94,7 +96,7 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async OCQueueUp(e) {
-    if (!this.verify()) return false
+    if (!this.verifyPermission()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (!info) return e.reply('本群尚未创建排队', true)
@@ -107,21 +109,21 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async getQueueUpInfo(e) {
-    if (!this.verify()) return false
+    if (!this.verifyPermission()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (!info) return e.reply('本群尚未创建排队', true)
     const memberData = await common.getMemberObj(e.group)
     const playersInfo = info.joining
       .map((player, index) => {
-        let memInfo = memberData[player]
-        let name = memInfo.card || memInfo.nickname
+        const memInfo = memberData[player]
+        const name = memInfo.card || memInfo.nickname
         return `${index + 1}、${name}（${player}）`
       })
     const finishedInfo = info.finished
       .map((player, index) => {
-        let memInfo = memberData[player]
-        let name = memInfo.card || memInfo.nickname
+        const memInfo = memberData[player]
+        const name = memInfo.card || memInfo.nickname
         return `${index + 1}、${name}（${player}）`
       })
     const title = '排队信息'
@@ -140,6 +142,7 @@ export default class UCQueueUp extends UCPlugin {
   }
 
   async getList(e) {
+    if (!this.verifyLevel()) return false
     const queueUpData = getData()
     const info = queueUpData[e.group_id]
     if (!info) return e.reply('本群尚未创建排队', true)
@@ -147,8 +150,8 @@ export default class UCQueueUp extends UCPlugin {
     const memberData = await common.getMemberObj(e.group)
     const playersInfo = info.joining
       .map((player, index) => {
-        let memInfo = memberData[player]
-        let name = memInfo.card || memInfo.nickname
+        const memInfo = memberData[player]
+        const name = memInfo.card || memInfo.nickname
         return `${index + 1}、${name}（${player}）`
       })
     const index = info.joining.indexOf(e.sender.user_id)

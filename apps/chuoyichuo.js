@@ -86,18 +86,20 @@ export default class UCChuoyichuo extends UCPlugin {
       e,
       name: 'UC-chuoyichuo',
       dsc: '戳一戳回复',
+      Cfg: 'config.chuoyichuo',
       event: 'notice.group.poke'
     })
     this.redisData = '[UC]chuoyichuo'
   }
 
   async accept(e) {
-    if (!this.config.chuoyichuo.isOpen) return false
+    const Cfg = this.Cfg
+    if (!Cfg.isOpen) return false
+    if (!this.verifyLevel()) return false
     if (e.target_id !== this.qq) return false
     log.whiteblod('戳一戳生效')
-    let count = await Data.redisGet(this.redisData + e.group_id, 0) || 0
+    let count = await Data.redisGet(this.redisData + e.group_id, 0)
     Data.redisSet(this.redisData + e.group_id, ++count, UCDate.EXsecondes)
-    const Cfg = this.config.chuoyichuo
     if (Cfg.isAutoSetCard) {
       e.group.setCard(this.qq, `${this.BotName}|${Cfg.groupCard.replace('num', count)}`)
     }

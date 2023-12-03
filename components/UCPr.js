@@ -1,6 +1,6 @@
 import { Data, Path, file } from './index.js'
 import defaultCfg from '../../../lib/config/config.js'
-import UCfetch from '../defSet/system/serve.js'
+import UCfetch from '../system/serve.js'
 import _ from 'lodash'
 
 /** 各配置数据 */
@@ -68,16 +68,18 @@ function getNewConfig(mode) {
 }
 
 /** 群配置 */
-const groupConfig = {}
+const groupCFG = {}
 
 /** 系统数据 */
 const UCPr = {
+  /** 数据状态 */
+  status: false,
   /** UC-plugin */
   Plugin_Name: 'UC-plugin',
   /** UCPr */
   Author: 'UCPr',
   /** 初始化数据 */
-  init: () => {
+  init: async () => {
     getNewConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))
     Data.watch(Path.GAconfigyaml, () => getNewConfig(2))
@@ -89,26 +91,41 @@ const UCPr = {
       const yamlPath = Path.get('groupCfg', yaml)
       const newYamlData = file.YAMLreader(yamlPath)
       const name = Path.parse(yaml).name
-      groupConfig[name] = newYamlData
+      groupCFG[name] = newYamlData
       Data.watch(yamlPath, () => {
-        groupConfig[name] = file.YAMLreader(yamlPath)
-        log.whiteblod(`修改设置文件${yaml}`)
+        groupCFG[name] = file.YAMLreader(yamlPath)
+        log.whiteblod(`修改群设置文件${yaml}`)
       })
       // 合并新增配置
       const newData = _.merge({}, { config, GAconfig }, newYamlData)
       if (!_.isEqual(newYamlData, newData)) {
-        file.YAMLsaver(yaml, newData)
+        setTimeout(() => file.YAMLsaver(yamlPath, newData), 100)
       }
     }
-    Data.watchDir(Path.groupCfg, (yaml) => {
-      groupConfig[Path.parse(yaml).name] = file.YAMLreader(yaml)
-      Data.watch(yaml, () => (groupConfig[Path.parse(yaml).name] = file.YAMLreader(yaml)))
+    const watcher = await Data.watchDir(Path.groupCfg, (yamlPath) => {
+      const { name, base } = Path.parse(yamlPath)
+      groupCFG[name] = file.YAMLreader(yamlPath)
+      log.whiteblod(`新增群设置文件${base}`)
+      Data.watch(yamlPath, () => {
+        groupCFG[name] = file.YAMLreader(yamlPath)
+        log.whiteblod(`修改群设置文件${base}`)
+      })
     })
+    if (!_.isBoolean(watcher)) {
+      watcher.on('unlink', (yamlPath) => {
+        const { name, base } = Path.parse(yamlPath)
+        delete groupCFG[name]
+        UCPr.temp.watcher[yamlPath].close()
+        log.whiteblod(`删除群设置文件${base}`)
+      })
+    } else {
+      log.error('监听groupCfg群设置文件夹错误，文件夹不存在')
+    }
     if (UCPr.isWatch) {
       Data.watch(Path.helpjs, () => getNewConfig(5))
       Data.watch(Path.cfgjs, () => getNewConfig(6))
     }
-    UCPr.temp.status = true
+    UCPr.status = true
   },
 
   /**
@@ -122,8 +139,6 @@ const UCPr = {
 
   /** 挂载临时数据，实现数据共享 */
   temp: {
-    /** 状态 */
-    status: false,
     /** UC监听项 */
     watcher: {},
     /** 签名崩溃检测计时器 */
@@ -131,7 +146,16 @@ const UCPr = {
   },
 
   /** 群配置 */
-  groupConfig,
+  groupCFG(groupId) {
+    if (!groupCFG[groupId]) return UCPr.defaultCFG
+    return _.merge({}, groupCFG[groupId], CFG.lock)
+  },
+
+  /** 默认所有全局配置 */
+  get defaultCFG() {
+    const { config, GAconfig } = CFG
+    return { config, GAconfig }
+  },
 
   /** config.yaml */
   get config() {

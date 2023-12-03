@@ -19,7 +19,7 @@ let prefix = ''
  */
 function s(field, label, component, bottomHelpMessage, componentProps = {}, optional = { required: false, helpMessage: undefined }) {
   field = cfgPrefix + prefix + field
-  let display = {
+  const display = {
     field,
     label,
     component,
@@ -31,7 +31,7 @@ function s(field, label, component, bottomHelpMessage, componentProps = {}, opti
 
 function sPRO(name, _prefix = 'use.', options = [true, true, true, true, true, true], name_prefix = '') {
   const info = []
-  for (let i in judgeProperty) {
+  for (const i in judgeProperty) {
     if (!options[i]) continue
     info.push(s(_prefix + judgeProperty[i], name_prefix + judgeInfo[i], 'Switch',
       judgeHelpInfo[i] + name, {},

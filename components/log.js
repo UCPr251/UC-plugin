@@ -21,7 +21,7 @@ function getFncChain(error) {
 const log = {
   /** 普通红色 */
   red(...log) {
-    logger.info(chalk.red('[UC]' + common.toString(log, true, '，')))
+    logger.mark(chalk.red('[UC]' + common.toString(log, true, '，')))
   },
 
   /** 全局logger.mark方法 */
@@ -60,33 +60,33 @@ const log = {
   /** 普通紫色 */
   purple(...log) {
     if (UCPr.log) {
-      logger.info(logger.magenta('[UC]' + common.toString(log, true, '，')))
+      logger.mark(logger.magenta('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 普通黄色 */
   yellow(...log) {
     if (UCPr.log) {
-      logger.info(chalk.yellow('[UC]' + common.toString(log, true, '，')))
+      logger.mark(chalk.yellow('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 普通蓝色 */
   blue(...log) {
     if (UCPr.log) {
-      logger.info(chalk.blue('[UC]' + common.toString(log, true, '，')))
+      logger.mark(chalk.blue('[UC]' + common.toString(log, true, '，')))
     }
   },
 
   /** 蓝色加粗 */
   bluebold(...log) {
-    logger.info(chalk.blue.bold('[UC]' + common.toString(log, true, '，')))
+    logger.mark(chalk.blue.bold('[UC]' + common.toString(log, true, '，')))
   },
 
   /** 普通白色 */
   white(...log) {
     if (UCPr.log) {
-      logger.info('[UC]' + common.toString(log, true, ''))
+      logger.mark('[UC]' + common.toString(log, true, ''))
     }
   },
 

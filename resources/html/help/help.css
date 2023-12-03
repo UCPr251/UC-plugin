@@ -33,11 +33,11 @@ body {
   background-position-x: 50%;
   background-position-y: 50%;
   background-repeat: no-repeat; 
-  background-size: auto 123%; 
+  background-size: auto 136%; 
 }
 
 .head-box .id-text {
-  font-size: 42px;
+  font-size: 36px;
   font-style: italic;
   letter-spacing: 3px;
   color: rgba(255, 255, 255, 0.8);

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Path, Check, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
 import UCPlugin from '../model/UCPlugin.js'
 import { segment } from 'icqq'
@@ -33,6 +32,7 @@ export default class UCBlivePush extends UCPlugin {
       e,
       name: 'UC-BlivePush',
       dsc: 'B站直播推送',
+      Cfg: 'config.BlivePush',
       rule: [
         {
           reg: '^#?直播推送测试$',
@@ -78,7 +78,7 @@ export default class UCBlivePush extends UCPlugin {
       ]
     })
     this.task = {
-      name: 'B站直播检测',
+      name: 'BlivePush',
       cron: `0 */${parseInt(UCPr.BlivePush.mins) || 4} * * * ?`,
       fnc: this.bLivePush.bind(this)
     }
@@ -104,6 +104,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bQueryUp(e) {
+    if (!this.verifyLevel()) return false
     const uid = e.msg.match(/\d+/)[0]
     const data = await getUpInfo.call(this, uid)
     if (data === false) return false
@@ -123,8 +124,8 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveSubscribe(e) {
-    if (!this.verify(this.config.BlivePush)) return false
-    const [location_id, room_id, type] = await getIdType(e)
+    if (!this.verifyPermission(this.Cfg.use)) return false
+    const [location_id, room_id, type] = await this.getIdType(e)
     if (!room_id) {
       return e.reply('请输入正确的直播间id')
     }
@@ -141,7 +142,7 @@ export default class UCBlivePush extends UCPlugin {
     if (!up_data) return e.reply(this.fetchErrReply)
     const nickname = up_data.data.up.uid
     if (!up_data.data?.up?.uid) {
-      let msg = [`订阅失败，直播间id：${room_id}不存在`]
+      const msg = [`订阅失败，直播间id：${room_id}不存在`]
       const up_info = await getUpInfo.call(this, room_id)
       if (up_info === false) return false
       if (up_info === null) return e.reply(this.fetchErrReply)
@@ -175,8 +176,8 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveDelete(e) {
-    if (!this.verify(this.config.BlivePush)) return false
-    const [location_id, room_id, type] = await getIdType(e)
+    if (!this.verifyPermission(this.Cfg.use)) return false
+    const [location_id, room_id, type] = await this.getIdType(e)
     if (location_id.length < 5 || location_id.length > 10) {
       return e.reply('请输入正确的推送群号')
     }
@@ -217,10 +218,11 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveList(e) {
+    if (!this.verifyLevel()) return false
     if (isNaN(e.msg.replace(/#?(直播)?推送列表/, ''))) {
       return false
     }
-    const [location_id, type] = await getIdType(e, false)
+    const [location_id, type] = await this.getIdType(e, false)
     if (location_id.length < 5 || location_id.length > 10) {
       return e.reply('请输入正确的推送群号')
     }
@@ -232,17 +234,17 @@ export default class UCBlivePush extends UCPlugin {
     const title = `${loc}：${location_id}直播推送订阅列表：\n\n`
     let reply = title + Data.makeArrStr(data[location_id].room.map(v => `${v.nickname}-${v.room_id}`))
     if (type === 'Group') reply += `\n${data[location_id].atAll ? '已' : '未'}开启直播推送艾特全员`
-    reply += `\n\n直播推送当前处于${this.config.BlivePush[`is${type}`] && data[location_id].push ? '开启' : '关闭'}状态`
+    reply += `\n\n直播推送当前处于${this.Cfg[`is${type}`] && data[location_id].push ? '开启' : '关闭'}状态`
     return e.reply(reply)
   }
 
   async bLiveSwitch(e) {
-    if (!this.verify(this.config.BlivePush)) return false
+    if (!this.verifyPermission(this.Cfg.use)) return false
     const regtest = e.msg.match(/推送(.*)/)[1]
     if (isNaN(regtest)) return false
-    const [location_id, type] = await getIdType(e, false)
+    const [location_id, type] = await this.getIdType(e, false)
     const loc = type === 'Group' ? '群聊' : '私聊'
-    if (!this.config.BlivePush[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
+    if (!this.Cfg[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
     const data = getData(type)
     if (!data[location_id]) {
       return e.reply(`${loc}：${location_id}未订阅直播间，订阅直播间自动开启推送`)
@@ -367,7 +369,8 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiving(e) {
-    const [location_id, type] = await getIdType(e, false)
+    if (!this.verifyLevel()) return false
+    const [location_id, type] = await this.getIdType(e, false)
     if (location_id.length < 5 || location_id.length > 10) {
       return e.reply('请输入正确的推送群号')
     }
@@ -403,8 +406,8 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveAtall(e) {
-    if (!this.verify(this.config.BlivePush)) return false
-    let [location_id, type] = await getIdType(e, false)
+    if (!this.verifyPermission(this.Cfg.use)) return false
+    let [location_id, type] = await this.getIdType(e, false)
     if (type == 'Private') {
       if (e.sender.user_id === location_id) {
         return e.reply('只能在群里开启直播推送艾特全员哦~')
@@ -427,6 +430,20 @@ export default class UCBlivePush extends UCPlugin {
     return e.reply(`成功${mode ? '开启' : '关闭'}群聊${location_id}的直播推送艾特全员`)
   }
 
+  async getIdType(e, isRoom = true) {
+    const numMatch = e.msg.match(/\d+/g)
+    const type = e.isGroup ? 'Group' : 'Private'
+    const self = e.group_id || this.userId
+    const isAppoint = numMatch && this.GM
+    if (!isRoom) {
+      const location_id = isAppoint ? numMatch[0] : self
+      return [location_id, type]
+    }
+    const room_id = numMatch ? numMatch[0] : null
+    const location_id = isAppoint ? (numMatch[1] ? numMatch[1] : self) : self
+    return [location_id, room_id, type]
+  }
+
 }
 
 function getData(type) {
@@ -439,21 +456,6 @@ function savaData(type, data) {
 
 function getUpInfo(uid) {
   return Data.getUpInfo.call(this, uid)
-}
-
-async function getIdType(e, isRoom = true) {
-  const numMatch = e.msg.match(/\d+/g)
-  const type = e.isGroup ? 'Group' : 'Private'
-  const user = e.sender.user_id
-  const self = e.group_id || user
-  const isAppoint = numMatch && this.GM
-  if (!isRoom) {
-    const location_id = isAppoint ? numMatch[0] : self
-    return [location_id, type]
-  }
-  const room_id = numMatch ? numMatch[0] : null
-  const location_id = isAppoint ? (numMatch[1] ? numMatch[1] : self) : self
-  return [location_id, room_id, type]
 }
 
 async function atall(isGroup, loc, msg, info) {

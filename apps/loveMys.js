@@ -38,7 +38,7 @@ export default class UCLoveMys extends UCPlugin {
     })
     if (Check.floder(loveMys)) {
       this.task = {
-        name: '刷新loveMys验证码统计',
+        name: 'loveMys',
         fnc: this.refresh.bind(this),
         cron: '0 0 0 * * ?'
       }
@@ -47,7 +47,6 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   _verify() {
-    if (!this.GM) return false
     if (!Check.floder(loveMys)) {
       this.reply('请先安装loveMys插件，指令：#UC安装过码')
       return false
@@ -60,18 +59,20 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   async loveMysHelp(e) {
+    if (!this.verifyLevel()) return false
     const hlepMsg = 'UC-plugin过码管理\n安装过码：#UC安装过码\n注入token：#UC注入过码tk你的tk\n查询剩余次数：#UC验证码查询\n更新过码插件：#UC更新过码'
     return e.reply(hlepMsg)
   }
 
   async installLoveMys(e) {
-    if (!this.GM) return false
+    if (!this.verifyLevel(4)) return false
     if (Check.floder(loveMys)) return e.reply('你已安装该插件，无需再次安装')
     Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
     return e.reply('安装成功，重启后生效')
   }
 
   async insertApiToken(e) {
+    if (!this.verifyLevel(4)) return false
     if (!this._verify()) return false
     const yamlData = file.YAMLreader(apiyaml)
     const isApi = /api/i.test(e.msg)
@@ -95,6 +96,7 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   async queryToken(e) {
+    if (!this.verifyLevel(4)) return false
     if (!this._verify()) return false
     const { api, token } = file.YAMLreader(apiyaml)
     if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
@@ -110,8 +112,9 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   async gitpull(e) {
+    if (!this.verifyLevel(4)) return false
     if (!this._verify()) return false
-    let Update_Plugin = new update()
+    const Update_Plugin = new update()
     Update_Plugin.e = e
     Update_Plugin.reply = e.reply
     if (Update_Plugin.getPlugin(Plugin_Name)) {

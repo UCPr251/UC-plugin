@@ -4,11 +4,6 @@ import { judgeProperty } from '../components/Admin.js'
 import { CFG } from '../components/UCPr.js'
 import _ from 'lodash'
 
-const map = new Map()
-map.set(0, '无权限')
-map.set(1, '管理权限')
-map.set(2, '主人权限')
-
 export default class UCAdmin extends UCPlugin {
   constructor(e) {
     super({
@@ -17,16 +12,16 @@ export default class UCAdmin extends UCPlugin {
       dsc: 'UC插件管理系统',
       rule: [
         {
-          reg: /^#?UC(设置|(增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d+)?(\s+\d+)?/i,
-          fnc: 'accredit'
+          reg: /^#?UC((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?(\s+\d{5,10})?/i,
+          fnc: 'groupPermission'
         },
         {
-          reg: /^#?UC全局(设置|(增|添)?加|删除?|减)(主人|黑名单|管理员?)\d*$/i,
-          fnc: 'globalAccredit'
+          reg: /^#?UC全局((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?$/i,
+          fnc: 'globalPermission'
         },
         {
-          reg: /^#?UC(全局)?(主人|管理员?|黑名单)列表$/i,
-          fnc: 'list'
+          reg: /^#?UC(全局)?(主人|管理员?|黑名单)列表(\d{5,10})?$/i,
+          fnc: 'permissionList'
         },
         {
           reg: /^#?UC查(\d*)$/i,
@@ -65,7 +60,7 @@ export default class UCAdmin extends UCPlugin {
     return false
   }
 
-  async accredit(e) {
+  async groupPermission(e) {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
@@ -74,22 +69,20 @@ export default class UCAdmin extends UCPlugin {
     if (!userId) return e.reply('请艾特或指定要操作的对象')
     const groupId = numMatch?.[1] ?? e.group_id
     if (!groupId) return e.reply('请同时指定要设置的群')
-    const isAdd = /设置|加/.test(e.msg)
-    if (type === 'BlackQQ') {
-      if (isAdd === Check.str(UCPr.BlackQQ[groupId], userId)) {
-        return e.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
-      }
-      Admin.balckQQ(groupId, userId, isAdd)
-    } else {
-      if (isAdd === Check.str(UCPr[type][userId], groupId)) {
-        return e.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
-      }
-      Admin.group(type, userId, groupId, isAdd)
+    const isAdd = /加/.test(e.msg)
+    if (!UCPr.groupCFG(groupId)) {
+      Admin.newConfig(groupId)
+      await common.sleep(0.1)
     }
-    return e.reply(`操作成功，群聊${groupId}${name}${isAdd ? '新增' : '删除'}<${userId}>`)
+    if (isAdd === Check.str(UCPr.groupCFG(groupId)[type], userId)) {
+      return e.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
+    }
+    Admin.newConfig(groupId)
+    Admin.groupPermission(type, userId, groupId, isAdd)
+    return e.reply(`操作成功，群聊${groupId}${isAdd ? '新增' : '删除'}${name}<${userId}>`)
   }
 
-  async globalAccredit(e) {
+  async globalPermission(e) {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
@@ -99,62 +92,87 @@ export default class UCAdmin extends UCPlugin {
     if (isAdd === Check.str(UCPr[`Global${type}`], userId)) {
       return e.reply(`全局${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
-    Admin.global(type, userId, isAdd)
+    Admin.globalPermission(type, userId, isAdd)
     return e.reply(`操作成功，全局${name}${isAdd ? '新增' : '删除'}<${userId}>`)
   }
 
   /** 按照全局或群查找 */
-  async list(e) {
+  async permissionList(e) {
     const { type, name, need } = this.getInfo()
-    if (!this.verifyLevel(need)) return false
-    const groupId = e.group_id ?? e.msg.match(/\d+/)?.[0]
+    if (!this.verifyLevel(need > 3 ? 3 : need)) return false
+    const numMatch = e.msg.match(/\d+/)
+    const groupId = e.group_id ?? (this.GM ? numMatch?.[0] : undefined)
     const title = `UC插件${name}列表`
     let replyMsg
     if ((/全局/.test(e.msg) || !groupId) && this.level === 4) {
-      const { global, globalLen, group, groupLen } = Admin.list(type)
+      const { global, globalLen, group, groupLen } = Admin.permissionList(type)
       const info = title + `\n总计${globalLen}个全局${name}\n${groupLen}个群${name}配置`
       replyMsg = await common.makeForwardMsg(e, [info, '全局：', ...global, '指定群：', ...group], title)
     } else if (!groupId) {
       return e.reply('请指定群号或于群内使用本功能')
     } else {
-      const cfg = UCPr[type]
-      let list
-      if (name === 'BlackQQ') {
-        list = cfg[groupId]
-      } else {
-        list = _.sortBy(_.keys(_.pickBy(cfg, v => Check.str(v, groupId))))
-      }
+      const list = UCPr.groupCFG(groupId).permission?.[type]
+      if (!list) return e.reply(`群${groupId}尚未生成群配置`)
       if (_.isEmpty(list)) return e.reply(`群聊${groupId}${name}列表为空`)
       const memberObj = await common.getMemberObj(groupId)
       const listInfo = {}
       list.forEach(user => {
         const name = memberObj[user]?.card || memberObj[user]?.nickname || user
-        listInfo.user = name
+        listInfo[name] = user
       })
       const info = Data.makeObjStr(listInfo, { isSort: true, chunkSize: 50 })
-      replyMsg = await common.makeForwardMsg(e, [title, ...info], title)
+      replyMsg = await common.makeForwardMsg(e, [title + `（群${groupId}）`, ...info], title)
     }
     return e.reply(replyMsg)
   }
 
   async searchUser(e) {
-    if (e.atme || !this.GM) return false
+    if (e.atme) return false
+    if (!this.verifyLevel(3)) return false
     const numMatch = e.msg.match(/\d+/)
-    const userId = e.at || numMatch?.[0]
-    if (!userId) return e.reply('请艾特或指定需要查询的用户')
-    const isBlack = Check.str(UCPr.BlackQQ, userId)
-    const userPermission = Check.globalLevel(userId)
-    let replyMsg = `用户${userId}：${map.get(userPermission)}`
-    if (userPermission === 1) {
-      let info = UCPr.Admin[userId]
-      replyMsg += `\n权限范围：${info ? info.join('、') : '全局管理'}`
+    const userId = e.at || (this.GM ? numMatch?.[0] : undefined)
+    if (!userId) return e.reply(`请艾特${this.GM ? '或指定' : ''}需要查询的用户`)
+    const level = Check.levelSet(userId, this.groupId)
+    const replyMsg = []
+    let title = `用户${userId}权限`
+    if (!this.GM) {
+      if (!Check.file(Admin.getCfgPath(this.groupId))) {
+        return e.reply(`群${this.groupId}尚未生成群配置`)
+      }
+      title += `（群${this.groupId}）\n\n`
+      if (level.has(3)) {
+        replyMsg.push('群插件主人')
+      }
+      if (level.has(1)) {
+        replyMsg.push('群插件管理')
+      }
+      if (level.has(-1)) {
+        replyMsg.push('群插件黑名单用户')
+      }
+      return e.reply(title + Data.empty(replyMsg.join('\n')))
     }
-    if (userPermission !== 2) replyMsg += '\n黑名单：' + isBlack
-    return e.reply(replyMsg)
+    if (level.has(4)) replyMsg.push('全局插件主人')
+    if (UCPr.Master[userId]) {
+      const info = UCPr.Master[userId]
+      replyMsg.push('群插件主人，权限范围：\n\t' + Data.makeArr(info).join('\n\t'))
+    }
+    if (level.has(2)) replyMsg.push('全局插件管理')
+    if (UCPr.Admin[userId]) {
+      const info = UCPr.Admin[userId]
+      replyMsg.push('群插件管理，权限范围：\n\t' + Data.makeArr(info).join('\n\t'))
+    }
+    if (level.has(-2)) replyMsg.push('全局插件黑名单用户')
+    if (UCPr.BlackQQ[userId]) {
+      const info = UCPr.BlackQQ[userId]
+      replyMsg.push('群插件黑名单，权限范围：\n\t' + Data.makeArr(info).join('\n\t'))
+    }
+    if (_.isEmpty(replyMsg)) return e.reply(title + '无')
+    const msg = await common.makeForwardMsg(e, [title, ...replyMsg], title)
+    return e.reply(msg)
   }
 
   async errorLog(e) {
-    if (!this.M) return false
+    if (!this.verifyLevel(4)) return false
     if (/删除/.test(e.msg)) {
       Data.delErrorLog()
       return e.reply('删除成功')
@@ -166,8 +184,8 @@ export default class UCAdmin extends UCPlugin {
   }
 
   async UC_HELP(e) {
-    if (this.B) return false
-    const data = Help.get(e)
+    if (!this.verifyLevel()) return false
+    const data = Help.get(e, this.groupId)
     if (!data) return
     return await common.render(e, data)
   }
@@ -176,14 +194,15 @@ export default class UCAdmin extends UCPlugin {
     if (!this.verifyLevel(1)) return false
     // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
     let isGlobal = /全局/.test(e.msg)
-    if (isGlobal && !this.verifyLevel(4)) return false
+    if (isGlobal && !this.GM) return false
     const str1 = e.msg.replace(/#?UC(全局)?设置/i, '').trim()
     const group = new RegExp(Cfg.groupReg, 'i').exec(str1)?.[0] ?? ''
     log.debug('修改设置group：' + group)
     const str2 = str1.replace(group, '').trim()
     const set = Cfg.settingReg(group).exec(str2)?.[0] ?? ''
     log.debug('修改设置set：' + set)
-    const num = e.msg.match(/\d{5,10}/)?.[0]
+    const str3 = str2.replace(set, '').trim()
+    const num = str3.match(/\d{5,10}/)?.[0]
     const groupId = this.GM ? (num ?? e.group_id) : e.group_id
     if (!groupId) {
       if (this.GM) isGlobal = true
@@ -196,7 +215,6 @@ export default class UCAdmin extends UCPlugin {
       if (setData) {
         // 获取新设置值
         let operation
-        const str3 = str2.replace(set, '').trim()
         if (setData.type === 'switch') {
           if (/开启|启动/.test(str3)) operation = true
           else if (/关闭|禁用/.test(str3)) operation = false
@@ -256,11 +274,11 @@ export default class UCAdmin extends UCPlugin {
     if (isLock === (_.get(lock, lockPath) !== undefined)) {
       return e.reply(`锁定设置中${isLock ? '已经' : '不'}存在<${lockPath}>`)
     } else if (!/config/.test(spArr[0])) {
-      return e.reply('请以config/GAconfig开头，用点号.连接每个键')
+      return e.reply('请以config/GAconfig开头，用点号连接每个键')
     } else if (_.get(UCPr, lockPath) === undefined) {
       return e.reply(`无效路径${lockPath}`)
     }
-    Admin.lock(lockPath, isLock)
+    Admin.lockConfig(lockPath, isLock)
     return e.reply(`成功${isLock ? '锁定' : '解锁'}${lockPath}`)
   }
 

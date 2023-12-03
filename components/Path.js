@@ -14,7 +14,7 @@ const groupAdmin = path.join(apps, 'groupAdmin')
 const config = path.join(UC, 'config')
 const groupCfg = path.join(config, 'groupCfg')
 const defSet = path.join(UC, 'defSet')
-const system = path.join(defSet, 'system')
+const system = path.join(UC, 'system')
 const helpjs = path.join(system, 'help.js')
 const cfgjs = path.join(system, 'cfg.js')
 const servesyaml = path.join(system, 'serves.yaml')
@@ -77,17 +77,17 @@ const Path = {
   groupCfg,
   /** ./defSet */
   defSet,
-  /** ./defSet/system */
+  /** ./system */
   system,
-  /** ./defSet/system/help.js */
+  /** ./system/help.js */
   helpjs,
-  /** ./defSet/system/cfg.js */
+  /** ./system/cfg.js */
   cfgjs,
-  /** ./defSet/system/serves.yaml */
+  /** ./system/serves.yaml */
   servesyaml,
-  /** ./defSet/system/UC_plugin_decrypt */
+  /** ./system/UC_plugin_decrypt */
   UC_plugin_decrypt,
-  /** ./defSet/system/UC_plugin_decrypt/decrypt.yaml */
+  /** ./system/UC_plugin_decrypt/decrypt.yaml */
   decryptyaml,
   /** ./resources */
   resources,

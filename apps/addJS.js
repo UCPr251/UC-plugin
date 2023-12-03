@@ -1,5 +1,6 @@
-import { Path, Data, Check, common } from '../components/index.js'
+import { Path, Data, Check, common, UCPr } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
+import { loadJs, unloadJs } from './reloadJSs.js'
 
 export default class UCAddJS extends UCPlugin {
   constructor(e) {
@@ -40,7 +41,8 @@ export default class UCAddJS extends UCPlugin {
         return this.reply(`你已经安装过[UC]${filename}插件了，是否覆盖原插件？[是|否]`)
       }
       if (await Data.download(fileUrl, Path.apps, filename)) {
-        this.reply(`操作成功，新增UC-plugin/apps/${filename}，重启后生效`)
+        if (!UCPr.isWatch) loadJs(Path.get('apps', filename))
+        this.reply(`操作成功，新增UC-plugin/apps/${filename}，已自动载入该插件`)
         Data.refresh()
       } else {
         this.reply(this.errorReply)
@@ -50,10 +52,12 @@ export default class UCAddJS extends UCPlugin {
   }
 
   async makeSure() {
-    if (this.e.msg === '是') {
+    if (this.isSure()) {
       const { fileUrl, filename } = this.getContext().makeSure
+      if (!UCPr.isWatch) unloadJs(Path.get('apps', filename))
       if (await Data.download(fileUrl, Path.apps, filename)) {
-        this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，重启后生效`)
+        if (!UCPr.isWatch) loadJs(Path.get('apps', filename))
+        this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，已自动载入该插件`)
         Data.refresh()
       } else {
         this.reply(this.errorReply)

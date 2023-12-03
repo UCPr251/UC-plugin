@@ -63,6 +63,7 @@ export default class UCQsignRestart extends UCPlugin {
       e,
       name: 'UC-qsignRestart',
       dsc: '监听qsign端口和消息回复报错自动重启签名',
+      Cfg: 'config.qsignRestart',
       rule: [
         {
           reg: /^#?(UC)?(开启|关闭)签名自动重启$/i,
@@ -82,11 +83,11 @@ export default class UCQsignRestart extends UCPlugin {
   }
 
   init() {
-    const cfg = UCPr.qsignRestart
-    if (cfg.isAutoOpen) {
-      if (Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
-        if (cfg.switch1) UCPr.temp.intervalId = setInterval(checkQsignPort, UCPr.qsignRestart.sleep * 1000)
-        if (cfg.switch2) {
+    const Cfg = UCPr.qsignRestart
+    if (Cfg.isAutoOpen) {
+      if (Check.file(Path.join(Cfg.qsign || Path.qsign, Cfg.qsingRunner))) {
+        if (Cfg.switch1) UCPr.temp.intervalId = setInterval(checkQsignPort, Cfg.sleep * 1000)
+        if (Cfg.switch2) {
           replaceReply()
           isCheckMsg = true
         }
@@ -97,36 +98,34 @@ export default class UCQsignRestart extends UCPlugin {
   async restart(e) {
     if (!this.GM) return false
     const isOpen = /开启/.test(e.msg)
-    const cfg = UCPr.qsignRestart
     if (isOpen) {
-      if (!Check.file(Path.join(cfg.qsign || Path.qsign, cfg.qsingRunner))) {
+      if (!Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {
         return e.reply('请根据本地配置在锅巴，UC-plugin配置中修改签名启动器路径及名称')
       }
       if (UCPr.temp.intervalId || isCheckMsg) {
         return e.reply('当前已经开启签名自动重启')
       }
       this.setContext(this.setFnc)
-      return e.reply(`请确认签名配置：\n监听host：${cfg.host}\n监听port：${cfg.port}\n签名路径：${cfg.qsign || Path.qsign}\n签名启动器名称：${cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
+      return e.reply(`请确认签名配置：\n监听host：${this.Cfg.host}\n监听port：${this.Cfg.port}\n签名路径：${this.Cfg.qsign || Path.qsign}\n签名启动器名称：${this.Cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
     } else {
       if (!UCPr.temp.intervalId && !isCheckMsg) {
         return e.reply('当前未启动签名自动重启')
       }
-      if (cfg.switch1) clearInterval(UCPr.temp.intervalId)
-      if (cfg.switch2) isCheckMsg = false
+      if (this.Cfg.switch1) clearInterval(UCPr.temp.intervalId)
+      if (this.Cfg.switch2) isCheckMsg = false
       return e.reply('已关闭签名自动重启，将不再自动重启签名')
     }
   }
 
   async verify() {
     if (this.isCancel()) return false
-    const cfg = UCPr.qsignRestart
     if (/确认|确定/.test(this.e.msg)) {
       const choices = []
-      if (cfg.switch1) {
-        UCPr.temp.intervalId = setInterval(checkQsignPort, cfg.sleep * 1000)
+      if (this.Cfg.switch1) {
+        UCPr.temp.intervalId = setInterval(checkQsignPort, this.Cfg.sleep * 1000)
         choices.push('签名崩溃检测')
       }
-      if (cfg.switch2) {
+      if (this.Cfg.switch2) {
         replaceReply()
         isCheckMsg = true
         choices.push('签名异常检测')
@@ -173,7 +172,7 @@ function replaceReply() {
             if (e.isGuild) {
               text = e.sender?.nickname
             } else {
-              let info = e.group.pickMember(at).info
+              const info = e.group.pickMember(at).info
               text = info?.card ?? info?.nickname
             }
             text = lodash.truncate(text, { length: 10 })
@@ -217,7 +216,7 @@ function replaceReply() {
             logger.warn(err)
           })
         } else {
-          let friend = e.bot.fl.get(e.user_id)
+          const friend = e.bot.fl.get(e.user_id)
           if (!friend) return
           return await e.bot.pickUser(e.user_id).sendMsg(msg).catch((err) => {
             logger.warn(err)

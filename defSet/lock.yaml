@@ -19,3 +19,5 @@ config:
       isA: true
       isGA: true
       isE: false
+  bigjpg:
+    apiKey: null

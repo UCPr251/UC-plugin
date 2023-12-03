@@ -19,14 +19,15 @@ const judgeHelpInfo = [
 
 export { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo }
 
-let tempData = {}
+const tempData = {}
 
 /**
  * 防抖保存设置文件，主要用于系统循环多次调用Admin.config，后覆盖前
  * @param {'config'|'GAconfig'|'permission'} [cfg='config'] 需要修改的配置文件
  * @param {Object} data 新数据
+ * @param {Function} fnc 保存新数据后的回调函数
  */
-function saver(cfg, data) {
+function saver(cfg, data, fnc) {
   if (!tempData[cfg]) {
     tempData[cfg] = {}
   }
@@ -36,7 +37,10 @@ function saver(cfg, data) {
     clearTimeout(tempData[cfg].timer)
     tempData[cfg].data = _.merge({}, tempData[cfg].data, data)
   }
-  tempData[cfg].timer = setTimeout(() => file.YAMLsaver(Path[`${cfg}yaml`], tempData[cfg].data), 100)
+  tempData[cfg].timer = setTimeout(() => {
+    file.YAMLsaver(Path[`${cfg}yaml`], tempData[cfg].data)
+    setImmediate(() => fnc && fnc(), 100)
+  }, 100)
 }
 
 /** 对config设置的Admin操作 */
@@ -50,13 +54,19 @@ const Admin = {
     const configPath = this.getCfgPath(groupId)
     if (!Check.file(configPath)) {
       const { config, GAconfig } = UCPr
-      file.YAMLsaver(configPath, { config, GAconfig })
+      const newGroupCfg = { config, GAconfig }
+      newGroupCfg.permission = {
+        Master: [],
+        Admin: [],
+        BlackQQ: []
+      }
+      file.YAMLsaver(configPath, newGroupCfg)
     }
   },
 
   /** 修改群设置 */
   groupCfg(groupId, path, operation, cfg) {
-    const groupConfig = UCPr.groupConfig[groupId]
+    const groupConfig = UCPr.groupCFG(groupId)
     if (!groupConfig) return log.warn('[Admin.groupCfg]群配置不存在：', groupId)
     const old = _.get(groupConfig[cfg], path)
     if (old !== undefined) {
@@ -78,14 +88,13 @@ const Admin = {
    */
   globalCfg(path, operation, cfg = 'config') {
     const config = UCPr[cfg]
-    if (!config) return log.warn('[Admin.config]错误参数：', path, cfg)
+    if (!config) return log.warn('[Admin.globalCfg]错误参数：', path, cfg)
     const old = _.get(config, path)
     if (old !== undefined) {
       if (!_.isEqual(old, operation)) {
         log.debug(`修改${cfg}文件${path}为` + common.toString(operation))
         _.set(config, path, operation)
-        saver(cfg, config)
-        Data.refreshLock()
+        saver(cfg, config, Data.refreshLock)
         return true
       }
     }
@@ -93,11 +102,74 @@ const Admin = {
   },
 
   /**
+   * 指定群加减主人、管理、黑名单
+   * @param {'Master'|'Admin'|'BlackQQ'} type
+   * @param {number} userId
+   * @param {number} groupId
+   * @param {boolean} isAdd
+   */
+  groupPermission(type, userId, groupId, isAdd) {
+    log.debug(`[Admin][groupPermission]群${groupId}${isAdd ? '加' : '减'}${type}：${userId}`)
+    userId = Number(userId)
+    groupId = Number(groupId)
+    if (!userId || !groupId) return log.warn('[Admin][group]错误参数', userId, groupId)
+    // 修改全局config
+    const permission = UCPr.permission
+    if (!permission[type]) permission[type] = {}
+    const cfg = permission[type]
+    if (isAdd) {
+      if (!_.isArray(cfg[userId])) cfg[userId] = []
+      cfg[userId].push(groupId)
+      cfg[userId] = _.sortBy(cfg[userId])
+    } else {
+      Data.remove(cfg[userId], groupId)
+      if (_.isEmpty(cfg[userId])) {
+        delete cfg[userId]
+      }
+    }
+    saver('permission', permission)
+    // 修改群config
+    if (!UCPr.groupCFG(groupId)) this.newConfig(groupId)
+    setTimeout(() => {
+      const _cfg = UCPr.groupCFG(groupId)
+      if (!_cfg) return log.warn('无群设置信息：' + groupId)
+      const _permission = _cfg.permission
+      if (isAdd) {
+        if (!_.isArray(_permission[type])) _permission[type] = []
+        _permission[type].push(userId)
+        _permission[type] = _.sortBy(_permission[type])
+      } else {
+        Data.remove(_permission[type], userId)
+      }
+      file.YAMLsaver(this.getCfgPath(groupId), _cfg)
+    }, 100)
+    return true
+  },
+
+  /**
+   * 加减全局主人、管理、黑名单
+   * @param {'Master'|'Admin'|'BlackQQ'} type
+   * @param {string} userId 操作的用户
+   * @param {boolean} isAdd 增删
+   */
+  globalPermission(type, userId, isAdd = true) {
+    type = `Global${type}`
+    userId = Number(userId)
+    const permission = UCPr.permission
+    if (isAdd) {
+      permission[type] = _.sortBy(permission[type].push(userId))
+    } else {
+      Data.remove(permission[type], userId)
+    }
+    saver('permission', permission)
+  },
+
+  /**
    * 锁定设置属性对应值
    * @param {*} path 属性路径，包含config/GAconfig
    * @param {boolean} isLock true锁定false解锁
    */
-  lock(path, isLock) {
+  lockConfig(path, isLock) {
     const lockCfg = UCPr.lock
     if (isLock) {
       const globalCfg = _.get(UCPr, path)
@@ -110,8 +182,8 @@ const Admin = {
     file.YAMLsaver(Path.lockyaml, lockCfg)
   },
 
-  /** 获取管理列表 */
-  list(type) {
+  /** 获取全局主人、管理或黑名单列表 */
+  permissionList(type) {
     const global = UCPr[`Global${type}`]
     const cfg = UCPr[type]
     return {
@@ -120,72 +192,6 @@ const Admin = {
       group: Data.makeArrStr(Data.makeObj(cfg), { chunkSize: 20, length: 500 }),
       groupLen: Object.keys(cfg).length
     }
-  },
-
-  /**
-   * 指定群加减主人、管理
-   * @param {'Master'|'Admin'} type
-   * @param {number} userId
-   * @param {boolean} isAdd
-   */
-  group(type, userId, groupId, isAdd) {
-    log.debug(`[Admin][group]群${groupId}${isAdd ? '加' : '减'}${type === 'Master' ? '主人' : '管理'}：${userId}`)
-    userId = Number(userId)
-    groupId = Number(groupId)
-    if (!userId || !groupId) return log.warn('[Admin][group]错误参数', userId, groupId)
-    const permission = UCPr.permission
-    if (!permission[type]) permission[type] = {}
-    const cfg = permission[type]
-    if (isAdd) {
-      cfg[userId] = _.sortBy((cfg[userId] || []).push(groupId))
-    } else {
-      Data.remove(cfg[userId], groupId)
-      if (_.isEmpty(cfg[userId])) {
-        delete cfg[userId]
-      }
-    }
-    saver('permission', permission)
-    return true
-  },
-
-  /** 指定群新增黑名单用户 */
-  balckQQ(groupId, userId, isAdd) {
-    log.debug(`[Admin][balckQQ]群${groupId}${isAdd ? '加' : '减'}黑名单：${userId}`)
-    groupId = Number(groupId)
-    userId = Number(userId)
-    if (!groupId || !userId) return log.warn('[Admin][balckQQ]错误参数', groupId, userId)
-    const permission = UCPr.permission
-    const BlackQQ = permission.BlackQQ
-    if (!BlackQQ[groupId]) BlackQQ[groupId] = []
-    const black = BlackQQ[groupId]
-    if (isAdd) {
-      black.push(userId)
-    } else {
-      Data.remove(black, userId)
-    }
-    BlackQQ[groupId] = _.sortBy(black)
-    saver('permission', permission)
-    return true
-  },
-
-  /**
-   * 加减全局主人、管理
-   * @param {'Master'|'Admin'|'BlackQQ'} type
-   * @param {string|Array} userId 操作的用户
-   * @param {boolean} isAdd 增删
-   */
-  global(type, userId, isAdd = true) {
-    type = `Global${type}`
-    userId = _.castArray(userId).map(Number)
-    const permission = UCPr.permission
-    if (!permission[type]) permission[type] = []
-    const cfg = permission[type]
-    if (isAdd) {
-      permission[type] = _.uniq(_.concat(cfg, userId))
-    } else {
-      permission[type] = _.difference(cfg, userId)
-    }
-    saver('permission', permission)
   }
 
 }

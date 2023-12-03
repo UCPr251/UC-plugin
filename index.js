@@ -7,20 +7,16 @@ global.UCPlugin = UCPlugin
 /** 日志 */
 global.log = log
 
-let files = await Data.init()
+const files = await Data.init()
 
-if (Array.isArray(UCPr.permission.GlobalMaster)) {
-    file.copyFileSync(Path.get('defSet', 'permission.yaml'), Path.get('config', 'permission.yaml'))
+if (Array.isArray(UCPr.permission.Master)) {
+    file.copyFileSync(Path.get('defSet', 'permission.yaml'), Path.permissionyaml)
 }
 
 log.blue('---------------------')
 log.purple(`-------${Path.Plugin_Name}载入中--------`)
 
 let ret = []
-
-if (UCPr.isWatch) {
-    files = ['reloadJSs.js']
-}
 
 files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}`)))
 
@@ -49,7 +45,7 @@ if (status) {
     log.bluebold('┃    ║      ║     ║          ┃')
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
-    log.purple(`-------成功载入${jsCount}个js-------`)
+    log.purple(`-------成功载入${jsCount}个js--------`)
     log.blue('---------------------')
 }
 

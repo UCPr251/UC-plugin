@@ -9,6 +9,7 @@ export default class UCSwitchBot extends UCPlugin {
       name: 'UC-switchBot',
       dsc: '指定群开关Bot',
       event: 'message.group',
+      Cfg: 'config.switchBot',
       rule: [
         {
           reg: `^#?${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})$`,
@@ -23,7 +24,7 @@ export default class UCSwitchBot extends UCPlugin {
   }
 
   async openBot(e) {
-    if (!this.verify(this.config.switchBot)) return false
+    if (!this.verifyPermission(this.Cfg.use)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (!data[e.group_id] || !_.get(data, `${e.group_id}.enable`)) {
       return e.reply('当前已经是开启状态了哦~', true)
@@ -33,17 +34,17 @@ export default class UCSwitchBot extends UCPlugin {
       delete data[e.group_id]
     }
     file.YAMLsaver(Path.groupyaml, data)
-    return e.reply(this.config.switchBot.openMsg.replace('BotName', this.BotName))
+    return e.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
   }
 
   async closeBot(e) {
-    if (!this.verify(this.config.switchBot)) return false
+    if (!this.verifyPermission(this.Cfg.use)) return false
     const data = file.YAMLreader(Path.groupyaml)
     if (_.isEqual(_.get(data, `${e.group_id}.enable`), ['UC-switchBot'])) {
       return e.reply('当前已经是关闭状态了哦~', true)
     }
     _.set(data, `${e.group_id}.enable`, ['UC-switchBot'])
     file.YAMLsaver(Path.groupyaml, data)
-    return e.reply(this.config.switchBot.closeMsg.replace('BotName', this.BotName))
+    return e.reply(this.Cfg.closeMsg.replace('BotName', this.BotName))
   }
 }

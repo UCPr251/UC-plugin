@@ -1,5 +1,5 @@
-import { Data, Path, Check } from '../../components/index.js'
-import { judgeInfo } from '../../components/Admin.js'
+import { Data, Path, Check } from '../components/index.js'
+import { judgeInfo } from '../components/Admin.js'
 import _ from 'lodash'
 
 /**

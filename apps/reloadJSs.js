@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { Path, Check, file, UCPr, log, Data, common } from '../components/index.js'
 import UCPlugin from '../model/UCPlugin.js'
 import loader from '../../../lib/plugins/loader.js'
@@ -63,6 +64,7 @@ export default class UCReloadJSs extends UCPlugin {
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
         const jsName = Path.basename(newAppPath)
         log.yellow('新增插件：' + jsName)
+        await common.sleep(0.1)
         await loadJs(newAppPath)
         JSs.push(jsName)
         const watch = Data.watch(newAppPath, reloadJS.bind(loader, newAppPath))
@@ -203,7 +205,7 @@ async function reloadJSs(path, isWatch = true) {
  * 载入js并按照优先级重新排序
  * @param {string} jsPath 需要载入的JS路径
  */
-async function loadJs(jsPath) {
+export async function loadJs(jsPath) {
   const temp = await import(`file:///${jsPath}?${Date.now()}`)
   const app = temp.default ?? temp[Object.keys(temp)[0]]
   const plugin = new app()
@@ -234,7 +236,7 @@ async function loadJs(jsPath) {
  * 卸载JS并删除其定时任务
  * @param {string} jsPath 需要卸载的JS路径
  */
-async function unloadJs(jsPath) {
+export async function unloadJs(jsPath) {
   const name = 'UC-' + Path.parse(jsPath).name
   const del = Data.remove(loader.priority, name, 'name')[0]
   if (del) {
@@ -254,9 +256,11 @@ async function unloadJs(jsPath) {
  * @param {string} jsPath JS路径
  */
 async function cancelTask(jsPath) {
-  const temp = await import(`file:///${jsPath}?${Date.now()}`)
-  const app = temp.default ?? temp[Object.keys(temp)[0]]
-  const plugin = new app()
+  const plugin = {
+    task: {
+      name: Path.parse(jsPath).name
+    }
+  }
   Data.cancelTask(plugin)
   delete tasks[jsPath]
 }

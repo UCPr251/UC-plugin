@@ -1,10 +1,15 @@
-import { Path, file, Check, UCDate } from '../components/index.js'
+import { Path, file, Check, UCDate, UCPr } from '../components/index.js'
 import Permission from './Permission.js'
 
 export default class Base {
   constructor(e = {}) {
     this.e = e
-    this.userId = Number(e?.sender?.user_id) || Number(e?.user_id)
+    /** 用户权限等级 */
+    this.level = Check.level.call(this)
+    /** 用户Id */
+    this.userId = e.sender?.user_id || e.user_id
+    /** 群id */
+    this.groupId = e.group_id
     this.model = Path.Plugin_Name
     this._path = Path._path.replace(/\\/g, '/')
     this.imgPath = Path.img.replace(/\\/g, '/')
@@ -16,16 +21,13 @@ export default class Base {
     return Permission.get(this.e, cfg)
   }
 
-  /** 用户权限等级 */
-  get power() {
-    if (Check.globalLevel.call(this, 2)) return 2
-    if (Check.Admin.call(this)) return 1
-    return 0
-  }
-
   /** 更新日志数据 */
   get changlogData() {
     return file.readFileSync(Path.join(Path.UC, 'CHANGELOG.md'))
+  }
+
+  get groupCFG() {
+    return UCPr.groupCFG(this.groupId)
   }
 
   /** 插件最近更新日期 */

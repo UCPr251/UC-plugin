@@ -28,7 +28,7 @@ export default class Cfg extends Base {
     const data = _.cloneDeep(CFG.cfgData)
     const { config, GAconfig } = UCPr
     const lock = UCPr.lock
-    const lockData = _.merge({}, UCPr.groupConfig[groupId] ?? { config, GAconfig }, lock)
+    const lockData = _.merge({}, UCPr.groupCFG(groupId) ?? { config, GAconfig }, lock)
     const cfg = isGlobal ? { config, GAconfig } : lockData
     // 挂载当前config数据
     for (const k in data) {

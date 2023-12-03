@@ -9,6 +9,8 @@ export default class Permission {
     this.sender = this.e.sender
     this.isGroup = this.e.isGroup
     this.userId = this.sender?.user_id ?? this.e.user_id
+    /** 权限级别Set */
+    this.levelSet = Check.levelSet.call(this)
     /** 权限级别 */
     this.level = Check.level.call(this)
     /** 是否允许私聊使用 */
@@ -36,30 +38,30 @@ export default class Permission {
   }
   /** 是否插件全局主人 */
   get GM() {
-    return this.level === 4
+    return this.levelSet?.has(4)
   }
   /** 是否插件主人 */
   get M() {
     if (this.GM) return true
-    return this.level === 3
+    return this.levelSet?.has(3)
   }
   /** 是否插件全局管理员 */
   get GA() {
-    return this.level === 2
+    return this.levelSet?.has(2)
   }
   /** 是否插件管理员 */
   get A() {
     if (this.GA) return true
-    return this.level === 1
+    return this.levelSet?.has(1)
   }
   /** 是否插件全局黑名单 */
   get GB() {
-    return this.level === -2
+    return this.levelSet?.has(-2)
   }
   /** 是否插件黑名单 */
   get B() {
     if (this.GB) return true
-    return this.level === -1
+    return this.levelSet?.has(-1)
   }
   /** 是否群管理员 */
   get isGroupAdmin() {
@@ -88,20 +90,28 @@ export default class Permission {
    */
   get isPer() {
     if (this.M) return true // 是主人
+    log.debug(93)
     if (UCPr.onlyMaster || this.B) return false // 是仅主人或黑名单
+    log.debug(95)
     if (this.isM && !this.M) return false // 是功能仅主人
+    log.debug(97)
     if (this.isGroup && !this.isG) return false // 不允许群聊
+    log.debug(99)
     if (!this.isGroup && !this.isP) return false // 不允许私聊
+    log.debug(101)
     if (this.isE) return true // 允许任何人
+    log.debug(103)
     if (this.A && this.isA) return true // 允许插件管理员
+    log.debug(105)
     if (this.isPow && this.isGA) return true // 允许群管理员
+    log.debug(107)
     return false // 无权限
   }
 
   /** 获取实例化数据 */
   static get(e, cfg) {
-    if (typeof cfg === 'string') {
-      cfg = _.get(UCPr.config, cfg, {})
+    if (typeof cfg === 'string' || _.isArray(cfg)) {
+      cfg = _.get(UCPr, cfg, {})
     }
     return new Permission(e, cfg)
   }
@@ -125,7 +135,7 @@ export default class Permission {
     recallMsg: 0
   }, judge = false) {
     if (judge) return this.reply(UCPr.noPerReply, option)
-    if (UCPr.onlyMaster && this.GA) return this.reply(UCPr.onlyMasterReply, option)
+    if (UCPr.onlyMaster && this.A) return this.reply(UCPr.onlyMasterReply, option)
     if (!this.isPer) return this.reply(UCPr.noPerReply, option)
     return true
   }

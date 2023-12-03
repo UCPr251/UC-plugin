@@ -1,6 +1,27 @@
 import file from './file.js'
 import UCPr from './UCPr.js'
 
+function getLevel(userId, groupId) {
+  const groupCfg = UCPr.groupCFG(groupId)
+  if (Check.str(UCPr.GlobalMaster, userId)) return 4
+  if (Check.str(groupCfg.permission?.Master, userId)) return 3
+  if (Check.str(UCPr.GlobalAdmin, userId)) return 2
+  if (Check.str(groupCfg.permission?.Admin, userId)) return 1
+  if (Check.str(UCPr.GlobalBlackQQ, userId)) return -2
+  if (Check.str(groupCfg.permission?.BlackQQ, userId)) return -1
+  return 0
+}
+
+const temp = {}
+
+function logLevel(userId, level) {
+  if (!UCPr.debugLog) return
+  if (temp[userId]) {
+    clearTimeout(temp[userId])
+  }
+  temp[userId] = setTimeout(() => log.debug(`用户${userId}权限等级：${level}`), 5)
+}
+
 /** 检查操作 */
 const Check = {
   /** 检查、递归创建文件夹 */
@@ -45,25 +66,28 @@ const Check = {
   },
 
   /**
-   * @returns {Set<6>}
+   * @returns {Set<7>}
    */
   levelSet(userId, groupId) {
     if (this.e) {
-      return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
+      return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
     }
     const level = new Set()
+    const groupCfg = UCPr.groupCFG(groupId)
     if (Check.str(UCPr.GlobalMaster, userId)) level.add(4)
-    if (Check.str(UCPr.permission.Master[userId], groupId)) level.add(3)
+    if (Check.str(groupCfg.permission?.Master, userId)) level.add(3)
     if (Check.str(UCPr.GlobalAdmin, userId)) level.add(2)
-    if (Check.str(UCPr.permission.Admin[userId], groupId)) level.add(1)
-    if (Check.str(UCPr.permission.BlackQQ[userId], groupId)) level.add(-1)
+    if (Check.str(groupCfg.permission?.Admin, userId)) level.add(1)
+    // level.add(0)
+    if (Check.str(groupCfg.permission?.BlackQQ, userId)) level.add(-1)
     if (Check.str(UCPr.GlobalBlackQQ, userId)) level.add(-2)
     return level
   },
 
   /**
    * 检查用户权限等级，不判断其他
-   * 返回权限等级绝对值最大值(黑名单优先)
+   * 不传群号则只检测全局权限等级
+   * 按照权限等级从大到小检查
    * @returns {number|boolean}
    * 全局主人：4
    * 群主人：3
@@ -81,14 +105,9 @@ const Check = {
     if (right !== undefined) {
       return Check.level(userId, groupId) >= right
     }
-    const levelSet = Check.levelSet(userId, groupId)
-    if (levelSet.has(4)) return 4
-    if (levelSet.has(3)) return 3
-    if (levelSet.has(-2)) return -2
-    if (levelSet.has(2)) return 2
-    if (levelSet.has(-1)) return -1
-    if (levelSet.has(1)) return 1
-    return 0
+    const level = getLevel(userId, groupId)
+    logLevel(userId, level)
+    return level
   },
 
   /** 检查用户全局权限，不判断其他 */

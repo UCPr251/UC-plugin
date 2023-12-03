@@ -9,38 +9,41 @@ export default class Help extends Base {
     this.model = 'help'
   }
 
-  static get(e) {
+  static get(e, groupId) {
     const help = new Help(e)
-    return help.getData()
+    return help.getData(groupId)
   }
 
   getIcon(iconNum) {
     return { x: -((iconNum - 1) % 10) * 50, y: -Math.floor((iconNum - 1) / 10) * 50 }
   }
 
-  getData() {
-    let data = _.cloneDeep(CFG.helpData.filter(group => _.get(UCPr, group.swh, true)))
-    const power = this.power
-    let iconNum = 0
+  getData(groupId) {
+    const config = UCPr.groupCFG(groupId) ?? UCPr
+    const data = _.cloneDeep(CFG.helpData.filter(group => {
+      // 筛选组
+      return this.level >= group.require && _.get(config, group.swh, true)
+    }))
+    // 筛选元素
     for (const i in data) {
       const filterPower = data[i].list.filter(groupInfo => {
         const { require, swh } = groupInfo
         // 功能开关判断
-        if (swh && !_.get(UCPr.config, swh, true)) return false
+        if (swh && !_.get(config[data[i].cfg], swh, true)) return false
         // 权限判断
         if (!require) return true
         if (typeof require === 'number') {
-          return power >= require
+          return this.level >= require
         }
-        const per = this.Permission(require)
+        const per = this.Permission(_.get(config[data[i].cfg], require, {}))
         log.debug(`[Help.getData]判断用户${per.userId} ${require}权限：${per.isPer}`)
         return per.isPer
       })
-      iconNum += filterPower.length
       data[i].list = filterPower
+      if (_.isEmpty(data[i].list)) data.splice(i, 1)
     }
-    data.iconNum = iconNum
-    const randomNumArr = Data.generateRandomArray(1, 350, data.iconNum)
+    const iconNum = data.reduce((a, b) => a + b.list.length, 0)
+    const randomNumArr = Data.generateRandomArray(1, 350, iconNum)
     let count = 0
     for (const group of data) {
       if (group?.list) {

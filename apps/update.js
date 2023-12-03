@@ -22,7 +22,7 @@ export default class UCUpdate extends UCPlugin {
 
   async update(e) {
     if (!this.GM) return false
-    let Update_Plugin = new update()
+    const Update_Plugin = new update()
     Update_Plugin.e = e
     Update_Plugin.reply = this.reply
     if (Update_Plugin.getPlugin(Path.Plugin_Name)) {

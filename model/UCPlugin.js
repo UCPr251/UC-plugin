@@ -1,6 +1,6 @@
-import { UCPr, log, Data } from '../components/index.js'
-import Permission from './Permission.js'
+import { UCPr, log, Data, Check } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
+import Permission from './Permission.js'
 import _ from 'lodash'
 
 /** UC插件plugin类 */
@@ -12,12 +12,16 @@ export default class UCPlugin extends plugin {
       dsc = 'UC插件',
       event = 'message',
       priority = UCPr.priority,
-      rule = []
+      rule = [],
+      Cfg
     } = cfg
     super({ name, dsc, event, priority, rule })
     this.UC = {}
     if (!e) return
-    if (e.msg) e.msg = Data.formatMsg(e)
+    if (e.msg) {
+      /** 格式化消息 */
+      this.msg = Data.formatMsg(e)
+    }
     /** Client */
     this.e = e
     /** 空cfg权限实例 */
@@ -30,7 +34,17 @@ export default class UCPlugin extends plugin {
     this.groupId = this.UC.groupId
     /** 是否群聊 */
     this.isGroup = e.isGroup
+    /** 群所有配置config, GAconfig, permission，无则全局 */
+    this.groupCFG = UCPr.groupCFG(this.groupId)
+    /** 群config配置，无则全局 */
+    this.config = this.groupCFG.config
+    /** 群GAconfig配置，无则全局 */
+    this.GAconfig = this.groupCFG.GAconfig
+    /** 群功能配置 */
+    this.Cfg = _.get(this.groupCFG, Cfg, {})
     if (!this.userId) return
+    /** 权限级别Set */
+    this.levelSet = this.UC.levelSet
     /** 权限级别 */
     this.level = this.UC.level
     /** 是否主人 */
@@ -50,20 +64,6 @@ export default class UCPlugin extends plugin {
   /** 插件使用权限 */
   get check() {
     return Data.check.call(this)
-  }
-
-  /** 获取config配置 */
-  get config() {
-    const configLock = UCPr.lock.config
-    const source = UCPr.groupConfig[this.groupId]?.config || UCPr.config
-    return _.merge({}, source, configLock)
-  }
-
-  /** 获取GAconfig配置 */
-  get GAconfig() {
-    const GAconfigLock = UCPr.lock.GAconfig
-    const source = UCPr.groupConfig[this.groupId]?.GAconfig || UCPr.GAconfig
-    return _.merge({}, source, GAconfigLock)
   }
 
   /** 用户无权限回复 */
@@ -105,23 +105,40 @@ export default class UCPlugin extends plugin {
     return await UCPr.fetch(urlCode, ...parameters)
   }
 
+  /** 检查是否全局主人 */
+  isGM(userId) {
+    return Check.Master(userId)
+  }
+
+  /** 检查是否全局管理 */
+  isGA(userId) {
+    return Check.Admin(userId)
+  }
+
+  /** 检查是否全局主黑名单 */
+  isGB(userId) {
+    return Check.BlackQQ(userId)
+  }
+
   /** 获取权限实例 */
   Permission(cfg = {}) {
     return Permission.get(this.e, cfg)
   }
 
   /** 默认权限判断(回复)? */
-  verify(cfg = {}, option = {
+  verifyPermission(cfg = {}, option = {
     isReply: true,
     quote: true,
     at: false,
     recallMsg: 0
   }) {
+    if (this.B) return false
     return Permission.verify(this.e, cfg, option)
   }
 
   /** 权限等级验证 */
   verifyLevel(need = 0) {
+    if (this.B) return false
     if (this.level < need) {
       this.e.reply(UCPr.noPerReply, true)
       return false
@@ -131,7 +148,7 @@ export default class UCPlugin extends plugin {
 
   /** 用户是否确认操作 */
   isSure(fnc) {
-    if (/确认|确定|确信|肯定/.test(this.e.msg)) {
+    if (/是|确认|确定|确信|肯定/.test(this.e.msg)) {
       fnc && fnc()
       return true
     }
