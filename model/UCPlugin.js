@@ -132,13 +132,14 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    if (this.B) return false
+    if (!this.verifyLevel()) return false
     return Permission.verify(this.e, cfg, option)
   }
 
   /** 权限等级验证 */
   verifyLevel(need = 0) {
     if (this.B) return false
+    if (UCPr.onlyMaster && !this.M) return false
     if (this.level < need) {
       this.e.reply(UCPr.noPerReply, true)
       return false
