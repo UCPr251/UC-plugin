@@ -137,12 +137,36 @@ const UCPr = {
     return await UCfetch.call(this, urlCode, parameters)
   },
 
-  /** 挂载临时数据，实现数据共享 */
+  /** 挂载临时数据 */
   temp: {
-    /** UC监听项 */
+    /** 事件监听器 */
+    event: {
+      'message.group': [],
+      'notice.group': [],
+      'request.group': []
+    },
+    /** 文件监听器 */
     watcher: {},
     /** 签名崩溃检测计时器 */
     intervalId: null
+  },
+
+  /** 注册监听事件 */
+  eventInit(eventClass) {
+    const app = new eventClass()
+    const events = this.temp.event[app.event]
+    if (!events) {
+      return log.warn('错误的监听事件：' + app.event)
+    }
+    Data.remove(events, app.name, 'name')
+    log.debug('注册监听事件：' + app.name)
+    events.push({
+      name: app.name,
+      class: eventClass,
+      rule: app.rule,
+      sub_type: app.sub_type,
+      accept: !!app.accept
+    })
   },
 
   /** 群配置 */

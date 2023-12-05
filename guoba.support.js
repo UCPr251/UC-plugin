@@ -29,7 +29,7 @@ function s(field, label, component, bottomHelpMessage, componentProps = {}, opti
   return _.merge({}, display, optional)
 }
 
-function sPRO(name, _prefix = 'use.', options = [true, true, true, true, true, true], name_prefix = '') {
+function sPRO(name, _prefix = 'use.', options = [1, 1, 1, 1, 1, 1], name_prefix = '') {
   const info = []
   for (const i in judgeProperty) {
     if (!options[i]) continue
@@ -84,7 +84,12 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
       '开启Bot的回复，BotName会被替换为上面设置的BotName的名称'),
     s('closeMsg', '关闭Bot回复', 'Input',
       '关闭Bot的回复，BotName会被替换为上面设置的BotName的名称'),
-    ...sPRO('群开关Bot', undefined, [false, false, true, true, true, false])
+    ...sPRO('群开关Bot', undefined, [0, 0, 1, 1, 1, 0]),
+    s('isPrefix', '响应前缀', 'Switch',
+      '在关闭群聊的情况下，以BotName开头的消息是否也响应'),
+    s('isAt', '响应艾特', 'Switch',
+      '在关闭群聊的情况下，以BotName开头的消息是否也响应'),
+    ...sPRO('响应前缀和响应艾特', 'closedCommand.', [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }
@@ -128,8 +133,8 @@ if (file.existsSync(Path.get('apps', 'randomWife.js'))) {
       '是否开启UC随机老婆'),
     s('wifeLimits', '老婆次数限制', 'InputNumber',
       '每日随机老婆次数限制，包括主人', { min: 1 }),
-    ...sPRO('#上传随机老婆', 'add.', [false, false, true, true, true, true], '上传 · '),
-    ...sPRO('#删除随机老婆', 'del.', [false, false, true, true, true, true], '删除 · ')
+    ...sPRO('#上传随机老婆', 'add.', [0, 0, 1, 1, 1, 1], '上传 · '),
+    ...sPRO('#删除随机老婆', 'del.', [0, 0, 1, 1, 1, 1], '删除 · ')
   ]
   js = js.concat(newCfg)
 }
@@ -149,7 +154,7 @@ if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
       '触发指令，#你设置的值 就可以触发该功能，修改后直接生效，英语字母大小写都可以触发'),
     s('reply', '回复内容', 'Input',
       '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）'),
-    ...sPRO('#随机群友', undefined, [false, false, true, true, true, true])
+    ...sPRO('#随机群友', undefined, [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }

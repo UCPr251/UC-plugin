@@ -1,5 +1,5 @@
 import { Path, Check, Data, UCDate, common } from '../components/index.js'
-import UCPlugin from '../model/UCPlugin.js'
+import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 
 export default class UCBigjpg extends UCPlugin {

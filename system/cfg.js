@@ -35,7 +35,7 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
 }
 /**
  * 对UC功能权限的设置
- * @param {string} [name='使用'] 权限名，仅展示，默认为“使用”，组装为：设置类name权限
+ * @param {string} [name='使用'] 权限名，仅展示，默认为“使用”，组装为：name权限
  * @param {string} [def=''] 默认值
  * @param {string} [_prefix=''] 权限path前缀，组装为：prefix_prefix
  * @param {Array} options 可配置项数组['群聊', '私聊', '仅主人', '插件管理', '群管理', '任何人']
@@ -275,7 +275,18 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
         'input',
         'BotName休息去啦~'
       ),
-      权限: sPRO('开关', '010', 'use', [2, 3, 4])
+      开关权限: sPRO('开关', '010', 'use', [2, 3, 4]),
+      响应前缀: s(
+        'isPrefix',
+        '响应前缀',
+        '在关闭群聊的情况下，以BotName开头的消息是否也响应'
+      ),
+      响应艾特: s(
+        'isAt',
+        '响应艾特',
+        '在关闭群聊的情况下，艾特机器人的消息是否也响应'
+      ),
+      响应权限: sPRO('响应', '0100', 'closedCommand', [2, 3, 4, 5])
     }
   }
 }

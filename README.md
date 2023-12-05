@@ -170,7 +170,7 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 ## 声明
 
-**请勿在其他公共场合传播本插件。**
+**请勿在其他任何公共场合传播本插件**
 
 </div>
 

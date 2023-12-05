@@ -5,25 +5,22 @@ import _ from 'lodash'
 
 /** UC插件plugin类 */
 export default class UCPlugin extends plugin {
-  constructor(cfg) {
-    const {
-      e,
-      name = 'UC-plugin-apps',
-      dsc = 'UC插件',
-      event = 'message',
-      priority = UCPr.priority,
-      rule = [],
-      Cfg
-    } = cfg
+  constructor({
+    e,
+    name = 'UC-plugin-apps',
+    dsc = 'UC插件',
+    event = 'message',
+    priority = UCPr.priority,
+    rule,
+    Cfg
+  }) {
     super({ name, dsc, event, priority, rule })
     this.UC = {}
     if (!e) return
-    if (e.msg) {
-      /** 格式化消息 */
-      this.msg = Data.formatMsg(e)
-    }
     /** Client */
     this.e = e
+    /** 格式化消息 */
+    this.msg = this.formatMsg()
     /** 空cfg权限实例 */
     this.UC = this.Permission()
     /** e.sender */
@@ -33,7 +30,7 @@ export default class UCPlugin extends plugin {
     /** 群号 */
     this.groupId = this.UC.groupId
     /** 是否群聊 */
-    this.isGroup = e.isGroup
+    this.isGroup = this.UC.isGroup
     /** 群所有配置config, GAconfig, permission，无则全局 */
     this.groupCFG = UCPr.groupCFG(this.groupId)
     /** 群config配置，无则全局 */
@@ -183,6 +180,34 @@ export default class UCPlugin extends plugin {
     log.debug('结束上下文hook：' + setContext)
     this.finish(setContext)
     return true
+  }
+
+  /** 格式化this.msg */
+  formatMsg() {
+    if (this.e.message) {
+      const msgArr = []
+      for (const msg of this.e.message) {
+        switch (msg.type) {
+          case 'text':
+            msgArr.push(msg.text?.replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim())
+            break
+          case 'image':
+            if (!this.img) {
+              this.img = []
+            }
+            this.img.push(msg.url)
+            break
+          case 'at':
+            this.at = msg.id ?? msg.qq
+            break
+          case 'file':
+            this.file = { name: msg.name, fid: msg.fid }
+            break
+          default: break
+        }
+      }
+      return msgArr.join(' ').replace(/\s+/g, ' ').trim()
+    }
   }
 
 }

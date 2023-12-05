@@ -64,6 +64,20 @@ switchBot:
     isA: true
     # 是否允许群原生管理员使用，关闭仅主人或插件群管理员可使用
     isGA: false
+  # 在关闭群聊的情况下，以BotName开头的消息是否也响应
+  isPrefix: true
+  # 在关闭群聊的情况下，艾特机器人的消息是否也响应
+  isAt: true
+  # 在关闭群聊且开启了上述两项(之一)的情况下，响应指令的权限配置
+  closedCommand:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: false
+    # 是否允许任何人
+    isE: false
 
 # 戳一戳设置
 chuoyichuo:

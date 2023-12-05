@@ -1,5 +1,6 @@
 import { Path, Data } from '../components/index.js'
 import { update } from '../../other/update.js'
+import { UCPlugin } from '../model/index.js'
 
 export default class UCUpdate extends UCPlugin {
   constructor(e) {

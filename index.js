@@ -1,9 +1,7 @@
 /* eslint-disable indent */
 import { Path, Data, log, UCPr, file } from './components/index.js'
-import UCPlugin from './model/UCPlugin.js'
+import { eventLoader } from './model/UCEvent.js'
 
-/** UC插件类 */
-global.UCPlugin = UCPlugin
 /** 日志 */
 global.log = log
 
@@ -14,7 +12,7 @@ if (Array.isArray(UCPr.permission.Master)) {
 }
 
 log.blue('---------------------')
-log.purple(`-------${Path.Plugin_Name}载入中--------`)
+log.purple(`----${Path.Plugin_Name} ${UCPr.version}载入中-----`)
 
 let ret = []
 
@@ -37,6 +35,8 @@ for (const i in files) {
     apps[name] = ret[i].value.default ?? ret[i].value[Object.keys(ret[i].value)[0]]
 }
 
+const groupAdminJs = await eventLoader()
+
 if (status) {
     log.bluebold('┎┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┒')
     log.bluebold('┃    ╦      ╦     ╔══════    ┃')
@@ -45,7 +45,8 @@ if (status) {
     log.bluebold('┃    ║      ║     ║          ┃')
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
-    log.purple(`-------成功载入${jsCount}个js--------`)
+    log.purple(`-------载入${jsCount}个一般js--------`)
+    log.purple(`-------载入${groupAdminJs}个群管js--------`)
     log.blue('---------------------')
 }
 

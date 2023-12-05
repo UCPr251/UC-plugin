@@ -29,6 +29,7 @@ const GAconfigyaml = path.join(config, 'GAconfig.yaml')
 const lockyaml = path.join(config, 'lock.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
+const temp = path.join(data, 'temp')
 const QA = path.join(data, 'QA')
 const bigjpg = path.join(data, 'bigjpg')
 const errorLogjson = path.join(data, 'errorLog.json')
@@ -36,13 +37,14 @@ const accreditjson = path.join(data, 'accredit.json')
 const BLPGroupjson = path.join(data, 'BLPGroup.json')
 const BLPPrivatejson = path.join(data, 'BLPPrivate.json')
 const queueUpjson = path.join(data, 'queueUp.json')
+const switchBotjson = path.join(data, 'switchBot.json')
 
 /** 路径配置，继承path */
 const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
@@ -55,6 +57,8 @@ const Path = {
   Plugin_Name,
   /** 云崽工作目录路径 */
   _path,
+  /** 云崽/config/config */
+  botConfig,
   /** 签名默认路径 */
   qsign,
   /** 云崽/plugins */
@@ -107,6 +111,8 @@ const Path = {
   permissionyaml,
   /** ./data */
   data,
+  /** ./data/temp */
+  temp,
   /** ./data/QA */
   QA,
   /** ./data/bigjpg */
@@ -120,7 +126,9 @@ const Path = {
   /** ./data/BLPPrivate.json */
   BLPPrivatejson,
   /** ./data/queueUp.json */
-  queueUpjson
+  queueUpjson,
+  /** ./data/switchBot.json */
+  switchBotjson
 }
 
 export default Path

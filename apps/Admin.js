@@ -196,7 +196,7 @@ export default class UCAdmin extends UCPlugin {
     let isGlobal = /全局/.test(e.msg)
     if (isGlobal && !this.GM) return false
     const str1 = e.msg.replace(/#?UC(全局)?设置/i, '').trim()
-    const group = new RegExp(Cfg.groupReg, 'i').exec(str1)?.[0] ?? ''
+    const group = new RegExp(Cfg.groupReg).exec(str1)?.[0] ?? ''
     log.debug('修改设置group：' + group)
     const str2 = str1.replace(group, '').trim()
     const set = Cfg.settingReg(group).exec(str2)?.[0] ?? ''

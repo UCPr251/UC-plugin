@@ -7,7 +7,9 @@ export default class Permission {
   constructor(e = {}, { isG = true, isP = false, isM = false, isA = false, isGA = false, isE = false }) {
     this.e = e
     this.sender = this.e.sender
-    this.isGroup = this.e.isGroup
+    /** 是否群聊 */
+    this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group'
+    /** 用户id */
     this.userId = this.sender?.user_id ?? this.e.user_id
     /** 权限级别Set */
     this.levelSet = Check.levelSet.call(this)
@@ -34,7 +36,7 @@ export default class Permission {
   /** 群号 */
   get groupId() {
     if (!this.isGroup) return null
-    return this.e.group_id
+    return this.e.group_id ?? this.e.group?.gid
   }
   /** 是否插件全局主人 */
   get GM() {
@@ -90,21 +92,13 @@ export default class Permission {
    */
   get isPer() {
     if (this.M) return true // 是主人
-    log.debug(93)
     if (UCPr.onlyMaster || this.B) return false // 是仅主人或黑名单
-    log.debug(95)
     if (this.isM && !this.M) return false // 是功能仅主人
-    log.debug(97)
     if (this.isGroup && !this.isG) return false // 不允许群聊
-    log.debug(99)
     if (!this.isGroup && !this.isP) return false // 不允许私聊
-    log.debug(101)
     if (this.isE) return true // 允许任何人
-    log.debug(103)
     if (this.A && this.isA) return true // 允许插件管理员
-    log.debug(105)
     if (this.isPow && this.isGA) return true // 允许群管理员
-    log.debug(107)
     return false // 无权限
   }
 

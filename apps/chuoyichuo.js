@@ -1,5 +1,5 @@
 import { Path, Data, UCDate, common, file, log } from '../components/index.js'
-import UCPlugin from '../model/UCPlugin.js'
+import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
