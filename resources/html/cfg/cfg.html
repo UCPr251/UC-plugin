@@ -29,7 +29,7 @@
             {{if cfgValue.lock}}
               <span class="cfg-hint-lock"> （已锁定） </span>
             {{else}}
-                <span class="cfg-hint"> #UC设置{{cfgGroupKey}}{{cfgKey}}
+                <span class="cfg-hint"> #UC{{if isGlobal}}全局{{/if}}设置{{cfgGroupKey}}{{cfgKey}}
                   {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
                 </span>
             {{/if}}
