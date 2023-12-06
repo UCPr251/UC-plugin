@@ -32,7 +32,7 @@
 - [直播推送·BlivePush](./apps/BlivePush.js)
 - [随机群友·randomMember](./apps/randomMember.js)
 - [随机老婆·randomWife](./apps/randomWife.js)
-- [AI语音·vitAI](./apps/vitsAI.js)
+- [AI语音·vitsAI](./apps/vitsAI.js)
 
 # 1.0.0
 
@@ -63,4 +63,4 @@
 - [直播推送·BlivePush](./apps/BlivePush.js)
 - [随机群友·randomMember](./apps/randomMember.js)
 - [随机老婆·randomWife](./apps/randomWife.js)
-- [AI语音·vitAI](./apps/vitsAI.js)
+- [AI语音·vitsAI](./apps/vitsAI.js)

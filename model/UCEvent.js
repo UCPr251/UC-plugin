@@ -55,13 +55,11 @@ async function dealMsg(type, e) {
 
 export async function eventLoader() {
   let count = 0
-  if (!UCPr.isWatch) {
-    const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
-    for (const file of files) {
-      import(`file:///${Path.groupAdmin}/${file}`)
-      count++
-    }
-  }
+  // const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
+  // for (const file of files) {
+  //   import(`file:///${Path.groupAdmin}/${file}`)
+  //   count++
+  // }
   Bot.on('message.group', (e) => {
     log.debug('接收事件：message.group')
     dealMsg('message.group', e)

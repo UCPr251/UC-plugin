@@ -27,24 +27,22 @@ async function addLog(msg = '') {
 }
 
 async function checkMsg(msg) {
-  if (ing || !isCheckMsg) return false
+  if (ing || !isCheckMsg) return
   if (/签名api异常/i.test(msg)) {
     if (++errorTimes >= (UCPr.qsignRestart?.errorTimes ?? 3)) {
       ing = true
+      errorTimes = 0
       log.red(`检测到签名异常${errorTimes}次，尝试重启签名`)
       killQsign()
       startQsign()
       addLog('签名异常')
-      setTimeout(() => {
-        ing = false
-        errorTimes = 0
-      }, 60000)
+      setTimeout(() => (ing = false), 60000)
     }
   }
 }
 
 async function checkQsignPort() {
-  if (ing) return false
+  if (ing) return
   const output = await Data.checkPort(UCPr.qsignRestart.port, UCPr.qsignRestart.host)
   if (output) {
     ing = true

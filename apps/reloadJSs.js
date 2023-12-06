@@ -206,29 +206,33 @@ async function reloadJSs(path, isWatch = true) {
  * @param {string} jsPath 需要载入的JS路径
  */
 export async function loadJs(jsPath) {
-  const temp = await import(`file:///${jsPath}?${Date.now()}`)
-  const app = temp.default ?? temp[Object.keys(temp)[0]]
-  const plugin = new app()
-  log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
-  const jsName = Path.basename(jsPath)
-  if (plugin.task.name) {
-    delete tasks[jsName]
-    const newTak = Data.reLoadTask(plugin)
-    const taskName = plugin.task.name ?? plugin.name
-    log.blue('[载入定时任务]' + taskName)
-    tasks[jsName] = {
-      name: taskName,
-      job: newTak.job
+  try {
+    const temp = await import(`file:///${jsPath}?${Date.now()}`)
+    const app = temp.default ?? temp[Object.keys(temp)[0]]
+    const plugin = new app()
+    log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
+    const jsName = Path.basename(jsPath)
+    if (plugin.task.name) {
+      delete tasks[jsName]
+      const newTak = Data.reLoadTask(plugin)
+      const taskName = plugin.task.name ?? plugin.name
+      log.blue('[载入定时任务]' + taskName)
+      tasks[jsName] = {
+        name: taskName,
+        job: newTak.job
+      }
     }
+    JSs.push(jsName)
+    plugin.init && plugin.init()
+    loader.priority.push({
+      class: app,
+      key: Path.Plugin_Name,
+      name: plugin.name,
+      priority: plugin.priority
+    })
+  } catch (err) {
+    log.error('载入插件错误：', err)
   }
-  JSs.push(jsName)
-  plugin.init && plugin.init()
-  loader.priority.push({
-    class: app,
-    key: Path.Plugin_Name,
-    name: plugin.name,
-    priority: plugin.priority
-  })
   order()
 }
 
