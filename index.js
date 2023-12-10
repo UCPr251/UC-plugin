@@ -46,7 +46,7 @@ if (status) {
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
     log.purple(`-------载入${jsCount}个一般js--------`)
-    log.purple(`-------载入${groupAdminJs}个群管js--------`)
+    // log.purple(`-------载入${groupAdminJs}个群管js--------`)
     log.blue('---------------------')
 }
 
