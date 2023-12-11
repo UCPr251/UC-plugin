@@ -74,7 +74,7 @@ export default class UCAdmin extends UCPlugin {
       Admin.newConfig(groupId)
       await common.sleep(0.1)
     }
-    if (isAdd === Check.str(UCPr.groupCFG(groupId)[type], userId)) {
+    if (isAdd === Check.str(UCPr.groupCFG(groupId).permission[type], userId)) {
       return e.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
     Admin.newConfig(groupId)
