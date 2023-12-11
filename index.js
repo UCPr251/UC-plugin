@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { Path, Data, log, UCPr, file } from './components/index.js'
-import { eventLoader } from './model/UCEvent.js'
+import { EventLoader } from './model/UCEvent.js'
 
 /** 日志 */
 global.log = log
@@ -35,7 +35,7 @@ for (const i in files) {
     apps[name] = ret[i].value.default ?? ret[i].value[Object.keys(ret[i].value)[0]]
 }
 
-const groupAdminJs = await eventLoader()
+const groupAdminJs = await EventLoader()
 
 if (status) {
     log.bluebold('┎┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┒')
@@ -45,8 +45,7 @@ if (status) {
     log.bluebold('┃    ║      ║     ║          ┃')
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
-    log.purple(`-------载入${jsCount}个一般js--------`)
-    // log.purple(`-------载入${groupAdminJs}个群管js--------`)
+    log.purple(`--------已载入${jsCount + groupAdminJs}个js---------`)
     log.blue('---------------------')
 }
 

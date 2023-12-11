@@ -97,6 +97,7 @@ const Admin = {
         saver(cfg, config, Data.refreshLock)
         return true
       }
+      return false
     }
     return log.warn(`操作失败：${cfg}配置中不存在${path}属性`)
   },
@@ -108,7 +109,7 @@ const Admin = {
    * @param {number} groupId
    * @param {boolean} isAdd
    */
-  groupPermission(type, userId, groupId, isAdd) {
+  groupPermission(type, userId, groupId, isAdd = true) {
     log.debug(`[Admin][groupPermission]群${groupId}${isAdd ? '加' : '减'}${type}：${userId}`)
     userId = Number(userId)
     groupId = Number(groupId)
@@ -120,14 +121,14 @@ const Admin = {
     if (isAdd) {
       if (!_.isArray(cfg[userId])) cfg[userId] = []
       cfg[userId].push(groupId)
-      cfg[userId] = _.sortBy(cfg[userId])
+      cfg[userId] = _.sortBy(_.uniq(cfg[userId]))
     } else {
       Data.remove(cfg[userId], groupId)
       if (_.isEmpty(cfg[userId])) {
         delete cfg[userId]
       }
     }
-    saver('permission', permission)
+    file.YAMLsaver(Path.permissionyaml, permission)
     // 修改群config
     if (!UCPr.groupCFG(groupId)) this.newConfig(groupId)
     setTimeout(() => {
@@ -137,7 +138,7 @@ const Admin = {
       if (isAdd) {
         if (!_.isArray(_permission[type])) _permission[type] = []
         _permission[type].push(userId)
-        _permission[type] = _.sortBy(_permission[type])
+        _permission[type] = _.sortBy(_.uniq(_permission[type]))
       } else {
         Data.remove(_permission[type], userId)
       }
@@ -161,7 +162,7 @@ const Admin = {
     } else {
       Data.remove(permission[type], userId)
     }
-    saver('permission', permission)
+    file.YAMLsaver(Path.permissionyaml, permission)
   },
 
   /**

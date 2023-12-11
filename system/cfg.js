@@ -125,7 +125,7 @@ const 系统 = {
     仅主人回复: s(
       'onlyMasterReply',
       '仅主人回复',
-      '仅主人可操作时，对本拥有权限的管理员的回复',
+      '开启仅主人可操作时，对其他使用者的回复内容',
       'input',
       '当前仅允许主人操作'
     ),
@@ -162,11 +162,170 @@ const 群管 = {
       'isOpen',
       '群管开关',
       '是否开启UC群管系统'
+    ),
+    超时时长: s(
+      'overTime',
+      '超时时长',
+      '群管上下文操作的超时时间',
+      'num',
+      120,
+      (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
     )
   }
 }
 
-const cfgData = { '': 系统 }
+const cfgData = { '': 系统, 群管 }
+
+if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
+  prefix = 'recall.'
+  cfgData.撤回 = {
+    title: '群管·撤回',
+    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管撤回开关',
+        '是否开启UC群管撤回'
+      ),
+      最大获取: s(
+        'FILTER_MAX',
+        '最大获取记录',
+        '允许递归获取的群聊天记录最大深度',
+        'num',
+        520
+      ),
+      默认清屏: s(
+        'defaultClear',
+        '默认清屏数量',
+        '清屏不指定数量时默认撤回数量',
+        'num',
+        10
+      ),
+      最大清屏: s(
+        'CLEAR_MAX',
+        '最大清屏数量',
+        '允许清屏数量的最大值',
+        'num',
+        100
+      ),
+      最大数量: s(
+        'RECALL_MAX',
+        '最大撤回数量',
+        '允许指定单人撤回的最大值',
+        'num',
+        20
+      ),
+      间隔: s(
+        'intervalTime',
+        '撤回间隔',
+        '批量撤回群消息的间隔时间，单位秒，建议大于等于0.1',
+        'num',
+        0.1,
+        (num) => Number(num.match(/(?:\d+\.)?\d+/)?.[0])
+      ),
+      权限: sPRO('使用', '0110', 'use', [2, 3, 4, 5])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
+  prefix = 'mute.'
+  cfgData.禁言 = {
+    title: '群管·禁言',
+    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管禁言开关',
+        '是否开启UC群管禁言'
+      ),
+      最长: s(
+        'MUTE_MAX',
+        '最大禁言时长',
+        '允许禁言最大时长，单位秒，默认一天（主人不限）',
+        'num',
+        86400
+      ),
+      默认: s(
+        'defaultMute',
+        '默认禁言时长',
+        '禁言不指定时长时默认禁言时长，单位秒',
+        'num',
+        60
+      ),
+      回复: s(
+        'muteReply',
+        '禁言回复',
+        '禁言回复，info会替换为 用户名（QQ），time会替换为禁言时长',
+        'input',
+        '已经把info拖进小黑屋枪毙time啦！'
+      ),
+      解禁回复: s(
+        'releaseReply',
+        '解禁回复',
+        '解禁时的回复，info会替换为 用户名（QQ）',
+        'input',
+        '成功解救info'
+      ),
+      全体回复: s(
+        'allMuteReply',
+        '全体禁言回复',
+        '全体禁言回复',
+        'input',
+        '全都不许说话了哦~'
+      ),
+      全体解禁回复: s(
+        'releaseAllMuteReply',
+        '全体解禁回复',
+        '全体解禁回复',
+        'input',
+        '好耶~可以说话辽~'
+      ),
+      全部解禁回复: s(
+        'releaseAllMutedReply',
+        '全部解禁回复',
+        '全部解禁回复，num会被替换为解禁群员的数量',
+        'input',
+        '归还了num名群员的清白之身！'
+      ),
+      权限: sPRO('禁言', '011', 'use', [2, 3, 4]),
+      全体权限: sPRO('全体禁言', '011', 'muteAll', [2, 3, 4])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
+  prefix = 'kick.'
+  cfgData.踢人 = {
+    title: '群管·踢人',
+    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管踢人开关',
+        '是否开启UC群管踢人'
+      ),
+      群拉黑: s(
+        'isAutoBlack',
+        '群同时拉黑',
+        '踢人是否同时在该群拉黑该用户'
+      ),
+      全局拉黑: s(
+        'isAutoGlobalBlack',
+        '全局拉黑',
+        '踢人是否同时在全局拉黑该用户'
+      ),
+      回复: s(
+        'kickReply',
+        '踢人回复',
+        '踢人回复',
+        'input',
+        '已经把这个坏惹踢掉了！'
+      ),
+      权限: sPRO('踢人', '011', undefined, [2, 3, 4])
+    }
+  }
+}
 
 cfg = 'config'
 
@@ -299,7 +458,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
       '': s(
         'isOpen',
         '戳一戳开关',
-        '是否启用UC戳一戳'
+        '是否开启UC戳一戳'
       ),
       更新群名片: s(
         'isAutoSetCard',
@@ -319,7 +478,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳回复文本+图片的概率，可选0-1',
         'num',
         0.8,
-        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
       ),
       次数图片概率: s(
         'chuoimg',
@@ -327,7 +486,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '触发文本+图片回复时在文本前加上被戳次数的概率，独立于其他概率，可选0-1',
         'num',
         0.2,
-        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
       ),
       头像表情包概率: s(
         'face',
@@ -335,7 +494,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳回复头像表情包概率，可选0-1',
         'num',
         0.1,
-        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
       ),
       禁言概率: s(
         'mute',
@@ -343,7 +502,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳禁言对方概率，可选0-1。1-(文本图片+表情包+禁言)即为反击概率',
         'num',
         0.05,
-        (num) => Math.min(1, Number(num.match(/(?:0.)?\d+/)?.[0]))
+        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
       ),
       禁言时长: s(
         'muteTime',

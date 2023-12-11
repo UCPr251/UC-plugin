@@ -1,4 +1,4 @@
-import { log, UCDate, file, Path } from './index.js'
+import { log, UCDate, file, Path, UCPr } from './index.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import _ from 'lodash'
 
@@ -11,59 +11,54 @@ const common = {
 
   /**
    * 发送消息
-   * @param {number} loc 位置id，如群号、Q号
-   * @param {Array} msg 要发送的消息
-   * @param {'Group' | 'Private'} type
+   * @param {number} loc 群号、Q号
+   * @param {Array|string} msg 要发送的消息
+   * @param {'Group'|'Private'} type
    */
   async sendMsgTo(loc, msg, type) {
-    if (type === 'Group') {
-      Bot.pickGroup(loc).sendMsg(msg)
-        .catch((err) => {
-          log.error('发送群消息错误' + err.message)
-        })
-    } else {
-      Bot.pickUser(loc).sendMsg(msg)
-        .catch((err) => {
-          log.error('发送私聊消息错误' + err.message)
-        })
-    }
+    Bot[`send${type}Msg`](loc, msg).catch((err) => {
+      log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误：`, err)
+    })
   },
 
   /** 转换为字符串 */
-  toString(value, every = false, sep = '\n') {
-    if (every && _.isArray(value)) return value.map(v => this.toString(v)).join(sep)
+  toString(value, sep = '，') {
+    if (_.isArray(value)) return value.map(v => this.toString(v, sep)).join(sep)
     if (_.isPlainObject(value)) return JSON.stringify(value, null, 2)
     return _.toString(value)
   },
 
-  /** sender是否是管理员或群主 */
-  isGroupAdmin(e) {
-    return e.sender?.role === 'admin' || e.sender?.role === 'owner'
-  },
-
   /** 获取群实例 */
-  async pickGroup(group) {
+  pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
-      if (!Number(group)) return false
-      group = await Bot.pickGroup(group)
+      if (!Number(group)) return {}
+      group = Bot.pickGroup(group)
     }
     return group
   },
 
+  isAdminOrOwner(obj) {
+    if (obj.role) {
+      return obj.role === 'admin' || obj.role === 'owner'
+    }
+    return obj.is_admin || obj.is_owner
+  },
+
   /** Bot是否是管理员或群主 */
-  async botIsGroupAdmin(group) {
-    group = await this.pickGroup(group)
-    return group.is_admin || group.is_owner
+  botIsGroupAdmin(group) {
+    if (!group) return false
+    group = this.pickGroup(group)
+    return this.isAdminOrOwner(group)
   },
 
   /** 指定群踢出群员 */
   async kickMember(groupId, userId) {
-    return await (await this.pickGroup(groupId)).kickMember?.(userId)
+    return await (this.pickGroup(groupId)).kickMember?.(userId)
   },
 
   /** 群员信息对象 */
   async getMemberObj(group) {
-    return Object.fromEntries(await (await this.pickGroup(group)).getMemberMap?.() ?? new Map())
+    return Object.fromEntries(await this.pickGroup(group).getMemberMap?.())
   },
 
   /** 返回群用户昵称 */
@@ -100,9 +95,9 @@ const common = {
 
   /** 删除群文件 */
   async rmGroupFile(group, fids) {
-    group = await this.pickGroup(group)
-    if (!await this.botIsGroupAdmin(group)) {
-      log.mark(`[common.rmGroupFile]无群${group.gid}管理权限，删除文件取消`)
+    group = this.pickGroup(group)
+    if (!this.botIsGroupAdmin(group)) {
+      log.warn(`[common.rmGroupFile]无群${group.gid}管理权限，删除文件取消`)
       return false
     }
     _.castArray(fids).forEach(fid => group.fs.rm(fid))
@@ -114,6 +109,105 @@ const common = {
     if (!e || !data) return log.warn('[common.render]图片渲染输入格式错误')
     const base64 = await puppeteer.screenshot(data.tempPath ?? Path.Plugin_Name, data)
     return await e.reply(base64, cfg.quote, cfg)
+  },
+
+  /** 禁言群员，seconds为0则为解禁 */
+  async muteMember(userId, groupId, seconds) {
+    const groupClient = this.pickGroup(groupId)
+    const status = await groupClient.muteMember(userId, seconds)
+    if (!status) return false
+    return true
+  },
+
+  /** 获取禁言群员列表、信息 */
+  async getMuteList(group, isReturnInfo = false) {
+    const groupObj = await this.getMemberObj(group)
+    const mutelist = _.filter(groupObj, info => {
+      const time = info.shut_up_timestamp ?? info.shutup_time
+      return time !== 0 && (time - (Date.now() / 1000)) > 0
+    })
+    if (_.isEmpty(mutelist)) return []
+    if (!isReturnInfo) return mutelist
+    return mutelist.map(info => {
+      const time = info.shut_up_timestamp ?? info.shutup_time
+      const secondes = parseInt(time - Date.now() / 1000)
+      return [
+        segment.image(`https://q1.qlogo.cn/g?b=qq&s=100&nk=${info.user_id}`),
+        `\n昵称：${info.card || info.nickname}\n`,
+        `QQ：${info.user_id}\n`,
+        `禁言剩余时间：${UCDate.diff(secondes, 's').toStr()}\n`,
+        `禁言到期时间：${UCDate.getTime(secondes, 's')}`
+      ]
+    })
+  },
+
+  /** 解除指定群中所有成员的禁言状态 */
+  async releaseAllMute(group) {
+    const mutelist = await this.getMuteList(group)
+    const groupClient = this.pickGroup(group)
+    const start = mutelist.length
+    for (const mem of mutelist) {
+      await groupClient.muteMember(mem.user_id, 0)
+    }
+    const end = (await this.getMuteList(group)).length
+    return start - end
+  },
+
+  /**
+   * 获取群聊天消息数组，顺序由远到近
+   * @param {object} groupClient 群组对象
+   * @param {number} seq seq
+   * @param {number} num 获取记录所需数量
+   * @param {Array} [msgHistoryArr=[]] 初始数据
+   * @returns {Promise<Array>} 返回所需群聊信息数组
+   */
+  async getChatHistoryArr(groupClient, seq, num, msgHistoryArr = []) {
+    if (num > 20) {
+      const historyMsg = await groupClient.getChatHistory(seq, 20)
+      if (_.isEmpty(historyMsg)) return msgHistoryArr
+      msgHistoryArr = historyMsg.concat(msgHistoryArr)
+      return await this.getChatHistoryArr(groupClient, seq - 20, num - 20, msgHistoryArr)
+    }
+    return (await groupClient.getChatHistory(seq, num)).concat(msgHistoryArr)
+  },
+
+  /**
+   * 获取某人指定数量的群聊消息数组，顺序由近到远
+   * @param {object} group 群组对象
+   * @param {number} userId 用户id
+   * @param {number} seq seq
+   * @param {number} num 需要获取的消息数量
+   * @param {Array} msgHistoryArr 初始数据
+   * @param {number} count 获取群消息计数
+   * @returns {Promise<object[]>} 返回所需某人消息信息数组
+   */
+  async getPersonalChatHistoryArr(group, userId, seq, num, msgHistoryArr = [], count = 0) {
+    if (msgHistoryArr.length < num && count < UCPr.recall.FILTER_MAX) {
+      const chatHistoryMsg = await this.getChatHistoryArr(group, seq, 20)
+      if (_.isEmpty(chatHistoryMsg)) return msgHistoryArr.reverse()
+      const personalChatHistory = chatHistoryMsg.filter(msg => msg.user_id == userId)
+      msgHistoryArr = chatHistoryMsg.concat(personalChatHistory)
+      return await this.getPersonalChatHistoryArr(group, userId, seq - 20, num, msgHistoryArr, count + 20)
+    }
+    return msgHistoryArr.reverse().slice(0, num)
+  },
+
+  /**
+   * 批量撤回群消息
+   * @param {obj} groupClient 群组对象
+   * @param {Array} msgArr 消息数组
+   * @returns {Promise<number>} 撤回成功数量
+   */
+  async recallMsgArr(groupClient, msgArr) {
+    let count = 0
+    groupClient = this.pickGroup(groupClient)
+    const intervalTime = UCPr.recall.intervalTime ?? 0.2
+    for (const msgInfo of msgArr) {
+      await this.sleep(intervalTime)
+      const status = await groupClient.recallMsg(msgInfo.message_id)
+      if (status) count++
+    }
+    return count
   },
 
   /**
@@ -238,7 +332,7 @@ const common = {
       message
     }))
     /** 制作转发内容 */
-    forwardMsg = await (await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id)).makeForwardMsg(forwardMsg)
+    forwardMsg = await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id).makeForwardMsg(forwardMsg)
     /** 处理描述，icqq0.4.12及以上 */
     if (dec) {
       const detail = forwardMsg.data?.meta?.detail

@@ -67,7 +67,7 @@ export default class UCRandomWife extends UCPlugin {
     const wifes = getWifes()
     if (wifes.length === 0) return e.reply(err_reply)
     const imgFiles = wifes.filter(wife => !data_wifes.includes(wife))
-    if (imgFiles.length == 0) {
+    if (imgFiles.length === 0) {
       return e.reply('今日所有的老婆已经被娶完了哦，明天早点来吧！')
     }
     const wife_img = _.sample(imgFiles)

@@ -27,18 +27,20 @@ export default class Cfg extends Base {
   getData(groupId, isGlobal) {
     const data = _.cloneDeep(CFG.cfgData)
     const { config, GAconfig } = UCPr
-    const lock = UCPr.lock
-    const lockData = _.merge({}, UCPr.groupCFG(groupId) ?? { config, GAconfig }, lock)
-    const cfg = isGlobal ? { config, GAconfig } : lockData
+    const cfg = isGlobal ? { config, GAconfig } : UCPr.groupCFG(groupId)
     // 挂载当前config数据
     for (const k in data) {
       if (!isGlobal && data[k].GM) {
         delete data[k]
         continue
       }
+      if (data[k].isOpen && !data[k].isOpen(cfg)) {
+        delete data[k]
+        continue
+      }
       _.forEach(data[k].cfg, (value) => {
         const sp = _.trim(value.path, '.').split('.')
-        if (!isGlobal && (_.get(lock, [value.cfg, ...sp]) !== undefined)) {
+        if (!isGlobal && (_.get(UCPr.lock, [value.cfg, ...sp]) !== undefined)) {
           value.lock = true
         }
         if (value.type === 'power') {

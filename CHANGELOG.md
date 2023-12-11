@@ -1,3 +1,21 @@
+# 12-12
+
+- 修复[Admin](./apps/Admin.js)对指定群主人、管理、黑名单加减错误
+- 同步群管 **撤回、禁言、踢人** 的帮助图以及锅巴配置
+- 修复锅巴修改设置时控制台错误的警告信息
+- 修复锅巴修改设置时对权限设置的错误修改
+
+# 12-11
+
+- 修改[log.js](./components/log.js)错误日志输出形式
+- 增加[UCDate.js](./components/UCDate.js)、[common.js](./components/common.js)等文件的内置函数，适配群管
+- 完善[UCEvent](./model/UCEvent.js)监听事件插件类
+- 完善监听逻辑
+- 若干修改
+- 新增[群管·撤回](./apps/groupAdmin/recall.js)
+- 新增[群管·禁言](./apps/groupAdmin/mute.js)
+- 新增[群管·踢人](./apps/groupAdmin/kick.js)
+
 # 12-6
 
 - 新增[UCEvent](./model/UCEvent.js)，为**UC群管**完成最后的准备

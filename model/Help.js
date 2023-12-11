@@ -19,23 +19,25 @@ export default class Help extends Base {
   }
 
   getData(groupId) {
-    const config = UCPr.groupCFG(groupId) ?? UCPr
+    const groupCFG = UCPr.groupCFG(groupId)
     const data = _.cloneDeep(CFG.helpData.filter(group => {
+      const { isOpen } = group
+      if (isOpen && !isOpen(groupCFG)) return false
       // 筛选组
-      return this.level >= group.require && _.get(config, group.swh, true)
+      return this.level >= group.require
     }))
     // 筛选元素
     for (const i in data) {
       const filterPower = data[i].list.filter(groupInfo => {
         const { require, swh } = groupInfo
         // 功能开关判断
-        if (swh && !_.get(config[data[i].cfg], swh, true)) return false
+        if (swh && !_.get(groupCFG[data[i].cfg], swh, true)) return false
         // 权限判断
         if (!require) return true
         if (typeof require === 'number') {
           return this.level >= require
         }
-        const per = this.Permission(_.get(config[data[i].cfg], require, {}))
+        const per = this.Permission(_.get(groupCFG[data[i].cfg], require, {}))
         log.debug(`[Help.getData]判断用户${per.userId} ${require}权限：${per.isPer}`)
         return per.isPer
       })

@@ -1,6 +1,6 @@
 import { Path, Data, Check, common, UCPr } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
 import { loadJs, unloadJs } from './reloadJSs.js'
+import { UCPlugin } from '../model/index.js'
 
 export default class UCAddJS extends UCPlugin {
   constructor(e) {
@@ -45,7 +45,7 @@ export default class UCAddJS extends UCPlugin {
         this.reply(`操作成功，新增UC-plugin/apps/${filename}，已自动载入该插件`)
         Data.refresh()
       } else {
-        this.reply(this.errorReply)
+        this.errorReply()
       }
       this.finish(this.setFnc)
     }
@@ -60,7 +60,7 @@ export default class UCAddJS extends UCPlugin {
         this.reply(`操作成功，已覆盖UC-plugin/apps/${filename}，已自动载入该插件`)
         Data.refresh()
       } else {
-        this.reply(this.errorReply)
+        this.errorReply()
       }
       return this.finish(this.setFnc2)
     }

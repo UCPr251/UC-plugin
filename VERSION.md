@@ -1,3 +1,13 @@
+# 2.1.0
+
+### 群管功能
+
+新增
+
+- [群管·撤回](./apps/groupAdmin/recall.js)
+- [群管·禁言](./apps/groupAdmin/mute.js)
+- [群管·踢人](./apps/groupAdmin/kick.js)
+
 # 2.0.1
 
 - [群开关Bot](./apps/switchBot.js)支持设置在关闭状态下的响应前缀、响应艾特、响应权限设置。该功能不再修改本地群配置文件group.yaml改为修改内存中的群配置
@@ -32,7 +42,7 @@
 - [直播推送·BlivePush](./apps/BlivePush.js)
 - [随机群友·randomMember](./apps/randomMember.js)
 - [随机老婆·randomWife](./apps/randomWife.js)
-- [AI语音·vitAI](./apps/vitsAI.js)
+- [AI语音·vitsAI](./apps/vitsAI.js)
 
 # 1.0.0
 
@@ -63,4 +73,4 @@
 - [直播推送·BlivePush](./apps/BlivePush.js)
 - [随机群友·randomMember](./apps/randomMember.js)
 - [随机老婆·randomWife](./apps/randomWife.js)
-- [AI语音·vitAI](./apps/vitsAI.js)
+- [AI语音·vitsAI](./apps/vitsAI.js)

@@ -14,6 +14,7 @@ function getLevel(userId, groupId) {
 
 const temp = {}
 
+// eslint-disable-next-line no-unused-vars
 function logLevel(userId, level) {
   if (!UCPr.debugLog) return
   if (temp[userId]) {
@@ -57,29 +58,21 @@ const Check = {
     return false
   },
 
-  /** 查找[ { } ]数组元素指定属性指定值 */
-  propertyValue(oriVal, property, value) {
-    if (oriVal.find(v => v[property] == value)) {
-      return true
-    }
-    return false
-  },
-
   /**
-   * @returns {Set<7>}
+   * @returns {Set<6>}
    */
   levelSet(userId, groupId) {
     if (this.e) {
       return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
     }
     const level = new Set()
-    const groupCfg = UCPr.groupCFG(groupId)
+    const groupCFG = UCPr.groupCFG(groupId)
     if (Check.str(UCPr.GlobalMaster, userId)) level.add(4)
-    if (Check.str(groupCfg.permission?.Master, userId)) level.add(3)
+    if (Check.str(groupCFG.permission?.Master, userId)) level.add(3)
     if (Check.str(UCPr.GlobalAdmin, userId)) level.add(2)
-    if (Check.str(groupCfg.permission?.Admin, userId)) level.add(1)
+    if (Check.str(groupCFG.permission?.Admin, userId)) level.add(1)
     // level.add(0)
-    if (Check.str(groupCfg.permission?.BlackQQ, userId)) level.add(-1)
+    if (Check.str(groupCFG.permission?.BlackQQ, userId)) level.add(-1)
     if (Check.str(UCPr.GlobalBlackQQ, userId)) level.add(-2)
     return level
   },
@@ -97,28 +90,28 @@ const Check = {
    * 群黑名单：-1
    * 全局黑名单：-2
    */
-  level(userId, groupId, right) {
+  level(userId, groupId, need) {
     if (this.e) {
       return Check.level(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
     }
     if (!userId) return 0
-    if (right !== undefined) {
-      return Check.level(userId, groupId) >= right
+    if (!isNaN(need)) {
+      return Check.level(userId, groupId) >= need
     }
     const level = getLevel(userId, groupId)
-    logLevel(userId, level)
+    // logLevel(userId, level)
     return level
   },
 
   /** 检查用户全局权限，不判断其他 */
-  globalLevel(userId, right = undefined) {
-    log.debug(`[Check.globalLevel]检查用户全局权限${userId}，${right}`)
+  globalLevel(userId, need) {
+    log.debug(`[Check.globalLevel]检查用户全局权限${userId}，${need}`)
     if (this.e) {
       return Check.globalLevel(this.e.sender?.user_id ?? this.e.user_id, userId)
     }
     if (!userId) return false
-    if (right !== undefined) {
-      return Check.globalLevel(userId) >= right
+    if (!isNaN(need)) {
+      return Check.globalLevel(userId) >= need
     }
     if (Check.str(UCPr.GlobalMaster, userId)) return 4
     if (Check.str(UCPr.GlobalBlackQQ, userId)) return -2
@@ -134,7 +127,7 @@ const Check = {
    * @returns {boolean}
    */
   GroupPermission(type, userId, groupId) {
-    log.debug(`[Check.GroupPermission]检查用户群权限${type}，${userId}，${groupId}`)
+    log.debug(`[Check.GroupPermission]检查用户群${groupId} ${type}权限，${userId}`)
     if (this.e) {
       return Check.GroupPermission(type, this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
     }

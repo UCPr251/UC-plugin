@@ -62,6 +62,8 @@ export default class UCReloadJSs extends UCPlugin {
       ing = true
       await reloadJSs(Path.apps)
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
+        const parentDirName = Path.basename(Path.dirname(newAppPath))
+        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(newAppPath)
         log.yellow('新增插件：' + jsName)
         await common.sleep(0.1)
@@ -72,6 +74,8 @@ export default class UCReloadJSs extends UCPlugin {
         await common.sleep(500)
       })
       watch.on('unlink', async (delAppPath) => {
+        const parentDirName = Path.basename(Path.dirname(delAppPath))
+        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(delAppPath)
         log.yellow('删除插件：' + jsName)
         await unloadJs(delAppPath)
@@ -80,8 +84,8 @@ export default class UCReloadJSs extends UCPlugin {
         delete watcher[jsName]
         Data.remove(JSs, jsName)
       })
-      const plugins = loader.priority.map(v => v.name).filter(name => name.startsWith('UC'))
-      plugins.forEach(name => log.yellow(name))
+      const plugins = loader.priority.filter(v => v.name.startsWith('UC'))
+      // plugins.forEach(v => log.yellow(v.name))
       log.red(`总计载入UC插件${plugins.length}项功能`)
     }
   }
@@ -206,29 +210,33 @@ async function reloadJSs(path, isWatch = true) {
  * @param {string} jsPath 需要载入的JS路径
  */
 export async function loadJs(jsPath) {
-  const temp = await import(`file:///${jsPath}?${Date.now()}`)
-  const app = temp.default ?? temp[Object.keys(temp)[0]]
-  const plugin = new app()
-  log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
-  const jsName = Path.basename(jsPath)
-  if (plugin.task.name) {
-    delete tasks[jsName]
-    const newTak = Data.reLoadTask(plugin)
-    const taskName = plugin.task.name ?? plugin.name
-    log.blue('[载入定时任务]' + taskName)
-    tasks[jsName] = {
-      name: taskName,
-      job: newTak.job
+  try {
+    const temp = await import(`file:///${jsPath}?${Date.now()}`)
+    const app = temp.default ?? temp[Object.keys(temp)[0]]
+    const plugin = new app()
+    log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
+    const jsName = Path.basename(jsPath)
+    if (plugin.task.name) {
+      delete tasks[jsName]
+      const newTak = Data.reLoadTask(plugin)
+      const taskName = plugin.task.name ?? plugin.name
+      log.blue('[载入定时任务]' + taskName)
+      tasks[jsName] = {
+        name: taskName,
+        job: newTak.job
+      }
     }
+    JSs.push(jsName)
+    plugin.init && plugin.init()
+    loader.priority.push({
+      class: app,
+      key: Path.Plugin_Name,
+      name: plugin.name,
+      priority: plugin.priority
+    })
+  } catch (err) {
+    log.error('载入插件错误：', err)
   }
-  JSs.push(jsName)
-  plugin.init && plugin.init()
-  loader.priority.push({
-    class: app,
-    key: Path.Plugin_Name,
-    name: plugin.name,
-    priority: plugin.priority
-  })
   order()
 }
 
@@ -246,8 +254,8 @@ export async function unloadJs(jsPath) {
     }
     log.purple('[卸载插件]' + '名称：' + del.name ?? '无', '优先级：' + del.priority ?? '无')
     const jsName = Path.basename(jsPath)
-    await cancelTask(jsPath)
     Data.remove(JSs, jsName)
+    await cancelTask(jsPath)
   }
 }
 
@@ -280,5 +288,5 @@ function order() {
   timer = setTimeout(() => {
     loader.priority = loader.priority.sort((a, b) => a.priority - b.priority)
     log.red('刷新插件优先级排序')
-  }, 2000)
+  }, 1500)
 }

@@ -44,7 +44,7 @@ class UCSwitchBotEvent extends UCEvent {
 
 }
 
-UCPr.eventInit(UCSwitchBotEvent)
+UCPr.EventInit(UCSwitchBotEvent)
 
 function init() {
   if (!_.isArray(switchBotData)) return

@@ -1,13 +1,28 @@
 import moment from 'moment'
 
-const Numreg = '[零一壹二两三四五六七八九十百千万亿\\d]+'
+const Numreg = '[零一壹二贰两三叁四肆五伍六陆七柒八捌九玖十拾百佰千仟万亿\\d]+'
 
 const daysMap = new Map()
 daysMap.set('天', 1)
 daysMap.set('日', 1)
+daysMap.set('d', 1)
 daysMap.set('周', 7)
 daysMap.set('月', 30)
 daysMap.set('年', 360)
+
+const secondsMap = new Map()
+secondsMap.set('秒', 1)
+secondsMap.set('s', 1)
+secondsMap.set('分', 60)
+secondsMap.set('m', 60)
+secondsMap.set('时', 3600)
+secondsMap.set('h', 3600)
+secondsMap.set('天', 86400)
+secondsMap.set('日', 86400)
+secondsMap.set('d', 86400)
+secondsMap.set('周', 604800)
+secondsMap.set('月', 2592000)
+secondsMap.set('年', 31536000)
 
 const numMap = new Map()
 numMap.set('一', 1)
@@ -33,14 +48,14 @@ numMap.set('玖', 9)
 /** 对日期的处理操作 */
 const UCDate = {
 
-  /** 获取指定天数后的时间，精确到秒，2012-04-25 00:02:51 */
-  getTime(days) {
-    return moment().add(parseInt(days), 'days').format('YYYY-MM-DD HH:mm:ss')
+  /** 获取指定时间后的时间，精确到秒，2012-04-25 00:02:51 */
+  getTime(time, unit = 'days') {
+    return moment().add(parseInt(time), unit).format('YYYY-MM-DD HH:mm:ss')
   },
 
-  /** 获取指定天数后的时间，精确到毫秒，2012-04-25 00:02:51:520 */
-  getTimeMS(days) {
-    return moment().add(parseInt(days), 'days').format('YYYY-MM-DD HH:mm:ss:SSS')
+  /** 获取指定时间后的时间，精确到毫秒，2012-04-25 00:02:51:520 */
+  getTimeMS(time, unit) {
+    return moment().add(parseInt(time), unit).format('YYYY-MM-DD HH:mm:ss:SSS')
   },
 
   /** 当前日期时间，精确到秒：2012-04-25 00:02:51 */
@@ -94,25 +109,30 @@ const UCDate = {
     return this.getEXsecondes(1)
   },
 
-  /** 计算时间差值，返回{ Y, M, D, h, m, s } */
-  diff(start_time, end_time) {
-    const startDate = moment(start_time, 'YYYY-MM-DD HH:mm:ss')
-    const endDate = end_time ? moment(end_time, 'YYYY-MM-DD HH:mm:ss') : moment()
-    const diffDuration = moment.duration(endDate.diff(startDate))
-    const Y = diffDuration.years()
-    const M = diffDuration.months()
-    const D = diffDuration.days()
-    const h = diffDuration.hours()
-    const m = diffDuration.minutes()
-    const s = diffDuration.seconds()
-    return { Y, M, D, h, m, s }
+  diff(diffTime, unit = 'ms') {
+    const diffDuration = moment.duration(diffTime, unit)
+    return {
+      Y: diffDuration.years(),
+      M: diffDuration.months(),
+      D: diffDuration.days(),
+      H: diffDuration.hours(),
+      m: diffDuration.minutes(),
+      s: diffDuration.seconds(),
+      toStr: function () {
+        const { Y, M, D, H, m, s } = this
+        const str = `${Y}年${M}个月${D}天${H}小时${m}分钟${s}秒`
+        const index = str.search(/[1-9]/)
+        if (index === -1) return 0
+        return str.slice(index)
+      }
+    }
   },
 
-  /** 时间差描述字符串，精确到分 */
-  diffStr(start_time, end_time) {
-    const { Y, M, D, h, m } = this.diff(start_time, end_time)
-    const str = `${Y}年${M}个月${D}天${h}小时${m}分钟`
-    return str.slice(str.match(/[1-9]/)?.index ?? 0)
+  /** 计算日期时间差值，返回{ Y, M, D, h, m, s } */
+  diffDate(start_time, end_time) {
+    const startDate = moment(start_time, 'YYYY-MM-DD HH:mm:ss')
+    const endDate = end_time ? moment(end_time, 'YYYY-MM-DD HH:mm:ss') : moment()
+    return this.diff(endDate.diff(startDate))
   },
 
   /** 获取指定日期(默认当日)到截止日期的天数 */
@@ -123,44 +143,54 @@ const UCDate = {
   /**
    * 计算新日期
    * @param {number} days 加的时长，负则为减
-   * @param {string} startDate 开始日期，无则为当前日期
-   * @returns {string} 新日期
+   * @param {string} startDate
+   * @returns {string}
    */
   calculateDDL(days, startDate = undefined) {
     return moment(startDate).add(days, 'days').format('YYYY-MM-DD')
   },
 
   /**
+   * 计算新时间
+   * @param {number} secondes 加的时长，负则为减
+   * @param {string} startDate
+   * @returns {string}
+   */
+  calculateDDLS(secondes, startDate = undefined) {
+    return moment(startDate).add(secondes, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+  },
+
+  /**
    * 汉语数字转阿拉伯数字
    * @author 椰羊
+   * 改造而成
    */
   transformChineseNum(s_123) {
+    s_123 = s_123.trim()
     if (!s_123 && s_123 != 0) return s_123
-    if (s_123 == '零') return 0
+    if (s_123 === '零') return 0
     if (/^\d+$/.test(s_123)) return Number(s_123)
-    let split = ''
+    // 按照亿、万、1分为三组转为string，拼接转为数字
+    let split
     split = s_123.split('亿')
     const s_1_23 = split.length > 1 ? split : ['', s_123]
-    const s_23 = s_1_23[1]
     const s_1 = s_1_23[0]
+    const s_23 = s_1_23[1]
     split = s_23.split('万')
     const s_2_3 = split.length > 1 ? split : ['', s_23]
     const s_2 = s_2_3[0]
     const s_3 = s_2_3[1]
     let arr = [s_1, s_2, s_3]
     arr = arr.map(item => {
-      let result = ''
-      result = item.replace('零', '')
+      item = item.replace('零', '')
       const reg = new RegExp(`[${Array.from(numMap.keys()).join('')}]`, 'g')
-      result = result.replace(reg, substring => {
-        return numMap.get(substring)
-      })
+      item = item.replace(reg, substring => numMap.get(substring))
       let temp
-      temp = /\d(?=千)/.exec(result)
+      temp = /\d(?=千|仟)/.exec(item)
       const num1 = temp ? temp[0] : '0'
-      temp = /\d(?=百)/.exec(result)
+      temp = /\d(?=百|佰)/.exec(item)
       const num2 = temp ? temp[0] : '0'
-      temp = /\d?(?=十)/.exec(result)
+      temp = /\d?(?=十|拾)/.exec(item)
       let num3
       if (temp === null) {
         num3 = '0'
@@ -169,14 +199,15 @@ const UCDate = {
       } else {
         num3 = temp[0]
       }
-      temp = /\d$/.exec(result)
+      temp = /\d$/.exec(item)
       const num4 = temp ? temp[0] : '0'
       return num1 + num2 + num3 + num4
     })
-    if (parseInt(arr.join('')) == 0) { // 非汉语数字
+    const result = parseInt(arr.join(''))
+    if (result === 0) {
       return NaN
     }
-    return parseInt(arr.join(''))
+    return result
   },
 
   /**
@@ -188,6 +219,21 @@ const UCDate = {
   daysCount(count, unit) {
     count = parseInt(count)
     unit = daysMap.get(unit)
+    if (!unit) {
+      return false
+    }
+    return count * unit
+  },
+
+  /**
+   * @description 单位换算→秒数
+   * @example daysCount('2', '分')
+   * @param {string} count 倍数/系数，如20
+   * @param {string} unit 计量单位
+   */
+  secondsCount(count, unit) {
+    count = parseInt(count)
+    unit = secondsMap.get(unit.toLowerCase())
     if (!unit) {
       return false
     }
@@ -215,20 +261,46 @@ const UCDate = {
   },
 
   /** 简单汉字时长转天数 */
-  transformChineseDate(date) {
-    if (isNaN(date.slice(-1))) { // 非纯数字
-      const numStr = date.match(Numreg)?.[0] // 三 三十
-      if (!numStr) {
-        return false
-      }
+  transformChineseDays(date) {
+    const isHalf = /半/.test(date)
+    date = date
+      .replace('半', '1')
+      .replace('个', '')
+    let days = date
+    if (isNaN(date.slice(-1))) {
+      const numStr = date.match(Numreg)?.[0]
+      if (!numStr) return false
       let unit = date.slice(-1)
-      if (numStr == date) { // 三 != 三月 ； 三十 == 三十
-        unit = '天'
-      }
+      if (numStr == date) unit = '天'
       const count = this.transformChineseNum(numStr)
-      return this.daysCount(count, unit) // 3*30，最终加的时间
+      days = this.daysCount(count, unit)
     }
-    return parseInt(date)
+    if (isHalf) days /= 2
+    return Number(days)
+  },
+
+  /** 简单汉字时长转秒数 */
+  transformChineseSecongds(time) {
+    if (!time) return false
+    const isHalf = /半/.test(time)
+    time = time
+      .replace('半', '1')
+      .replace('个', '')
+      .replace('小', '')
+      .replace('钟', '')
+    let seconds = time
+    if (isNaN(time.slice(-1))) {
+      const numStr = time.match(Numreg)?.[0]
+      if (!numStr) return false
+      let unit = time.slice(-1)
+      if (numStr == time) unit = '分'
+      const count = this.transformChineseNum(numStr)
+      seconds = this.secondsCount(count, unit)
+    } else {
+      seconds = time * 60
+    }
+    if (isHalf) seconds /= 2
+    return Number(seconds)
   }
 
 }

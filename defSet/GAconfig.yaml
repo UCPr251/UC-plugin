@@ -1,14 +1,107 @@
 # 是否开启UC群管功能
 isOpen: false
+# 黑名单发言是否撤回并踢出
+isDetecteBlack: false
+# 群管上下文操作的超时时间
+overTime: 120
+
 # 进退群欢迎，非真值则为关闭
 WM:
   welcome: 欢迎info小伙伴进群~\n群里有很多大佬给你透哦~
   mourn: info退群了~
 
+# 撤回、清屏设置
+recall:
+  # 是否开启UC群管撤回
+  isOpen: true
+  # 允许递归获取的群聊天记录最大深度
+  FILTER_MAX: 520
+  # 清屏不指定数量时默认撤回数量
+  defaultClear: 10
+  # 允许清屏数量的最大值
+  CLEAR_MAX: 100
+  # 允许指定单人撤回的最大值
+  RECALL_MAX: 20
+  # 批量撤回群消息的间隔时间，单位秒，建议大于等于0.1
+  intervalTime: 0.1
+  # 撤回权限配置
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+    # 是否允许任何人
+    isE: false
+
+# 禁言设置
+mute:
+  # 是否开启UC群管禁言
+  isOpen: true
+  # 允许禁言最大时长，单位秒（主人不限）
+  MUTE_MAX: 86400
+  # 禁言不指定时长时默认禁言时长，单位秒
+  defaultMute: 60
+  # 禁言时的回复，info会替换为 用户名（QQ），time会替换为禁言时长
+  muteReply: 已经把info拖进小黑屋枪毙time啦！
+  # 解禁时的回复，info会替换为 用户名（QQ）
+  releaseReply: 成功解救info
+  # 全体禁言回复
+  allMuteReply: 全都不许说话了哦~
+  # 全体解禁回复
+  releaseAllMuteReply: 好耶~可以说话辽~
+  # 全部解禁回复，num会被替换为解禁群员的数量
+  releaseAllMutedReply: 归还了num名群员的清白之身！
+  # 普通禁言权限配置
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+  # 全体禁言权限配置
+  muteAll:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+
+# 踢人设置
+kick:
+  # 是否开启UC群管踢人
+  isOpen: true
+  # 踢人是否同时在该群拉黑该用户
+  isAutoBlack: true
+  # 踢人是否同时在全局拉黑该用户
+  isAutoGlobalBlack: false
+  # 踢人回复
+  kickReply: 已经把这个坏惹踢掉了！
+  # 普通踢人权限配置
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+
+# 申请入群设置
+requestAdd:
+  # 是否开启UC群管入群申请处理
+  isOpen: true
+  # 是否自动同意入群（黑名单除外）
+  isAutoApprove: false
+  # 是否通知群
+  isNotice: true
+
 # 刷屏检测设置
 DetecteFloodScreen:
   # 刷屏检测开关
-  isOpen: true
+  isOpen: false
   # 刷屏触发数量
   judgeNum: 10
   # 是否警告，达到(刷屏数量-2)时提醒
@@ -22,17 +115,4 @@ DetecteFloodScreen:
   # 设置为禁言的禁言时长，单位分钟
   muteTime: 5
   # 设置为踢人时是否自动拉黑
-  kickAndBlack: true
-
-# 撤回、清屏设置
-recall:
-  # 允许获取的群聊天记录最大值，设置过大可能影响响应速度
-  FILTER_MAX: 521
-  # 清屏不指定数量时默认撤回数量
-  clearNum: 10
-  # 允许清屏数量的最大值
-  RECALL_MAX: 100
-  # 允许指定单人撤回的最大值
-  PERSONAL_MAX: 20
-  # 批量撤回群消息的间隔时间，单位秒
-  intervalTime: 0.5
+  isAutoBlack: true

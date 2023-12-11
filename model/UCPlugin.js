@@ -1,4 +1,4 @@
-import { UCPr, log, Data, Check } from '../components/index.js'
+import { UCPr, log, Data } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import Permission from './Permission.js'
 import _ from 'lodash'
@@ -58,26 +58,6 @@ export default class UCPlugin extends plugin {
     this.GB = this.UC.GB
   }
 
-  /** 插件使用权限 */
-  get check() {
-    return Data.check.call(this)
-  }
-
-  /** 用户无权限回复 */
-  get noPerReply() {
-    return UCPr.noPerReply
-  }
-
-  /** Bot无权限回复 */
-  get noPowReply() {
-    return UCPr.noPowReply
-  }
-
-  /** api连接失败回复 */
-  get fetchErrReply() {
-    return UCPr.fetchErrReply
-  }
-
   /** 设置的Bot名称 */
   get BotName() {
     return UCPr.BotName
@@ -88,9 +68,33 @@ export default class UCPlugin extends plugin {
     return UCPr.qq
   }
 
+  /** 插件使用权限 */
+  get check() {
+    return Data.check.call(this)
+  }
+
+  /** 用户无权限回复 */
+  noPerReply(quote = true, data = {}) {
+    this.e.reply(UCPr.noPerReply, quote, data)
+    return false
+  }
+
+  /** Bot无权限回复 */
+  noPowReply(quote = true, data = {}) {
+    this.e.reply(UCPr.noPowReply, quote, data)
+    return false
+  }
+
+  /** api连接失败回复 */
+  fetchErrReply(quote = true, data = {}) {
+    this.e.reply(UCPr.fetchErrReply, quote, data)
+    return false
+  }
+
   /** 错误回复 */
-  get errorReply() {
-    return '未知错误，请查看错误日志'
+  errorReply(quote = true, data = {}) {
+    this.e.reply('未知错误，请查看错误日志', quote, data)
+    return false
   }
 
   /**
@@ -100,21 +104,6 @@ export default class UCPlugin extends plugin {
    */
   async fetch(urlCode, ...parameters) {
     return await UCPr.fetch(urlCode, ...parameters)
-  }
-
-  /** 检查是否全局主人 */
-  isGM(userId) {
-    return Check.Master(userId)
-  }
-
-  /** 检查是否全局管理 */
-  isGA(userId) {
-    return Check.Admin(userId)
-  }
-
-  /** 检查是否全局主黑名单 */
-  isGB(userId) {
-    return Check.BlackQQ(userId)
   }
 
   /** 获取权限实例 */
@@ -136,17 +125,19 @@ export default class UCPlugin extends plugin {
   /** 权限等级验证 */
   verifyLevel(need = 0) {
     if (this.B) return false
-    if (UCPr.onlyMaster && !this.M) return false
-    if (this.level < need) {
-      this.e.reply(UCPr.noPerReply, true)
+    if (UCPr.onlyMaster && !this.M) {
+      this.e.reply(UCPr.onlyMasterReply)
       return false
+    }
+    if (this.level < need) {
+      return this.noPerReply()
     }
     return true
   }
 
   /** 用户是否确认操作 */
   isSure(fnc) {
-    if (/是|确认|确定|确信|肯定/.test(this.e.msg)) {
+    if (/是|确认|确定|确信|肯定/.test(this.msg)) {
       fnc && fnc()
       return true
     }
@@ -159,7 +150,7 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    if (/取消/.test(this.e.msg)) {
+    if (/取消/.test(this.msg)) {
       if (setFnc) {
         this.setFnc = setFnc
       }
@@ -177,7 +168,7 @@ export default class UCPlugin extends plugin {
     const { quote = true, ...data } = option
     this.reply(msg, quote, data)
     const setContext = setFnc || this.setFnc
-    log.debug('结束上下文hook：' + setContext)
+    log.debug(`结束上下文hook：${this.name} ${setContext}`)
     this.finish(setContext)
     return true
   }
@@ -208,6 +199,7 @@ export default class UCPlugin extends plugin {
       }
       return msgArr.join(' ').replace(/\s+/g, ' ').trim()
     }
+    return this.e.msg
   }
 
 }
