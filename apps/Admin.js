@@ -222,7 +222,7 @@ export default class UCAdmin extends UCPlugin {
           if (setData.input) {
             const setNum = setData.input(str3)
             if (setNum || setNum === 0) {
-              operation = setData.input(str3)
+              operation = setNum
             } else {
               operation = setData.def
             }

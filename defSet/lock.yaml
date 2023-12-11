@@ -9,11 +9,6 @@ config:
     openReg: null
     closeReg: null
   randomWife:
-    add:
-      isM: false
-      isA: true
-      isGA: true
-      isE: false
     del:
       isM: false
       isA: true
@@ -21,3 +16,8 @@ config:
       isE: false
   bigjpg:
     apiKey: null
+GAconfig:
+  recall:
+    FILTER_MAX: null
+  kick:
+    isAutoGlobalBlack: null

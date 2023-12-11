@@ -97,6 +97,7 @@ const Admin = {
         saver(cfg, config, Data.refreshLock)
         return true
       }
+      return false
     }
     return log.warn(`操作失败：${cfg}配置中不存在${path}属性`)
   },
@@ -120,7 +121,7 @@ const Admin = {
     if (isAdd) {
       if (!_.isArray(cfg[userId])) cfg[userId] = []
       cfg[userId].push(groupId)
-      cfg[userId] = _.sortBy(cfg[userId])
+      cfg[userId] = _.sortBy(_.uniq(cfg[userId]))
     } else {
       Data.remove(cfg[userId], groupId)
       if (_.isEmpty(cfg[userId])) {
@@ -137,7 +138,7 @@ const Admin = {
       if (isAdd) {
         if (!_.isArray(_permission[type])) _permission[type] = []
         _permission[type].push(userId)
-        _permission[type] = _.sortBy(_permission[type])
+        _permission[type] = _.sortBy(_.uniq(_permission[type]))
       } else {
         Data.remove(_permission[type], userId)
       }

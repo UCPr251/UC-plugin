@@ -235,7 +235,84 @@ if (file.existsSync(Path.get('apps', 'bigjpg.js'))) {
 // if (file.existsSync(Path.join(Path.apps, )))
 
 prefix = ''
+cfgPrefix = 'GAconfig.'
+const GAconfig = [
+  {
+    label: '【UC】群管设置',
+    component: 'Divider'
+  },
+  s('isOpen', '群管开关', 'Switch',
+    '是否开启UC群管系统'),
+  s('overTime', '超时时长', 'InputNumber',
+    '群管上下文操作的超时时间')
+]
 
+prefix = 'recall.'
+GAconfig.push(
+  {
+    label: '【UC】群管 · 撤回',
+    component: 'Divider'
+  },
+  s('isOpen', '群管撤回开关', 'Switch',
+    '是否开启UC群管撤回'),
+  s('FILTER_MAX', '最大获取记录', 'InputNumber',
+    '允许递归获取的群聊天记录最大深度'),
+  s('defaultClear', '默认清屏数量', 'InputNumber',
+    '清屏不指定数量时默认撤回数量'),
+  s('CLEAR_MAX', '最大清屏数量', 'InputNumber',
+    '允许清屏数量的最大值'),
+  s('RECALL_MAX', '最大撤回数量', 'InputNumber',
+    '允许指定单人撤回的最大值'),
+  s('intervalTime', '撤回间隔', 'InputNumber',
+    '批量撤回群消息的间隔时间，单位秒，建议大于等于0.1',
+    { min: 0 }),
+  ...sPRO('#撤回', undefined, [0, 0, 1, 1, 1, 1])
+)
+
+prefix = 'mute.'
+GAconfig.push(
+  {
+    label: '【UC】群管 · 禁言',
+    component: 'Divider'
+  },
+  s('isOpen', '群管禁言开关', 'Switch',
+    '是否开启UC群管禁言'),
+  s('MUTE_MAX', '最大禁言时长', 'InputNumber',
+    '允许禁言最大时长，单位秒，默认一天（主人不限）'),
+  s('defaultMute', '默认禁言时长', 'InputNumber',
+    '禁言不指定时长时默认禁言时长，单位秒'),
+  s('muteReply', '禁言回复', 'Input',
+    '禁言回复，info会替换为 用户名（QQ），time会替换为禁言时长'),
+  s('releaseReply', '解禁回复', 'Input',
+    '解禁时的回复，info会替换为 用户名（QQ）'),
+  s('allMuteReply', '全体禁言回复', 'Input',
+    '全体禁言回复'),
+  s('releaseAllMuteReply', '全体解禁回复', 'Input',
+    '全体解禁回复'),
+  s('releaseAllMutedReply', '全部解禁回复', 'Input',
+    '全部解禁回复，num会被替换为解禁群员的数量'),
+  ...sPRO('#禁言', undefined, [0, 0, 1, 1, 1, 0]),
+  ...sPRO('#全体禁言', 'muteAll.', [0, 0, 1, 1, 1, 0])
+)
+
+prefix = 'kick.'
+GAconfig.push(
+  {
+    label: '【UC】群管 · 踢人',
+    component: 'Divider'
+  },
+  s('isOpen', '群管踢人开关', 'Switch',
+    '是否开启UC群管踢人'),
+  s('isAutoBlack', '群同时拉黑', 'Switch',
+    '踢人是否同时在该群拉黑该用户'),
+  s('isAutoGlobalBlack', '全局拉黑', 'Switch',
+    '踢人是否同时在全局拉黑该用户'),
+  s('kickReply', '踢人回复', 'Input',
+    '踢人回复'),
+  ...sPRO('#踢', undefined, [0, 0, 1, 1, 1, 0])
+)
+
+prefix = ''
 cfgPrefix = 'permission.'
 const permission = [
   s('GlobalMaster', 'UC全局主人', 'InputTextArea',
@@ -292,13 +369,14 @@ export function supportGuoba() {
           '每日0点自动检测过码剩余次数，低于该值则提醒主人，0则不提醒',
           { min: 0 }),
         s('onlyMasterReply', '仅主人回复', 'Input',
-          '开启仅主人后，对原本拥有管理权限的插件管理员的回复'),
+          '开启仅主人可操作时，对其他使用者的回复内容'),
         s('noPerReply', '用户无权限回复', 'Input',
           '用户权限不足以操作机器人时的回复'),
         s('noPowReply', 'Bot无权限回复', 'Input',
           'Bot权限不足无法执行操作时的回复'),
         s('fetchErrReply', '连接失败回复', 'Input',
-          'Api服务连接失败回复')
+          'Api服务连接失败回复'),
+        ...GAconfig
       ].concat(js),
 
       getConfigData() {
@@ -312,13 +390,11 @@ export function supportGuoba() {
           const path = ret.join('.')
           if (!path) continue
           _.set(guoba_config, property, value) // 同步数据
-          if (path === 'Master' || path === 'WhiteQQ' || path === 'BlackQQ') {
+          if (path === 'GlobalMaster' || path === 'GlobalAdmin' || path === 'GlobalBlackQQ') {
             value = _.sortBy(value
               .split('，')
               .filter(num => num.length >= 7 && num.length <= 10)
-              .map(Number))
-          } else if (path === 'searchNovel.novelPath') {
-            value = value.split('\n').map(path => path.trim())
+            ).map(Number)
           }
           if (Admin.globalCfg(path, value, cfg)) changed = true
         }

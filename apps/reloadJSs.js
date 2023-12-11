@@ -62,6 +62,8 @@ export default class UCReloadJSs extends UCPlugin {
       ing = true
       await reloadJSs(Path.apps)
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
+        const parentDirName = Path.basename(Path.dirname(newAppPath))
+        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(newAppPath)
         log.yellow('新增插件：' + jsName)
         await common.sleep(0.1)
@@ -72,6 +74,8 @@ export default class UCReloadJSs extends UCPlugin {
         await common.sleep(500)
       })
       watch.on('unlink', async (delAppPath) => {
+        const parentDirName = Path.basename(Path.dirname(delAppPath))
+        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(delAppPath)
         log.yellow('删除插件：' + jsName)
         await unloadJs(delAppPath)
@@ -80,8 +84,8 @@ export default class UCReloadJSs extends UCPlugin {
         delete watcher[jsName]
         Data.remove(JSs, jsName)
       })
-      const plugins = loader.priority.map(v => v.name).filter(name => name.startsWith('UC'))
-      plugins.forEach(name => log.yellow(name))
+      const plugins = loader.priority.filter(v => v.name.startsWith('UC'))
+      // plugins.forEach(v => log.yellow(v.name))
       log.red(`总计载入UC插件${plugins.length}项功能`)
     }
   }
@@ -250,8 +254,8 @@ export async function unloadJs(jsPath) {
     }
     log.purple('[卸载插件]' + '名称：' + del.name ?? '无', '优先级：' + del.priority ?? '无')
     const jsName = Path.basename(jsPath)
-    await cancelTask(jsPath)
     Data.remove(JSs, jsName)
+    await cancelTask(jsPath)
   }
 }
 
@@ -284,5 +288,5 @@ function order() {
   timer = setTimeout(() => {
     loader.priority = loader.priority.sort((a, b) => a.priority - b.priority)
     log.red('刷新插件优先级排序')
-  }, 2000)
+  }, 1500)
 }

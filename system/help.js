@@ -115,10 +115,69 @@ helpData.push({
 helpData.push({
   group: 'UC群管',
   require: 1,
-  swh: 'GAconfig.isOpen',
+  isOpen: (groupCFG) => groupCFG.GAconfig.isOpen,
   cfg: 'GAconfig',
   list: [
-
+    s(
+      '#清屏20',
+      '清屏群聊天记录',
+      'recall.use',
+      'recall.isOpen'
+    ),
+    s(
+      '#撤回5',
+      '撤回群员聊天记录，可艾特或引用',
+      'recall.use',
+      'recall.isOpen'
+    ),
+    s(
+      '@XXX #禁言2分钟',
+      '禁言群员指定时长',
+      'mute.use',
+      'mute.isOpen'
+    ),
+    s(
+      '@XXX #解禁',
+      '解除指定群员禁言',
+      'mute.use',
+      'mute.isOpen'
+    ),
+    s(
+      '#全体禁言/解禁',
+      '开启或关闭群全体禁言',
+      'mute.muteAll',
+      'mute.isOpen'
+    ),
+    s(
+      '#全部解禁',
+      '解除所有正在禁言中的群员的禁言',
+      'mute.use',
+      'mute.isOpen'
+    ),
+    s(
+      '#禁言信息',
+      '查看本群禁言信息',
+      'mute.use',
+      'mute.isOpen'
+    ),
+    s(
+      '@XXX #踢',
+      '将指定群员踢出群聊',
+      'kick.use',
+      'kick.isOpen'
+    ),
+    s(
+      '#踢黑名单',
+      '将群黑名单用户踢出群聊',
+      'kick.use',
+      'kick.isOpen'
+    ),
+    s(
+      '#全局踢黑名单',
+      '踢出Bot所有群聊的黑名单用户',
+      4,
+      'kick.isOpen'
+    )
   ]
 })
 
@@ -170,37 +229,39 @@ helpData.push({
   ]
 })
 
-helpData.push({
-  group: 'UC工具——群内排队',
-  require: 1,
-  cfg: 'config',
-  list: [
-    s(
-      '#创建排队',
-      '初始化群内排队任务'
-    ),
-    s(
-      '#排队',
-      '群员参与排队，添加至待处理'
-    ),
-    s(
-      '@XXX #完成',
-      '完成某人排队，添加至已完成'
-    ),
-    s(
-      '#队列',
-      '查看当前待处理队列'
-    ),
-    s(
-      '#排队信息',
-      '查看当前排队详细信息'
-    ),
-    s(
-      '#开始/结束排队',
-      '开关#排队，不会删除排队信息'
-    )
-  ]
-})
+if (Check.file(Path.get('apps', 'queueUp.js'))) {
+  helpData.push({
+    group: 'UC工具——群内排队',
+    require: 1,
+    cfg: 'config',
+    list: [
+      s(
+        '#创建排队',
+        '初始化群内排队任务'
+      ),
+      s(
+        '#排队',
+        '群员参与排队，添加至待处理'
+      ),
+      s(
+        '@XXX #完成',
+        '完成某人排队，添加至已完成'
+      ),
+      s(
+        '#队列',
+        '查看当前待处理队列'
+      ),
+      s(
+        '#排队信息',
+        '查看当前排队详细信息'
+      ),
+      s(
+        '#开始/结束排队',
+        '开关#排队，不会删除排队信息'
+      )
+    ]
+  })
+}
 
 helpData.push({
   group: 'UC工具——configSet',
@@ -324,12 +385,12 @@ if (Check.file(Path.get('apps', 'accredit.js'))) {
   })
 }
 
-if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
+if (Check.file(Path.get('apps', 'BLivePush.js'))) {
   helpData.push({
     group: 'UC直播推送',
     require: 0,
     cfg: 'config',
-    swh: 'config.BlivePush.isGroup',
+    isOpen: (groupCFG) => Data.check('BlivePush') && groupCFG.config.BlivePush.isGroup,
     list: [
       s(
         '注：',

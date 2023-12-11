@@ -86,21 +86,12 @@ export default class UCConfigSet extends UCPlugin {
     file.YAMLsaver(Path.otheryaml, Cfg)
   }
 
-  _verify() {
-    if (this.B) return false
-    if (!this.GM) {
-      this.reply(this.noPerReply)
-      return false
-    }
-    return true
-  }
-
   async help(e) {
     return e.reply(helptext)
   }
 
   async autoFriend(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const newSet = Number(/开启|启用/.test(e.msg))
     const operation = newSet ? '开启' : '关闭'
     if (Cfg.autoFriend == newSet) {
@@ -111,7 +102,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async autoQuit(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const num = parseInt(e.msg.match(/\d+/)[0])
     Cfg.autoQuit = num
     this.save()
@@ -119,7 +110,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async BWset(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     let type = 0
     const msg = e.msg
     const isAdd = /拉|加/.test(e.msg)
@@ -165,7 +156,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async disableAdopt(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const isAdd = /增加/.test(e.msg)
     const len = Number(arrTemp[9]?.length)
     const str = e.msg.match(/通行字符串(.*)/)[1].trim()
@@ -194,7 +185,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async disablePrivate(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const newSet = /开启|启用/.test(e.msg)
     const operation = newSet ? '开启' : '关闭'
     if (Cfg.disablePrivate === !newSet) {
@@ -206,7 +197,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async disableMsg(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const str = e.msg.match(/回复(.*)/)[1]
     Cfg.disableMsg = str
     const status = Cfg.disablePrivate ? '开启' : '关闭'
@@ -215,7 +206,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   async dataList(e) {
-    if (!this._verify()) return false
+    if (!this.verifyLevel(4)) return false
     const msg = []
     const operate = (arr, num) => {
       msg.push(Data.makeArrStr(arr))

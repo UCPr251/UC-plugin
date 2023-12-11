@@ -1,4 +1,4 @@
-import { UCPr, Data, common } from './index.js'
+import { UCPr, Data, common, Path } from './index.js'
 import chalk from 'chalk'
 
 function getFncChain(error) {
@@ -14,86 +14,75 @@ function getFncChain(error) {
     const fncLine = name.slice(extIndex + 2).match(/\d+/)[0]
     return `[${fncFile}.${fncName}:${fncLine}]`
   })
-  return '←' + fncChain.join('←')
+  return fncChain.join('←')
 }
 
-/** 输出调试日志 */
+/** 输出日志 */
 const log = {
-  /** 普通红色 */
   red(...log) {
-    logger.mark(chalk.red('[UC]' + common.toString(log, true, '，')))
+    logger.mark(chalk.red('[UC]' + common.toString(log)))
   },
 
-  /** 全局logger.mark方法 */
   mark(...log) {
-    logger.mark('[UC]' + common.toString(log, true, '，'))
+    logger.mark('[UC]' + common.toString(log))
   },
 
   /** debug */
-  debug(log, chain = false) {
+  debug(...log) {
     if (UCPr.debugLog || UCPr.isWatch) {
-      let ext = ''
-      if (chain) {
-        const error = new Error()
-        ext = getFncChain(error)
-      }
-      this.yellow('[debug]' + ext + common.toString(log))
+      this.yellow('[debug]' + common.toString(log))
     }
   },
 
-  /** 警告信息 */
   warn(...log) {
-    logger.warn(chalk.yellow('[UC][Warn]' + common.toString(log, true)))
+    logger.warn(chalk.yellow('[UC][Warn]' + common.toString(log)))
     return false
   },
 
-  /** 红色报错输出，同时增加报错日志 */
   error(...log) {
-    const error = new Error()
-    const fncChain = getFncChain(error)
-    log = fncChain + common.toString(log, true)
-    logger.error(chalk.red('[UC][error]←' + log))
-    Data.error(log)
+    log = log.map(_log => {
+      if (_log instanceof Error) {
+        return common.toString(_log.message) + '\n' + getFncChain(_log)
+      }
+      return _log
+    })
+    log = common.toString(log, '\n')
+    logger.error(chalk.red('[UC][error]' + log))
+    Data.addLog(Path.errorLogjson, log)
     return false
   },
 
-  /** 普通紫色 */
   purple(...log) {
     if (UCPr.log) {
-      logger.mark(logger.magenta('[UC]' + common.toString(log, true, '，')))
+      logger.mark(logger.magenta('[UC]' + common.toString(log)))
     }
   },
 
-  /** 普通黄色 */
   yellow(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.yellow('[UC]' + common.toString(log, true, '，')))
+      logger.mark(chalk.yellow('[UC]' + common.toString(log)))
     }
   },
 
-  /** 普通蓝色 */
   blue(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.blue('[UC]' + common.toString(log, true, '，')))
+      logger.mark(chalk.blue('[UC]' + common.toString(log)))
     }
   },
 
-  /** 蓝色加粗 */
   bluebold(...log) {
-    logger.mark(chalk.blue.bold('[UC]' + common.toString(log, true, '，')))
+    logger.mark(chalk.blue.bold('[UC]' + common.toString(log)))
   },
 
-  /** 普通白色 */
   white(...log) {
     if (UCPr.log) {
-      logger.mark('[UC]' + common.toString(log, true, ''))
+      logger.mark('[UC]' + common.toString(log))
     }
   },
 
-  /** 白色加粗 */
   whiteblod(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.bold('[UC]' + common.toString(log, true, '，')))
+      logger.mark(chalk.bold('[UC]' + common.toString(log)))
     }
   }
 }

@@ -152,8 +152,8 @@ const UCPr = {
   },
 
   /** 注册监听事件 */
-  eventInit(eventClass) {
-    const app = new eventClass()
+  EventInit(EventClass) {
+    const app = new EventClass({})
     const events = this.temp.event[app.event]
     if (!events) {
       return log.warn('错误的监听事件：' + app.event)
@@ -162,7 +162,7 @@ const UCPr = {
     log.debug('注册监听事件：' + app.name)
     events.push({
       name: app.name,
-      class: eventClass,
+      class: EventClass,
       rule: app.rule,
       sub_type: app.sub_type,
       accept: !!app.accept
@@ -251,14 +251,14 @@ const UCPr = {
     return this.config.loveMysNotice ?? 50
   },
 
-  /** 仅主人可操作时，对本拥有权限的管理的回复 */
+  /** 开启仅主人可操作时，对其他使用者的回复内容 */
   get onlyMasterReply() {
     return this.config.onlyMasterReply ?? '当前仅主人可操作'
   },
 
   /** 用户无权限回复 */
   get noPerReply() {
-    return this.config.noPerReply ?? '无权限'
+    return this.config.noPerReply ?? '无权限或权限不足'
   },
 
   /** Bot无权限回复 */
@@ -350,6 +350,21 @@ const UCPr = {
   /** 随机群友设置 */
   get randomMember() {
     return this.config.randomMember ?? {}
+  },
+
+  /** 群撤回设置 */
+  get recall() {
+    return this.GAconfig.recall ?? {}
+  },
+
+  /** 群禁言设置 */
+  get mute() {
+    return this.GAconfig.mute ?? {}
+  },
+
+  /** 群踢人设置 */
+  get kick() {
+    return this.GAconfig.kick ?? {}
   }
 
 }

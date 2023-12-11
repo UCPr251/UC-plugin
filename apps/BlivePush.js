@@ -108,7 +108,7 @@ export default class UCBlivePush extends UCPlugin {
     const uid = e.msg.match(/\d+/)[0]
     const data = await getUpInfo.call(this, uid)
     if (data === false) return false
-    if (data === null) return e.reply(this.fetchErrReply)
+    if (data === null) return this.fetchErrReply()
     const [nickname, face_url, fans, fan_sign, room] = data
     let msg = [`B站用户${uid}不存在！`]
     if (nickname) {
@@ -139,13 +139,13 @@ export default class UCBlivePush extends UCPlugin {
       return e.reply(`订阅失败，${loc}：${location_id}已订阅直播间：${room_id}`)
     }
     const up_data = await this.fetch('BlivePush1', room_id)
-    if (!up_data) return e.reply(this.fetchErrReply)
+    if (!up_data) return this.fetchErrReply()
     const nickname = up_data.data.up.uid
     if (!up_data.data?.up?.uid) {
       const msg = [`订阅失败，直播间id：${room_id}不存在`]
       const up_info = await getUpInfo.call(this, room_id)
       if (up_info === false) return false
-      if (up_info === null) return e.reply(this.fetchErrReply)
+      if (up_info === null) return this.fetchErrReply()
       const [nickname, face_url, fans, fan_sign, room] = up_info
       if (room) {
         msg.push(`\n自动搜索uid为${room_id}的B站用户\n昵称：${nickname}`)
@@ -190,7 +190,7 @@ export default class UCBlivePush extends UCPlugin {
     if (!info) {
       return e.reply(`${loc}：${location_id}未开启推送`)
     }
-    if (!Check.propertyValue(info.room, 'room_id', room_id)) {
+    if (!_.some(info.room, { room_id })) {
       return e.reply(`操作失败：${loc}：${location_id}` +
         `\n未订阅直播间：${room_id}`)
     }
@@ -306,7 +306,7 @@ export default class UCBlivePush extends UCPlugin {
                 `主播：${info[room].uid}——本次直播已结束\n标题：${info[room].title}\n封面：`,
                 segment.image(info[room].cover),
                 `直播开始时间：${info[room].start_time}`,
-                `\n本次直播了${UCDate.diffStr(info[room].start_time)}`
+                `\n本次直播了${UCDate.diffDate(info[room].start_time).toStr()}`
               ]
               await common.sendMsgTo(loc, msg, type)
               await common.sleep(1)
@@ -348,7 +348,7 @@ export default class UCBlivePush extends UCPlugin {
                   `主播：${info[room].uid}——本次直播已结束\n标题：${info[room].title}\n封面：`,
                   segment.image(info[room].cover),
                   `直播开始时间：${info[room].start_time}`,
-                  `\n本次直播了${UCDate.diffStr(info[room].start_time)}`
+                  `\n本次直播了${UCDate.diffDate(info[room].start_time).toStr()}`
                 ]
                 await common.sendMsgTo(loc, msg, type)
                 await common.sleep(1)
@@ -386,7 +386,7 @@ export default class UCBlivePush extends UCPlugin {
           `主播：${info[room].uid}——正在直播中\n标题：${info[room].title}\n封面：`,
           segment.image(info[room].cover),
           `直播开始时间：${info[room].start_time}`,
-          `\n已经直播了${UCDate.diffStr(info[room].start_time)}`,
+          `\n已经直播了${UCDate.diffDate(info[room].start_time).toStr()}`,
           `\n快去捧场吧！\n${BLive + room}`
         ]
         await common.sendMsgTo(location_id, msg, type)
@@ -420,7 +420,7 @@ export default class UCBlivePush extends UCPlugin {
     }
     const mode = /开启/.test(e.msg)
     if (mode && !await common.botIsGroupAdmin(location_id)) {
-      return e.reply(this.noPowReply + '\n群聊：' + location_id)
+      return this.noPowReply()
     }
     data[location_id].atAll = mode
     savaData(type, data)
