@@ -108,7 +108,7 @@ const Admin = {
    * @param {number} groupId
    * @param {boolean} isAdd
    */
-  groupPermission(type, userId, groupId, isAdd) {
+  groupPermission(type, userId, groupId, isAdd = true) {
     log.debug(`[Admin][groupPermission]群${groupId}${isAdd ? '加' : '减'}${type}：${userId}`)
     userId = Number(userId)
     groupId = Number(groupId)
@@ -127,7 +127,7 @@ const Admin = {
         delete cfg[userId]
       }
     }
-    saver('permission', permission)
+    file.YAMLsaver(Path.permissionyaml, permission)
     // 修改群config
     if (!UCPr.groupCFG(groupId)) this.newConfig(groupId)
     setTimeout(() => {
@@ -161,7 +161,7 @@ const Admin = {
     } else {
       Data.remove(permission[type], userId)
     }
-    saver('permission', permission)
+    file.YAMLsaver(Path.permissionyaml, permission)
   },
 
   /**
