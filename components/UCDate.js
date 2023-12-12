@@ -48,14 +48,32 @@ numMap.set('玖', 9)
 /** 对日期的处理操作 */
 const UCDate = {
 
-  /** 获取指定时间后的时间，精确到秒，2012-04-25 00:02:51 */
-  getTime(time, unit = 'days') {
-    return moment().add(parseInt(time), unit).format('YYYY-MM-DD HH:mm:ss')
+  /**
+   * 格式化日期
+   * @param {number|object} value 时间戳或moment对象
+   */
+  format(value) {
+    if (value instanceof moment) {
+      return value.format('YYYY-MM-DD HH:mm:ss')
+    }
+    return this.format(moment(value))
   },
 
-  /** 获取指定时间后的时间，精确到毫秒，2012-04-25 00:02:51:520 */
+  formatMS(value) {
+    if (value instanceof moment) {
+      return value.format('YYYY-MM-DD HH:mm:ss.SSS')
+    }
+    return this.formatMS(moment(value))
+  },
+
+  /** 获取指定时间后的时间，精确到秒，2012-04-25 00:02:51 */
+  getTime(time, unit = 'days') {
+    return this.format(moment().add(parseInt(time), unit))
+  },
+
+  /** 获取指定时间后的时间，精确到毫秒，2012-04-25 00:02:51.520 */
   getTimeMS(time, unit) {
-    return moment().add(parseInt(time), unit).format('YYYY-MM-DD HH:mm:ss:SSS')
+    return this.formatMS(moment().add(parseInt(time), unit))
   },
 
   /** 当前日期时间，精确到秒：2012-04-25 00:02:51 */
@@ -63,7 +81,7 @@ const UCDate = {
     return this.getTime()
   },
 
-  /** 当前日期时间，精确到毫秒：2012-04-25 00:02:51:520 */
+  /** 当前日期时间，精确到毫秒：2012-04-25 00:02:51.520 */
   get NowTimeMS() {
     return this.getTimeMS()
   },
@@ -83,7 +101,7 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
-  /** 当前[日期, 时间]，精确到毫秒，[年-月-日, 时:分:秒:毫秒] */
+  /** 当前[日期, 时间]，精确到毫秒，[年-月-日, 时:分:秒.毫秒] */
   get date_timeMS() {
     return this.NowTimeMS.split(' ')
   },
@@ -93,7 +111,7 @@ const UCDate = {
     return this.getTime(days).split(' ')
   },
 
-  /** 获取指定天数后的[日期, 时间]，精确到毫秒，[2012-04-25, 00:02:51:520] */
+  /** 获取指定天数后的[日期, 时间]，精确到毫秒，[2012-04-25, 00:02:51.520] */
   getdate_timeMS(days) {
     return this.getTimeMS(days).split(' ')
   },
@@ -157,7 +175,7 @@ const UCDate = {
    * @returns {string}
    */
   calculateDDLS(secondes, startDate = undefined) {
-    return moment(startDate).add(secondes, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+    return this.format(moment(startDate).add(secondes, 'seconds'))
   },
 
   /**

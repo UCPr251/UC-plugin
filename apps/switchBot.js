@@ -29,7 +29,15 @@ export default class UCSwitchBot extends UCPlugin {
           fnc: 'openBot'
         },
         {
+          reg: /^#?UC上线$/i,
+          fnc: 'openBot'
+        },
+        {
           reg: `^#${UCPr.BotName}(${UCPr.switchBot.closeReg?.trim() || '下班|休息'})$`,
+          fnc: 'closeBot'
+        },
+        {
+          reg: /^#?UC下线$/i,
           fnc: 'closeBot'
         }
       ]
