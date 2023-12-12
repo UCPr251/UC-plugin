@@ -34,6 +34,7 @@ export default class UCUpdate extends UCPlugin {
       Data.refresh()
       if (Update_Plugin.isUp) {
         this.reply('UC-plugin更新成功，重启生效')
+        Data.execSync('pnpm i --filter=uc-plugin', Path.UC)
       }
     }
     return true
