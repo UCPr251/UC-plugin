@@ -10,15 +10,15 @@ class UCMute extends UCEvent {
       Cfg: 'GAconfig.mute',
       rule: [
         {
-          reg: /^#?(全体)?禁言(?!信息|列表)(.*)/,
+          reg: /^#?(UC)?(全体)?禁言(?!信息|列表)(.*)/,
           fnc: 'muteMember'
         },
         {
-          reg: /^#?(全体|全部)?解禁$/,
+          reg: /^#?(UC)?(全体|全部)?解禁$/,
           fnc: 'releaseMute'
         },
         {
-          reg: /^#?群?禁言(信息|列表)$/,
+          reg: /^#?(UC)?群?禁言(信息|列表)$/,
           fnc: 'groupMuteInfo'
         }
       ]

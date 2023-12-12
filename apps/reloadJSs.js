@@ -68,6 +68,7 @@ export default class UCReloadJSs extends UCPlugin {
         let watch
         if (parentDirName === 'groupAdmin') {
           log.yellow('新增群管插件：' + jsName)
+          import(`file:///${newAppPath}?${Date.now()}`).catch(err => log.error(err))
           watch = Data.watch(newAppPath, (path) => {
             log.whiteblod(`修改群管插件${Path.basename(path)}`)
             import(`file:///${path}?${Date.now()}`).catch(err => log.error(err))
@@ -86,6 +87,11 @@ export default class UCReloadJSs extends UCPlugin {
         const jsName = Path.basename(delAppPath)
         if (parentDirName === 'groupAdmin') {
           log.yellow('删除群管插件：' + jsName)
+          for (const event in UCPr.temp.event) {
+            const name = 'UC-' + jsName.replace('.js', '')
+            const findIndex = UCPr.temp.event[event].findIndex(v => v.name === name)
+            if (findIndex > -1) UCPr.temp.event[event].splice(findIndex, 1)
+          }
         } else {
           log.yellow('删除插件：' + jsName)
           await unloadJs(delAppPath)
@@ -95,9 +101,8 @@ export default class UCReloadJSs extends UCPlugin {
         delete watcher[jsName]
         Data.remove(JSs, jsName)
       })
-      const plugins = loader.priority.filter(v => v.name.startsWith('UC'))
-      // plugins.forEach(v => log.yellow(v.name))
-      log.red(`总计载入UC插件${plugins.length}项功能`)
+      // JSs.forEach(JS => log.yellow(JS))
+      log.red(`总计载入UC插件${JSs.length}项功能`)
     }
   }
 

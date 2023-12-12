@@ -1,4 +1,5 @@
-import { UCPr, file, Path, Check, Data } from '../components/index.js'
+import { UCPr, file, Path, Check, Data, common } from '../components/index.js'
+import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from './index.js'
 import _ from 'lodash'
 
@@ -136,7 +137,49 @@ export default class UCEvent extends UCPlugin {
 
 }
 
+class UCSwitchBotEvent extends UCEvent {
+  constructor(e) {
+    super({
+      e,
+      name: 'UC-switchBotEvent',
+      event: 'message.group',
+      Cfg: 'config.switchBot'
+    })
+    if (!this.isGroup) return
+    this.groupData = UCPr.defaultCfg.getConfig('group')
+  }
+
+  async deal(e) {
+    if (!this.verifyPermission(this.Cfg.closedCommand, { isReply: false })) return false
+    if (this.Cfg.isAt && e.atme) {
+      return await this.dealMsg(e)
+    }
+    const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
+    if (this.Cfg.isPrefix && reg.test(this.msg)) {
+      e.message.forEach(v => {
+        if (v.text) v.text = v.text.replace(reg, '')
+      })
+      return await this.dealMsg(e)
+    }
+  }
+
+  async dealMsg(e) {
+    _.unset(this.groupData, `${this.groupId}.enable`)
+    dealMsg('message.group', e)
+    await common.sleep(0.2)
+    await loader.deal(e)
+    _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
+    return true
+  }
+}
+
 async function dealMsg(type, e) {
+  if (type === 'message.group') {
+    if (_.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${e.group_id}.enable`), ['UC-switchBot'])) {
+      const a = new UCSwitchBotEvent(e)
+      return await a.deal(e)
+    }
+  }
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
   const events = UCPr.temp.event[type]
   for (const event of events) {
@@ -153,14 +196,14 @@ async function dealMsg(type, e) {
         log.error(`执行${event.name} 上下文${userHook.type}错误`, err)
       }
       Data.remove(hook, userHook)
-      return
+      return true
     }
     if (event.accept) {
       // log.debug('执行accept方法：' + event.name)
       const app = new event.class(e)
       try {
         const result = await app.accept(e)
-        if (result === 'return') return
+        if (result === 'return') return true
       } catch (err) {
         log.error(`执行${event.name} accept错误`, err)
       }
@@ -177,11 +220,13 @@ async function dealMsg(type, e) {
           e.reply?.(logInfo + ' 执行错误，请查看错误日志')
         })
         if (result !== false) {
-          return log.white(`${logInfo} 处理完成 ${Date.now() - start}ms`)
+          log.white(`${logInfo} 处理完成 ${Date.now() - start}ms`)
+          return true
         }
       }
     }
   }
+  return false
 }
 
 export async function EventLoader() {

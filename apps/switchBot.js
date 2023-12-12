@@ -1,50 +1,6 @@
-import { Path, file, UCPr, Data, Check, common } from '../components/index.js'
-import { UCPlugin, UCEvent } from '../model/index.js'
-import loader from '../../../lib/plugins/loader.js'
+import { Path, file, UCPr, Data, Check } from '../components/index.js'
+import { UCPlugin } from '../model/index.js'
 import _ from 'lodash'
-
-class UCSwitchBotEvent extends UCEvent {
-  constructor(e) {
-    super({
-      e,
-      name: 'UC-switchBotEvent',
-      event: 'message.group',
-      Cfg: 'config.switchBot'
-    })
-    if (!this.isGroup) return
-    this.groupData = UCPr.defaultCfg.getConfig('group')
-    this.isClose = _.isEqual(_.get(this.groupData, `${e.group_id}.enable`), ['UC-switchBot'])
-  }
-
-  accept(e) {
-    if (this.isClose) {
-      if (!this.verifyPermission(this.Cfg.closedCommand, { isReply: false })) return false
-      if (this.Cfg.isAt && e.atme) {
-        this.dealMsg(e)
-        return 'return'
-      }
-      const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
-      if (this.Cfg.isPrefix && reg.test(this.msg)) {
-        e.message.forEach(v => {
-          if (v.text) v.text = v.text.replace(reg, '')
-        })
-        this.dealMsg(e)
-        return 'return'
-      }
-    }
-  }
-
-  async dealMsg(e) {
-    _.unset(this.groupData, `${this.groupId}.enable`)
-    await common.sleep(0.2)
-    await loader.deal(e)
-    _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
-    return true
-  }
-
-}
-
-UCPr.EventInit(UCSwitchBotEvent)
 
 function init() {
   if (!_.isArray(switchBotData)) return

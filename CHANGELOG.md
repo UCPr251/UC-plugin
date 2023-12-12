@@ -10,6 +10,9 @@
 - 优化UC群管 **撤回、禁言、踢人** 的消息拦截
 - 适配[重载插件](./apps/reloadJSs.js)对 **UC群管** 的支持
 - 删除 **全局仅主人可操作** 时的回复，同步修改锅巴、设置等
+- 适配[开关Bot](./apps/switchBot.js)对 **UC群管** 的支持
+- 调整[开关Bot](./apps/switchBot.js)响应前缀、艾特，与[UCEVent](./model/UCEvent.js)合并
+- 调整 **UC群管** 指令，指令可选前缀 **UC**
 
 # 12-11
 

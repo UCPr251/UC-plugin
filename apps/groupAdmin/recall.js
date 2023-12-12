@@ -11,11 +11,11 @@ class UCRecall extends UCEvent {
       Cfg: 'GAconfig.recall',
       rule: [
         {
-          reg: /^#?清屏\s*\d*$/,
+          reg: /^#?(UC)?清屏\s*\d*$/,
           fnc: 'clear'
         },
         {
-          reg: /^#?撤回\s*\d*$/,
+          reg: /^#?(UC)?撤回\s*\d*$/,
           fnc: 'recall'
         }
       ]

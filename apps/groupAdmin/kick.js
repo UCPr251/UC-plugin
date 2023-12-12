@@ -11,7 +11,7 @@ class UCKick extends UCEvent {
       Cfg: 'GAconfig.kick',
       rule: [
         {
-          reg: /^#?(全局)?踢(黑名单\s*\d*)?$/,
+          reg: /^#?(UC)?(全局)?踢(黑名单\s*\d*)?$/,
           fnc: 'kickMember'
         }
       ]

@@ -89,17 +89,19 @@ const UCPr = {
     const { config, GAconfig } = CFG
     for (const yaml of yamls) {
       const yamlPath = Path.get('groupCfg', yaml)
-      const newYamlData = file.YAMLreader(yamlPath)
+      const groupCFGData = file.YAMLreader(yamlPath)
       const name = Path.parse(yaml).name
-      groupCFG[name] = newYamlData
+      groupCFG[name] = groupCFGData
       Data.watch(yamlPath, () => {
         groupCFG[name] = file.YAMLreader(yamlPath)
         log.whiteblod(`修改群设置文件${yaml}`)
       })
-      // 合并新增配置
-      const newData = _.merge({}, { config, GAconfig }, newYamlData)
-      if (!_.isEqual(newYamlData, newData)) {
-        setTimeout(() => file.YAMLsaver(yamlPath, newData), 100)
+      // 合并筛选新增配置
+      const usefulData = Data.mergeCfg(groupCFGData, {
+        config, GAconfig, permission: { Master: [], Admin: [], BlackQQ: [] }
+      })
+      if (!_.isEqual(groupCFGData, usefulData)) {
+        setTimeout(() => file.YAMLsaver(yamlPath, usefulData), 100)
       }
     }
     const watcher = await Data.watchDir(Path.groupCfg, (yamlPath) => {
