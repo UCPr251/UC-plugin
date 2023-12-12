@@ -251,11 +251,6 @@ const UCPr = {
     return this.config.loveMysNotice ?? 50
   },
 
-  /** 开启仅主人可操作时，对其他使用者的回复内容 */
-  get onlyMasterReply() {
-    return this.config.onlyMasterReply ?? '当前仅主人可操作'
-  },
-
   /** 用户无权限回复 */
   get noPerReply() {
     return this.config.noPerReply ?? '无权限或权限不足'

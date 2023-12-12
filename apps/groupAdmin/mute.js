@@ -26,16 +26,16 @@ class UCMute extends UCEvent {
   }
 
   async muteMember(e) {
-    if (!this.defaultVerify(false)) return false
-    if (e.atme) return false
+    if (!this.defaultVerify(false)) return
+    if (e.atme) return
     if (/全体/.test(this.msg)) {
-      if (!this.verifyPermission(this.Cfg.muteAll)) return false
+      if (!this.verifyPermission(this.Cfg.muteAll)) return
       if (e.group.all_muted) return this.reply('当前已经开启全体禁言了哦~')
       const status = await e.group.muteAll(true).catch(err => log.error(err))
       if (status) return this.reply(this.Cfg.allMuteReply)
       return this.errorReply()
     }
-    if (!this.verifyPermission(this.Cfg.use)) return false
+    if (!this.verifyPermission(this.Cfg.use)) return
     if (!this.at) return this.reply('请艾特要禁言的群员')
     if (!this.checkUserPower(this.at)) return this.noPerReply()
     if (!this.checkBotPower(this.at)) return this.noPowReply()

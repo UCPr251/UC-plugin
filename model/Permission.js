@@ -129,7 +129,7 @@ export default class Permission {
     recallMsg: 0
   }, judge = false) {
     if (judge) return this.reply(UCPr.noPerReply, option)
-    if (UCPr.onlyMaster && !this.M) return this.reply(UCPr.onlyMasterReply, option)
+    if (UCPr.onlyMaster && !this.M) return false
     if (!this.isPer) return this.reply(UCPr.noPerReply, option)
     return true
   }

@@ -23,7 +23,7 @@ class UCRecall extends UCEvent {
   }
 
   async clear(e) {
-    if (!this.defaultVerify()) return false
+    if (!this.defaultVerify()) return
     const clearNum = Math.min(this.msg.match(/\d+/)?.[0] ?? this.Cfg.defaultClear, this.Cfg.CLEAR_MAX)
     const start = Date.now()
     this.reply(`开始执行清屏任务，待清理：${clearNum}`, false, { recallMsg: 60 })
@@ -34,7 +34,7 @@ class UCRecall extends UCEvent {
   }
 
   async recall(e) {
-    if (!this.defaultVerify()) return false
+    if (!this.defaultVerify()) return
     if (!(this.at || e.atme) && !e.source) return this.reply('请艾特或引用需要撤回消息的群员')
     const userId = this.at || (e.atme ? e.self_id : e.source.user_id)
     if (!this.checkUserPower(userId)) return this.noPerReply()

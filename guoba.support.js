@@ -368,8 +368,6 @@ export function supportGuoba() {
         s('loveMysNotice', '过码次数预警值', 'InputNumber',
           '每日0点自动检测过码剩余次数，低于该值则提醒主人，0则不提醒',
           { min: 0 }),
-        s('onlyMasterReply', '仅主人回复', 'Input',
-          '开启仅主人可操作时，对其他使用者的回复内容'),
         s('noPerReply', '用户无权限回复', 'Input',
           '用户权限不足以操作机器人时的回复'),
         s('noPowReply', 'Bot无权限回复', 'Input',

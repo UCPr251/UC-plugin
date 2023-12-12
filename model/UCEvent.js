@@ -185,13 +185,9 @@ async function dealMsg(type, e) {
 }
 
 export async function EventLoader() {
-  const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
-  files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
-  if (UCPr.isWatch) {
-    files.forEach(file => Data.watch(Path.get('groupAdmin', file), (path) => {
-      log.whiteblod(`修改群管插件${Path.basename(path)}`)
-      import(`file:///${path}?${Date.now()}`).catch(err => log.error(err))
-    }))
+  if (!UCPr.isWatch) {
+    const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
+    files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
   Bot.on('message.group', (e) => {
     // log.debug('接收事件：message.group')

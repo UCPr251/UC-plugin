@@ -20,7 +20,7 @@ class UCKick extends UCEvent {
   }
 
   async kickMember(e) {
-    if (!this.defaultVerify()) return false
+    if (!this.defaultVerify()) return
     if (/黑名单/.test(this.msg)) {
       return this.kickBlack(e)
     }
@@ -46,7 +46,7 @@ class UCKick extends UCEvent {
       const groupId = this.GM ? (this.msg.match(/\d+/)?.[0] || e.group_id) : e.group_id
       GroupsArr = [groupId]
     } else {
-      if (!this.verifyLevel(4)) return false
+      if (!this.verifyLevel(4)) return
       GroupsArr = _.sortBy(Object.keys(GroupsInfo))
     }
     const groupToKick = []

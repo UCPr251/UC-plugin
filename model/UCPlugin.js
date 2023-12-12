@@ -125,13 +125,8 @@ export default class UCPlugin extends plugin {
   /** 权限等级验证 */
   verifyLevel(need = 0) {
     if (this.B) return false
-    if (UCPr.onlyMaster && !this.M) {
-      this.e.reply(UCPr.onlyMasterReply)
-      return false
-    }
-    if (this.level < need) {
-      return this.noPerReply()
-    }
+    if (UCPr.onlyMaster && !this.M) return false
+    if (this.level < need) return this.noPerReply()
     return true
   }
 

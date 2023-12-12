@@ -60,26 +60,37 @@ export default class UCReloadJSs extends UCPlugin {
   async init(mode) {
     if (UCPr.isWatch || mode) {
       ing = true
-      await reloadJSs(Path.apps)
+      await reloadJSs()
+      await reloadGroupAdminJSs()
       const watch = await Data.watchDir(Path.apps, async (newAppPath) => {
         const parentDirName = Path.basename(Path.dirname(newAppPath))
-        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(newAppPath)
-        log.yellow('新增插件：' + jsName)
-        await common.sleep(0.1)
-        await loadJs(newAppPath)
+        let watch
+        if (parentDirName === 'groupAdmin') {
+          log.yellow('新增群管插件：' + jsName)
+          watch = Data.watch(newAppPath, (path) => {
+            log.whiteblod(`修改群管插件${Path.basename(path)}`)
+            import(`file:///${path}?${Date.now()}`).catch(err => log.error(err))
+          })
+        } else {
+          log.yellow('新增插件：' + jsName)
+          await common.sleep(0.1)
+          await loadJs(newAppPath)
+          watch = Data.watch(newAppPath, reloadJS.bind(loader, newAppPath))
+        }
         JSs.push(jsName)
-        const watch = Data.watch(newAppPath, reloadJS.bind(loader, newAppPath))
         watcher[jsName] = watch
-        await common.sleep(500)
       })
       watch.on('unlink', async (delAppPath) => {
         const parentDirName = Path.basename(Path.dirname(delAppPath))
-        if (parentDirName === 'groupAdmin') return
         const jsName = Path.basename(delAppPath)
-        log.yellow('删除插件：' + jsName)
-        await unloadJs(delAppPath)
-        await cancelTask(delAppPath)
+        if (parentDirName === 'groupAdmin') {
+          log.yellow('删除群管插件：' + jsName)
+        } else {
+          log.yellow('删除插件：' + jsName)
+          await unloadJs(delAppPath)
+          await cancelTask(delAppPath)
+        }
         watcher[jsName].close()
         delete watcher[jsName]
         Data.remove(JSs, jsName)
@@ -114,8 +125,9 @@ export default class UCReloadJSs extends UCPlugin {
     if (ing) return e.reply('当前已处于开发模式，无需手动重载插件')
     const jsName = e.msg.match(/重载插件(.*)/)[1].trim() + '.js'
     if (jsName === '.js') {
-      const num = await reloadJSs(Path.apps, false)
-      return e.reply(`成功重载${num}个UC插件`)
+      const num = await reloadJSs(false)
+      const GAnum = await reloadGroupAdminJSs(false)
+      return e.reply(`成功重载${num}个UC插件、${GAnum}个UC群管插件`)
     }
     const jsPath = Path.get('apps', jsName)
     if (!Check.file(jsPath)) return e.reply(jsName + '插件不存在，请检查')
@@ -188,12 +200,11 @@ export default class UCReloadJSs extends UCPlugin {
 
 /**
  * 重载除reloadJSs.js以外全部JS
- * @param {string} path 重载插件路径
  * @param {boolean} [isWatch=true] 重载后是否监听，默认监听
  * @returns 重载JS个数
  */
-async function reloadJSs(path, isWatch = true) {
-  const _JSs = file.readdirSync(path, { type: '.js', removes: 'reloadJSs.js' })
+async function reloadJSs(isWatch = true) {
+  const _JSs = file.readdirSync(Path.apps, { type: '.js', removes: 'reloadJSs.js' })
   for (const _JS of _JSs) {
     const jsPath = Path.get('apps', _JS)
     await reloadJS(jsPath)
@@ -289,4 +300,22 @@ function order() {
     loader.priority = loader.priority.sort((a, b) => a.priority - b.priority)
     log.red('刷新插件优先级排序')
   }, 1500)
+}
+
+async function reloadGroupAdminJSs(isWatch = true) {
+  const _JSs = file.readdirSync(Path.groupAdmin, { type: '.js' })
+  _JSs.forEach(_JS => {
+    import(`file:///${Path.groupAdmin}/${_JS}`).catch(err => log.error(err))
+    JSs.push(_JS)
+  })
+  if (isWatch) {
+    _JSs.forEach(_JS => {
+      const watch = Data.watch(Path.get('groupAdmin', _JS), (path) => {
+        log.whiteblod(`修改群管插件${Path.basename(path)}`)
+        import(`file:///${path}?${Date.now()}`).catch(err => log.error(err))
+      })
+      watcher[_JS] = watch
+    })
+  }
+  return _JSs.length
 }
