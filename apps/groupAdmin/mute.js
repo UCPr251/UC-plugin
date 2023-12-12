@@ -10,7 +10,7 @@ class UCMute extends UCEvent {
       Cfg: 'GAconfig.mute',
       rule: [
         {
-          reg: /^#?(全体)?禁言(.*)/,
+          reg: /^#?(全体)?禁言(?!信息|列表)(.*)/,
           fnc: 'muteMember'
         },
         {
