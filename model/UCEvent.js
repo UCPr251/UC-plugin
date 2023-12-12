@@ -246,5 +246,4 @@ export async function EventLoader() {
     // log.debug('接收事件：request.group')
     dealMsg('request.group', e)
   })
-  return _.flatMap(_.values(UCPr.temp.event)).length
 }

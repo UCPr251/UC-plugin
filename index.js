@@ -22,7 +22,6 @@ ret = await Promise.allSettled(ret)
 
 const apps = {}
 let status = true
-let jsCount = 0
 for (const i in files) {
     const name = files[i].replace('.js', '')
     if (ret[i].status !== 'fulfilled') {
@@ -31,11 +30,10 @@ for (const i in files) {
         status = false
         continue
     }
-    jsCount++
     apps[name] = ret[i].value.default ?? ret[i].value[Object.keys(ret[i].value)[0]]
 }
 
-const groupAdminJs = await EventLoader()
+await EventLoader()
 
 if (status) {
     log.bluebold('┎┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┒')
@@ -45,7 +43,7 @@ if (status) {
     log.bluebold('┃    ║      ║     ║          ┃')
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
-    log.purple(`--------已载入${jsCount + groupAdminJs}个js---------`)
+    log.purple(`----${Path.Plugin_Name} ${UCPr.version}载入成功-----`)
     log.blue('---------------------')
 }
 
