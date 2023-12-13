@@ -31,8 +31,8 @@ async function checkMsg(msg) {
   if (/签名api异常/i.test(msg)) {
     if (++errorTimes >= (UCPr.qsignRestart?.errorTimes ?? 3)) {
       ing = true
-      errorTimes = 0
       log.red(`检测到签名异常${errorTimes}次，尝试重启签名`)
+      errorTimes = 0
       killQsign()
       startQsign()
       addLog('签名异常')
