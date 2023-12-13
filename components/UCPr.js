@@ -162,7 +162,7 @@ const UCPr = {
       return log.warn('错误的监听事件：' + app.event)
     }
     Data.remove(events, app.name, 'name')
-    log.debug('注册监听事件：' + app.name)
+    log.debug(`注册${app.event}监听事件：` + app.name)
     events.push({
       name: app.name,
       class: EventClass,

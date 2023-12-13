@@ -22,25 +22,27 @@ export { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo }
 const tempData = {}
 
 /**
- * 防抖保存设置文件，主要用于系统循环多次调用Admin.config，后覆盖前
- * @param {'config'|'GAconfig'|'permission'} [cfg='config'] 需要修改的配置文件
+ * 防抖保存配置文件
+ * @param {string} key key
  * @param {Object} data 新数据
- * @param {Function} fnc 保存新数据后的回调函数
+ * @param {*} path
+ * @param {Function} fnc 保存新数据后调用函数
  */
-function saver(cfg, data, fnc) {
-  if (!tempData[cfg]) {
-    tempData[cfg] = {}
+function saver(key, data, path, fnc) {
+  if (!tempData[key]) {
+    tempData[key] = {}
   }
-  if (!tempData[cfg].timer) {
-    tempData[cfg].data = data
+  if (!tempData[key].timer) {
+    tempData[key].data = data
   } else {
-    clearTimeout(tempData[cfg].timer)
-    tempData[cfg].data = _.merge({}, tempData[cfg].data, data)
+    clearTimeout(tempData[key].timer)
+    tempData[key].data = _.merge({}, tempData[key].data, data)
   }
-  tempData[cfg].timer = setTimeout(() => {
-    file.YAMLsaver(Path[`${cfg}yaml`], tempData[cfg].data)
-    setImmediate(() => fnc && fnc(), 100)
-  }, 100)
+  tempData[key].timer = setTimeout(() => {
+    file.YAMLsaver(path, tempData[key].data)
+    delete tempData[key]
+    setImmediate(() => fnc && fnc(), 40)
+  }, 40)
 }
 
 /** 对config设置的Admin操作 */
@@ -66,16 +68,17 @@ const Admin = {
 
   /** 修改群设置 */
   groupCfg(groupId, path, operation, cfg) {
-    const groupConfig = UCPr.groupCFG(groupId)
+    const groupConfig = tempData[groupId]?.data ?? UCPr.groupCFG(groupId)
     if (!groupConfig) return log.warn('[Admin.groupCfg]群配置不存在：', groupId)
     const old = _.get(groupConfig[cfg], path)
     if (old !== undefined) {
       if (!_.isEqual(old, operation)) {
         log.debug(`修改${groupId}.yaml文件${path}为` + common.toString(operation))
         _.set(groupConfig[cfg], path, operation)
-        file.YAMLsaver(this.getCfgPath(groupId), groupConfig)
+        saver(groupId, groupConfig, this.getCfgPath(groupId))
+        return true
       }
-      return true
+      return false
     }
     return log.warn(`操作失败：${groupId}.yaml配置中不存在${path}属性`)
   },
@@ -94,7 +97,7 @@ const Admin = {
       if (!_.isEqual(old, operation)) {
         log.debug(`修改${cfg}文件${path}为` + common.toString(operation))
         _.set(config, path, operation)
-        saver(cfg, config, Data.refreshLock)
+        saver(cfg, config, Path[`${cfg}yaml`], Data.refreshLock)
         return true
       }
       return false

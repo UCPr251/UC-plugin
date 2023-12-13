@@ -233,7 +233,11 @@ export default class UCAdmin extends UCPlugin {
           const numMatch = str3.match(/0|1/g)
           if (numMatch && numMatch.length === setData.options?.length) {
             for (const i in numMatch) {
-              Admin.globalCfg(setData.path + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
+              if (isGlobal) {
+                Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
+              } else {
+                Admin.groupCfg(groupId, setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
+              }
             }
           }
         } else {

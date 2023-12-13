@@ -1,6 +1,7 @@
 import { UCPr, file, Path, Check, Data, common } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from './index.js'
+import Runtime from '../../../lib/plugins/runtime.js'
 import _ from 'lodash'
 
 const hook = []
@@ -142,53 +143,60 @@ class UCSwitchBotEvent extends UCEvent {
     super({
       e,
       name: 'UC-switchBotEvent',
-      event: 'message.group',
       Cfg: 'config.switchBot'
     })
     if (!this.isGroup) return
     this.groupData = UCPr.defaultCfg.getConfig('group')
   }
 
-  async deal(e) {
+  async deal(e, type) {
+    if (e.isUCSwitchBot) {
+      return await this.dealMsg(e, type)
+    }
     if (!this.verifyPermission(this.Cfg.closedCommand, { isReply: false })) return false
     if (this.Cfg.isAt && e.atme) {
-      return await this.dealMsg(e)
+      e.isUCSwitchBot = true
+      return await this.dealMsg(e, type)
     }
     const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
     if (this.Cfg.isPrefix && reg.test(this.msg)) {
+      e.isUCSwitchBot = true
       e.message.forEach(v => {
         if (v.text) v.text = v.text.replace(reg, '')
       })
-      return await this.dealMsg(e)
+      return await this.dealMsg(e, type)
     }
+    return false
   }
 
-  async dealMsg(e) {
+  async dealMsg(e, type) {
     _.unset(this.groupData, `${this.groupId}.enable`)
-    dealMsg('message.group', e)
-    await common.sleep(0.2)
-    await loader.deal(e)
+    let result = await UCdealMsg(type, e)
+    await common.sleep(0.2) // 等待本体loader.deal执行完毕和本体CD
+    if (result === false && type === 'message.all' && !e.atme) {
+      result = await BotPluginsDeal(e).catch(err => log.error('执行消息处理错误', err))
+    }
     _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
-    return true
+    return result
   }
 }
 
-async function dealMsg(type, e) {
-  if (type === 'message.group') {
+async function UCdealMsg(type, e) {
+  if (type.startsWith('message')) {
     if (_.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${e.group_id}.enable`), ['UC-switchBot'])) {
       const a = new UCSwitchBotEvent(e)
-      return await a.deal(e)
+      return await a.deal(e, type)
     }
   }
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
   const events = UCPr.temp.event[type]
   for (const event of events) {
-    // log.debug('检查方法：' + event.name)
+    // log.debug('检查插件：' + event.name)
     if (event.sub_type !== 'all' && !event.sub_type === e.sub_type) continue
     const key = `${event.name}.${e.sender?.user_id ?? e.user_id}`
     const userHook = _.find(hook, { key })
     if (userHook) {
-      log.debug(`执行hook方法：${event.name} ${userHook.type}`)
+      log.white(`执行hook方法：${event.name} ${userHook.type}`)
       const app = new event.class(e)
       try {
         await app[userHook.type](e)
@@ -209,8 +217,11 @@ async function dealMsg(type, e) {
       }
     }
     if (!_.isArray(event.rule)) continue
+    // log.debug('检查插件正则' + event.name)
     for (const rule of event.rule) {
+      // log.debug('检查功能正则' + rule.reg)
       if (new RegExp(rule.reg).test(msg)) {
+        log.white(msg)
         const start = Date.now()
         const logInfo = `[${event.name}][${rule.fnc}] ${_.truncate(msg, { length: 50 })}`
         log.white(logInfo)
@@ -234,14 +245,96 @@ export async function EventLoader() {
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
-  Bot.on('message', (e) => {
-    dealMsg('message.all', e)
-    if (e.message_type === 'group') dealMsg('message.group', e)
+  Bot.on('message', async (e) => {
+    const result = await UCdealMsg('message.all', e)
+    if (result === false) {
+      if (e.message_type === 'group') UCdealMsg('message.group', e)
+    }
   })
   Bot.on('notice.group', (e) => {
-    dealMsg('notice.group', e)
+    UCdealMsg('notice.group', e)
   })
   Bot.on('request.group', (e) => {
-    dealMsg('request.group', e)
+    UCdealMsg('request.group', e)
   })
+}
+
+async function BotPluginsDeal(e) {
+  if (loader.checkGuildMsg(e)) return false
+  if (!loader.checkLimit(e)) return false
+  if (!loader.checkBlack(e)) return false
+  const priority = []
+  if (!e.runtime) await Runtime.init(e)
+  if (e.msg === undefined && _.some(e.message, v => v.type === 'text')) loader.dealMsg(e)
+  if (e.msg) {
+    const reg = new RegExp(`^\\s*(${UCPr.BotName})+`, 'i')
+    e.msg = e.msg.replace(reg, '')
+  }
+  loader.priority.forEach(v => {
+    const p = new v.class(e)
+    p.e = e
+    if (!loader.checkDisable(e, p)) return
+    if (!loader.filtEvent(e, p)) return
+    priority.push(p)
+  })
+  for (const plugin of priority) {
+    if (plugin.getContext) {
+      const context = plugin.getContext()
+      if (!_.isEmpty(context)) {
+        for (const fnc in context) {
+          plugin[fnc](context[fnc])
+        }
+        return true
+      }
+    }
+    if (plugin.getContextGroup) {
+      const context = plugin.getContextGroup()
+      if (!_.isEmpty(context)) {
+        for (const fnc in context) {
+          plugin[fnc](context[fnc])
+        }
+        return true
+      }
+    }
+  }
+  if (!loader.onlyReplyAt(e)) return false
+  for (const plugin of priority) {
+    if (plugin.accept) {
+      const res = await plugin.accept(e)
+      if (res === 'return') return true
+      if (res) break
+    }
+  }
+  for (const plugin of priority) {
+    if (plugin.rule) {
+      for (const v of plugin.rule) {
+        if (v.event && !loader.filtEvent(e, v)) continue
+        const regExp = new RegExp(v.reg)
+        const messageOrApplet = e.msg || e.message?.[0]?.data
+        if (regExp.test(messageOrApplet)) {
+          e.logFnc = `[${plugin.name}][${v.fnc}]`
+          if (v.log !== false) {
+            log.white(`${e.logFnc}${e.logText} ${_.truncate(e.msg, { length: 50 })}`)
+          }
+          if (!loader.filtPermission(e, v)) return false
+          try {
+            const res = plugin[v.fnc] && (await plugin[v.fnc](e))
+            const start = Date.now()
+            if (res !== false) {
+              loader.setLimit(e)
+              if (v.log !== false) {
+                log.white(`${e.logFnc} ${_.truncate(e.msg, { length: 50 })} 处理完成 ${Date.now() - start}ms`)
+              }
+              return true
+            }
+          } catch (err) {
+            logger.error(`${e.logFnc}`)
+            logger.error(err.stack)
+            return false
+          }
+        }
+      }
+    }
+  }
+  return false
 }

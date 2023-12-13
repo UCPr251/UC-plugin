@@ -8,8 +8,8 @@ class UCGroupInfo extends UCEvent {
     super({
       e,
       name: 'UC-groupInfo',
+      dsc: 'UC群管·获取群信息',
       event: 'message.all',
-      dsc: '查看机器人所在群信息',
       rule: [
         {
           reg: /^#?(UC)?获取群列表$/i,
@@ -24,30 +24,30 @@ class UCGroupInfo extends UCEvent {
     this.sub_type = 'all'
   }
 
-  async GroupList(e) {
+  async GroupList() {
     if (!this.isOpen) return false
     if (!this.verifyLevel(4)) return
-    const groupsInfo = _.sortBy(Array.from(e.bot.gl.values()), 'group_id')
+    const groupsInfo = _.sortBy(Array.from(Bot.gl.values()), 'group_id')
     const msgArr = Data.makeArrStr(groupsInfo, { property: 'group_name', property2: 'group_id' })
-    return e.reply(`总群数：${groupsInfo.length}\n\n` + msgArr)
+    return this.reply(`总群数：${groupsInfo.length}\n\n` + msgArr)
   }
 
   async GroupInfo(e) {
     if (!this.isOpen) return false
     if (!this.verifyLevel(4)) return
-    const GroupsInfo = Object.fromEntries(e.bot.gl)
+    const GroupsInfo = Object.fromEntries(Bot.gl)
     const groupId = e.msg.match(/\d+/)?.[0]
     if (groupId) {
       const info = GroupsInfo[groupId]
-      if (!info) return e.reply(`我不在群${groupId}中哦~`)
+      if (!info) return this.reply(`我不在群${groupId}中哦~`)
       const msg = makeMsg(info)
-      return e.reply([segment.image(getImg(info)), msg])
+      return this.reply([segment.image(getImg(info)), msg])
     }
     const groupsInfo = _.sortBy(_.values(GroupsInfo), 'group_id')
     const msgArr = groupsInfo.map((info, index) => [segment.image(getImg(info)), `${index + 1}、${makeMsg(info)}`])
     const title = `群信息，总群数：${groupsInfo.length}`
     const replyMsg = await common.makeForwardMsg(e, [title, ...msgArr], title)
-    return e.reply(replyMsg)
+    return this.reply(replyMsg)
   }
 
 }
