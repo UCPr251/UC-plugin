@@ -1,13 +1,14 @@
-import { Data, UCDate, common } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { Data, UCDate, UCPr, common } from '../../components/index.js'
+import { UCEvent } from '../../model/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-export default class UCGroupInfo extends UCPlugin {
+class UCGroupInfo extends UCEvent {
   constructor(e) {
     super({
       e,
       name: 'UC-groupInfo',
+      event: 'message.all',
       dsc: '查看机器人所在群信息',
       rule: [
         {
@@ -20,18 +21,20 @@ export default class UCGroupInfo extends UCPlugin {
         }
       ]
     })
+    this.sub_type = 'all'
   }
 
   async GroupList(e) {
-    if (!this.verifyLevel(4)) return false
-    const GroupsInfo = Object.fromEntries(e.bot.gl)
-    const groupsInfo = _.sortBy(_.values(GroupsInfo), 'group_id')
+    if (!this.isOpen) return false
+    if (!this.verifyLevel(4)) return
+    const groupsInfo = _.sortBy(Array.from(e.bot.gl.values()), 'group_id')
     const msgArr = Data.makeArrStr(groupsInfo, { property: 'group_name', property2: 'group_id' })
     return e.reply(`总群数：${groupsInfo.length}\n\n` + msgArr)
   }
 
   async GroupInfo(e) {
-    if (!this.verifyLevel(4)) return false
+    if (!this.isOpen) return false
+    if (!this.verifyLevel(4)) return
     const GroupsInfo = Object.fromEntries(e.bot.gl)
     const groupId = e.msg.match(/\d+/)?.[0]
     if (groupId) {
@@ -68,3 +71,5 @@ function makeMsg(info) {
 function getImg(info) {
   return `https://p.qlogo.cn/gh/${info.group_id}/${info.group_id}/100`
 }
+
+UCPr.EventInit(UCGroupInfo)

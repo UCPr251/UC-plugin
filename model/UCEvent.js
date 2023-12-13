@@ -24,7 +24,7 @@ export default class UCEvent extends UCPlugin {
      * request.froup: invite add
      */
     this.sub_type = 'normal'
-    this.isOpen = UCPr.GAconfig.isOpen && this.Cfg?.isOpen
+    this.isOpen = this.GAconfig.isOpen && _.get(this.Cfg, 'isOpen', true)
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
     /** bot是否为群主 */
@@ -234,16 +234,14 @@ export async function EventLoader() {
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
-  Bot.on('message.group', (e) => {
-    // log.debug('接收事件：message.group')
-    dealMsg('message.group', e)
+  Bot.on('message', (e) => {
+    dealMsg('message.all', e)
+    if (e.message_type === 'group') dealMsg('message.group', e)
   })
   Bot.on('notice.group', (e) => {
-    // log.debug('接收事件：notice.group')
     dealMsg('notice.group', e)
   })
   Bot.on('request.group', (e) => {
-    // log.debug('接收事件：request.group')
     dealMsg('request.group', e)
   })
 }

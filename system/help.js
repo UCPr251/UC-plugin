@@ -177,6 +177,16 @@ helpData.push({
       '踢出Bot所有群聊的黑名单用户',
       4,
       'kick.isOpen'
+    ),
+    s(
+      '#获取群列表',
+      '获取Bot所在群列表',
+      4
+    ),
+    s(
+      '#获取群信息',
+      '获取Bot所在群详细信息',
+      4
     )
   ]
 })
@@ -225,16 +235,6 @@ helpData.push({
       `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
       '群内关闭Bot',
       'switchBot.use'
-    ),
-    s(
-      '#获取群列表',
-      '获取Bot所在群列表',
-      4
-    ),
-    s(
-      '#获取群信息',
-      '获取Bot所在群详细信息',
-      4
     )
   ]
 })

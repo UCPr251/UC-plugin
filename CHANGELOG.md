@@ -2,6 +2,7 @@
 
 - [开关Bot](./apps/switchBot.js)增加固定开关指令 **#UC上线** **#UC下线**
 - 新增[获取群信息](./apps/groupInfo.js)插件，可获取 **群列表** 和 **群信息**
+- [获取群信息](./apps/groupInfo.js)移动至 **UC群管** 类
 
 # 12-12
 

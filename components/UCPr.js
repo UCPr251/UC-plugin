@@ -144,6 +144,7 @@ const UCPr = {
     /** 事件监听器 */
     event: {
       'message.group': [],
+      'message.all': [],
       'notice.group': [],
       'request.group': []
     },
