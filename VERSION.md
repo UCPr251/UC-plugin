@@ -1,6 +1,10 @@
+## 2.1.4
+
+- [水群统计](./apps/sqtj.js) `#水群统计` `#昨日水群统计`
+
 ## 2.1.2
 
-- [获取群信息](./apps/groupInfo.js)
+- [获取群信息](./apps/groupInfo.js) `#获取群列表` `#获取群信息`
 
 ## 2.1.0
 
@@ -8,9 +12,9 @@
 
 新增
 
-- [群管·撤回](./apps/groupAdmin/recall.js)
-- [群管·禁言](./apps/groupAdmin/mute.js)
-- [群管·踢人](./apps/groupAdmin/kick.js)
+- [群管·撤回](./apps/groupAdmin/recall.js) `#撤回` `#清屏`
+- [群管·禁言](./apps/groupAdmin/mute.js) `#禁言` `#解禁` `#全体禁言` `#全体解禁` `#全部解禁` `#禁言信息`
+- [群管·踢人](./apps/groupAdmin/kick.js) `#踢` `#踢黑名单` `#全局踢黑名单`
 
 ## 2.0.1
 

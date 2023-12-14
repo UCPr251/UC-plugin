@@ -6,19 +6,17 @@ export default class Sqtj extends Base {
     this.model = 'sqtj'
   }
 
-  static get(e, charArr, dsw, bqd, shwz) {
+  static get(e, Data) {
     const help = new Sqtj(e)
-    return help.getData(charArr, dsw, bqd, shwz)
+    return help.getData(Data)
   }
 
-  getData(charArr, dsw, bqd, shwz) {
+  getData(Data) {
     return {
       ...this.screenData,
-      charArr,
-      dsw,
-      bqd,
-      shwz,
-      saveId: 'UC-sqtj'
+      ...Data,
+      saveId: 'UC-sqtj',
+      quality: 100
     }
   }
 }

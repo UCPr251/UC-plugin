@@ -78,7 +78,7 @@ export default class UCBlivePush extends UCPlugin {
       ]
     })
     this.task = {
-      name: 'BlivePush',
+      name: 'UC-BlivePush',
       cron: `0 */${parseInt(UCPr.BlivePush.mins) || 4} * * * ?`,
       fnc: this.bLivePush.bind(this)
     }

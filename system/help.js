@@ -192,6 +192,56 @@ helpData.push({
 })
 
 helpData.push({
+  group: 'UC娱乐功能',
+  require: 0,
+  cfg: 'config',
+  list: [
+    s(
+      `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
+      '随机挑选一名幸运群友',
+      'randomMember.use',
+      'randomMember.isOpen'
+    ),
+    s(
+      '#随机老婆',
+      '随机二次元老婆',
+      '',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#随机老婆列表',
+      '随机二次元老婆列表',
+      '',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#上传随机老婆+名称',
+      '新增随机老婆图片',
+      'randomWife.add',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#删除随机老婆+名称',
+      '删除指定随机老婆图片',
+      'randomWife.del',
+      'randomWife.isOpen'
+    ),
+    s(
+      'UC戳一戳#poke#',
+      '开启功能后戳一戳生效',
+      '',
+      'chuoyichuo.isOpen'
+    ),
+    s(
+      '#今/昨日水群统计',
+      '查看群聊水群统计',
+      'sqtj.use',
+      'sqtj.isOpen'
+    )
+  ]
+})
+
+helpData.push({
   group: 'UC工具',
   require: 2,
   cfg: 'config',
@@ -329,50 +379,6 @@ helpData.push({
   ]
 })
 
-helpData.push({
-  group: 'UC娱乐功能',
-  require: 0,
-  cfg: 'config',
-  list: [
-    s(
-      `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
-      '随机挑选一名幸运群友',
-      'randomMember.use',
-      'randomMember.isOpen'
-    ),
-    s(
-      '#随机老婆',
-      '随机二次元老婆',
-      '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#随机老婆列表',
-      '随机二次元老婆列表',
-      '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#上传随机老婆+名称',
-      '新增随机老婆图片',
-      'randomWife.add',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#删除随机老婆+名称',
-      '删除指定随机老婆图片',
-      'randomWife.del',
-      'randomWife.isOpen'
-    ),
-    s(
-      'UC戳一戳#poke#',
-      '开启功能后戳一戳生效',
-      '',
-      'chuoyichuo.isOpen'
-    )
-  ]
-})
-
 if (Check.file(Path.get('apps', 'accredit.js'))) {
   helpData.push({
     group: 'UC授权管理',
@@ -447,7 +453,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
 }
 
 if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('bigjpg')) {
-  helpData[5].list.push(
+  helpData[2].list.push(
     s(
       '#放大图片',
       'AI无损放大图片',

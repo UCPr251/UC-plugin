@@ -234,7 +234,7 @@ export async function loadJs(jsPath) {
     const jsName = Path.basename(jsPath)
     if (plugin.task.name) {
       delete tasks[jsName]
-      const newTak = Data.reLoadTask(plugin)
+      const newTak = Data.loadTask(plugin.task)
       const taskName = plugin.task.name ?? plugin.name
       log.blue('[载入定时任务]' + taskName)
       tasks[jsName] = {
@@ -280,12 +280,7 @@ export async function unloadJs(jsPath) {
  * @param {string} jsPath JS路径
  */
 async function cancelTask(jsPath) {
-  const plugin = {
-    task: {
-      name: Path.parse(jsPath).name
-    }
-  }
-  Data.cancelTask(plugin)
+  Data.cancelTask('UC-' + Path.parse(jsPath).name)
   delete tasks[jsPath]
 }
 
