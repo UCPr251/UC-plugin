@@ -1,4 +1,4 @@
-import { UCPr, log, Data } from '../components/index.js'
+import { UCPr, log, Data, Check } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import Permission from './Permission.js'
 import _ from 'lodash'
@@ -128,6 +128,18 @@ export default class UCPlugin extends plugin {
     if (UCPr.onlyMaster && !this.M) return false
     if (this.level < need) return this.noPerReply()
     return true
+  }
+
+  /** 检查是否全局黑名单 */
+  isGB(userId) {
+    return Check.BlackQQ(userId)
+  }
+
+  /** 检查是否黑名单 */
+  isB(userId, groupId) {
+    if (this.isGB(userId)) return true
+    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.BlackQQ, userId)
+    return Check.str(this.groupCFG.permission?.BlackQQ, userId)
   }
 
   /** 用户是否确认操作 */

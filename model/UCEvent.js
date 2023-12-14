@@ -1,7 +1,7 @@
 import { UCPr, file, Path, Check, Data, common } from '../components/index.js'
+import Runtime from '../../../lib/plugins/runtime.js'
 import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from './index.js'
-import Runtime from '../../../lib/plugins/runtime.js'
 import _ from 'lodash'
 
 const hook = []
@@ -25,7 +25,8 @@ export default class UCEvent extends UCPlugin {
      * request.froup: invite add
      */
     this.sub_type = 'normal'
-    this.isOpen = this.GAconfig.isOpen && _.get(this.Cfg, 'isOpen', true)
+    if (!e) return
+    this.isOpen = this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
     /** bot是否为群主 */
@@ -58,18 +59,6 @@ export default class UCEvent extends UCPlugin {
     return Check.str(this.groupCFG.permission?.Admin, userId)
   }
 
-  /** 检查是否全局黑名单 */
-  isGB(userId) {
-    return Check.BlackQQ(userId)
-  }
-
-  /** 检查是否黑名单 */
-  isB(userId, groupId) {
-    if (this.isGB(userId)) return true
-    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.BlackQQ, userId)
-    return Check.str(this.groupCFG.permission?.BlackQQ, userId)
-  }
-
   /** 检查开关、use权限?、Bot群权限 */
   defaultVerify(isVerifyPermission = true) {
     if (!this.isOpen) return false
@@ -85,7 +74,7 @@ export default class UCEvent extends UCPlugin {
   }
 
   /** Bot和待操作群员群权限对比 */
-  checkBotPower(memId) {
+  checkBotPower(memId = this.userId) {
     if (this.botIsOwner) return true
     if (memId == this.qq) return true
     if (!this.botIsAdmin) return false
