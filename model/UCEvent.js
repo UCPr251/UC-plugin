@@ -25,8 +25,8 @@ export default class UCEvent extends UCPlugin {
      * request.froup: invite add
      */
     this.sub_type = 'normal'
-    if (!e) return
     this.isOpen = this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
+    if (!e) return
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
     /** bot是否为群主 */

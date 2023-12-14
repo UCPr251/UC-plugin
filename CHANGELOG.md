@@ -7,12 +7,18 @@
 - 修复指令设置群权限bug
 - 优化[开关Bot响应前缀、艾特](./model/UCEvent.js)
 
+**ver 2.1.4**
+
+- 调整一下`定时任务`的载入
+- 戏天插件不太灵了，自己写个安装example插件的功能，同步到[安装JS](./apps/addJS.js)`#UC安装插件`安装UC插件，`#UC安装JS`安装云崽js
+- 新增[水群统计](./apps/sqtj.js)`#今/昨日水群统计`，由原版千羽水群统计改造而成，后续会
+
 ## 12-13
 
 **ver 2.1.2**
 
 - [开关Bot](./apps/switchBot.js)增加固定开关指令 **#UC上线** **#UC下线**
-- 新增[获取群信息](./apps/groupInfo.js)插件，可获取 **群列表** 和 **群信息**
+- 新增[获取群信息](./apps/groupInfo.js)插件，可获取 **群列表** 和 **群信息**，`#获取群列表`，`#获取群信息`
 
 ## 12-12
 
@@ -41,9 +47,9 @@
 - 完善[UCEvent](./model/UCEvent.js)监听事件插件类
 - 完善监听逻辑
 - 若干修改
-- 新增[群管·撤回](./apps/groupAdmin/recall.js)
-- 新增[群管·禁言](./apps/groupAdmin/mute.js)
-- 新增[群管·踢人](./apps/groupAdmin/kick.js)
+- 新增[群管·撤回](./apps/groupAdmin/recall.js)`#撤回`，`#清屏`
+- 新增[群管·禁言](./apps/groupAdmin/mute.js)`#禁言`，`#解禁`，`#全体禁言`，`#全体解禁`，`#全部解禁`，`#禁言信息`
+- 新增[群管·踢人](./apps/groupAdmin/kick.js)`#踢`，`#踢黑名单`，`#全局踢黑名单`
 
 ## 12-6
 

@@ -38,7 +38,7 @@ export default class UCLoveMys extends UCPlugin {
     })
     if (Check.floder(loveMys)) {
       this.task = {
-        name: 'loveMys',
+        name: 'UC-loveMys',
         fnc: this.refresh.bind(this),
         cron: '0 0 0 * * ?'
       }

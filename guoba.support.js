@@ -159,6 +159,22 @@ if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
   js = js.concat(newCfg)
 }
 
+if (file.existsSync(Path.get('apps', 'sqtj.js'))) {
+  prefix = 'sqtj.'
+  const newCfg = [
+    {
+      label: '【UC】水群统计设置',
+      component: 'Divider'
+    },
+    s('isOpen', '水群统计开关', 'Switch',
+      '是否开启UC水群统计'),
+    s('isSelf', '统计机器人自身', 'Switch',
+      '水群统计是否也统计机器人自身记录'),
+    ...sPRO('#水群统计', undefined, [0, 0, 1, 1, 1, 1])
+  ]
+  js = js.concat(newCfg)
+}
+
 if (file.existsSync(Path.get('apps', 'BlivePush.js'))) {
   prefix = 'BlivePush.'
   const newCfg = [

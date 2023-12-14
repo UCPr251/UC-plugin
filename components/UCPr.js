@@ -148,8 +148,10 @@ const UCPr = {
       'notice.group': [],
       'request.group': []
     },
-    /** 文件监听器 */
+    /** 文件监听器{ path: watcher } */
     watcher: {},
+    /** cron定时任务[ { cron, fnc, name, job } ] */
+    task: [],
     /** 签名崩溃检测计时器 */
     intervalId: null
   },
@@ -312,7 +314,7 @@ const UCPr = {
 
   /** 机器人qq */
   get qq() {
-    return Bot.uin ?? this.defaultCfg.qq
+    return Number(Bot.uin ?? this.defaultCfg.qq)
   },
 
   /** 签名自动重启设置 */

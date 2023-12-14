@@ -1,0 +1,171 @@
+@font-face {
+    font-family: "SourceHanSansCN-Heavy";
+    src: url("../../fonts/SourceHanSansCN-Heavy.otf");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "SourceHanSansCN-Heavy";
+    transform: scale(1);
+}
+
+#container {
+    background-image: url(../../img/cool-background.png);
+    background-size: cover;
+    color: white;
+    width: 900px;
+}
+
+.topdiv {
+    background-color: rgb(14, 5, 19);
+    width: 900px;
+    height: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.topdiv div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+img {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+    z-index: 10;
+}
+
+.wl {
+    border-radius: 100%;
+    position: absolute;
+}
+
+.dsw {
+    top: -35px;
+    left: 33px;
+}
+
+.bqd {
+    width: 100px;
+    height: 100px;
+    top: 0px;
+}
+
+.shwz {
+    top: -25px;
+    left: 13px;
+    width: 150px;
+    height: 150px;
+    z-index: 5;
+}
+
+.topdiv div span {
+    margin-top: 5px;
+    width: 160px;
+    text-align: center;
+    z-index: 10;
+}
+
+.topdiv div span:nth-child(5) {
+    width: 160px;
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 0px;
+}
+
+tr:nth-child(1) {
+    background-color: rgb(14, 5, 19);
+}
+
+.last {
+    line-height: 40px;
+    background-color: rgb(14, 5, 19);
+}
+
+th,
+td {
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+
+tr>th:nth-child(2) {
+    text-align: left;
+    padding-left: 12%;
+}
+
+td img {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    margin-right: 5px;
+    margin-left: 20%;
+}
+
+td:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#container>table>tbody>tr:nth-child(2)>td:nth-child(1)::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-image: url(../../img/金牌.png);
+    position: absolute;
+    top: 17%;
+    left: 40%;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+}
+
+#container>table>tbody>tr:nth-child(3)>td:nth-child(1)::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-image: url(../../img/银牌.png);
+    position: absolute;
+    top: 17%;
+    left: 40%;
+    background-size: 25px 30px;
+    background-repeat: no-repeat;
+}
+
+#container>table>tbody>tr:nth-child(4)>td:nth-child(1)::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-image: url(../../img/铜牌.png);
+    position: absolute;
+    top: 17%;
+    left: 40%;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+}
+
+.logo {
+    font-size: 12px;
+    line-height: 20px;
+    margin-top: 10px;
+    text-align: center;
+    color: #fff;
+}

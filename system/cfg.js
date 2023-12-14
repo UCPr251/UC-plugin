@@ -173,7 +173,7 @@ if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
   prefix = 'recall.'
   cfgData.撤回 = {
     title: '群管·撤回',
-    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    isDisplay: (cfg) => cfg.GAconfig.isOpen,
     cfg: {
       '': s(
         'isOpen',
@@ -225,7 +225,7 @@ if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
   prefix = 'mute.'
   cfgData.禁言 = {
     title: '群管·禁言',
-    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    isDisplay: (cfg) => cfg.GAconfig.isOpen,
     cfg: {
       '': s(
         'isOpen',
@@ -291,7 +291,7 @@ if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
   prefix = 'kick.'
   cfgData.踢人 = {
     title: '群管·踢人',
-    isOpen: (cfg) => cfg.GAconfig.isOpen,
+    isDisplay: (cfg) => cfg.GAconfig.isOpen,
     cfg: {
       '': s(
         'isOpen',
@@ -570,6 +570,31 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
         '随机群友回复内容，info会被替换为：群友昵称（QQ）',
         'input',
         '恭喜info成为天选之子！'
+      ),
+      权限: sPRO(
+        undefined,
+        '0111',
+        'use',
+        [2, 3, 4, 5]
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'sqtj.js'))) {
+  prefix = 'sqtj.'
+  cfgData.水群统计 = {
+    title: '水群统计',
+    cfg: {
+      '': s(
+        'isOpen',
+        '水群统计开关',
+        '是否开启UC水群统计'
+      ),
+      机器人: s(
+        'isSelf',
+        '统计机器人自身',
+        '水群统计是否也统计机器人自身记录'
       ),
       权限: sPRO(
         undefined,

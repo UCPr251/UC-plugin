@@ -30,6 +30,7 @@ const lockyaml = path.join(config, 'lock.yaml')
 const permissionyaml = path.join(config, 'permission.yaml')
 const data = path.join(UC, 'data')
 const temp = path.join(data, 'temp')
+const testjson = path.join(temp, 'test.json')
 const QA = path.join(data, 'QA')
 const bigjpg = path.join(data, 'bigjpg')
 const errorLogjson = path.join(data, 'errorLog.json')
@@ -113,6 +114,8 @@ const Path = {
   data,
   /** ./data/temp */
   temp,
+  /** ./data/temp/test.json */
+  testjson,
   /** ./data/QA */
   QA,
   /** ./data/bigjpg */

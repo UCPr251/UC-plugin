@@ -34,7 +34,7 @@ export default class Cfg extends Base {
         delete data[k]
         continue
       }
-      if (data[k].isOpen && !data[k].isOpen(cfg)) {
+      if (data[k].isDisplay && !data[k].isDisplay(cfg)) {
         delete data[k]
         continue
       }

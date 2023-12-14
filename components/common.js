@@ -106,7 +106,7 @@ const common = {
 
   /** 渲染图片并发送 */
   async render(e, data, cfg = { quote: false, recallMsg: 0, at: false }) {
-    if (!e || !data) return log.warn('[common.render]图片渲染输入格式错误')
+    if (!e || !data) return log.warn('[common.render]图片渲染传参错误')
     const base64 = await puppeteer.screenshot(data.tempPath ?? Path.Plugin_Name, data)
     return await e.reply(base64, cfg.quote, cfg)
   },
