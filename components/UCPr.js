@@ -312,7 +312,7 @@ const UCPr = {
 
   /** 机器人qq */
   get qq() {
-    return Bot.uin ?? this.defaultCfg.qq
+    return Bot.uin ?? Number(this.defaultCfg.qq)
   },
 
   /** 签名自动重启设置 */

@@ -127,7 +127,7 @@ const Check = {
    * @returns {boolean}
    */
   GroupPermission(type, userId, groupId) {
-    log.debug(`[Check.GroupPermission]检查用户群${groupId} ${type}权限，${userId}`)
+    // log.debug(`[Check.GroupPermission]检查用户群${groupId} ${type}权限，${userId}`)
     if (this.e) {
       return Check.GroupPermission(type, this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
     }

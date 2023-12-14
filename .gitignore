@@ -17,6 +17,8 @@
 /apps/upload.js
 /apps/searchNovel.js
 /apps/QA.js
+/apps/sqtj.js
+/apps/atMute.js
 /apps/groupAdmin/*
 !/apps/groupAdmin/kick.js
 !/apps/groupAdmin/mute.js
