@@ -16,7 +16,7 @@ export default class UCSqtj extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?(UC)?(分析)?.*(昨|今)?(天|日)?水群统计/i,
+          reg: /^#?(UC)?(分析)?.*(昨|今)?(天|日)?水群统计$/i,
           fnc: 'sqtj'
         },
         {
@@ -169,7 +169,7 @@ export default class UCSqtj extends UCPlugin {
 }
 
 Data.loadTask({
-  cron: '30 9 1 * * ?',
+  cron: '0 0 0 * * ?',
   name: 'UC-sqtj',
   fnc: autoSendSqtj
 })
