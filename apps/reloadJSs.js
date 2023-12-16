@@ -243,7 +243,11 @@ export async function loadJs(jsPath) {
       }
     }
     JSs.push(jsName)
-    plugin.init && plugin.init()
+    try {
+      plugin.init && plugin.init()
+    } catch (err) {
+      log.error(err)
+    }
     loader.priority.push({
       class: app,
       key: Path.Plugin_Name,

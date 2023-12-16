@@ -258,24 +258,41 @@ const UCDate = {
     return count * unit
   },
 
+  /** 年月日是否有效 */
+  isValidDate(year, month, day) {
+    month--
+    const date = new Date(year, month, day)
+    return (
+      date.getFullYear() == year &&
+      date.getMonth() == month &&
+      date.getDate() == day
+    )
+  },
+
   /**
    * 格式化年月日，补全年份、补零日期
-   * @param {string} date 日期如8-1
-   * @returns 格式化后的日期
+   * @param {string} date 日期如 8-1
+   * @returns 格式化后的日期如 2023-08-01
    */
-  formatTime(date) {
-    if (!date) return NaN
+  formatDate(date, defaultYear = '2023') {
+    if (!date) return null
     date = date.replace(/年|月/g, '-').replace('日', '')
     const dateArr = date.split('-')
     const len = dateArr.length
     if (len < 2 || len > 3) {
-      return NaN
+      return null
     }
-    const [year, month, day] = len === 3 ? dateArr : ['2023', ...dateArr]
-    const formattedyear = (len === 2 && month < 11) ? '2024' : year.padStart(4, '20')
+    const [year, month, day] = len === 3 ? dateArr : [defaultYear, ...dateArr]
+    const formattedyear = len === 2 ? defaultYear : year.padStart(4, '20')
+    if (!this.isValidDate(formattedyear, month, day)) return null
     const formattedMonth = month.padStart(2, '0')
     const formattedDay = day.padStart(2, '0')
     return `${formattedyear}-${formattedMonth}-${formattedDay}`
+  },
+
+  /** 提取消息中的年月日并格式化为 年-月-日 */
+  getFormatedDate(msg) {
+    return this.formatDate(/((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2}/.exec(msg)?.[0])
   },
 
   /** 简单汉字时长转天数 */

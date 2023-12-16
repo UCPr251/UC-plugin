@@ -8,7 +8,7 @@ export default class Permission {
     this.e = e
     this.sender = this.e.sender
     /** 是否群聊 */
-    this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group'
+    this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group' || this.e.isGroup
     /** 用户id */
     this.userId = this.sender?.user_id ?? this.e.user_id
     /** 权限级别Set */
@@ -36,7 +36,7 @@ export default class Permission {
   /** 群号 */
   get groupId() {
     if (!this.isGroup) return null
-    return this.e.group_id ?? this.e.group?.gid
+    return this.e.group_id ?? this.e.group?.gid ?? this.e.groupId
   }
   /** 是否插件全局主人 */
   get GM() {

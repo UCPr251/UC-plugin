@@ -16,6 +16,8 @@ config:
       isE: false
   bigjpg:
     apiKey: null
+  sqtj:
+    isSave: null
 GAconfig:
   recall:
     FILTER_MAX: null

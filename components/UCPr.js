@@ -256,6 +256,11 @@ const UCPr = {
     return this.config.loveMysNotice ?? 50
   },
 
+  /** UC插件部分功能不指定年份时默认补全年份 */
+  get defaultYear() {
+    return this.config.defaultYear ?? 2023
+  },
+
   /** 用户无权限回复 */
   get noPerReply() {
     return this.config.noPerReply ?? '无权限或权限不足'

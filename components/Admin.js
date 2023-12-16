@@ -41,7 +41,7 @@ function saver(key, data, path, fnc) {
   tempData[key].timer = setTimeout(() => {
     file.YAMLsaver(path, tempData[key].data)
     delete tempData[key]
-    setImmediate(() => fnc && fnc(), 40)
+    setTimeout(() => fnc && fnc(), 40)
   }, 40)
 }
 
@@ -153,17 +153,18 @@ const Admin = {
   /**
    * 加减全局主人、管理、黑名单
    * @param {'Master'|'Admin'|'BlackQQ'} type
-   * @param {string} userId 操作的用户
+   * @param {string|Array} userId 操作的用户
    * @param {boolean} isAdd 增删
    */
   globalPermission(type, userId, isAdd = true) {
+    if (!type || !userId) return log.warn('[Admin.globalPermission]空白参数')
     type = `Global${type}`
-    userId = Number(userId)
+    userId = _.castArray(userId).map(Number)
     const permission = UCPr.permission
     if (isAdd) {
-      permission[type] = _.sortBy(permission[type].push(userId))
+      permission[type] = _.sortBy(_.uniq(permission[type].concat(userId)))
     } else {
-      Data.remove(permission[type], userId)
+      permission[type] = _.difference(permission[type], userId)
     }
     file.YAMLsaver(Path.permissionyaml, permission)
   },

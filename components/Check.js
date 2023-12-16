@@ -66,6 +66,7 @@ const Check = {
       return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
     }
     const level = new Set()
+    if (!userId) return level
     const groupCFG = UCPr.groupCFG(groupId)
     if (Check.str(UCPr.GlobalMaster, userId)) level.add(4)
     if (Check.str(groupCFG.permission?.Master, userId)) level.add(3)

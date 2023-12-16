@@ -18,6 +18,7 @@
 /apps/searchNovel.js
 /apps/QA.js
 /apps/atMute.js
+/apps/ji.js
 /apps/groupAdmin/*
 !/apps/groupAdmin/kick.js
 !/apps/groupAdmin/mute.js

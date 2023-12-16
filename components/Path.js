@@ -32,6 +32,7 @@ const data = path.join(UC, 'data')
 const temp = path.join(data, 'temp')
 const testjson = path.join(temp, 'test.json')
 const QA = path.join(data, 'QA')
+const sqtj = path.join(data, 'sqtj')
 const bigjpg = path.join(data, 'bigjpg')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
@@ -45,12 +46,12 @@ const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'|'sqtj'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
   get(rootDir, ...basename) {
-    return Path.join(Path[rootDir] ?? rootDir, ...basename)
+    return Path.join(Path[rootDir] ?? rootDir, ...basename.map(v => v.toString()))
   },
   /** UCPr */
   Author: 'UCPr',
@@ -118,6 +119,8 @@ const Path = {
   testjson,
   /** ./data/QA */
   QA,
+  /** ./data/QA/sqtj */
+  sqtj,
   /** ./data/bigjpg */
   bigjpg,
   /** ./data/errorLog.json */

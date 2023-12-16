@@ -12,11 +12,19 @@ export default class UCAdmin extends UCPlugin {
       dsc: 'UC插件管理系统',
       rule: [
         {
-          reg: /^#?UC((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?(\s+\d{5,10})?/i,
+          reg: /^#?UC((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?(\s+\d{5,10})?$/i,
           fnc: 'groupPermission'
         },
         {
-          reg: /^#?UC全局((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?$/i,
+          reg: /^#?UC(拉|加|解|删)黑(\d{5,10})?(\s+\d{5,10})?$/i,
+          fnc: 'groupPermission'
+        },
+        {
+          reg: /^#?UC全局((增|添)?加|删除?|减)(主人|黑名单|管理员?).*/i,
+          fnc: 'globalPermission'
+        },
+        {
+          reg: /^#?UC全局(拉|加|解|删)黑.*/i,
           fnc: 'globalPermission'
         },
         {
@@ -48,13 +56,13 @@ export default class UCAdmin extends UCPlugin {
   }
 
   getInfo() {
-    if (/主人/.test(this.e.msg)) {
+    if (/主人/.test(this.msg)) {
       return { type: 'Master', name: '主人', need: 4 }
     }
-    if (/管理/.test(this.e.msg)) {
+    if (/管理/.test(this.msg)) {
       return { type: 'Admin', name: '管理', need: 3 }
     }
-    if (/黑名单/.test(this.e.msg)) {
+    if (/黑/.test(this.msg)) {
       return { type: 'BlackQQ', name: '黑名单', need: 1 }
     }
     return false
@@ -64,13 +72,13 @@ export default class UCAdmin extends UCPlugin {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
-    const numMatch = e.msg.match(/\d{5,10}/g)
+    const numMatch = this.msg.match(/\d{5,10}/g)
     const userId = e.at ?? numMatch?.[0]
     if (!userId) return e.reply('请艾特或指定要操作的对象')
     const groupId = numMatch?.[1] ?? e.group_id
     if (!groupId) return e.reply('请同时指定要设置的群')
-    const isAdd = /加/.test(e.msg)
-    if (!UCPr.groupCFG(groupId)) {
+    const isAdd = /设置|加|拉/.test(e.msg)
+    if (!Check.file(Admin.getCfgPath(groupId))) {
       Admin.newConfig(groupId)
       await common.sleep(0.1)
     }
@@ -86,9 +94,25 @@ export default class UCAdmin extends UCPlugin {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
-    const userId = e.at ?? e.msg.match(/\d+/)?.[0]
-    if (!userId) return e.reply('请艾特或指定要操作的对象')
-    const isAdd = /设置|加/.test(e.msg)
+    const isAdd = /设置|加|拉/.test(e.msg)
+    const numMatch = this.msg.match(/\d{5,10}/g)
+    if (numMatch && numMatch.length > 1) {
+      const filter = numMatch.filter(userId => isAdd !== Check.str(UCPr[`Global${type}`], userId))
+      const allready = _.difference(numMatch, filter)
+      const replyMsg = []
+      if (filter.length) {
+        Admin.globalPermission(type, filter, isAdd)
+        const infoMsg = Data.makeArrStr(filter, { length: 500 })
+        replyMsg.push(`全局${name}批量${isAdd ? '新增' : '删除'}：\n${infoMsg}`)
+      }
+      if (allready.length) {
+        const infoMsg = Data.makeArrStr(allready, { length: 500 })
+        replyMsg.push(`以下用户${isAdd ? '已经' : '不'}存在于全局${name}中：\n${infoMsg}`)
+      }
+      return e.reply(replyMsg.join('\n\n'))
+    }
+    const userId = e.at ?? numMatch?.[0]
+    if (_.isEmpty(userId)) return e.reply('请艾特或指定要操作的对象')
     if (isAdd === Check.str(UCPr[`Global${type}`], userId)) {
       return e.reply(`全局${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
