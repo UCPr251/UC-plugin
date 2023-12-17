@@ -262,7 +262,7 @@ const GAconfig = [
     component: 'Divider'
   },
   s('isOpen', '群管开关', 'Switch',
-    '是否开启UC群管系统'),
+    '是否开启UC群管系统，群管总开关'),
   s('overTime', '超时时长', 'InputNumber',
     '群管上下文操作的超时时间')
 ]

@@ -25,7 +25,6 @@ export default class UCEvent extends UCPlugin {
      * request.froup: invite add
      */
     this.sub_type = 'normal'
-    this.isOpen = this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
     if (!e) return
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
@@ -33,6 +32,13 @@ export default class UCEvent extends UCPlugin {
     this.botIsOwner = this.e.group?.is_owner
     /** bot是否管理员或群主 */
     this.botIsAdminOrOwner = this.botIsAdmin || this.botIsOwner
+    /** 群名 */
+    this.groupName = this.e.group?.name
+  }
+
+  /** 是否启用群管及该功能 */
+  get isOpen() {
+    return this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
   }
 
   /** 检查是否全局主人 */
@@ -181,7 +187,7 @@ async function UCdealMsg(type, e) {
   const events = UCPr.temp.event[type]
   for (const event of events) {
     // log.debug('检查插件：' + event.name)
-    if (event.sub_type !== 'all' && !event.sub_type === e.sub_type) continue
+    if (event.sub_type !== 'all' && event.sub_type !== e.sub_type) continue
     const key = `${event.name}.${e.sender?.user_id ?? e.user_id}`
     const userHook = _.find(hook, { key })
     if (userHook) {

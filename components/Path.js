@@ -34,6 +34,7 @@ const testjson = path.join(temp, 'test.json')
 const QA = path.join(data, 'QA')
 const sqtj = path.join(data, 'sqtj')
 const bigjpg = path.join(data, 'bigjpg')
+const WM = path.join(data, 'WM')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
 const BLPGroupjson = path.join(data, 'BLPGroup.json')
@@ -123,6 +124,8 @@ const Path = {
   sqtj,
   /** ./data/bigjpg */
   bigjpg,
+  /** ./data/WM */
+  WM,
   /** ./data/errorLog.json */
   errorLogjson,
   /** ./data/accredit.json */

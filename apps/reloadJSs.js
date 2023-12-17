@@ -57,8 +57,8 @@ export default class UCReloadJSs extends UCPlugin {
     this.redisData = '[UC]reloadPlugins'
   }
 
-  async init(mode) {
-    if (UCPr.isWatch || mode) {
+  async init(isOpen) {
+    if (UCPr.isWatch || isOpen) {
       ing = true
       await reloadJSs()
       await reloadGroupAdminJSs()
@@ -110,9 +110,10 @@ export default class UCReloadJSs extends UCPlugin {
     let msg = '【UC开发环境总览】\n'
     msg += `UC载入${JSs.length}个功能\n`
     msg += `UC载入${Object.keys(tasks).length}个定时任务\n`
+    msg += `UC载入${Object.values(UCPr.temp.event).reduce((ori, arr) => ori + arr.length, 0)}个Event\n`
     msg += `UC监听${Object.keys(watcher).length}个js\n`
-    msg += `Bot总计${loader.priority.length}个插件\n`
-    msg += `Bot总计${loader.task.length}个定时任务`
+    msg += `Bot本体总计${loader.priority.length}个插件\n`
+    msg += `Bot本体总计${loader.task.length}个定时任务`
     log.yellow(msg)
     return msg
   }

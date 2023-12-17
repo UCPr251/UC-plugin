@@ -19,8 +19,8 @@ function getFncChain(error) {
 
 /** 输出日志 */
 const log = {
-  red(...log) {
-    logger.mark(chalk.red('[UC]' + common.toString(log)))
+  red() {
+    logger.mark(chalk.red('[UC]' + common.toString(Array.from(arguments))))
   },
 
   mark(...log) {

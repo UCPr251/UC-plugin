@@ -4,6 +4,8 @@ import { EventLoader } from './model/UCEvent.js'
 
 /** 日志 */
 global.log = log
+/** 数据 */
+global.UCPr = UCPr
 
 const files = await Data.init()
 

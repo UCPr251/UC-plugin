@@ -41,10 +41,10 @@ class UCGroupInfo extends UCEvent {
       const info = GroupsInfo[groupId]
       if (!info) return this.reply(`我不在群${groupId}中哦~`)
       const msg = makeMsg(info)
-      return this.reply([segment.image(getImg(info)), msg])
+      return this.reply([segment.image(common.getAvatarUrl(info.group_id, 'group')), msg])
     }
     const groupsInfo = _.sortBy(_.values(GroupsInfo), 'group_id')
-    const msgArr = groupsInfo.map((info, index) => [segment.image(getImg(info)), `${index + 1}、${makeMsg(info)}`])
+    const msgArr = groupsInfo.map((info, index) => [segment.image(common.getAvatarUrl(info.group_id, 'group')), `${index + 1}、${makeMsg(info)}`])
     const title = `群信息，总群数：${groupsInfo.length}`
     const replyMsg = await common.makeForwardMsg(e, [title, ...msgArr], title)
     return this.reply(replyMsg)
@@ -66,10 +66,6 @@ function makeMsg(info) {
   if (shutup_time_me) msg += `\n被禁言时刻：${UCDate.format(shutup_time_me * 1000)}`
   if (shutup_time_whole) msg += '\n已开启全体禁言'
   return msg
-}
-
-function getImg(info) {
-  return `https://p.qlogo.cn/gh/${info.group_id}/${info.group_id}/100`
 }
 
 UCPr.EventInit(UCGroupInfo)
