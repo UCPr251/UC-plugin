@@ -200,7 +200,7 @@ async function autoSendSqtj() {
     }
     const sqtj = new UCSqtj(e)
     const localData = sqtj.getLocalData()
-    const sqtjData = localData ?? { isWholeDay: false, count: 0, chatHistoryArr: [] }
+    const sqtjData = _.cloneDeep(localData) ?? { isWholeDay: false, count: 0, chatHistoryArr: [] }
     let chatHistoryArr = sqtjData.chatHistoryArr
     if (!sqtjData.isWholeDay) {
       const newData = await sqtj.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
@@ -211,7 +211,9 @@ async function autoSendSqtj() {
     const count = chatHistoryArr.length
     sqtjData.count = count
     sqtjData.chatHistoryArr = chatHistoryArr
-    if (Cfg.isSave && !_.isEqual(sqtjData, localData)) sqtj.saveLocalData(sqtjData)
+    if (Cfg.isSave && !_.isEqual(sqtjData, localData)) {
+      sqtj.saveLocalData(sqtjData)
+    }
     if (_.isEmpty(filterData)) continue
     const data = await sqtj.getImgData(filterData, count)
     const imgData = Sqtj.get(e, { ...data, count, date })
