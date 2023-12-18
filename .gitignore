@@ -19,6 +19,7 @@
 /apps/QA.js
 /apps/atMute.js
 /apps/ji.js
+/apps/Lockdown.js
 /apps/groupAdmin/*
 !/apps/groupAdmin/kick.js
 !/apps/groupAdmin/mute.js

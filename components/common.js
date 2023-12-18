@@ -207,12 +207,18 @@ const common = {
    */
   async getChatHistoryArr(groupClient, seq, num, msgHistoryArr = []) {
     if (num > 20) {
-      const historyMsg = await groupClient.getChatHistory(seq, 20)
+      const historyMsg = await this.getChatHistoryArr(groupClient, seq, 20)
       if (_.isEmpty(historyMsg)) return msgHistoryArr
       msgHistoryArr = historyMsg.concat(msgHistoryArr)
       return await this.getChatHistoryArr(groupClient, seq - 20, num - 20, msgHistoryArr)
     }
-    return (await groupClient.getChatHistory(seq, num)).concat(msgHistoryArr)
+    try {
+      const info = await groupClient.getChatHistory(seq, num)
+      return info.concat(msgHistoryArr)
+    } catch (err) {
+      log.error(`获取群${groupClient?.group_id}聊天记录错误，可能是该群状态异常`, err)
+      return msgHistoryArr
+    }
   },
 
   /**
