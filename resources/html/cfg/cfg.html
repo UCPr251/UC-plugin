@@ -10,7 +10,7 @@
   <div class="container" id="container">
     <div class="head-box">
       <!-- 标题文字 -->
-      <div class="title">UC-plugin{{if isGlobal}}全局{{else}}群{{groupId}}{{/if}}系统设置</div>
+      <div class="title">UC-plugin{{if isGlobal}}全局{{else}}群{{groupId}}{{/if}}{{if type === 'GAconfig'}}群管{{/if}}系统设置</div>
     </div>
     <!-- 遍历每一个cfg组 cfgGroup -->
     {{each cfgData cfgGroup cfgGroupKey}}
@@ -28,7 +28,7 @@
             {{if cfgValue.lock}}
               <span class="cfg-hint-lock"> （已锁定） </span>
             {{else}}
-                <span class="cfg-hint"> #UC{{if isGlobal}}全局{{/if}}设置{{cfgGroupKey}}{{cfgKey}}
+                <span class="cfg-hint"> #UC{{if isGlobal}}全局{{/if}}{{if type === 'GAconfig'}}群管{{/if}}设置{{cfgGroupKey}}{{cfgKey}}
                   {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
                 </span>
             {{/if}}

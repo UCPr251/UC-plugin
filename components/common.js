@@ -18,7 +18,7 @@ const common = {
    */
   async sendMsgTo(loc, msg, type) {
     Bot[`send${type}Msg`](loc, msg).catch((err) => {
-      log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误`, err)
+      log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误`, msg, err)
     })
   },
 

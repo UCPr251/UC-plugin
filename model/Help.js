@@ -32,6 +32,7 @@ export default class Help extends Base {
         const { require, swh } = groupInfo
         // 功能开关判断
         if (swh && !_.get(groupCFG[data[i].cfg], swh, true)) return false
+        else if (swh === false) return false
         // 权限判断
         if (!require) return true
         if (typeof require === 'number') {

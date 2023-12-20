@@ -9,46 +9,48 @@ export default class Cfg extends Base {
     this.model = 'cfg'
   }
 
-  static get(e, groupId, isGlobal) {
+  /**
+   * 获取设置图数据
+   * @param {*} e
+   * @param {*} groupId
+   * @param {*} isGlobal 是否全局设置
+   * @param {'config'|'GAconfig'} type 系统设置或群管设置
+   * @returns {object}
+   */
+  static get(e, type, groupId, isGlobal) {
     const cfg = new Cfg(e)
-    return cfg.getData(groupId, isGlobal)
+    return cfg.getData(type, groupId, isGlobal)
   }
 
   /** 获取所有设置组的关键词|字符串 */
-  static get groupReg() {
-    return Object.keys(CFG.cfgData).filter(v => v).join('|')
+  static groupReg(type) {
+    return Object.keys(CFG.cfgData[type]).filter(v => v).join('|')
   }
 
   /** 获取某一组的各个设置的关键词正则 */
-  static settingReg(group) {
-    return new RegExp(Object.keys(CFG.cfgData[group].cfg).filter(v => v).join('|'), 'i')
+  static settingReg(type, group) {
+    return new RegExp(Object.keys(CFG.cfgData[type][group].cfg).filter(v => v).join('|'), 'i')
   }
 
-  getData(groupId, isGlobal) {
-    const data = _.cloneDeep(CFG.cfgData)
-    const { config, GAconfig } = UCPr
-    const cfg = isGlobal ? { config, GAconfig } : UCPr.groupCFG(groupId)
+  getData(type, groupId, isGlobal) {
+    const data = _.cloneDeep(CFG.cfgData[type])
+    const cfg = (isGlobal ? UCPr.defaultCFG : UCPr.groupCFG(groupId))[type]
     // 挂载当前config数据
     for (const k in data) {
       if (!isGlobal && data[k].GM) {
         delete data[k]
         continue
       }
-      if (data[k].isDisplay && !data[k].isDisplay(cfg)) {
-        delete data[k]
-        continue
-      }
       _.forEach(data[k].cfg, (value) => {
-        const sp = _.trim(value.path, '.').split('.')
-        if (!isGlobal && (_.get(UCPr.lock, [value.cfg, ...sp]) !== undefined)) {
+        if (!isGlobal && (_.get(UCPr.lock[type], value.path) !== undefined)) {
           value.lock = true
         }
         if (value.type === 'power') {
           value.value = value.options.map(option => {
-            return _.get(cfg, [value.cfg, ...sp, judgeProperty[option]]) ? '1' : '0'
+            return _.get(cfg, value.path + '.' + judgeProperty[option]) ? '1' : '0'
           }).join('')
         } else if (!value.value) {
-          let v = _.get(cfg, [value.cfg, ...sp])
+          let v = _.get(cfg, value.path)
           if (typeof v === 'string') {
             v = _.truncate(v, { length: 10 })
           }
@@ -60,6 +62,7 @@ export default class Cfg extends Base {
       ...this.screenData,
       cfgData: data,
       isGlobal,
+      type,
       groupId,
       saveId: 'UC-cfg'
     }

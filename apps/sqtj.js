@@ -224,7 +224,6 @@ async function autoSendSqtj() {
     let count = 0
     for (const result of results) {
       if (result.status === 'fulfilled') {
-        if (!result.value) continue
         const { e, imgData, groupId } = result.value
         await common.render(e, imgData)
         log.yellow(`[水群统计推送]推送群${groupId} [${++count}/${results.length}]`)

@@ -1,5 +1,5 @@
-import { common, UCPr } from '../../components/index.js'
-import { UCEvent } from '../../model/index.js'
+import { common, UCPr } from '../../../components/index.js'
+import { UCEvent } from '../../../model/index.js'
 import _ from 'lodash'
 
 class UCRecall extends UCEvent {

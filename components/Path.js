@@ -10,7 +10,8 @@ const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
 const apps = path.join(UC, 'apps')
-const groupAdmin = path.join(apps, 'groupAdmin')
+const Event = path.join(apps, 'Event')
+const groupAdmin = path.join(Event, 'groupAdmin')
 const config = path.join(UC, 'config')
 const groupCfg = path.join(config, 'groupCfg')
 const defSet = path.join(UC, 'defSet')
@@ -76,7 +77,9 @@ const Path = {
   UC,
   /** ../UC-plugin/apps */
   apps,
-  /** ../UC-plugin/apps/groupAdmin */
+  /** ../UC-plugin/apps/Event */
+  Event,
+  /** ../UC-plugin/apps/Event/groupAdmin */
   groupAdmin,
   /** ./config */
   config,

@@ -1,3 +1,11 @@
+## 12-20
+
+- 修改一下目录结构，[app/Event](./apps/Event/)，群管移动至[app/Event/groupAdmin](./apps/Event/groupAdmin/)
+- 分离`UC设置`和`UC群管设置`，uc帮助的群管部分目前并不多，暂时不打算分离
+- 完善[重载插件](./apps/reloadJSs.js)
+- 可选隐藏[签名自动重启](./apps/qsignRestart.js)重启的签名窗口
+- [前台重启](./apps/restart.js)可前台重启机器人 `#UC重启`
+
 ## 12-18
 
 **ver 2.1.6**

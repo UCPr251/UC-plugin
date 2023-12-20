@@ -2,6 +2,7 @@ import { UCPr, Data, common, Path } from './index.js'
 import chalk from 'chalk'
 
 function getFncChain(error) {
+  if (!error?.stack) return '[Empty Error Stack]'
   const callerName = error.stack.split('\n').slice(2, -2)
   const fncChain = callerName.map(line => {
     const sp = line.trim().split(' ')
@@ -41,7 +42,7 @@ const log = {
 
   error(...log) {
     log = log.map(_log => {
-      if (_log instanceof Error) {
+      if (_log?.message) {
         return common.toString(_log.message) + '\n' + getFncChain(_log)
       }
       return _log

@@ -19,10 +19,10 @@
 /apps/QA.js
 /apps/atMute.js
 /apps/ji.js
-/apps/Lockdown.js
-/apps/groupAdmin/*
-!/apps/groupAdmin/kick.js
-!/apps/groupAdmin/mute.js
-!/apps/groupAdmin/recall.js
-!/apps/groupAdmin/groupInfo.js
-!/apps/groupAdmin/WM.js
+/apps/Event/Lockdown.js
+/apps/Event/groupAdmin/*
+!/apps/Event/groupAdmin/kick.js
+!/apps/Event/groupAdmin/mute.js
+!/apps/Event/groupAdmin/recall.js
+!/apps/Event/groupAdmin/groupInfo.js
+!/apps/Event/groupAdmin/WM.js

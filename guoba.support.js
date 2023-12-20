@@ -3,7 +3,11 @@ import { Path, file, Data } from './components/index.js'
 import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
 
-Data.refresh()
+try {
+  Data.refresh()
+} catch (err) {
+  log.error(err)
+}
 /** config前缀 */
 let cfgPrefix = 'config.'
 /** field前缀 */
@@ -42,7 +46,7 @@ function sPRO(name, _prefix = 'use.', options = [1, 1, 1, 1, 1, 1], name_prefix 
 
 let js = []
 
-if (file.existsSync(Path.get('apps', 'qsignRestart.js'))) {
+if (file.existsSync(Path.get('apps', 'qsignRestart.js')) && process.platform === 'win32') {
   prefix = 'qsignRestart.'
   const newCfg = [
     {
@@ -51,6 +55,8 @@ if (file.existsSync(Path.get('apps', 'qsignRestart.js'))) {
     },
     s('isAutoOpen', '签名自动重启', 'Switch',
       '开启后Bot启动时自动开启签名自动重启'),
+    s('windowsHide', '隐藏签名窗口', 'Switch',
+      '隐藏重启的签名的窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启'),
     s('switch1', '签名崩溃检测', 'Switch',
       '签名崩溃检测，检测签名是否崩溃，崩溃则尝试启动签名'),
     s('switch2', '签名异常检测', 'Switch',
@@ -330,6 +336,34 @@ GAconfig.push(
   s('kickReply', '踢人回复', 'Input',
     '踢人回复'),
   ...sPRO('#踢', undefined, [0, 0, 1, 1, 1, 0])
+)
+
+prefix = 'welcome.'
+GAconfig.push(
+  {
+    label: '【UC】群管 · 入群欢迎',
+    component: 'Divider'
+  },
+  s('isOpen', '入群欢迎开关', 'Switch',
+    '是否开启UC群管入群欢迎'),
+  s('isAvatar', '展示头像', 'Switch',
+    '入群欢迎同时展示新群员的头像'),
+  s('isAt', '艾特新群员', 'Switch',
+    '入群欢迎同时艾特新群员'),
+  ...sPRO('#修改入群欢迎', undefined, [0, 0, 1, 1, 1, 1])
+)
+
+prefix = 'mourn.'
+GAconfig.push(
+  {
+    label: '【UC】群管 · 退群通知',
+    component: 'Divider'
+  },
+  s('isOpen', '退群通知开关', 'Switch',
+    '是否开启UC群管退群通知'),
+  s('isAvatar', '艾特新群员', 'Switch',
+    '退群通知同时艾特新群员'),
+  ...sPRO('#修改退群通知', undefined, [0, 0, 1, 1, 1, 1])
 )
 
 prefix = ''

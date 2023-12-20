@@ -1,5 +1,5 @@
-import { common, UCPr, Admin, Data } from '../../components/index.js'
-import { UCEvent } from '../../model/index.js'
+import { common, UCPr, Admin, Data } from '../../../components/index.js'
+import { UCEvent } from '../../../model/index.js'
 import _ from 'lodash'
 
 class UCKick extends UCEvent {

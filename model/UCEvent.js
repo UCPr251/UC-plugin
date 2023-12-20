@@ -218,7 +218,7 @@ async function UCdealMsg(type, e) {
       if (new RegExp(rule.reg).test(msg)) {
         log.white(msg)
         const start = Date.now()
-        const logInfo = `[${event.name}][${rule.fnc}] ${_.truncate(msg, { length: 50 })}`
+        const logInfo = `[${event.name}][${rule.fnc}]${_.truncate(msg, { length: 50 })}`
         log.white(logInfo)
         const app = new event.class(e)
         const result = await app[rule.fnc](e)?.catch?.(err => {
@@ -240,6 +240,7 @@ export async function EventLoader() {
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
+  if (!Bot?.on) return log.warn('非正常启动流程，跳过监听事件注册')
   Bot.on('message', async (e) => {
     const result = await UCdealMsg('message.all', e)
     if (result === false) {
