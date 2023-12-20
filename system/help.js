@@ -327,6 +327,17 @@ helpData.push({
       `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
       '群内关闭Bot',
       'switchBot.use'
+    ),
+    s(
+      '#UC全部(强制)?更新',
+      '全部更新，但不会自动重启',
+      4
+    ),
+    s(
+      '#UC重启',
+      '前台重启云崽，不转后台',
+      4,
+      isWin
     )
   ]
 })
