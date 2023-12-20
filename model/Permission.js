@@ -6,7 +6,7 @@ import _ from 'lodash'
 export default class Permission {
   constructor(e = {}, { isG = true, isP = false, isM = false, isA = false, isGA = false, isE = false }) {
     this.e = e
-    this.sender = this.e.sender
+    this.sender = this.e.sender ?? this.e.member
     /** 是否群聊 */
     this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group' || this.e.isGroup
     /** 用户id */
@@ -31,12 +31,12 @@ export default class Permission {
 
   /** 发送者昵称 */
   get name() {
-    return this.sender?.card || this.sender?.nickname
+    return this.sender?.card || this.sender?.nickname || this.userId
   }
   /** 群号 */
   get groupId() {
     if (!this.isGroup) return null
-    return this.e.group_id ?? this.e.group?.gid ?? this.e.groupId
+    return this.e.group_id ?? this.e.group?.group_id ?? this.e.group?.gid ?? this.e.groupId
   }
   /** 是否插件全局主人 */
   get GM() {

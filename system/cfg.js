@@ -24,7 +24,6 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
     input = (str) => input[_.findKey(input, (value) => value == str)]
   }
   return _.merge({
-    cfg,
     path,
     title,
     desc,
@@ -57,13 +56,11 @@ function sPRO(name = '使用', def = '', _prefix = 'use', options = [0, 1, 2, 3,
 
 /** path前缀 */
 let prefix = ''
-/** 指定cfg文件 */
-let cfg = 'config'
 
 const 系统 = {
   /** 一个设置组的标题 */
   title: '系统——UC插件系统设置',
-  /** 仅限全局主人 */
+  /** 仅限全局设置 */
   GM: true,
   /** 一个设置组的各个单独设置 */
   cfg: {
@@ -146,185 +143,11 @@ const 系统 = {
   }
 }
 
-cfg = 'GAconfig'
-
-const 群管 = {
-  title: '群管——UC群管系统设置',
-  cfg: {
-    '': s(
-      'isOpen',
-      '群管开关',
-      '是否开启UC群管系统'
-    ),
-    超时时长: s(
-      'overTime',
-      '超时时长',
-      '群管上下文操作的超时时间',
-      'num',
-      120,
-      (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
-    )
-  }
-}
-
-const cfgData = { '': 系统, 群管 }
-
-if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
-  prefix = 'recall.'
-  cfgData.撤回 = {
-    title: '群管·撤回',
-    isDisplay: (cfg) => cfg.GAconfig.isOpen,
-    cfg: {
-      '': s(
-        'isOpen',
-        '群管撤回开关',
-        '是否开启UC群管撤回'
-      ),
-      最大获取: s(
-        'FILTER_MAX',
-        '最大获取记录',
-        '允许递归获取的群聊天记录最大深度',
-        'num',
-        520
-      ),
-      默认清屏: s(
-        'defaultClear',
-        '默认清屏数量',
-        '清屏不指定数量时默认撤回数量',
-        'num',
-        10
-      ),
-      最大清屏: s(
-        'CLEAR_MAX',
-        '最大清屏数量',
-        '允许清屏数量的最大值',
-        'num',
-        100
-      ),
-      最大数量: s(
-        'RECALL_MAX',
-        '最大撤回数量',
-        '允许指定单人撤回的最大值',
-        'num',
-        20
-      ),
-      间隔: s(
-        'intervalTime',
-        '撤回间隔',
-        '批量撤回群消息的间隔时间，单位秒，建议大于等于0.1',
-        'num',
-        0.1,
-        (num) => Number(num.match(/(?:\d+\.)?\d+/)?.[0])
-      ),
-      权限: sPRO('使用', '0110', 'use', [2, 3, 4, 5])
-    }
-  }
-}
-
-if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
-  prefix = 'mute.'
-  cfgData.禁言 = {
-    title: '群管·禁言',
-    isDisplay: (cfg) => cfg.GAconfig.isOpen,
-    cfg: {
-      '': s(
-        'isOpen',
-        '群管禁言开关',
-        '是否开启UC群管禁言'
-      ),
-      最长: s(
-        'MUTE_MAX',
-        '最大禁言时长',
-        '允许禁言最大时长，单位秒，默认一天（主人不限）',
-        'num',
-        86400
-      ),
-      默认: s(
-        'defaultMute',
-        '默认禁言时长',
-        '禁言不指定时长时默认禁言时长，单位秒',
-        'num',
-        60
-      ),
-      回复: s(
-        'muteReply',
-        '禁言回复',
-        '禁言回复，info会替换为 用户名（QQ），time会替换为禁言时长',
-        'input',
-        '已经把info拖进小黑屋枪毙time啦！'
-      ),
-      解禁回复: s(
-        'releaseReply',
-        '解禁回复',
-        '解禁时的回复，info会替换为 用户名（QQ）',
-        'input',
-        '成功解救info'
-      ),
-      全体回复: s(
-        'allMuteReply',
-        '全体禁言回复',
-        '全体禁言回复',
-        'input',
-        '全都不许说话了哦~'
-      ),
-      全体解禁回复: s(
-        'releaseAllMuteReply',
-        '全体解禁回复',
-        '全体解禁回复',
-        'input',
-        '好耶~可以说话辽~'
-      ),
-      全部解禁回复: s(
-        'releaseAllMutedReply',
-        '全部解禁回复',
-        '全部解禁回复，num会被替换为解禁群员的数量',
-        'input',
-        '归还了num名群员的清白之身！'
-      ),
-      权限: sPRO('禁言', '011', 'use', [2, 3, 4]),
-      全体权限: sPRO('全体禁言', '011', 'muteAll', [2, 3, 4])
-    }
-  }
-}
-
-if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
-  prefix = 'kick.'
-  cfgData.踢人 = {
-    title: '群管·踢人',
-    isDisplay: (cfg) => cfg.GAconfig.isOpen,
-    cfg: {
-      '': s(
-        'isOpen',
-        '群管踢人开关',
-        '是否开启UC群管踢人'
-      ),
-      群拉黑: s(
-        'isAutoBlack',
-        '群同时拉黑',
-        '踢人是否同时在该群拉黑该用户'
-      ),
-      全局拉黑: s(
-        'isAutoGlobalBlack',
-        '全局拉黑',
-        '踢人是否同时在全局拉黑该用户'
-      ),
-      回复: s(
-        'kickReply',
-        '踢人回复',
-        '踢人回复',
-        'input',
-        '已经把这个坏惹踢掉了！'
-      ),
-      权限: sPRO('踢人', '011', undefined, [2, 3, 4])
-    }
-  }
-}
-
-cfg = 'config'
+const config = { '': 系统 }
 
 if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'
-  cfgData.签名 = {
+  config.签名 = {
     title: '签名——签名自动重启设置，重启生效',
     GM: true,
     cfg: {
@@ -332,6 +155,11 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
         'isAutoOpen',
         '自动开启签名重启',
         '启动Bot后是否自动开启签名重启检测'
+      ),
+      隐藏: s(
+        'windowsHide',
+        '隐藏签名窗口',
+        '隐藏重启的签名的窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启'
       ),
       崩溃检测: s(
         'switch1',
@@ -396,8 +224,8 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
 
 if (Check.file(Path.get('apps', 'switchBot.js'))) {
   prefix = 'switchBot.'
-  cfgData.开关Bot = {
-    title: '开关Bot——指定群开关Bot设置',
+  config.开关机器人 = {
+    title: '开关机器人——指定群开关机器人设置',
     cfg: {
       开启触发词: s(
         'openReg',
@@ -427,7 +255,7 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
         'input',
         'BotName休息去啦~'
       ),
-      开关权限: sPRO('开关', '010', 'use', [2, 3, 4]),
+      权限: sPRO('开关', '010', 'use', [2, 3, 4]),
       响应前缀: s(
         'isPrefix',
         '响应前缀',
@@ -445,7 +273,7 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
 
 if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
   prefix = 'chuoyichuo.'
-  cfgData.戳一戳 = {
+  config.戳一戳 = {
     title: '戳一戳——群聊戳一戳回复设置',
     cfg: {
       '': s(
@@ -510,7 +338,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
 
 if (Check.file(Path.get('apps', 'randomWife.js'))) {
   prefix = 'randomWife.'
-  cfgData.随机老婆 = {
+  config.随机老婆 = {
     title: '随机老婆',
     cfg: {
       '': s(
@@ -544,7 +372,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
 
 if (Check.file(Path.get('apps', 'randomMember.js'))) {
   prefix = 'randomMember.'
-  cfgData.随机群友 = {
+  config.随机群友 = {
     title: '随机群友',
     cfg: {
       '': s(
@@ -583,7 +411,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
 
 if (Check.file(Path.get('apps', 'sqtj.js'))) {
   prefix = 'sqtj.'
-  cfgData.水群统计 = {
+  config.水群统计 = {
     title: '水群统计',
     cfg: {
       '': s(
@@ -618,7 +446,7 @@ if (Check.file(Path.get('apps', 'sqtj.js'))) {
 
 if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
   prefix = 'BlivePush.'
-  cfgData.直播推送 = {
+  config.直播推送 = {
     title: '直播推送',
     cfg: {
       群聊: s(
@@ -650,7 +478,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
 
 if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
   prefix = 'bigjpg.'
-  cfgData.放大图片 = {
+  config.放大图片 = {
     title: '放大图片',
     cfg: {
       '': s(
@@ -727,5 +555,216 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
   }
 }
 
+const 群管 = {
+  title: '群管——UC群管系统设置',
+  cfg: {
+    群管: s(
+      'isOpen',
+      '群管开关',
+      '是否开启UC群管系统，群管总开关'
+    ),
+    超时时长: s(
+      'overTime',
+      '超时时长',
+      '群管上下文操作的超时时间',
+      'num',
+      120,
+      (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
+    )
+  }
+}
+
+const GAconfig = { '': 群管 }
+
+if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
+  prefix = 'recall.'
+  GAconfig.撤回 = {
+    title: '群管·撤回',
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管撤回开关',
+        '是否开启UC群管撤回'
+      ),
+      最大获取: s(
+        'FILTER_MAX',
+        '最大获取记录',
+        '允许递归获取的群聊天记录最大深度',
+        'num',
+        520
+      ),
+      默认清屏: s(
+        'defaultClear',
+        '默认清屏数量',
+        '清屏不指定数量时默认撤回数量',
+        'num',
+        10
+      ),
+      最大清屏: s(
+        'CLEAR_MAX',
+        '最大清屏数量',
+        '允许清屏数量的最大值',
+        'num',
+        100
+      ),
+      最大数量: s(
+        'RECALL_MAX',
+        '最大撤回数量',
+        '允许指定单人撤回的最大值',
+        'num',
+        20
+      ),
+      间隔: s(
+        'intervalTime',
+        '撤回间隔',
+        '批量撤回群消息的间隔时间，单位秒，建议大于等于0.1',
+        'num',
+        0.1,
+        (num) => Number(num.match(/(?:\d+\.)?\d+/)?.[0])
+      ),
+      权限: sPRO('使用', '0110', 'use', [2, 3, 4, 5])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
+  prefix = 'mute.'
+  GAconfig.禁言 = {
+    title: '群管·禁言',
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管禁言开关',
+        '是否开启UC群管禁言'
+      ),
+      最长: s(
+        'MUTE_MAX',
+        '最大禁言时长',
+        '允许禁言最大时长，单位秒，默认一天（主人不限）',
+        'num',
+        86400
+      ),
+      默认: s(
+        'defaultMute',
+        '默认禁言时长',
+        '禁言不指定时长时默认禁言时长，单位秒',
+        'num',
+        60
+      ),
+      回复: s(
+        'muteReply',
+        '禁言回复',
+        '禁言回复，info会替换为 用户名（QQ），time会替换为禁言时长',
+        'input',
+        '已经把info拖进小黑屋枪毙time啦！'
+      ),
+      解禁回复: s(
+        'releaseReply',
+        '解禁回复',
+        '解禁时的回复，info会替换为 用户名（QQ）',
+        'input',
+        '成功解救info'
+      ),
+      全体回复: s(
+        'allMuteReply',
+        '全体禁言回复',
+        '全体禁言回复',
+        'input',
+        '全都不许说话了哦~'
+      ),
+      全体解禁回复: s(
+        'releaseAllMuteReply',
+        '全体解禁回复',
+        '全体解禁回复',
+        'input',
+        '好耶~可以说话辽~'
+      ),
+      全部解禁回复: s(
+        'releaseAllMutedReply',
+        '全部解禁回复',
+        '全部解禁回复，num会被替换为解禁群员的数量',
+        'input',
+        '归还了num名群员的清白之身！'
+      ),
+      权限: sPRO('禁言', '011', 'use', [2, 3, 4]),
+      全体权限: sPRO('全体禁言', '011', 'muteAll', [2, 3, 4])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
+  prefix = 'kick.'
+  GAconfig.踢人 = {
+    title: '群管·踢人',
+    cfg: {
+      '': s(
+        'isOpen',
+        '群管踢人开关',
+        '是否开启UC群管踢人'
+      ),
+      群拉黑: s(
+        'isAutoBlack',
+        '群同时拉黑',
+        '踢人是否同时在该群拉黑该用户'
+      ),
+      全局拉黑: s(
+        'isAutoGlobalBlack',
+        '全局拉黑',
+        '踢人是否同时在全局拉黑该用户'
+      ),
+      回复: s(
+        'kickReply',
+        '踢人回复',
+        '踢人回复',
+        'input',
+        '已经把这个坏惹踢掉了！'
+      ),
+      权限: sPRO('踢人', '011', undefined, [2, 3, 4])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'WM.js'))) {
+  prefix = 'welcome.'
+  GAconfig.入群欢迎 = {
+    title: '群管·入群欢迎',
+    cfg: {
+      '': s(
+        'isOpen',
+        '入群欢迎开关',
+        '是否开启UC群管入群欢迎'
+      ),
+      头像: s(
+        'isAvatar',
+        '展示头像',
+        '入群欢迎同时展示新群员的头像'
+      ),
+      艾特: s(
+        'isAt',
+        '艾特新群员',
+        '入群欢迎同时艾特新群员'
+      ),
+      修改权限: sPRO('修改', '0110', undefined, [2, 3, 4, 5])
+    }
+  }
+  prefix = 'mourn.'
+  GAconfig.退群通知 = {
+    title: '群管·退群通知',
+    cfg: {
+      '': s(
+        'isOpen',
+        '退群通知开关',
+        '是否开启UC群管退群通知'
+      ),
+      头像: s(
+        'isAvatar',
+        '展示头像',
+        '退群通知同时展示退群群员的头像'
+      ),
+      修改权限: sPRO('修改', '0110', undefined, [2, 3, 4, 5])
+    }
+  }
+}
+
 /** #UC设置信息 */
-export default cfgData
+export default { config, GAconfig }

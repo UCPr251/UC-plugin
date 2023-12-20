@@ -12,7 +12,12 @@ let errorTimes = 0
 const redisData = '[UC]restartLog'
 
 function startQsign() {
-  Data.exec(`start ${UCPr.qsignRestart.qsingRunner}`, UCPr.qsignRestart.qsign || Path.qsign)
+  const path = UCPr.qsignRestart.qsign || Path.qsign
+  if (UCPr.qsignRestart.windowsHide) {
+    Data.exec(UCPr.qsignRestart.qsingRunner, path)
+  } else {
+    Data.exec(`start ${UCPr.qsignRestart.qsingRunner}`, path)
+  }
   log.red('执行签名启动完毕')
 }
 
@@ -81,6 +86,7 @@ export default class UCQsignRestart extends UCPlugin {
   }
 
   init() {
+    if (process.platform !== 'win32') return
     const Cfg = UCPr.qsignRestart
     if (Cfg.isAutoOpen) {
       if (Check.file(Path.join(Cfg.qsign || Path.qsign, Cfg.qsingRunner))) {
@@ -95,6 +101,7 @@ export default class UCQsignRestart extends UCPlugin {
 
   async restart(e) {
     if (!this.GM) return false
+    if (process.platform !== 'win32') return e.reply('本功能仅可在Windows系统中使用')
     const isOpen = /开启/.test(e.msg)
     if (isOpen) {
       if (!Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {

@@ -1,14 +1,45 @@
-# 是否开启UC群管功能
+# 是否开启UC群管功能，总开关
 isOpen: false
 # 黑名单发言是否撤回并踢出
 isDetecteBlack: false
 # 群管上下文操作的超时时间
 overTime: 120
 
-# 进退群欢迎，非真值则为关闭
-WM:
-  welcome: 欢迎info小伙伴进群~\n群里有很多大佬给你透哦~
-  mourn: info退群了~
+# 进群欢迎设置
+welcome:
+  # 是否开启UC群管进群欢迎
+  isOpen: true
+  # 进群欢迎是否展示新成员头像
+  isAvatar: true
+  # 进群欢迎是否艾特新成员
+  isAt: false
+  # 设置进群欢迎权限配置
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+    # 是否允许任何人
+    isE: false
+
+# 退群通知设置
+mourn:
+  # 是否开启UC群管退群通知
+  isOpen: true
+  # 退群通知是否展示新成员头像
+  isAvatar: true
+  # 设置退群通知权限配置
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+    # 是否允许任何人
+    isE: false
 
 # 撤回、清屏设置
 recall:

@@ -1,5 +1,7 @@
 import { UCPr, Path, Check, Data } from '../components/index.js'
 
+const isWin = process.platform === 'win32'
+
 /**
  * 生成帮助信息
  * @param {string} title 帮助标题
@@ -88,6 +90,15 @@ helpData.push({
     s(
       '#UC全局设置',
       '查看当前UC插件全局设置',
+      4
+    ),
+    s(
+      '#UC群管设置',
+      '查看当前UC插件群管设置'
+    ),
+    s(
+      '#UC全局群管设置',
+      '查看当前UC插件全局群管设置',
       4
     ),
     s(
@@ -187,6 +198,30 @@ helpData.push({
       '#获取群信息',
       '获取Bot所在群详细信息',
       4
+    ),
+    s(
+      '#查看/修改入群欢迎',
+      '查看或修改本群入群欢迎',
+      'welcome.use',
+      'welcome.isOpen'
+    ),
+    s(
+      '#查看/修改退群通知',
+      '查看或修改本群退群通知',
+      'mourn.use',
+      'mourn.isOpen'
+    ),
+    s(
+      '#查看/修改全局入群欢迎',
+      '查看或修改全局默认入群欢迎',
+      4,
+      'welcome.isOpen'
+    ),
+    s(
+      '#查看/修改全局退群通知',
+      '查看或修改全局默认退群通知',
+      4,
+      'mourn.isOpen'
     )
   ]
 })
@@ -249,11 +284,18 @@ helpData.push({
     s(
       '#开启/关闭签名自动重启',
       '开启/关闭签名自动重启',
-      4
+      4,
+      isWin
     ),
     s(
       '#签名重启日志',
       '查看当日签名重启日志',
+      4,
+      isWin
+    ),
+    s(
+      '#UC安装js',
+      '安装机器人js插件',
       4
     ),
     s(
@@ -285,6 +327,17 @@ helpData.push({
       `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
       '群内关闭Bot',
       'switchBot.use'
+    ),
+    s(
+      '#UC全部(强制)?更新',
+      '原更新逻辑，但不自动重启',
+      4
+    ),
+    s(
+      '#UC重启',
+      '前台重启云崽，不转后台',
+      4,
+      isWin
     )
   ]
 })

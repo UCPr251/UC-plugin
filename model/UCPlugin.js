@@ -15,7 +15,7 @@ export default class UCPlugin extends plugin {
     Cfg
   }) {
     super({ name, dsc, event, priority, rule })
-    this.UC = {}
+    // this.UC = {}
     if (!e) return
     /** Client */
     this.e = e
@@ -206,7 +206,7 @@ export default class UCPlugin extends plugin {
       }
       return msgArr.join(' ').replace(/\s+/g, ' ').trim()
     }
-    return this.e.msg
+    return this.e.msg ?? ''
   }
 
 }

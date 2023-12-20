@@ -1,6 +1,7 @@
 import { log, UCDate, file, Path, UCPr } from './index.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import _ from 'lodash'
+import { segment } from 'icqq'
 
 /** 常用api */
 const common = {
@@ -17,8 +18,42 @@ const common = {
    */
   async sendMsgTo(loc, msg, type) {
     Bot[`send${type}Msg`](loc, msg).catch((err) => {
-      log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误：`, err)
+      log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误`, msg, err)
     })
+  },
+
+  makeMsg(message, replaceKey = [], replaceValue = []) {
+    if (!_.isArray(message)) return null
+    replaceKey = _.castArray(replaceKey)
+    replaceValue = _.castArray(replaceValue)
+    const reply = []
+    const replaceFnc = (str, keyArr, valueArr) =>
+      keyArr.reduce((ori, key, index) => ori.replace(key, valueArr[index]), str)
+    for (const val of message) {
+      switch (val.type) {
+        case 'text':
+          reply.push(replaceFnc(val.text, replaceKey, replaceValue))
+          break
+        case 'at':
+          reply.push(segment.at(val.qq))
+          break
+        case 'image':
+          reply.push(segment.image(val.url ?? val.path))
+          break
+      }
+    }
+    return reply
+  },
+
+  /**
+   * 获取头像URL
+   * @param {*} Id
+   * @param {'group'|'user'} type
+   * @param {'0'|'100'} quality 100小尺寸；0大尺寸
+   */
+  getAvatarUrl(Id, type = 'user', quality = '100') {
+    if (type === 'user') return `https://q1.qlogo.cn/g?b=qq&s=${quality}&nk=${Id}`
+    if (type === 'group') return `https://p.qlogo.cn/gh/${Id}/${Id}/${quality}`
   },
 
   /** 转换为字符串 */
@@ -75,7 +110,7 @@ const common = {
     return [url, e.file.name]
   },
 
-  /** 获取图片下载url */
+  /** 获取单张图片下载url */
   async getPicUrl(e) {
     let url = null
     if (e.img) {
@@ -84,6 +119,15 @@ const common = {
       url = await this.getFileUrl(e)?.[0]
     }
     return url
+  },
+
+  /** 获取一条消息中的所有图片url */
+  getAllPicsUrl(e) {
+    if (e.message) {
+      const imgs = _.filter(e.message, { type: 'img' })
+      return _.map(imgs, 'url')
+    }
+    return null
   },
 
   /** 获取文件message_id，顺序 */
@@ -163,12 +207,18 @@ const common = {
    */
   async getChatHistoryArr(groupClient, seq, num, msgHistoryArr = []) {
     if (num > 20) {
-      const historyMsg = await groupClient.getChatHistory(seq, 20)
+      const historyMsg = await this.getChatHistoryArr(groupClient, seq, 20)
       if (_.isEmpty(historyMsg)) return msgHistoryArr
       msgHistoryArr = historyMsg.concat(msgHistoryArr)
       return await this.getChatHistoryArr(groupClient, seq - 20, num - 20, msgHistoryArr)
     }
-    return (await groupClient.getChatHistory(seq, num)).concat(msgHistoryArr)
+    try {
+      const info = await groupClient.getChatHistory(seq, num)
+      return info.concat(msgHistoryArr)
+    } catch (err) {
+      log.error(`获取群${groupClient?.group_id}聊天记录错误，可能是该群状态异常`, err)
+      return msgHistoryArr
+    }
   },
 
   /**

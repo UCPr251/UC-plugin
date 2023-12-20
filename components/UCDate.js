@@ -274,7 +274,7 @@ const UCDate = {
    * @param {string} date 日期如 8-1
    * @returns 格式化后的日期如 2023-08-01
    */
-  formatDate(date, defaultYear = '2023') {
+  formatDate(date) {
     if (!date) return null
     date = date.replace(/年|月/g, '-').replace('日', '')
     const dateArr = date.split('-')
@@ -282,6 +282,7 @@ const UCDate = {
     if (len < 2 || len > 3) {
       return null
     }
+    const defaultYear = global.UCPr?.defaultYear ?? '2023'
     const [year, month, day] = len === 3 ? dateArr : [defaultYear, ...dateArr]
     const formattedyear = len === 2 ? defaultYear : year.padStart(4, '20')
     if (!this.isValidDate(formattedyear, month, day)) return null

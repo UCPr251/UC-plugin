@@ -16,7 +16,7 @@ export default class UCSqtj extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?(UC)?(分析)?.*(昨|今)?(天|日)?水群统计$/i,
+          reg: /^#?(UC)?(分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计$/i,
           fnc: 'sqtj'
         },
         {
@@ -108,7 +108,7 @@ export default class UCSqtj extends UCPlugin {
     const newData = []
     uc:
     for (let i = this.e.seq; i > 0; i -= 20) {
-      const chatHistoryArr20 = (await this.e.group.getChatHistory(i, 20)).reverse()
+      const chatHistoryArr20 = (await common.getChatHistoryArr(this.e.group, i, 20)).reverse()
       if (_.isEmpty(chatHistoryArr20)) break
       for (const info of chatHistoryArr20) {
         if (_.isEmpty(info)) continue
@@ -163,7 +163,7 @@ export default class UCSqtj extends UCPlugin {
 
   async test() {
     if (!this.GM) return false
-    autoSendSqtj()
+    return await autoSendSqtj()
   }
 
 }
@@ -175,17 +175,13 @@ Data.loadTask({
 })
 
 async function autoSendSqtj() {
-  const yesterday = moment().subtract(1, 'd')
-  const start = yesterday.startOf('d').valueOf() / 1000
-  const end = yesterday.endOf('d').valueOf() / 1000
-  const date = UCDate.getdate_time(-1)[0]
-  const groups = Array.from(Bot.gl.keys())
-  for (const groupId of groups) {
+  const processGroup = async function (groupId) {
     const Cfg = _.get(UCPr.groupCFG(groupId), 'config.sqtj', {})
     const isAutoSend = Cfg.isOpen && Cfg.isAutoSend
-    if (!isAutoSend) continue
+    if (!isAutoSend) return null
     const group = common.pickGroup(groupId)
-    const msgInfo = await group.getChatHistory(0, 1)
+    const msgInfo = await common.getChatHistoryArr(group, 0, 1)
+    if (!msgInfo.length) return null
     const seq = msgInfo[0]?.seq ?? 0
     const e = {
       group,
@@ -200,7 +196,8 @@ async function autoSendSqtj() {
     }
     const sqtj = new UCSqtj(e)
     const localData = sqtj.getLocalData()
-    const sqtjData = _.cloneDeep(localData) ?? { isWholeDay: false, count: 0, chatHistoryArr: [] }
+    const sqtjData = localData ? _.cloneDeep(localData) : { isWholeDay: false, count: 0, chatHistoryArr: [] }
+    const shouldSave = !(localData && localData.isWholeDay)
     let chatHistoryArr = sqtjData.chatHistoryArr
     if (!sqtjData.isWholeDay) {
       const newData = await sqtj.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
@@ -211,11 +208,35 @@ async function autoSendSqtj() {
     const count = chatHistoryArr.length
     sqtjData.count = count
     sqtjData.chatHistoryArr = chatHistoryArr
-    if (Cfg.isSave && !_.isEqual(sqtjData, localData)) sqtj.saveLocalData(sqtjData)
-    if (_.isEmpty(filterData)) continue
+    if (Cfg.isSave && shouldSave) {
+      sqtj.saveLocalData(sqtjData)
+    }
+    if (_.isEmpty(filterData)) return null
     const data = await sqtj.getImgData(filterData, count)
     const imgData = Sqtj.get(e, { ...data, count, date })
-    await common.render(e, imgData)
-    await common.sleep(0.1)
+    return { e, imgData, groupId }
   }
+  const processGroups = async function (groups) {
+    log.yellow('[水群统计推送]开始处理数据')
+    const promises = groups.map(groupId => processGroup(groupId))
+    const results = (await Promise.allSettled(promises)).filter(v => v.value)
+    log.yellow('[水群统计推送]数据处理完毕，开始依次推送')
+    let count = 0
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        const { e, imgData, groupId } = result.value
+        await common.render(e, imgData)
+        log.yellow(`[水群统计推送]推送群${groupId} [${++count}/${results.length}]`)
+        await common.sleep(0.2)
+      } else if (result.status === 'rejected') {
+        log.error('[水群统计推送]处理群聊天数据异常：', result.reason)
+      }
+    }
+  }
+  const yesterday = moment().subtract(1, 'd')
+  const start = yesterday.startOf('d').valueOf() / 1000
+  const end = yesterday.endOf('d').valueOf() / 1000
+  const date = UCDate.getdate_time(-1)[0]
+  const groups = Array.from(Bot.gl.keys())
+  await processGroups(groups)
 }

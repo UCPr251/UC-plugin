@@ -1,4 +1,4 @@
-import { UCPr } from '../components/index.js'
+import { UCPr, common } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
@@ -25,7 +25,7 @@ export default class UCRandomMember extends UCPlugin {
     if (!this.verifyPermission(this.Cfg.use)) return false
     const map = await e.group.getMemberMap()
     const mem = _.sample(Array.from(map.values()))
-    const msg = [this.Cfg.reply.replace('info', `${mem.nickname}（${mem.user_id}）`), segment.image(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${mem.user_id}`)]
+    const msg = [this.Cfg.reply.replace('info', `${mem.nickname}（${mem.user_id}）`), segment.image(common.getAvatarUrl(mem.user_id, 'user', '0'))]
     if (this.Cfg.isAt) msg.unshift(segment.at(mem.user_id))
     return e.reply(msg)
   }

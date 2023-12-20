@@ -44,7 +44,7 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'UC_HELP'
         },
         {
-          reg: new RegExp(`^#?UC(全局)?设置\\s*(${Cfg.groupReg})?.*`, 'i'),
+          reg: /^#?UC(全局)?(群管)?设置\s*.*/i,
           fnc: 'UC_CFG'
         },
         {
@@ -219,11 +219,12 @@ export default class UCAdmin extends UCPlugin {
     // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
     let isGlobal = /全局/.test(e.msg)
     if (isGlobal && !this.GM) return false
-    const str1 = e.msg.replace(/#?UC(全局)?设置/i, '').trim()
-    const group = new RegExp(Cfg.groupReg).exec(str1)?.[0] ?? ''
+    const str1 = e.msg.replace(/#?UC(全局)?(群管)?设置/i, '').trim()
+    const type = /群管/.test(e.msg) ? 'GAconfig' : 'config'
+    const group = new RegExp(Cfg.groupReg(type)).exec(str1)?.[0] ?? ''
     log.debug('修改设置group：' + group)
     const str2 = str1.replace(group, '').trim()
-    const set = Cfg.settingReg(group).exec(str2)?.[0] ?? ''
+    const set = Cfg.settingReg(type, group).exec(str2)?.[0] ?? ''
     log.debug('修改设置set：' + set)
     const str3 = str2.replace(set, '').trim()
     const num = str3.match(/\d{5,10}/)?.[0]
@@ -234,7 +235,7 @@ export default class UCAdmin extends UCPlugin {
     }
     // 修改全局设置或群设置
     if (group || set) {
-      const setData = CFG.cfgData[group]?.cfg?.[set]
+      const setData = CFG.cfgData[type][group]?.cfg?.[set]
       log.debug(setData)
       if (setData) {
         // 获取新设置值
@@ -258,9 +259,9 @@ export default class UCAdmin extends UCPlugin {
           if (numMatch && numMatch.length === setData.options?.length) {
             for (const i in numMatch) {
               if (isGlobal) {
-                Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
+                Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
               } else {
-                Admin.groupCfg(groupId, setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', setData.cfg)
+                Admin.groupCfg(groupId, setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
               }
             }
           }
@@ -274,10 +275,10 @@ export default class UCAdmin extends UCPlugin {
         // 保存新设置
         if (operation !== undefined) {
           if (isGlobal) {
-            Admin.globalCfg(setData.path, operation, setData.cfg)
+            Admin.globalCfg(setData.path, operation, type)
           } else {
             Admin.newConfig(groupId)
-            Admin.groupCfg(groupId, setData.path, operation, setData.cfg)
+            Admin.groupCfg(groupId, setData.path, operation, type)
           }
         }
       }
@@ -285,7 +286,7 @@ export default class UCAdmin extends UCPlugin {
       await common.sleep(0.12)
     }
     // 发送新设置图
-    const data = Cfg.get(e, groupId, isGlobal)
+    const data = Cfg.get(e, type, groupId, isGlobal)
     if (!data) return
     return await common.render(e, data)
   }

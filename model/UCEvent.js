@@ -25,7 +25,6 @@ export default class UCEvent extends UCPlugin {
      * request.froup: invite add
      */
     this.sub_type = 'normal'
-    this.isOpen = this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
     if (!e) return
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
@@ -33,6 +32,13 @@ export default class UCEvent extends UCPlugin {
     this.botIsOwner = this.e.group?.is_owner
     /** bot是否管理员或群主 */
     this.botIsAdminOrOwner = this.botIsAdmin || this.botIsOwner
+    /** 群名 */
+    this.groupName = this.e.group?.name
+  }
+
+  /** 是否启用群管及该功能 */
+  get isOpen() {
+    return this.GAconfig?.isOpen && _.get(this.Cfg, 'isOpen', true)
   }
 
   /** 检查是否全局主人 */
@@ -181,7 +187,7 @@ async function UCdealMsg(type, e) {
   const events = UCPr.temp.event[type]
   for (const event of events) {
     // log.debug('检查插件：' + event.name)
-    if (event.sub_type !== 'all' && !event.sub_type === e.sub_type) continue
+    if (event.sub_type !== 'all' && event.sub_type !== e.sub_type) continue
     const key = `${event.name}.${e.sender?.user_id ?? e.user_id}`
     const userHook = _.find(hook, { key })
     if (userHook) {
@@ -212,7 +218,7 @@ async function UCdealMsg(type, e) {
       if (new RegExp(rule.reg).test(msg)) {
         log.white(msg)
         const start = Date.now()
-        const logInfo = `[${event.name}][${rule.fnc}] ${_.truncate(msg, { length: 50 })}`
+        const logInfo = `[${event.name}][${rule.fnc}]${_.truncate(msg, { length: 50 })}`
         log.white(logInfo)
         const app = new event.class(e)
         const result = await app[rule.fnc](e)?.catch?.(err => {
@@ -234,6 +240,7 @@ export async function EventLoader() {
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
+  if (!Bot?.on) return log.warn('非正常启动流程，跳过监听事件注册')
   Bot.on('message', async (e) => {
     const result = await UCdealMsg('message.all', e)
     if (result === false) {

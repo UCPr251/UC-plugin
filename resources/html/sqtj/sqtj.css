@@ -133,7 +133,7 @@ td:nth-child(2) {
     background-image: url(../../img/金牌.png);
     position: absolute;
     top: 17%;
-    left: 40%;
+    left: 36%;
     background-size: 30px 30px;
     background-repeat: no-repeat;
 }
@@ -145,7 +145,7 @@ td:nth-child(2) {
     background-image: url(../../img/银牌.png);
     position: absolute;
     top: 17%;
-    left: 40%;
+    left: 34%;
     background-size: 25px 30px;
     background-repeat: no-repeat;
 }
@@ -157,7 +157,7 @@ td:nth-child(2) {
     background-image: url(../../img/铜牌.png);
     position: absolute;
     top: 17%;
-    left: 40%;
+    left: 32%;
     background-size: 30px 30px;
     background-repeat: no-repeat;
 }

@@ -10,7 +10,8 @@ const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
 const apps = path.join(UC, 'apps')
-const groupAdmin = path.join(apps, 'groupAdmin')
+const Event = path.join(apps, 'Event')
+const groupAdmin = path.join(Event, 'groupAdmin')
 const config = path.join(UC, 'config')
 const groupCfg = path.join(config, 'groupCfg')
 const defSet = path.join(UC, 'defSet')
@@ -34,6 +35,7 @@ const testjson = path.join(temp, 'test.json')
 const QA = path.join(data, 'QA')
 const sqtj = path.join(data, 'sqtj')
 const bigjpg = path.join(data, 'bigjpg')
+const WM = path.join(data, 'WM')
 const errorLogjson = path.join(data, 'errorLog.json')
 const accreditjson = path.join(data, 'accredit.json')
 const BLPGroupjson = path.join(data, 'BLPGroup.json')
@@ -75,7 +77,9 @@ const Path = {
   UC,
   /** ../UC-plugin/apps */
   apps,
-  /** ../UC-plugin/apps/groupAdmin */
+  /** ../UC-plugin/apps/Event */
+  Event,
+  /** ../UC-plugin/apps/Event/groupAdmin */
   groupAdmin,
   /** ./config */
   config,
@@ -123,6 +127,8 @@ const Path = {
   sqtj,
   /** ./data/bigjpg */
   bigjpg,
+  /** ./data/WM */
+  WM,
   /** ./data/errorLog.json */
   errorLogjson,
   /** ./data/accredit.json */

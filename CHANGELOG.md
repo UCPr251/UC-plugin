@@ -1,3 +1,20 @@
+## 12-20
+
+- 修改一下目录结构，[app/Event](./apps/Event/)，群管移动至[app/Event/groupAdmin](./apps/Event/groupAdmin/)
+- 分离`UC设置`和`UC群管设置`，uc帮助的群管部分目前并不多，暂时不打算分离
+- 完善[重载插件](./apps/reloadJSs.js)
+- 可选隐藏[签名自动重启](./apps/qsignRestart.js)重启的签名窗口
+- [前台重启](./apps/restart.js)可前台重启机器人 `#UC重启`
+
+## 12-18
+
+**ver 2.1.6**
+
+- 新增[入群欢迎、退群通知](./apps/groupAdmin/WM.js)
+- 对[水群统计](./apps/sqtj.js)获取状态异常的群聊数据时进行异常处理
+- 对[水群统计](./apps/sqtj.js)水群推送进行异步优化
+- 修复[水群统计](./apps/sqtj.js)深海乌贼无头像bug等
+
 ## 12-17
 
 **ver 2.1.5**

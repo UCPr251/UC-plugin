@@ -60,8 +60,7 @@ function getNewConfig(mode) {
   if (mode) {
     getConfig(mode)
     if (mode <= 3) getNewGuobaConfig()
-    log.whiteblod(`修改设置文件${cfgMap.get(mode)}`)
-    return
+    return log.whiteblod(`修改设置文件${cfgMap.get(mode)}`)
   }
   for (const i of _.range(1, 7)) getConfig(i)
   getNewGuobaConfig()
@@ -164,7 +163,8 @@ const UCPr = {
       return log.warn('错误的监听事件：' + app.event)
     }
     Data.remove(events, app.name, 'name')
-    log.debug(`注册${app.event}监听事件：` + app.name)
+    log.debug(`注册${app.event}监听事件：${app.name}`)
+    app.init && app.init()
     events.push({
       name: app.name,
       class: EventClass,
