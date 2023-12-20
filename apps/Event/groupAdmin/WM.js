@@ -42,7 +42,7 @@ class UCWelcome extends UCEvent {
     log.white(`[群员增加]${info}`)
     const message = isGlobal ? globalWelcome : file.JSONreader(Path.get('WM', this.groupId, 'welcome.json')) ?? globalWelcome
     replyMsg.push(common.makeMsg(message, 'info', info))
-    return await common.sendMsgTo(isView ?? this.groupId, replyMsg, 'Group')
+    return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
   }
 }
 
@@ -81,11 +81,11 @@ class UCMourn extends UCEvent {
     if (e.operator_id === this.userId) {
       log.white(`[群员退群]${info}`)
       const message = isGlobal ? globalMourn : file.JSONreader(Path.get('WM', this.groupId, 'mourn.json')) ?? globalMourn
-      const replyMsg = common.makeMsg(message, 'info', info)
-      return await common.sendMsgTo(isView ?? this.groupId, replyMsg, 'Group')
+      replyMsg.push(common.makeMsg(message, 'info', info))
+      return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
     } else if (e.operator_id !== this.qq) {
       log.white(`[群员被踢]${info} 操作人：${e.operator_id}`)
-      return await common.sendMsgTo(this.groupId, `${info}被管理员${e.operator_id ?? ''}踢出群聊`, 'Group')
+      return await common.sendMsgTo(isView || this.groupId, `${info}被管理员${e.operator_id ?? ''}踢出群聊`, 'Group')
     }
     log.white(`[机器人踢人]${info}`)
   }

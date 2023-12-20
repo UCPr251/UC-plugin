@@ -203,7 +203,7 @@ export default class UCAdmin extends UCPlugin {
     }
     const errorLog = Data.getLogArr(Path.errorLogjson, { num: 30 })
     if (!errorLog) return e.reply('当前无错误日志哦~')
-    const replyMsg = await common.makeForwardMsg(e, errorLog, '错误日志')
+    const replyMsg = await common.makeForwardMsg(e, errorLog, 'UC插件错误日志')
     return e.reply(replyMsg, false)
   }
 
