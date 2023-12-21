@@ -42,6 +42,7 @@ const BLPGroupjson = path.join(data, 'BLPGroup.json')
 const BLPPrivatejson = path.join(data, 'BLPPrivate.json')
 const queueUpjson = path.join(data, 'queueUp.json')
 const switchBotjson = path.join(data, 'switchBot.json')
+const lockdownjson = path.join(data, 'lockdown.json')
 
 /** 路径配置，继承path */
 const Path = {
@@ -140,7 +141,9 @@ const Path = {
   /** ./data/queueUp.json */
   queueUpjson,
   /** ./data/switchBot.json */
-  switchBotjson
+  switchBotjson,
+  /** ./data/lockdown.json */
+  lockdownjson
 }
 
 export default Path

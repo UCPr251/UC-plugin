@@ -187,7 +187,17 @@ const UCPr = {
 
   /** UC插件版本 */
   get version() {
-    return this.package.version ?? '2.0.0'
+    return this.package.version
+  },
+
+  /** URL */
+  get authorUrl() {
+    return this.package.author.url
+  },
+
+  /** UC插件URL */
+  get repoUrl() {
+    return this.package.repository.url
   },
 
   /** 默认所有全局配置 */

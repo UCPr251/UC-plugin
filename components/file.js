@@ -84,6 +84,12 @@ const file = {
     return fs.existsSync(_path)
   },
 
+  unlink(_path) {
+    return fs.unlink(_path, (err) => {
+      if (err) log.error(`删除文件${_path}错误`, err)
+    })
+  },
+
   /**
    * (批量)删除文件，返回删除文件name
    * 支持一目录多文件 或 _path多文件路径数组
@@ -104,6 +110,26 @@ const file = {
     }
     fs.unlinkSync(_path)
     return path.parse(_path).name
+  },
+
+  unlinkFilesRecursively(dir) {
+    if (!file.existsSync(dir)) {
+      return
+    }
+    const files = fs.readdirSync(dir, { withFileTypes: true })
+    for (const _file of files) {
+      const currentPath = path.join(dir, _file.name)
+      if (_file.isDirectory()) {
+        this.unlinkFilesRecursively(currentPath)
+      } else {
+        file.unlinkSync(currentPath)
+      }
+    }
+    try {
+      fs.rmdirSync(dir)
+    } catch (err) {
+      log.red(`无法删除目录: ${dir}`, err)
+    }
   },
 
   /** 复制文件 */

@@ -14,7 +14,7 @@ if (Array.isArray(UCPr.permission.Master)) {
 }
 
 log.blue('---------------------')
-log.purple(`----${Path.Plugin_Name} ${UCPr.version}载入中-----`)
+log.purple(`----${UCPr.Plugin_Name} ${UCPr.version}载入中-----`)
 
 let ret = []
 

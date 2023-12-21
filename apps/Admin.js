@@ -48,7 +48,7 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'UC_CFG'
         },
         {
-          reg: /^#?UC(锁定|解锁)(设置)?.*/i,
+          reg: /^#?UC(锁定|解锁)设置.*/i,
           fnc: 'lockConfig'
         }
       ]
@@ -294,7 +294,7 @@ export default class UCAdmin extends UCPlugin {
   async lockConfig(e) {
     if (!this.verifyLevel(4)) return false
     const { lock } = CFG
-    const lockPath = e.msg.match(/(?:锁定|解锁)(?:设置)?(.*)/)?.[1]
+    const lockPath = e.msg.match(/设置(.*)/)?.[1]
     if (!lockPath) {
       return e.reply('已锁定设置：\n\n' + Data.empty(Data.makeArrStr(getAllKeyPaths(lock))) + '\n\n#UC取消锁定设置 + 键路径可解除锁定')
     }
