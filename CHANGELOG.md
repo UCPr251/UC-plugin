@@ -1,3 +1,7 @@
+## 12-21
+
+- [UC一键卸载](./apps/run.js) `#UC一键卸载`
+
 ## 12-20
 
 - 修改一下目录结构，[app/Event](./apps/Event/)，群管移动至[app/Event/groupAdmin](./apps/Event/groupAdmin/)

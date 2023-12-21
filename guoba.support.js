@@ -1,5 +1,5 @@
 import Admin, { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo } from './components/Admin.js'
-import { Path, file, Data } from './components/index.js'
+import { Path, file, Data, UCPr } from './components/index.js'
 import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
 
@@ -383,13 +383,13 @@ export function supportGuoba() {
   return {
     pluginInfo: {
       name: Path.Plugin_Name,
-      title: Path.Plugin_Name,
+      title: `${Path.Plugin_Name}（${UCPr.version}）`,
       author: Path.Author,
-      authorLink: 'https://gitee.com/UCPr251',
-      link: 'https://gitee.com/UCPr251/UC-plugin',
+      authorLink: UCPr.authorUrl,
+      link: UCPr.repoUrl,
       isV3: true,
       isV2: false,
-      description: 'UC-plugin，为更多有趣的功能',
+      description: UCPr.package.description,
       iconPath: Path.get('img', 'xiubi.png')
     },
     configInfo: {
