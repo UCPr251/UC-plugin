@@ -31,9 +31,6 @@ export default class UCUpdate extends UCPlugin {
     Update_Plugin.e = e
     Update_Plugin.reply = this.reply
     if (Update_Plugin.getPlugin(Path.Plugin_Name)) {
-      if (/强制/.test(e.msg)) {
-        Data.execSync('git reset --hard', Path.UC)
-      }
       await Update_Plugin.runUpdate(Path.Plugin_Name)
       Data.refresh()
       if (Update_Plugin.isUp) {

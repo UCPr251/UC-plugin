@@ -67,15 +67,19 @@ export default class UCSwitchBot extends UCPlugin {
     if (!this.isClose) {
       return e.reply('当前已经是开启状态了哦~', true)
     }
+    this.open()
+    Data.remove(switchBotData, this.groupId)
+    file.JSONsaver(Path.switchBotjson, switchBotData)
+    return e.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
+  }
+
+  open() {
     const oriData = _.get(tempData, `${this.groupId}.enable`)
     if (!oriData || _.isEqual(oriData, ['UC-switchBot'])) {
       _.unset(this.groupData, `${this.groupId}.enable`)
     } else {
       _.set(this.groupData, `${this.groupId}.enable`, oriData)
     }
-    Data.remove(switchBotData, this.groupId)
-    file.JSONsaver(Path.switchBotjson, switchBotData)
-    return e.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
   }
 
   async closeBot(e) {

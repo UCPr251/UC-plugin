@@ -294,6 +294,12 @@ helpData.push({
       isWin
     ),
     s(
+      '#重启签名',
+      '指令重启签名',
+      4,
+      isWin
+    ),
+    s(
       '#UC安装js',
       '安装机器人js插件',
       4
