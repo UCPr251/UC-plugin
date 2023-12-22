@@ -127,9 +127,7 @@ const file = {
     }
     try {
       fs.rmdirSync(dir)
-    } catch (err) {
-      log.red(`无法删除目录: ${dir}`, err)
-    }
+    } catch (e) { }
   },
 
   /** 复制文件 */

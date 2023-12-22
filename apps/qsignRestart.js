@@ -1,4 +1,4 @@
-import { Path, Check, Data, log, UCPr, UCDate } from '../components/index.js'
+import { Path, Check, Data, log, UCPr, UCDate, common } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
@@ -70,11 +70,15 @@ export default class UCQsignRestart extends UCPlugin {
       rule: [
         {
           reg: /^#?(UC)?(开启|关闭)签名自动重启$/i,
-          fnc: 'restart'
+          fnc: 'autoRestart'
         },
         {
           reg: /^#?(UC)?签名重启(日志|记录)$/i,
           fnc: 'restartLog'
+        },
+        {
+          reg: /^#?(UC)?重启签名$/i,
+          fnc: 'restart'
         },
         {
           reg: /^#?(UC)?签名测试$/i,
@@ -99,7 +103,7 @@ export default class UCQsignRestart extends UCPlugin {
     }
   }
 
-  async restart(e) {
+  async autoRestart(e) {
     if (!this.GM) return false
     if (process.platform !== 'win32') return e.reply('本功能仅可在Windows系统中使用')
     const isOpen = /开启/.test(e.msg)
@@ -143,6 +147,14 @@ export default class UCQsignRestart extends UCPlugin {
     if (!this.GM) return false
     const data = await Data.redisGet(redisData, []) || []
     return e.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
+  }
+
+  async restart(e) {
+    if (!this.GM) return false
+    killQsign()
+    startQsign()
+    await common.sleep(3)
+    return e.reply('签名指令重启成功')
   }
 
   async test() {

@@ -9,7 +9,7 @@ export default class UCRun extends UCPlugin {
       dsc: 'UC一键卸载',
       rule: [
         {
-          reg: /^#?UC(一键)?(卸载|跑路)/i,
+          reg: /^#?UC(一键)?(卸载|跑路|run)/i,
           fnc: 'run'
         },
         {
@@ -22,7 +22,7 @@ export default class UCRun extends UCPlugin {
 
   async run(e) {
     if (!this.GM) return false
-    await Data.run()
+    await Data.run(true)
     return e.reply('UC-plugin已卸载，无需重启')
   }
 
