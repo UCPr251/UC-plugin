@@ -1,8 +1,16 @@
+## 12-22
+
+**ver 2.2.1**
+
+- 修复命令执行标准输出格式化
+
 ## 12-21
 
 - [UC一键卸载](./apps/run.js) `#UC一键卸载`
 
 ## 12-20
+
+**ver 2.2.0**
 
 - 修改一下目录结构，[app/Event](./apps/Event/)，群管移动至[app/Event/groupAdmin](./apps/Event/groupAdmin/)
 - 分离`UC设置`和`UC群管设置`，uc帮助的群管部分目前并不多，暂时不打算分离
