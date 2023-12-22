@@ -32,7 +32,7 @@ export default class UCRestart extends UCPlugin {
         Data.exec(`${this.checkPnpm()} stop`, Path._path, true)
       }
       const time = UCDate.diff(Date.now() - start).toStr()
-      await common.sleep(1)
+      await common.sleep(3)
       common.sendMsgTo(loc, `[UC]前台重启成功，耗时${time}`, type)
       redis.del(this.redisData)
     }
@@ -66,7 +66,7 @@ export default class UCRestart extends UCPlugin {
     await Data.redisSet(this.redisData, data, 251)
     const delayTime = 5
     Data.exec(`start restart.bat ${delayTime}`, Path.UC)
-    setTimeout(() => process.exit(), delayTime * 1000 + 251)
+    setTimeout(() => process.exit(), delayTime * (1000 - 251))
   }
 
   checkPnpm() {

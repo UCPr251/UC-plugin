@@ -11,6 +11,4 @@ IF EXIST app.js (
   timeout /t 1 /nobreak > NUL
   echo [UC]开始启动云崽
   node app
-) ELSE (
-  echo 错误的执行路径，启动已取消
 )
