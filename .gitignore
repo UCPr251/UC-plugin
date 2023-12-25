@@ -20,6 +20,7 @@
 /apps/QA.js
 /apps/atMute.js
 /apps/ji.js
+/apps/RA_Accredit.js
 /apps/Event/groupAdmin/*
 !/apps/Event/groupAdmin/kick.js
 !/apps/Event/groupAdmin/mute.js

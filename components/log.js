@@ -18,14 +18,16 @@ function getFncChain(error) {
   return fncChain.join('←')
 }
 
+const prefix = '[UC]'
+
 /** 输出日志 */
 const log = {
   red() {
-    logger.mark(chalk.red('[UC]' + common.toString(Array.from(arguments))))
+    logger.mark(chalk.red(prefix + common.toString(Array.from(arguments))))
   },
 
   mark(...log) {
-    logger.mark('[UC]' + common.toString(log))
+    logger.mark(prefix + common.toString(log))
   },
 
   /** debug */
@@ -48,42 +50,42 @@ const log = {
       return _log
     })
     log = common.toString(log, '\n')
-    logger.error(chalk.red('[UC][error]' + log))
+    logger.error(chalk.red(prefix + '[error]' + log))
     Data.addLog(Path.errorLogjson, log)
     return false
   },
 
   purple(...log) {
     if (UCPr.log) {
-      logger.mark(logger.magenta('[UC]' + common.toString(log)))
+      logger.mark(logger.magenta(prefix + common.toString(log)))
     }
   },
 
   yellow(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.yellow('[UC]' + common.toString(log)))
+      logger.mark(chalk.yellow(prefix + common.toString(log)))
     }
   },
 
   blue(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.blue('[UC]' + common.toString(log)))
+      logger.mark(chalk.blue(prefix + common.toString(log)))
     }
   },
 
   bluebold(...log) {
-    logger.mark(chalk.blue.bold('[UC]' + common.toString(log)))
+    logger.mark(chalk.blue.bold(prefix + common.toString(log)))
   },
 
   white(...log) {
     if (UCPr.log) {
-      logger.mark('[UC]' + common.toString(log))
+      logger.mark(prefix + common.toString(log))
     }
   },
 
   whiteblod(...log) {
     if (UCPr.log) {
-      logger.mark(chalk.bold('[UC]' + common.toString(log)))
+      logger.mark(chalk.bold(prefix + common.toString(log)))
     }
   }
 }

@@ -139,7 +139,7 @@ const Admin = {
     }
     file.YAMLsaver(Path.permissionyaml, permission)
     // 修改群config
-    if (!UCPr.groupCFG(groupId)) this.newConfig(groupId)
+    this.newConfig(groupId)
     setTimeout(() => {
       const _cfg = UCPr.groupCFG(groupId)
       if (!_cfg) return log.warn('无群设置信息：' + groupId)

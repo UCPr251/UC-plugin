@@ -45,7 +45,7 @@ if (status) {
     log.bluebold('┃    ║      ║     ║          ┃')
     log.bluebold('┃    ╚══════╝     ╚══════    ┃')
     log.bluebold('┖┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┚')
-    log.purple(`----${Path.Plugin_Name} ${UCPr.version}载入成功-----`)
+    log.purple(`----${UCPr.Plugin_Name} ${UCPr.version}载入成功-----`)
     log.blue('---------------------')
 }
 
