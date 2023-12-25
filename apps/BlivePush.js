@@ -468,3 +468,21 @@ async function atall(isGroup, loc, msg, info) {
     }
   }
 }
+
+Data.loadTask({
+  cron: '0 0 0 * * ?',
+  name: '每天清理一下已经退出的群的推送数据',
+  fnc: function () {
+    const pushGroupData = file.JSONreader(Path.BLPGroupjson)
+    const pushGroups = Object.keys(pushGroupData)
+    log.red(pushGroups)
+    const groupList = Array.from(Bot.gl.keys())
+    log.red(groupList)
+    pushGroups.forEach(groupId => {
+      if (!Check.str(groupList, groupId)) {
+        delete pushGroupData[groupId]
+      }
+    })
+    file.JSONsaver(Path.BLPGroupjson, pushGroupData)
+  }
+})

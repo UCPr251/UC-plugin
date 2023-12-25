@@ -22,7 +22,7 @@ export default class UCAddJS extends UCPlugin {
   async addJS(e) {
     if (!this.GM) return false
     e.isUCJS = /插件/.test(e.msg)
-    if (e.isUCJS && e.isGroup) return e.reply('请私聊安装UC插件')
+    // if (e.isUCJS && e.isGroup) return e.reply('请私聊安装UC插件')
     this.setContext(this.setFnc, false, 60)
     return e.reply('请在60s内发送js文件')
   }

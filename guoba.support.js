@@ -6,7 +6,7 @@ import _ from 'lodash'
 try {
   Data.refresh()
 } catch (err) {
-  log.error(err)
+  logger.error(err)
 }
 /** config前缀 */
 let cfgPrefix = 'config.'

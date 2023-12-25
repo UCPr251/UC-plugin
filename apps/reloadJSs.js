@@ -114,7 +114,7 @@ export default class UCReloadJSs extends UCPlugin {
     msg += `UC载入${Object.values(UCPr.temp.event).reduce((ori, arr) => ori + arr.length, 0)}个Event\n`
     msg += `UC监听${Object.keys(watcher).length}个js\n`
     msg += `UC共监听${Object.keys(UCPr.temp.watcher).length}个文件(夹)\n`
-    msg += `Bot本体总计${loader.priority.length}个插件\n`
+    msg += `Bot本体总计${loader.priority.length}个插件功能\n`
     msg += `Bot本体总计${loader.task.length}个定时任务`
     log.yellow(msg)
     return msg
@@ -190,6 +190,8 @@ export default class UCReloadJSs extends UCPlugin {
     const msg = Object.keys(watcher).join('\n')
     log.yellow(msg)
     log.red(`总计监听${Object.keys(watcher).length}个js`)
+    const all = Data.makeArrStr(Object.keys(UCPr.temp.watcher))
+    log.yellow(all)
     log.red(`总计监听${Object.keys(UCPr.temp.watcher).length}个文件(夹)`)
   }
 

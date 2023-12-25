@@ -9,38 +9,18 @@ let Cfg = {}
 const arrTemp = {}
 
 function getNewCfg() {
-  Cfg = file.YAMLreader(Path.otheryaml)
+  Cfg = file.YAMLreader(Path.get('botConfig', 'other.yaml'))
 }
 
-Data.watch(Path.otheryaml, getNewCfg)
+Data.watch(Path.get('botConfig', 'other.yaml'), getNewCfg)
 
-const helptext =
-  `[UC]configset.js支持指令修改config/other.yaml中所有内容
-正则匹配规则如下：
-0./^#?(config|UC)(帮助|菜单)$/i
-1./^#?(开启|启用|禁用|关闭)(自动)?(同意)?好友申请$/
-2./^#?(设置)?(自动)?退群人数(.*)$/
-3./^#?(增加|删除)主人(.*)$/
-4./^#?(拉黑|解黑)(群)?(.*)$/
-5./^#?(加白|解白)(群)?(.*)$/
-6./^#?(开启|启用|关闭|禁用)私聊$/
-7./^#?设置(私聊禁用|禁用私聊)回复(.*)$/
-8./^#?(增加|删除)(私聊)?通行字符串(.*)$/
-9./^#?(主人|黑名单群|黑名单|白名单|(私聊)?通行字符串)列表$/
-单次指令间隔参数可批量操作
-`
-
-export default class UCConfigSet extends UCPlugin {
+export default class UCOtherSet extends UCPlugin {
   constructor(e) {
     super({
       e,
-      name: 'UC-configSet',
+      name: 'UC-otherSet',
       dsc: '指令修改config/other.yaml',
       rule: [
-        {
-          reg: /^#?config帮助$/i,
-          fnc: 'help'
-        },
         {
           reg: /^#?(开启|启用|禁用|关闭)(自动)?(同意)?好友申请$/,
           fnc: 'autoFriend'
@@ -50,15 +30,15 @@ export default class UCConfigSet extends UCPlugin {
           fnc: 'autoQuit'
         },
         {
-          reg: /^#?(增加|删除)主人(.*)/,
+          reg: /^#?(增加|删除)主人.*/,
           fnc: 'BWset'
         },
         {
-          reg: /^#?(拉黑|解黑)(群)?(.*)/,
+          reg: /^#?(拉黑|解黑)(群)?.*/,
           fnc: 'BWset'
         },
         {
-          reg: /^#?(加白|解白)(群)?(.*)$/,
+          reg: /^#?(加白|解白)(群)?.*$/,
           fnc: 'BWset'
         },
         {
@@ -66,11 +46,11 @@ export default class UCConfigSet extends UCPlugin {
           fnc: 'disablePrivate'
         },
         {
-          reg: /^#?设置(私聊禁用|禁用私聊)回复(.*)/,
+          reg: /^#?设置(私聊禁用|禁用私聊)回复.*/,
           fnc: 'disableMsg'
         },
         {
-          reg: /^#?(增加|删除)(私聊)?通行字符串(.+)/,
+          reg: /^#?(增加|删除)(私聊)?通行字符串.+/,
           fnc: 'disableAdopt'
         },
         {
@@ -83,11 +63,7 @@ export default class UCConfigSet extends UCPlugin {
   }
 
   save() {
-    file.YAMLsaver(Path.otheryaml, Cfg)
-  }
-
-  async help(e) {
-    return e.reply(helptext)
+    file.YAMLsaver(Path.get('botConfig', 'other.yaml'), Cfg)
   }
 
   async autoFriend(e) {
@@ -158,20 +134,7 @@ export default class UCConfigSet extends UCPlugin {
   async disableAdopt(e) {
     if (!this.verifyLevel(4)) return false
     const isAdd = /增加/.test(e.msg)
-    const len = Number(arrTemp[9]?.length)
     const str = e.msg.match(/通行字符串(.*)/)[1].trim()
-    if (Array.prototype.every.call(str, num => num <= len)) {
-      const numMatch = str.match(/\d+/g)
-      const strs = []
-      for (const num of numMatch) {
-        const _str = arrTemp[9]?.[num - 1]
-        if (_str && hy(_str, 9)) {
-          strs.push(_str)
-        }
-      }
-      this.save()
-      return e.reply('成功删除私聊通行字符串：\n' + Data.makeArrStr(strs))
-    }
     if (isAdd) {
       if (Check.str(Cfg.disableAdopt, str)) {
         return e.reply(`【${str}】已存在于私聊通行字符串中`)
@@ -180,6 +143,19 @@ export default class UCConfigSet extends UCPlugin {
       this.save()
       return e.reply(`成功添加私聊通行字符串【${str}】`)
     } else {
+      const len = arrTemp[9]?.length
+      const numMatch = str.match(/\d+/g)
+      if (len && numMatch.every(num => num <= len)) {
+        const strs = []
+        for (const num of numMatch) {
+          const _str = arrTemp[9]?.[num - 1]
+          if (_str && hy(_str, 9)) {
+            strs.push(_str)
+          }
+        }
+        this.save()
+        return e.reply('成功删除私聊通行字符串：\n' + Data.makeArrStr(strs))
+      }
       return e.reply(hy.call(this, str, 9))
     }
   }
@@ -213,35 +189,34 @@ export default class UCConfigSet extends UCPlugin {
       arrTemp[num] = _.clone(arr)
     }
     const type = e.msg.match(/(.*)列表/)[1].replace('#', '')
-    const help = '，序号删除时用空格间隔不同序号可同时删除多个'
     switch (type) {
       case '主人':
         if (_.isEmpty(Cfg.masterQQ)) {
           return e.reply('我还没有主人哦')
         }
         operate(Cfg.masterQQ, 2)
-        msg.push('可以用#增加主人123456和#删除主人+序号或q号增减主人哦' + help)
+        msg.push('可以用\n#增加主人123456\n#删除主人+序号或q号\n增减主人哦')
         break
       case '黑名单群':
         if (_.isEmpty(Cfg.blackGroup)) {
           return e.reply('黑名单群列表为空哦')
         }
         operate(Cfg.blackGroup, 4)
-        msg.push('可以用#拉黑群123456和#解黑群+序号或群号增减黑名单群哦' + help)
+        msg.push('可以用\n#拉黑群123456\n#解黑群+序号或群号\n增减黑名单群哦')
         break
       case '黑名单':
         if (_.isEmpty(Cfg.blackQQ)) {
           return e.reply('黑名单列表为空哦')
         }
         operate(Cfg.blackQQ, 6)
-        msg.push('可以用#拉黑123456和#解黑+序号或q号增减黑名单用户哦' + help)
+        msg.push('可以用\n#拉黑123456\n#解黑+序号或q号\n增减黑名单用户哦')
         break
       case '白名单':
         if (_.isEmpty(Cfg.whiteGroup)) {
           return e.reply('白名单列表为空哦')
         }
         operate(Cfg.whiteGroup, 8)
-        msg.push('可以用#加白123456和#解白+序号或群号\n增减白名单群哦' + help)
+        msg.push('可以用\n#加白123456\n解白+序号或群号\n增减白名单群哦')
         break
       case '通行字符串':
       case '私聊通行字符串':
@@ -249,11 +224,12 @@ export default class UCConfigSet extends UCPlugin {
           return e.reply('通行字符串列表为空哦')
         }
         operate(Cfg.disableAdopt, 9)
-        msg.push('可以用#增加通行字符串XXX和#删除通行字符串+序号或XXX\n增删私聊通行字符串哦' + help)
+        msg.push('可以用\n#增加通行字符串XXX\n#删除通行字符串+序号或XXX\n增删私聊通行字符串哦')
         break
       default:
         return e.reply('未知错误')
     }
+    msg.push('序号删除时用空格间隔不同序号可同时删除多个')
     const title = type + '列表'
     const replyMsg = await common.makeForwardMsg(e, [title, ...msg], title)
     return e.reply(replyMsg)
@@ -262,8 +238,10 @@ export default class UCConfigSet extends UCPlugin {
 }
 
 function hy(num, type) {
-  num = parseInt(num)
   if (!num) return false
+  if (!isNaN(num)) {
+    num = parseInt(num)
+  }
   switch (type) {
     case 1:// 增加主人
       if (!Check.str(Cfg.masterQQ, num)) {

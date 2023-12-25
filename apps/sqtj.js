@@ -174,7 +174,11 @@ Data.loadTask({
   fnc: autoSendSqtj
 })
 
+let push_ing = false
+
 async function autoSendSqtj() {
+  if (push_ing) return
+  push_ing = true
   const processGroup = async function (groupId) {
     const Cfg = _.get(UCPr.groupCFG(groupId), 'config.sqtj', {})
     const isAutoSend = Cfg.isOpen && Cfg.isAutoSend
@@ -227,7 +231,7 @@ async function autoSendSqtj() {
         const { e, imgData, groupId } = result.value
         await common.render(e, imgData)
         log.yellow(`[水群统计推送]推送群${groupId} [${++count}/${results.length}]`)
-        await common.sleep(0.2)
+        await common.sleep(2.51)
       } else if (result.status === 'rejected') {
         log.error('[水群统计推送]处理群聊天数据异常：', result.reason)
       }
@@ -239,4 +243,5 @@ async function autoSendSqtj() {
   const date = UCDate.getdate_time(-1)[0]
   const groups = Array.from(Bot.gl.keys())
   await processGroups(groups)
+  push_ing = false
 }

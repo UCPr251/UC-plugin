@@ -344,6 +344,16 @@ helpData.push({
       '前台重启云崽，不转后台',
       4,
       isWin
+    ),
+    s(
+      '#UC锁定/解锁功能',
+      '锁定功能，全局禁用',
+      4
+    ),
+    s(
+      '#UC锁定功能列表',
+      '锁定功能列表',
+      4
     )
   ]
 })
@@ -383,13 +393,13 @@ if (Check.file(Path.get('apps', 'queueUp.js'))) {
 }
 
 helpData.push({
-  group: 'UC工具——configSet',
+  group: 'UC工具——otherSet',
   require: 4,
   cfg: 'config',
   list: [
     s(
-      '#config帮助',
-      '原文字版configSet帮助'
+      '注：本功能可批量操作',
+      '如#拉黑123456 456789……'
     ),
     s(
       '#开启/关闭自动好友申请',
@@ -438,6 +448,59 @@ helpData.push({
   ]
 })
 
+helpData.push({
+  group: 'UC工具——groupSet',
+  require: 3,
+  cfg: 'config',
+  list: [
+    s(
+      '注：可接群号指定群',
+      '#全局+原指令 修改全局默认设置',
+      4
+    ),
+    s(
+      '#设置群CD 500',
+      '设置群整体CD 单位ms'
+    ),
+    s(
+      '#设置个人CD 500',
+      '设置群个人CD 单位ms'
+    ),
+    s(
+      '#开启/关闭仅艾特',
+      '仅响应艾特的指令'
+    ),
+    s(
+      '#禁用/解禁功能',
+      '群内禁用功能'
+    ),
+    s(
+      '#禁用功能列表',
+      '查看群禁用功能'
+    )
+  ]
+})
+
+helpData.push({
+  group: 'UC工具——noticeSet',
+  require: 4,
+  cfg: 'config',
+  list: [
+    s(
+      '#设置iyuu tk',
+      '填写iyuu通知token'
+    ),
+    s(
+      '#设置sct tk',
+      '填写sct通知token'
+    ),
+    s(
+      '#查看iyuu/sct tk',
+      '查看iyuu或sct通知token'
+    )
+  ]
+})
+
 if (Check.file(Path.get('apps', 'accredit.js'))) {
   helpData.push({
     group: 'UC授权管理',
@@ -468,8 +531,8 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
     isOpen: (groupCFG) => Data.check('BlivePush') && groupCFG.config.BlivePush.isGroup,
     list: [
       s(
-        '注：',
-        '后接群号可指定操作某一个群',
+        '注：可接群号指定群',
+        '如#直播推送列表987654321',
         4
       ),
       s(

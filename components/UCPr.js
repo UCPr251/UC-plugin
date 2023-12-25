@@ -85,7 +85,13 @@ const UCPr = {
     Data.watch(Path.permissionyaml, () => getNewConfig(3))
     Data.watch(Path.lockyaml, () => getNewConfig(4))
     const yamls = file.readdirSync(Path.groupCfg, { type: '.yaml' })
-    const { config, GAconfig } = CFG
+    const config = _.cloneDeep(CFG.config)
+    const { GAconfig } = CFG
+    for (const key in config) {
+      if (!_.isPlainObject(config[key])) {
+        delete config[key]
+      }
+    }
     for (const yaml of yamls) {
       const yamlPath = Path.get('groupCfg', yaml)
       const groupCFGData = file.YAMLreader(yamlPath)

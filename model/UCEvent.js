@@ -177,11 +177,13 @@ class UCSwitchBotEvent extends UCEvent {
 }
 
 async function UCdealMsg(type, e) {
-  if (type.startsWith('message')) {
-    if (_.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${e.group_id}.enable`), ['UC-switchBot'])) {
+  const groupId = e.group_id || e.group?.gid
+  if (groupId && _.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${groupId}.enable`), ['UC-switchBot'])) {
+    if (type.startsWith('message')) {
       const a = new UCSwitchBotEvent(e)
       return await a.deal(e, type)
     }
+    return
   }
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
   const events = UCPr.temp.event[type]

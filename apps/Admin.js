@@ -12,7 +12,7 @@ export default class UCAdmin extends UCPlugin {
       dsc: 'UC插件管理系统',
       rule: [
         {
-          reg: /^#?UC((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\d{5,10})?(\s+\d{5,10})?$/i,
+          reg: /^#?UC((增|添)?加|删除?|减)(主人|黑名单|管理员?)(\s*\d{5,10}){0,2}$/i,
           fnc: 'groupPermission'
         },
         {
@@ -32,7 +32,7 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'permissionList'
         },
         {
-          reg: /^#?UC查(\d*)$/i,
+          reg: /^#?UC查\s*\d*$/i,
           fnc: 'searchUser'
         },
         {
@@ -72,10 +72,10 @@ export default class UCAdmin extends UCPlugin {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
-    const numMatch = this.msg.match(/\d{5,10}/g)
-    const userId = e.at ?? numMatch?.[0]
+    const numMatch = this.msg.match(/\d{5,10}/g) ?? []
+    const userId = e.at ?? numMatch[0]
     if (!userId) return e.reply('请艾特或指定要操作的对象')
-    const groupId = numMatch?.[1] ?? e.group_id
+    const groupId = this.GM ? ((e.at ? numMatch[0] : numMatch[1]) ?? this.groupId) : this.groupId
     if (!groupId) return e.reply('请同时指定要设置的群')
     const isAdd = /设置|加|拉/.test(e.msg)
     if (!Check.file(Admin.getCfgPath(groupId))) {
@@ -125,7 +125,7 @@ export default class UCAdmin extends UCPlugin {
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need > 3 ? 3 : need)) return false
     const numMatch = e.msg.match(/\d+/)
-    const groupId = e.group_id ?? (this.GM ? numMatch?.[0] : undefined)
+    const groupId = (this.GM ? numMatch?.[0] : this.groupId) ?? this.groupId
     const title = `UC插件${name}列表`
     let replyMsg
     if ((/全局/.test(e.msg) || !groupId) && this.level === 4) {
@@ -222,10 +222,10 @@ export default class UCAdmin extends UCPlugin {
     const str1 = e.msg.replace(/#?UC(全局)?(群管)?设置/i, '').trim()
     const type = /群管/.test(e.msg) ? 'GAconfig' : 'config'
     const group = new RegExp(Cfg.groupReg(type)).exec(str1)?.[0] ?? ''
-    log.debug('修改设置group：' + group)
+    log.debug('修改设置group类：' + group)
     const str2 = str1.replace(group, '').trim()
     const set = Cfg.settingReg(type, group).exec(str2)?.[0] ?? ''
-    log.debug('修改设置set：' + set)
+    log.debug('修改设置set类：' + set)
     const str3 = str2.replace(set, '').trim()
     const num = str3.match(/\d{5,10}/)?.[0]
     const groupId = this.GM ? (num ?? e.group_id) : e.group_id

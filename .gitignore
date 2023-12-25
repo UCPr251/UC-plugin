@@ -8,6 +8,7 @@
 /data
 /dev
 /test.js
+/UC功能解析.md
 /node_modules
 /system/UC-plugin-decrypt/
 /apps/accredit.js
@@ -19,7 +20,6 @@
 /apps/QA.js
 /apps/atMute.js
 /apps/ji.js
-/apps/Event/Lockdown.js
 /apps/Event/groupAdmin/*
 !/apps/Event/groupAdmin/kick.js
 !/apps/Event/groupAdmin/mute.js

@@ -4,8 +4,6 @@ const Plugin_Name = 'UC-plugin'
 const _path = process.cwd()
 const qsign = path.resolve(_path, '..', 'unidbg-fetch-qsign')
 const botConfig = path.join(_path, 'config', 'config')
-const otheryaml = path.join(botConfig, 'other.yaml')
-const groupyaml = path.join(botConfig, 'group.yaml')
 const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
@@ -22,6 +20,7 @@ const servesyaml = path.join(system, 'serves.yaml')
 const UC_plugin_decrypt = path.join(system, 'UC-plugin-decrypt')
 const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
+const resdata = path.join(resources, 'data')
 const img = path.join(resources, 'img')
 const chuoyichuo = path.join(resources, 'chuoyichuo')
 const wife = path.join(resources, 'wife')
@@ -49,7 +48,7 @@ const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'|'sqtj'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'botConfig'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'|'sqtj'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
@@ -70,10 +69,6 @@ const Path = {
   plugins,
   /** 云崽/plugins/example */
   example,
-  /** other.yaml */
-  otheryaml,
-  /** group.yaml */
-  groupyaml,
   /** ../UC-plugin */
   UC,
   /** ../UC-plugin/apps */
@@ -102,6 +97,8 @@ const Path = {
   decryptyaml,
   /** ./resources */
   resources,
+  /** ./resources/data */
+  resdata,
   /** ./resources/img */
   img,
   /** ./resources/chuoyichuo */

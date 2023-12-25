@@ -122,7 +122,16 @@ export default class UCPlugin extends plugin {
     return Permission.verify(this.e, cfg, option)
   }
 
-  /** 权限等级验证 */
+  /**
+   * 权限等级验证，向0覆盖
+   * - 全局主人：4
+   * - 群主人：3
+   * - 全局管理：2
+   * - 群管理：1
+   * - 普通用户：0
+   * - 群黑名单：-1
+   * - 全局黑名单：-2
+   */
   verifyLevel(need = 0) {
     if (this.B) return false
     if (UCPr.onlyMaster && !this.M) return false
@@ -206,7 +215,29 @@ export default class UCPlugin extends plugin {
       }
       return msgArr.join(' ').replace(/\s+/g, ' ').trim()
     }
-    return this.e.msg ?? ''
+    return this.msg ?? this.e.msg ?? ''
+  }
+
+  /** 获取序号指定数据 */
+  _getNum() {
+    if (this.isCancel()) return false
+    const data = this.getContext()._getNum.data
+    const { list, fnc } = data
+    let numMatch = this.msg.match(/\d+/g)
+    if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
+      const [start, end] = this.msg.match(/\d+/g).map(Number)
+      if (start > end) return this.reply('???')
+      numMatch = _.range(start, Math.min(end, list.length) + 1)
+    } else {
+      numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
+    }
+    if (_.isEmpty(numMatch)) {
+      this.reply('请输入有效的序号或取消操作')
+    } else {
+      const arr = numMatch.map(num => list[num - 1])
+      this.finish('_getNum')
+      this[fnc](arr, data)
+    }
   }
 
 }

@@ -1,3 +1,15 @@
+## 12-25
+
+**ver 2.3.0**
+
+- 新增[noticeSet](./apps/noticeSet.js)，可指令修改`notice.yaml`中的内容
+- [直播推送](./apps/BlivePush.js)每日零点清理已退群的推送数据
+- 修复群下班状态下UC群管仍响应
+- [群配置](./config/groupCfg/)不再展示uc底层设置（此部分设置仅以全局为准）
+- 原`configSet`重命名为`otherSet`，将按照本体config内文件对应名称命名
+- 新增[groupSet](./apps/groupSet.js)，可指令修改`group.yaml`中的内容
+- 新增[锁定功能](./apps/Event/Lockdown.js)，可锁定功能全局禁用
+
 ## 12-22
 
 **ver 2.2.1**
