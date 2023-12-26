@@ -89,8 +89,8 @@ export default class UCReloadJSs extends UCPlugin {
         if (parentDirName === 'groupAdmin' || parentDirName === 'Event') {
           log.yellow(`删除${parentDirName}插件：${jsName}`)
           const name = 'UC-' + jsName.replace('.js', '')
-          for (const event in UCPr.temp.event) {
-            Data.remove(UCPr.temp.event[event], name, 'name')
+          for (const event in UCPr.event) {
+            Data.remove(UCPr.event[event], name, 'name')
           }
         } else {
           log.yellow('删除插件：' + jsName)
@@ -99,7 +99,7 @@ export default class UCReloadJSs extends UCPlugin {
         }
         watcher[jsName].close()
         delete watcher[jsName]
-        delete UCPr.temp.watcher[delAppPath]
+        delete UCPr.watcher[delAppPath]
         Data.remove(JSs, jsName)
       })
       // JSs.forEach(JS => log.yellow(JS))
@@ -110,10 +110,10 @@ export default class UCReloadJSs extends UCPlugin {
   getGeneralView() {
     let msg = '【UC开发环境总览】\n'
     msg += `UC载入${JSs.length}个功能\n`
-    msg += `UC载入${UCPr.temp.task.length}个定时任务\n`
-    msg += `UC载入${Object.values(UCPr.temp.event).reduce((ori, arr) => ori + arr.length, 0)}个Event\n`
+    msg += `UC载入${UCPr.task.length}个定时任务\n`
+    msg += `UC载入${Object.values(UCPr.event).reduce((ori, arr) => ori + arr.length, 0)}个Event\n`
     msg += `UC监听${Object.keys(watcher).length}个js\n`
-    msg += `UC共监听${Object.keys(UCPr.temp.watcher).length}个文件(夹)\n`
+    msg += `UC共监听${Object.keys(UCPr.watcher).length}个文件(夹)\n`
     msg += `Bot本体总计${loader.priority.length}个插件功能\n`
     msg += `Bot本体总计${loader.task.length}个定时任务`
     log.yellow(msg)
@@ -180,9 +180,9 @@ export default class UCReloadJSs extends UCPlugin {
 
   async viewTasks() {
     if (!this.GM) return false
-    const msg = Data.makeArrStr(UCPr.temp.task, { property: 'name', property2: 'cron' })
+    const msg = Data.makeArrStr(UCPr.task, { property: 'name', property2: 'cron' })
     log.yellow(msg)
-    log.red(`总计${UCPr.temp.task.length}个定时任务`)
+    log.red(`总计${UCPr.task.length}个定时任务`)
   }
 
   async viewWatcher() {
@@ -190,9 +190,9 @@ export default class UCReloadJSs extends UCPlugin {
     const msg = Object.keys(watcher).join('\n')
     log.yellow(msg)
     log.red(`总计监听${Object.keys(watcher).length}个js`)
-    const all = Data.makeArrStr(Object.keys(UCPr.temp.watcher))
+    const all = Data.makeArrStr(Object.keys(UCPr.watcher))
     log.yellow(all)
-    log.red(`总计监听${Object.keys(UCPr.temp.watcher).length}个文件(夹)`)
+    log.red(`总计监听${Object.keys(UCPr.watcher).length}个文件(夹)`)
   }
 
   async viewloaderPlugin() {
@@ -271,9 +271,9 @@ export async function unloadJs(jsPath) {
   const name = 'UC-' + Path.parse(jsPath).name
   const del = Data.remove(loader.priority, name, 'name')[0]
   if (del) {
-    if (name === 'UC-qsignRestart' && UCPr.temp.intervalId) {
+    if (name === 'UC-qsignRestart' && UCPr.intervalId) {
       log.blue('清除签名崩溃检测计时器')
-      clearTimeout(UCPr.temp.intervalId)
+      clearTimeout(UCPr.intervalId)
     }
     log.purple('[卸载插件]' + '名称：' + del.name ?? '无', '优先级：' + del.priority ?? '无')
     const jsName = Path.basename(jsPath)

@@ -555,6 +555,8 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
   }
 }
 
+prefix = ''
+
 const 群管 = {
   title: '群管——UC群管系统设置',
   cfg: {

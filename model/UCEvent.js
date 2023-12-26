@@ -186,7 +186,7 @@ async function UCdealMsg(type, e) {
     return
   }
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
-  const events = UCPr.temp.event[type]
+  const events = UCPr.event[type]
   for (const event of events) {
     // log.debug('检查插件：' + event.name)
     if (event.sub_type !== 'all' && event.sub_type !== e.sub_type) continue

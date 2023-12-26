@@ -70,15 +70,31 @@ function getNewConfig(mode) {
 const groupCFG = {}
 
 /** 系统数据 */
-const UCPr = {
-  /** 数据状态 */
-  status: false,
-  /** UC-plugin */
-  Plugin_Name: 'UC-plugin',
-  /** UCPr */
-  Author: 'UCPr',
+class UCPr {
+  constructor(name) {
+    /** UCPr */
+    this.Author = 'UCPr'
+    /** Plugin_Name */
+    this.Plugin_Name = name
+    /** 数据状态 */
+    this.status = false
+    /** 事件监听器 */
+    this.event = {
+      'message.group': [],
+      'message.all': [],
+      'notice.group': [],
+      'request.group': []
+    }
+    /** 文件监听器{ path: watcher } */
+    this.watcher = {}
+    /** cron定时任务[ { cron, fnc, name, job } ] */
+    this.task = []
+    /** 签名崩溃检测计时器 */
+    this.intervalId = null
+  }
+
   /** 初始化数据 */
-  init: async () => {
+  async init() {
     getNewConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))
     Data.watch(Path.GAconfigyaml, () => getNewConfig(2))
@@ -122,18 +138,18 @@ const UCPr = {
       watcher.on('unlink', (yamlPath) => {
         const { name, base } = Path.parse(yamlPath)
         delete groupCFG[name]
-        UCPr.temp.watcher[yamlPath].close()
+        this.temp.watcher[yamlPath].close()
         log.whiteblod(`删除群设置文件${base}`)
       })
     } else {
       log.error('监听groupCfg群设置文件夹错误，文件夹不存在')
     }
-    if (UCPr.isWatch) {
+    if (this.isWatch) {
       Data.watch(Path.helpjs, () => getNewConfig(5))
       Data.watch(Path.cfgjs, () => getNewConfig(6))
     }
-    UCPr.status = true
-  },
+    this.status = true
+  }
 
   /**
    * @param {string} urlCode url代号
@@ -142,29 +158,12 @@ const UCPr = {
    */
   async fetch(urlCode, ...parameters) {
     return await UCfetch.call(this, urlCode, parameters)
-  },
-
-  /** 挂载临时数据 */
-  temp: {
-    /** 事件监听器 */
-    event: {
-      'message.group': [],
-      'message.all': [],
-      'notice.group': [],
-      'request.group': []
-    },
-    /** 文件监听器{ path: watcher } */
-    watcher: {},
-    /** cron定时任务[ { cron, fnc, name, job } ] */
-    task: [],
-    /** 签名崩溃检测计时器 */
-    intervalId: null
-  },
+  }
 
   /** 注册监听事件 */
   EventInit(EventClass) {
     const app = new EventClass({})
-    const events = this.temp.event[app.event]
+    const events = this.event[app.event]
     if (!events) {
       return log.warn('错误的监听事件：' + app.event)
     }
@@ -178,210 +177,210 @@ const UCPr = {
       sub_type: app.sub_type,
       accept: !!app.accept
     })
-  },
+  }
 
   /** 群配置 */
   groupCFG(groupId) {
-    if (!groupCFG[groupId]) return UCPr.defaultCFG
+    if (!groupCFG[groupId]) return this.defaultCFG
     return _.merge({}, groupCFG[groupId], CFG.lock)
-  },
+  }
 
   /** package.json */
   get package() {
     return file.JSONreader(Path.get('UC', 'package.json'))
-  },
+  }
 
   /** UC插件版本 */
   get version() {
     return this.package.version
-  },
+  }
 
   /** URL */
   get authorUrl() {
     return this.package.author.url
-  },
+  }
 
   /** UC插件URL */
   get repoUrl() {
     return this.package.repository.url
-  },
+  }
 
   /** 默认所有全局配置 */
   get defaultCFG() {
     const { config, GAconfig } = CFG
     return { config, GAconfig }
-  },
+  }
 
   /** config.yaml */
   get config() {
     return CFG.config || {}
-  },
+  }
 
   /** GAconfig.yaml */
   get GAconfig() {
     return CFG.GAconfig || {}
-  },
+  }
 
   /** permission.yaml */
   get permission() {
     return CFG.permission || {}
-  },
+  }
 
   /** lock.yaml */
   get lock() {
     return CFG.lock || {}
-  },
+  }
 
   /** 机器人设置 */
   get defaultCfg() {
     return defaultCfg || {}
-  },
+  }
 
   /** 是否合并机器人主人和插件主人 */
   get isDefaultMaster() {
     return this.config.isDefaultMaster ?? true
-  },
+  }
 
   /** 是否仅主人可操作 */
   get onlyMaster() {
     return this.config.onlyMaster ?? false
-  },
+  }
 
   /** 开发模式使用，热更新apps等数据 */
   get isWatch() {
     return this.config.isWatch ?? false
-  },
+  }
 
   /** 插件优先级 */
   get priority() {
     return this.config.priority ?? 251
-  },
+  }
 
   /** 选择服务 */
   get server() {
     return this.config.server ?? 1
-  },
+  }
 
   /** 设置的Bot名称 */
   get BotName() {
     return this.config.BotName || Bot.nickname
-  },
+  }
 
   /** 过码剩余次数提醒预警值 */
   get loveMysNotice() {
     return this.config.loveMysNotice ?? 50
-  },
+  }
 
   /** UC插件部分功能不指定年份时默认补全年份 */
   get defaultYear() {
     return this.config.defaultYear ?? 2023
-  },
+  }
 
   /** 用户无权限回复 */
   get noPerReply() {
     return this.config.noPerReply ?? '无权限或权限不足'
-  },
+  }
 
   /** Bot无权限回复 */
   get noPowReply() {
     return this.config.noPowReply ?? '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
-  },
+  }
 
   /** api连接失败回复 */
   get fetchErrReply() {
     return this.config.fetchErrReply ?? '连接失败，请稍后重试'
-  },
+  }
 
   /** 指定群主人对象 */
   get Master() {
     return this.permission.Master ?? {}
-  },
+  }
 
   /** 全局主人列表 */
   get GlobalMaster() {
     if (!this.isDefaultMaster) return this.permission.GlobalMaster
     return _.uniq(this.defaultCfg.masterQQ.concat(this.permission.GlobalMaster)).map(Number)
-  },
+  }
 
   /** 指定群管理对象 */
   get Admin() {
     return this.permission.Admin ?? {}
-  },
+  }
 
   /** 全局管理列表 */
   get GlobalAdmin() {
     return this.permission.GlobalAdmin ?? []
-  },
+  }
 
   /** 黑名单对象 */
   get BlackQQ() {
     return this.permission.BlackQQ ?? {}
-  },
+  }
 
   /** 黑名单列表 */
   get GlobalBlackQQ() {
     return this.permission.GlobalBlackQQ ?? []
-  },
+  }
 
   /** 是否输出日志 */
   get log() {
     return this.config.log ?? true
-  },
+  }
 
   /** 是否输出debug日志 */
   get debugLog() {
     return this.config.debugLog ?? false
-  },
+  }
 
   /** 机器人qq */
   get qq() {
     return Number(Bot.uin ?? this.defaultCfg.qq)
-  },
+  }
 
   /** 签名自动重启设置 */
   get qsignRestart() {
     return this.config.qsignRestart ?? {}
-  },
+  }
 
   /** 直播推送设置 */
   get BlivePush() {
     return this.config.BlivePush ?? {}
-  },
+  }
 
   /** 放大图片设置 */
   get bigjpg() {
     return this.config.bigjpg ?? {}
-  },
+  }
 
   /** 开关Bot设置 */
   get switchBot() {
     return this.config.switchBot ?? {}
-  },
+  }
 
   /** 戳一戳设置 */
   get chuoyichuo() {
     return this.config.chuoyichuo ?? {}
-  },
+  }
 
   /** 随机老婆设置 */
   get randomWife() {
     return this.config.randomWife ?? {}
-  },
+  }
 
   /** 随机群友设置 */
   get randomMember() {
     return this.config.randomMember ?? {}
-  },
+  }
 
   /** 群撤回设置 */
   get recall() {
     return this.GAconfig.recall ?? {}
-  },
+  }
 
   /** 群禁言设置 */
   get mute() {
     return this.GAconfig.mute ?? {}
-  },
+  }
 
   /** 群踢人设置 */
   get kick() {
@@ -390,4 +389,4 @@ const UCPr = {
 
 }
 
-export default UCPr
+export default new UCPr(Path.Plugin_Name)

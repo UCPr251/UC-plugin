@@ -51,11 +51,11 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 - **群设置**：只在对应群内生效的UC设置
 
-  > 在群内发送 **#UC设置** 指令，查看的即是当前群设置
+  > 在群内发送 **#UC设置** 和 **#UC群管设置** 指令，查看的都是当前群设置
 
 - **全局设置**：在全局范围内生效的UC设置。当某个群没有进行单独的群设置时，会以全局设置为准；反之会忽略全局设置，以群设置为准
 
-  > 发送 **#UC全局设置** 或私聊发送 **#UC设置** 查看的都是全局设置
+  > 发送 **#UC全局设置** 和 **#UC全局群管设置** 或**私聊**发送 **#UC设置** 和 **#UC群管设置** 查看的都是全局设置
 
 注意：部分设置仅以全局设置为准，如底层基础设置、签名设置等
 
@@ -95,15 +95,15 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 <details>
 <summary>PS</summary>
 
-~~给大家介绍一下，这是我老婆：~~:innocent:
+~~给大家介绍一下，这是我老婆：~~ :innocent:
 
 <p align="center">
-  <a href="https://www.bilibili.com/read/cv13428981?spm_id_from=333.999.0.0">
+  <a href="https://www.bilibili.com/read/cv13428981">
     <img width="400" src="./resources/img/xiubi2.jpg" title="她真好看">
   </a>
 </p>
 
-~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371?spm_id_from=333.337.0.0 "游戏人生")第 2 季啥时候才能出啊~~
+~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371 "游戏人生")第 2 季啥时候才能出啊~~
 
 </details>
 
