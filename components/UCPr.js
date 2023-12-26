@@ -138,7 +138,7 @@ class UCPr {
       watcher.on('unlink', (yamlPath) => {
         const { name, base } = Path.parse(yamlPath)
         delete groupCFG[name]
-        this.temp.watcher[yamlPath].close()
+        this.watcher[yamlPath].close()
         log.whiteblod(`删除群设置文件${base}`)
       })
     } else {
