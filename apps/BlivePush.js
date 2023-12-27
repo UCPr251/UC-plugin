@@ -475,9 +475,7 @@ Data.loadTask({
   fnc: function () {
     const pushGroupData = file.JSONreader(Path.BLPGroupjson)
     const pushGroups = Object.keys(pushGroupData)
-    log.red(pushGroups)
     const groupList = Array.from(Bot.gl.keys())
-    log.red(groupList)
     pushGroups.forEach(groupId => {
       if (!Check.str(groupList, groupId)) {
         delete pushGroupData[groupId]

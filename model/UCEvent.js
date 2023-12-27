@@ -263,7 +263,7 @@ async function BotPluginsDeal(e) {
   if (!loader.checkBlack(e)) return false
   const priority = []
   if (!e.runtime) await Runtime.init(e)
-  if (e.msg === undefined && _.some(e.message, v => v.type === 'text')) loader.dealMsg(e)
+  if (e.msg === undefined && _.some(e.message, { type: 'text' })) loader.dealMsg(e)
   if (e.msg) {
     const reg = new RegExp(`^\\s*(${UCPr.BotName})+`, 'i')
     e.msg = e.msg.replace(reg, '')

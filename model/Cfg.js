@@ -1,4 +1,4 @@
-import UCPr, { CFG } from '../components/UCPr.js'
+import { UCPr } from '../components/index.js'
 import { judgeProperty } from '../components/Admin.js'
 import Base from './Base.js'
 import _ from 'lodash'
@@ -24,16 +24,16 @@ export default class Cfg extends Base {
 
   /** 获取所有设置组的关键词|字符串 */
   static groupReg(type) {
-    return Object.keys(CFG.cfgData[type]).filter(v => v).join('|')
+    return Object.keys(UCPr.CFG.cfgData[type]).filter(v => v).join('|')
   }
 
   /** 获取某一组的各个设置的关键词正则 */
   static settingReg(type, group) {
-    return new RegExp(Object.keys(CFG.cfgData[type][group].cfg).filter(v => v).join('|'), 'i')
+    return new RegExp(Object.keys(UCPr.CFG.cfgData[type][group].cfg).filter(v => v).join('|'), 'i')
   }
 
   getData(type, groupId, isGlobal) {
-    const data = _.cloneDeep(CFG.cfgData[type])
+    const data = _.cloneDeep(UCPr.CFG.cfgData[type])
     const cfg = (isGlobal ? UCPr.defaultCFG : UCPr.groupCFG(groupId))[type]
     // 挂载当前config数据
     for (const k in data) {

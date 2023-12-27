@@ -1,4 +1,13 @@
+## 12-27
+
+**ver 2.3.2**
+
+- 调整[UCPr](./components/UCPr.js)结构
+- 若干调整
+
 ## 12-26
+
+**ver 2.3.1**
 
 - fix`#UC群管设置`基础设置数据错误
 - 调整[UCPr](./components/UCPr.js)结构

@@ -4,7 +4,7 @@ import UCfetch from '../system/serve.js'
 import _ from 'lodash'
 
 /** 各配置数据 */
-export const CFG = {
+const CFG = {
   /** config.yaml */
   config: {},
   /** GAconfig.yaml */
@@ -66,9 +66,6 @@ function getNewConfig(mode) {
   getNewGuobaConfig()
 }
 
-/** 群配置 */
-const groupCFG = {}
-
 /** 系统数据 */
 class UCPr {
   constructor(name) {
@@ -78,6 +75,8 @@ class UCPr {
     this.Plugin_Name = name
     /** 数据状态 */
     this.status = false
+    /** 各配置数据 */
+    this.CFG = CFG
     /** 事件监听器 */
     this.event = {
       'message.group': [],
@@ -89,6 +88,8 @@ class UCPr {
     this.watcher = {}
     /** cron定时任务[ { cron, fnc, name, job } ] */
     this.task = []
+    /** 群配置 */
+    this.group_CFG = {}
     /** 签名崩溃检测计时器 */
     this.intervalId = null
   }
@@ -101,8 +102,8 @@ class UCPr {
     Data.watch(Path.permissionyaml, () => getNewConfig(3))
     Data.watch(Path.lockyaml, () => getNewConfig(4))
     const yamls = file.readdirSync(Path.groupCfg, { type: '.yaml' })
-    const config = _.cloneDeep(CFG.config)
-    const { GAconfig } = CFG
+    const config = _.cloneDeep(this.CFG.config)
+    const { GAconfig } = this.CFG
     for (const key in config) {
       if (!_.isPlainObject(config[key])) {
         delete config[key]
@@ -112,9 +113,9 @@ class UCPr {
       const yamlPath = Path.get('groupCfg', yaml)
       const groupCFGData = file.YAMLreader(yamlPath)
       const name = Path.parse(yaml).name
-      groupCFG[name] = groupCFGData
+      this.group_CFG[name] = groupCFGData
       Data.watch(yamlPath, () => {
-        groupCFG[name] = file.YAMLreader(yamlPath)
+        this.group_CFG[name] = file.YAMLreader(yamlPath)
         log.whiteblod(`修改群设置文件${yaml}`)
       })
       // 合并筛选新增配置
@@ -127,17 +128,17 @@ class UCPr {
     }
     const watcher = await Data.watchDir(Path.groupCfg, (yamlPath) => {
       const { name, base } = Path.parse(yamlPath)
-      groupCFG[name] = file.YAMLreader(yamlPath)
+      this.group_CFG[name] = file.YAMLreader(yamlPath)
       log.whiteblod(`新增群设置文件${base}`)
       Data.watch(yamlPath, () => {
-        groupCFG[name] = file.YAMLreader(yamlPath)
+        this.group_CFG[name] = file.YAMLreader(yamlPath)
         log.whiteblod(`修改群设置文件${base}`)
       })
     })
     if (!_.isBoolean(watcher)) {
       watcher.on('unlink', (yamlPath) => {
         const { name, base } = Path.parse(yamlPath)
-        delete groupCFG[name]
+        delete this.group_CFG[name]
         this.watcher[yamlPath].close()
         log.whiteblod(`删除群设置文件${base}`)
       })
@@ -181,8 +182,8 @@ class UCPr {
 
   /** 群配置 */
   groupCFG(groupId) {
-    if (!groupCFG[groupId]) return this.defaultCFG
-    return _.merge({}, groupCFG[groupId], CFG.lock)
+    if (!this.group_CFG[groupId]) return this.defaultCFG
+    return _.merge({}, this.group_CFG[groupId], this.CFG.lock)
   }
 
   /** package.json */
@@ -207,28 +208,28 @@ class UCPr {
 
   /** 默认所有全局配置 */
   get defaultCFG() {
-    const { config, GAconfig } = CFG
+    const { config, GAconfig } = this.CFG
     return { config, GAconfig }
   }
 
   /** config.yaml */
   get config() {
-    return CFG.config || {}
+    return this.CFG.config || {}
   }
 
   /** GAconfig.yaml */
   get GAconfig() {
-    return CFG.GAconfig || {}
+    return this.CFG.GAconfig || {}
   }
 
   /** permission.yaml */
   get permission() {
-    return CFG.permission || {}
+    return this.CFG.permission || {}
   }
 
   /** lock.yaml */
   get lock() {
-    return CFG.lock || {}
+    return this.CFG.lock || {}
   }
 
   /** 机器人设置 */

@@ -27,10 +27,10 @@ export default class UCPlugin extends plugin {
     this.sender = this.UC.sender
     /** 用户id */
     this.userId = this.UC.userId
-    /** 群号 */
-    this.groupId = this.UC.groupId
     /** 是否群聊 */
     this.isGroup = this.UC.isGroup
+    /** 群号 */
+    this.groupId = this.UC.groupId
     /** 群所有配置config, GAconfig, permission，无则全局 */
     this.groupCFG = UCPr.groupCFG(this.groupId)
     /** 群config配置，无则全局 */
@@ -220,7 +220,7 @@ export default class UCPlugin extends plugin {
 
   /** 获取序号指定数据 */
   _getNum() {
-    if (this.isCancel()) return false
+    if (this.isCancel('_getNum')) return false
     const data = this.getContext()._getNum.data
     const { list, fnc } = data
     let numMatch = this.msg.match(/\d+/g)

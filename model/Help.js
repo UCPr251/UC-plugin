@@ -1,4 +1,3 @@
-import { CFG } from '../components/UCPr.js'
 import { Data, UCPr, file, log } from '../components/index.js'
 import Base from './Base.js'
 import _ from 'lodash'
@@ -20,7 +19,7 @@ export default class Help extends Base {
 
   getData(groupId) {
     const groupCFG = UCPr.groupCFG(groupId)
-    const data = _.cloneDeep(CFG.helpData.filter(group => {
+    const data = _.cloneDeep(UCPr.CFG.helpData.filter(group => {
       const { isOpen } = group
       if (isOpen && !isOpen(groupCFG)) return false
       // 筛选组

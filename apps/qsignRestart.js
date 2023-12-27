@@ -66,7 +66,6 @@ export default class UCQsignRestart extends UCPlugin {
       e,
       name: 'UC-qsignRestart',
       dsc: '监听qsign端口和消息回复报错自动重启签名',
-      Cfg: 'config.qsignRestart',
       rule: [
         {
           reg: /^#?(UC)?(开启|关闭)签名自动重启$/i,
@@ -87,15 +86,15 @@ export default class UCQsignRestart extends UCPlugin {
       ]
     })
     this.setFnc = 'verify'
+    this.Cfg = UCPr.qsignRestart
   }
 
   init() {
     if (process.platform !== 'win32') return
-    const Cfg = UCPr.qsignRestart
-    if (Cfg.isAutoOpen) {
-      if (Check.file(Path.join(Cfg.qsign || Path.qsign, Cfg.qsingRunner))) {
-        if (Cfg.switch1) UCPr.intervalId = setInterval(checkQsignPort, Cfg.sleep * 1000)
-        if (Cfg.switch2) {
+    if (this.Cfg.isAutoOpen) {
+      if (Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {
+        if (this.Cfg.switch1) UCPr.intervalId = setInterval(checkQsignPort, this.Cfg.sleep * 1000)
+        if (this.Cfg.switch2) {
           replaceReply()
           isCheckMsg = true
         }

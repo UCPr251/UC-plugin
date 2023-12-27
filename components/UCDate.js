@@ -8,7 +8,7 @@ daysMap.set('日', 1)
 daysMap.set('d', 1)
 daysMap.set('周', 7)
 daysMap.set('月', 30)
-daysMap.set('年', 360)
+daysMap.set('年', 365)
 
 const secondsMap = new Map()
 secondsMap.set('秒', 1)
@@ -101,6 +101,16 @@ const UCDate = {
     return this.NowTime.split(' ')
   },
 
+  /** 今日日期，2023-12-27 */
+  get today() {
+    return this.date_time[0]
+  },
+
+  /** 昨日日期，2023-12-26 */
+  get yesterday() {
+    return this.getdate_time(-1)[0]
+  },
+
   /** 当前[日期, 时间]，精确到毫秒，[年-月-日, 时:分:秒.毫秒] */
   get date_timeMS() {
     return this.NowTimeMS.split(' ')
@@ -136,12 +146,19 @@ const UCDate = {
       H: diffDuration.hours(),
       m: diffDuration.minutes(),
       s: diffDuration.seconds(),
+      // toStr: function () {
+      //   const { Y, M, D, H, m, s } = this
+      //   const str = `${Y}年${M}个月${D}天${H}小时${m}分钟${s}秒`
+      //   const index = str.search(/[1-9]/)
+      //   if (index === -1) return 0
+      //   const lastIndex = str.search(/\D0(?!.*[1-9])/)
+      //   return str.slice(index, lastIndex === -1 ? undefined : lastIndex + 1)
+      // }
       toStr: function () {
         const { Y, M, D, H, m, s } = this
-        const str = `${Y}年${M}个月${D}天${H}小时${m}分钟${s}秒`
-        const index = str.search(/[1-9]/)
-        if (index === -1) return 0
-        return str.slice(index)
+        const parts = [Y + '年', M + '个月', D + '天', H + '小时', m + '分钟', s + '秒']
+        const result = parts.filter(part => !part.startsWith('0')).join('')
+        return result || '0'
       }
     }
   },
@@ -180,8 +197,9 @@ const UCDate = {
 
   /**
    * 汉语数字转阿拉伯数字
+   * - 由
    * @author 椰羊
-   * 改造而成
+   * - 改造而成
    */
   transformChineseNum(s_123) {
     s_123 = s_123.trim()
@@ -312,7 +330,7 @@ const UCDate = {
       days = this.daysCount(count, unit)
     }
     if (isHalf) days /= 2
-    return Number(days)
+    return parseInt(days)
   },
 
   /** 简单汉字时长转秒数 */
@@ -336,7 +354,7 @@ const UCDate = {
       seconds = time * 60
     }
     if (isHalf) seconds /= 2
-    return Number(seconds)
+    return parseInt(seconds)
   }
 
 }

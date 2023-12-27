@@ -86,7 +86,7 @@ const file = {
 
   unlink(_path) {
     return fs.unlink(_path, (err) => {
-      if (err) log.error(`删除文件${_path}错误`, err)
+      if (err) throw err
     })
   },
 

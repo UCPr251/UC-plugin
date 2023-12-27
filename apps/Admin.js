@@ -1,7 +1,6 @@
 import { Check, Data, common, Admin, UCPr, Path, log } from '../components/index.js'
 import { UCPlugin, Help, Cfg } from '../model/index.js'
 import { judgeProperty } from '../components/Admin.js'
-import { CFG } from '../components/UCPr.js'
 import _ from 'lodash'
 
 export default class UCAdmin extends UCPlugin {
@@ -235,7 +234,7 @@ export default class UCAdmin extends UCPlugin {
     }
     // 修改全局设置或群设置
     if (group || set) {
-      const setData = CFG.cfgData[type][group]?.cfg?.[set]
+      const setData = UCPr.CFG.cfgData[type][group]?.cfg?.[set]
       log.debug(setData)
       if (setData) {
         // 获取新设置值
@@ -293,7 +292,7 @@ export default class UCAdmin extends UCPlugin {
 
   async lockConfig(e) {
     if (!this.verifyLevel(4)) return false
-    const { lock } = CFG
+    const { lock } = UCPr.CFG
     const lockPath = e.msg.match(/设置(.*)/)?.[1]
     if (!lockPath) {
       return e.reply('已锁定设置：\n\n' + Data.empty(Data.makeArrStr(getAllKeyPaths(lock))) + '\n\n#UC取消锁定设置 + 键路径可解除锁定')

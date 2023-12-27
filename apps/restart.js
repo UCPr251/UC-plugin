@@ -1,4 +1,4 @@
-import { Path, Check, Data, UCDate, common, log } from '../components/index.js'
+import { Path, Check, Data, UCDate, common, log, UCPr } from '../components/index.js'
 import { UCPlugin } from '../model/index.js'
 
 export default class UCRestart extends UCPlugin {
@@ -62,6 +62,9 @@ export default class UCRestart extends UCPlugin {
       type: this.groupId ? 'Group' : 'Private',
       loc: this.groupId ?? this.userId,
       isPM2
+    }
+    if (UCPr.qsignRestart.windowsHide) {
+      Data.killPort(UCPr.qsignRestart.port)
     }
     await Data.redisSet(this.redisData, data, 251)
     const delayTime = 3
