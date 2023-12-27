@@ -5,6 +5,8 @@
 - 调整[UCPr](./components/UCPr.js)结构
 - 若干调整
 - 优化[log](./components/log.js)错误日志获取函数栈函数
+- 修复非开发模式下不载入Event插件[Lockdown](./apps/Event/Lockdown.js)的问题
+- 优化Event插件上下文hook处理
 
 ## 12-26
 

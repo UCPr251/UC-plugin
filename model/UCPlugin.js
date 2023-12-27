@@ -226,13 +226,17 @@ export default class UCPlugin extends plugin {
     let numMatch = this.msg.match(/\d+/g)
     if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
       const [start, end] = this.msg.match(/\d+/g).map(Number)
-      if (start > end) return this.reply('???')
+      if (start > end) {
+        this.reply('???')
+        return false
+      }
       numMatch = _.range(start, Math.min(end, list.length) + 1)
     } else {
       numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
     }
     if (_.isEmpty(numMatch)) {
       this.reply('请输入有效的序号或取消操作')
+      return false
     } else {
       const arr = numMatch.map(num => list[num - 1])
       this.finish('_getNum')

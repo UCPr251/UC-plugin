@@ -196,11 +196,11 @@ async function UCdealMsg(type, e) {
       log.white(`执行hook方法：${event.name} ${userHook.type}`)
       const app = new event.class(e)
       try {
-        await app[userHook.type](e)
+        const result = await app[userHook.type](e)
+        if (result !== false) Data.remove(hook, userHook)
       } catch (err) {
         log.error(`执行${event.name} 上下文${userHook.type}错误`, err)
       }
-      Data.remove(hook, userHook)
       return true
     }
     if (event.accept) {
@@ -239,6 +239,8 @@ async function UCdealMsg(type, e) {
 
 export async function EventLoader() {
   if (!UCPr.isWatch) {
+    const _files = file.readdirSync(Path.Event, { type: '.js' })
+    _files.forEach(file => import(`file:///${Path.Event}/${file}`).catch(err => log.error(err)))
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
