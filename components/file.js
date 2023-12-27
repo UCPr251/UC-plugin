@@ -6,8 +6,8 @@ import _ from 'lodash'
 /** 文件读写 */
 const file = {
   /** 读取yaml */
-  YAMLreader(_path) {
-    if (!this.existsSync(_path)) return null
+  YAMLreader(_path, defaultValue = null) {
+    if (!this.existsSync(_path)) return defaultValue
     return yaml.parse(fs.readFileSync(_path, 'utf8'))
   },
 
@@ -17,8 +17,8 @@ const file = {
   },
 
   /** 读取json */
-  JSONreader(_path) {
-    if (!this.existsSync(_path)) return null
+  JSONreader(_path, defaultValue = null) {
+    if (!this.existsSync(_path)) return defaultValue
     return JSON.parse(fs.readFileSync(_path, 'utf8'))
   },
 
@@ -72,6 +72,11 @@ const file = {
   /** 写入数据 */
   writeFileSync(_path, data) {
     return fs.writeFileSync(_path, data)
+  },
+
+  /** 移动文件 */
+  renameSync(oriFilePath, targetFilePath) {
+    return fs.renameSync(oriFilePath, targetFilePath)
   },
 
   /** 创建文件夹 */
@@ -131,8 +136,8 @@ const file = {
   },
 
   /** 复制文件 */
-  copyFileSync(orlFilePath, targetFilPath) {
-    return fs.copyFileSync(orlFilePath, targetFilPath)
+  copyFileSync(orlFilePath, targetFilePath) {
+    return fs.copyFileSync(orlFilePath, targetFilePath)
   },
 
   /** 符号链接信息 */

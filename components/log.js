@@ -3,17 +3,17 @@ import chalk from 'chalk'
 
 function getFncChain(error) {
   if (!error?.stack) return '[Empty Error Stack]'
-  const callerName = error.stack.split('\n').slice(2, -2)
+  const callerName = error.stack.split('\n').slice(1, -2)
   const fncChain = callerName.map(line => {
     const sp = line.trim().split(' ')
     const fncName = sp[1]?.split('.')?.at(-1)
     const name = sp[2]?.split('/')?.at(-1)
     if (!fncName || !name) return ''
-    const extIndex = name.match(/\.js/)?.index
-    if (!extIndex) return ''
+    const extIndex = name.search(/\.js/)
+    if (extIndex === -1) return ''
     const fncFile = name.slice(0, extIndex)
-    const fncLine = name.slice(extIndex + 2).match(/\d+/)[0]
-    return `[${fncFile}.${fncName}:${fncLine}]`
+    const fncLine = name.slice(extIndex + 2).match(/:\d+/)[0]
+    return `[${fncFile}.${fncName}${fncLine}]`
   })
   return fncChain.join('←')
 }
@@ -52,7 +52,7 @@ const log = {
     log = common.toString(log, '\n')
     logger.error(chalk.red(prefix + '[error]' + log))
     Data.addLog(Path.errorLogjson, log)
-    return false
+    return log
   },
 
   purple(...log) {

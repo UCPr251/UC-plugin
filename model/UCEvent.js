@@ -224,8 +224,8 @@ async function UCdealMsg(type, e) {
         log.white(logInfo)
         const app = new event.class(e)
         const result = await app[rule.fnc](e)?.catch?.(err => {
-          log.error(`执行${logInfo}错误`, err)
-          e.reply?.(logInfo + ' 执行错误，请查看错误日志')
+          const errInfo = log.error(`执行${logInfo}错误`, err)
+          e.reply?.(logInfo + ' 执行错误：\n' + errInfo)
         })
         if (result !== false) {
           log.white(`${logInfo} 处理完成 ${Date.now() - start}ms`)

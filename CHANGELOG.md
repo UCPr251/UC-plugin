@@ -4,6 +4,7 @@
 
 - 调整[UCPr](./components/UCPr.js)结构
 - 若干调整
+- 优化[log](./components/log.js)错误日志获取函数栈函数
 
 ## 12-26
 
