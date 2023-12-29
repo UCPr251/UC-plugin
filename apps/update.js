@@ -93,6 +93,7 @@ export default class UCUpdate extends UCPlugin {
         await this.runUpdate(plu)
       }
     }
+    await Update_All.runUpdate()
     await Update_All.UCupdateAll()
     await common.sleep(1)
     const command = this.msg.replace(/UC/i, '')
