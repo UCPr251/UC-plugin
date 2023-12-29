@@ -21,7 +21,8 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
   }
   if (type === 'select') {
     def = input.join('/')
-    input = (str) => input[_.findKey(input, (value) => value == str)]
+    const ret = input
+    input = (str) => _.find(ret, v => v == str)
   }
   return _.merge({
     path,
