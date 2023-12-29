@@ -7,7 +7,7 @@
 
 - [入群欢迎、退群通知](./apps/Event/groupAdmin/WM.js) `#UC修改入群欢迎` `#UC修改退群通知`
 - [前台重启](./apps/restart.js) `#UC重启`
-- [全部更新不自动重启](./apps/update.js) `#UC全部更新`
+- [更新不自动重启](./apps/update.js) `#UC更新喵喵` `#UC全部更新`
 
 ## 2.1
 

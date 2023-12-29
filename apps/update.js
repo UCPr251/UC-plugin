@@ -84,7 +84,7 @@ export default class UCUpdate extends UCPlugin {
     Update_All.reply = this.reply
     const oriDependencies = UCPr.package.dependencies
     Update_All.UCupdateAll = async function () {
-      const dirs = file.readdirSync(Path.plugins, { removes: ['chatgpt-plugin', 'ji-plugin'] })
+      const dirs = file.readdirSync(Path.plugins, { removes: ['chatgpt-plugin', 'ji-plugin', 'xiuxian@2.0.0', 'xiuxian-home-plugin', 'xiuxian-association-plugin'] })
       await this.runUpdate()
       for (let plu of dirs) {
         plu = this.getPlugin(plu)
