@@ -75,7 +75,7 @@ class UCLockdown extends UCEvent {
       return this[fnc](toOperate)
     }
     const operate = isLock ? '锁定' : '解锁'
-    const info = Data.makeArrStr(filterPlugins, { chunkSize: 50, length: 1000, property: 'name', property2: 'key' })
+    const info = Data.makeArrStr(filterPlugins, { chunkSize: 50, length: 2000, property: 'name', property2: 'key' })
     const title = `请选择要${operate}的功能`
     const replyMsg = await common.makeForwardMsg(e, [title, `请选择要${operate}的功能的序号\n间隔可一次${operate}多个\n也可使用1-10可一次${operate}多个`, ...info], title)
     e.data = {

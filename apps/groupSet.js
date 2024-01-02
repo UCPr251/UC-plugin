@@ -148,7 +148,7 @@ export default class UCGroupSet extends UCPlugin {
       return this[fnc](toOperate, { path, disabled, groupId })
     }
     const operate = isDisable ? '禁用' : '解禁'
-    const info = Data.makeArrStr(filterPlugins, { chunkSize: 50, length: 1000, property: 'name', property2: 'key' })
+    const info = Data.makeArrStr(filterPlugins, { chunkSize: 50, length: 2000, property: 'name', property2: 'key' })
     const title = `请选择要${operate}的功能`
     const msg = [title]
     if (this.GM) msg.push(noticeForGM)
@@ -171,7 +171,7 @@ export default class UCGroupSet extends UCPlugin {
     const { isGlobal, groupId } = locData
     const disabled = this.getDisabled(isGlobal, groupId)
     const infoData = _.sortBy(disabled.map(name => pluginsData.find(obj => obj.name === name)).filter(v => v), 'key')
-    const infoMsg = Data.makeArrStr(infoData, { chunkSize: 50, length: 1000, property: 'name', property2: 'key' })
+    const infoMsg = Data.makeArrStr(infoData, { chunkSize: 50, length: 2000, property: 'name', property2: 'key' })
     const title = `${isGlobal ? '默认' : `群${groupId}`}禁用功能`
     const replyMsg = await common.makeForwardMsg(e, [title, ...infoMsg, '如需解禁功能可使用#解禁功能'])
     return e.reply(replyMsg)
@@ -181,7 +181,7 @@ export default class UCGroupSet extends UCPlugin {
     const { path, disabled, groupId } = data
     _.set(Cfg, path, _.sortBy(disabled.concat(toDisable)))
     this.save()
-    this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能禁用：\n${Data.makeArrStr(toDisable, { length: 1000 })}`)
+    this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能禁用：\n${Data.makeArrStr(toDisable, { length: 2000 })}`)
   }
 
   async _cancelDisable(toCancelDisable, data) {
@@ -192,7 +192,7 @@ export default class UCGroupSet extends UCPlugin {
       _.unset(Cfg, groupId)
     }
     this.save()
-    this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能解禁：\n${Data.makeArrStr(toCancelDisable, { length: 1000 })}`)
+    this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能解禁：\n${Data.makeArrStr(toCancelDisable, { length: 2000 })}`)
   }
 
 }
