@@ -220,7 +220,7 @@ export default class UCPlugin extends plugin {
 
   /** 获取序号指定数据 */
   _getNum() {
-    if (this.isCancel('_getNum')) return false
+    if (this.isCancel('_getNum')) return
     const data = this.getContext()._getNum.data
     const { list, fnc } = data
     let numMatch = this.msg.match(/\d+/g)

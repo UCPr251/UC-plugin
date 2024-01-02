@@ -1,4 +1,4 @@
-import { UCPr, file, Path, Check, Data, common } from '../components/index.js'
+import { UCPr, file, Path, Check, common } from '../components/index.js'
 import Runtime from '../../../lib/plugins/runtime.js'
 import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from './index.js'
@@ -120,7 +120,7 @@ export default class UCEvent extends UCPlugin {
     return msgRes
   }
 
-  /** 创建上下文 */
+  /** 创建上下文，false再处理 */
   setFunction(type = this.setFnc, time = UCPr.GAconfig.overTime) {
     const key = this.conKey()
     if (_.some(hook, { key })) return
@@ -197,7 +197,7 @@ async function UCdealMsg(type, e) {
       const app = new event.class(e)
       try {
         const result = await app[userHook.type](e)
-        if (result !== false) Data.remove(hook, userHook)
+        if (result !== false) _.remove(hook, userHook)
       } catch (err) {
         log.error(`执行${event.name} 上下文${userHook.type}错误`, err)
       }
