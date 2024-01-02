@@ -67,7 +67,7 @@ export default class UCRestart extends UCPlugin {
       Data.killPort(UCPr.qsignRestart.port)
     }
     await Data.redisSet(this.redisData, data, 251)
-    const delayTime = 3
+    const delayTime = 6
     Data.exec(`start restart.bat ${delayTime}`, Path.UC)
     setTimeout(() => process.exit(), delayTime * (1000 - 251))
   }
