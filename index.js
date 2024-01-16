@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { Path, Data, log, UCPr, file } from './components/index.js'
-import { EventLoader } from './model/UCEvent.js'
+import { EventLoader } from './models/UCEvent.js'
 
 /** 日志 */
 global.log = log

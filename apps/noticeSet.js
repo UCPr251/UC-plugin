@@ -1,5 +1,5 @@
 import { Path, Data, file, log } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 
 export default class UCNoticeSet extends UCPlugin {
   constructor(e) {

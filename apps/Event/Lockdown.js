@@ -1,5 +1,5 @@
 import { Path, Check, Data, common, file, UCPr } from '../../components/index.js'
-import { UCEvent } from '../../model/index.js'
+import { UCEvent } from '../../models/index.js'
 import loader from '../../../../lib/plugins/loader.js'
 import _ from 'lodash'
 

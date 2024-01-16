@@ -1,5 +1,5 @@
 import { Data, Path } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 
 export default class UCRun extends UCPlugin {
   constructor(e) {

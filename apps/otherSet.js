@@ -1,6 +1,6 @@
 /* eslint-disable brace-style */
 import { Path, Check, Data, common, file, log } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import _ from 'lodash'
 
 /** 全局变量Cfg */

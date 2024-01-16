@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Path, Check, file, UCPr, log, Data, common } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import loader from '../../../lib/plugins/loader.js'
 
 let JSs = ['reloadJSs.js'], watcher = {}, ing = false, timer

@@ -1,6 +1,6 @@
 import { Path, Data, file, common, UCPr } from '../components/index.js'
 import { update } from '../../other/update.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import _ from 'lodash'
 
 export default class UCUpdate extends UCPlugin {

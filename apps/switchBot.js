@@ -1,5 +1,5 @@
 import { Path, file, UCPr, Data, Check } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import _ from 'lodash'
 
 function init() {

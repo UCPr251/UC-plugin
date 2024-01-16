@@ -1,5 +1,5 @@
 import { Check, Data, common, log, UCPr, Path, file } from '../../../components/index.js'
-import { UCEvent } from '../../../model/index.js'
+import { UCEvent } from '../../../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 

@@ -1,6 +1,6 @@
 import { Path, Data, Check, common, UCPr } from '../components/index.js'
 import { loadJs, unloadJs } from './reloadJSs.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 
 export default class UCAddJS extends UCPlugin {
   constructor(e) {

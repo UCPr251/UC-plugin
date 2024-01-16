@@ -1,5 +1,5 @@
 import { Check, Data, common, Admin, UCPr, Path, log } from '../components/index.js'
-import { UCPlugin, Help, Cfg } from '../model/index.js'
+import { UCPlugin, Help, Cfg } from '../models/index.js'
 import { judgeProperty } from '../components/Admin.js'
 import _ from 'lodash'
 

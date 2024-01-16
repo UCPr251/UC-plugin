@@ -1,5 +1,5 @@
 import { common, UCDate, UCPr } from '../../../components/index.js'
-import { UCEvent } from '../../../model/index.js'
+import { UCEvent } from '../../../models/index.js'
 
 class UCMute extends UCEvent {
   constructor(e) {

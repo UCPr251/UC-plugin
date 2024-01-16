@@ -1,5 +1,5 @@
 import { Path, Check, Data, UCDate, common, log, UCPr } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 
 export default class UCRestart extends UCPlugin {
   constructor(e) {

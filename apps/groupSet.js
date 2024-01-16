@@ -1,5 +1,5 @@
 import { Path, Data, common, file } from '../components/index.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import _ from 'lodash'
 

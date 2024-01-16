@@ -1,6 +1,6 @@
 import { Path, Check, Data, log, UCPr, UCDate, common, file } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 import { segment } from 'icqq'
 import lodash from 'lodash'
 

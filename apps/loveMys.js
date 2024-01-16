@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import { Path, Data, UCPr, Check, file, common } from '../components/index.js'
 import { update } from '../../other/update.js'
-import { UCPlugin } from '../model/index.js'
+import { UCPlugin } from '../models/index.js'
 
 const Plugin_Name = 'loveMys-plugin'
 const loveMys = Path.get('plugins', Plugin_Name)

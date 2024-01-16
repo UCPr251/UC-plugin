@@ -1,6 +1,6 @@
 /* eslint-disable no-labels */
 import { Check, Data, Path, UCDate, UCPr, common, file } from '../components/index.js'
-import { UCPlugin, Sqtj } from '../model/index.js'
+import { UCPlugin, Sqtj } from '../models/index.js'
 import moment from 'moment'
 import _ from 'lodash'
 
