@@ -86,7 +86,7 @@ export default class UCUpdate extends UCPlugin {
     const symbol = Symbol('[UC]updateAll')
     Update_All[symbol] = async function () {
       await this.runUpdate()
-      const dirs = file.readdirSync(Path.plugins, { removes: ['chatgpt-plugin', 'ji-plugin', 'xiuxian@2.0.0', 'xiuxian-home-plugin', 'xiuxian-association-plugin'] })
+      const dirs = file.readdirSync(Path.plugins, { removes: ['chatgpt-plugin', 'ji-plugin', 'xiuxian@2.0.0', 'qianyu-plugin', 'xiuxian-home-plugin', 'xiuxian-association-plugin'] })
       for (let plu of dirs) {
         plu = this.getPlugin(plu)
         if (plu === false) continue
