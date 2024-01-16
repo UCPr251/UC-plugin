@@ -29,6 +29,8 @@ fetchErrReply: 服务连接失败，请稍后重试
 qsignRestart:
   # 启动Bot后是否自动开启签名重启检测，开启此项后重启生效
   isAutoOpen: false
+  # 是否每日自动清理签名生成的日志文件
+  isAutoClearLog: false
   # 隐藏重启的签名的窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启
   windowsHide: false
   # 签名崩溃检测

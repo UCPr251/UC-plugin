@@ -70,8 +70,8 @@ function getNewConfig(mode) {
 class UCPr {
   constructor(name) {
     /** UCPr */
-    this.Author = 'UCPr'
-    /** Plugin_Name */
+    this.Author = Path.Author
+    /** UC-plugin */
     this.Plugin_Name = name
     /** 数据状态 */
     this.status = false

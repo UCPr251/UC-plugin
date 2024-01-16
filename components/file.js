@@ -113,7 +113,13 @@ const file = {
       const filesPath = filesArr.map(_file => path.join(_path, _file))
       return this.unlinkSync(filesPath)
     }
-    fs.unlinkSync(_path)
+    if (file.existsSync(_path)) {
+      try {
+        fs.unlinkSync(_path)
+      } catch (err) {
+        log.error(err)
+      }
+    }
     return path.parse(_path).name
   },
 

@@ -320,6 +320,7 @@ const UCDate = {
     date = date
       .replace('半', '1')
       .replace('个', '')
+      .trim()
     let days = date
     if (isNaN(date.slice(-1))) {
       const numStr = date.match(Numreg)?.[0]

@@ -4,6 +4,7 @@
 /.editorconfig
 /.eslintignore
 /.prettierignore
+/.VSCodeCounter
 /config
 /data
 /dev

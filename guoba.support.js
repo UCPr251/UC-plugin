@@ -55,6 +55,8 @@ if (file.existsSync(Path.get('apps', 'qsignRestart.js')) && process.platform ===
     },
     s('isAutoOpen', '签名自动重启', 'Switch',
       '开启后Bot启动时自动开启签名自动重启'),
+    s('isAutoClearLog', '自动清理日志', 'Switch',
+      '是否开启每日零点自动清理签名日志'),
     s('windowsHide', '隐藏签名窗口', 'Switch',
       '隐藏重启的签名的窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启'),
     s('switch1', '签名崩溃检测', 'Switch',

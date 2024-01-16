@@ -105,7 +105,16 @@ export default class UCEvent extends UCPlugin {
 
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {
     if (_.isEmpty(msg)) return
-    if (!this.e.reply) return log.warn('[UCEvent.reply]发送消息错误，e.reply不存在')
+    if (!this.e.reply) {
+      if (this.isGroup) {
+        this.e.reply = common.pickGroup(this.groupId)?.sendMsg
+      } else if (this.userId) {
+        this.e.reply = Bot.pickFriend(this.userId)?.sendMsg
+      }
+    }
+    if (!this.e.reply) {
+      return log.warn('[UCEvent.reply]发送消息错误，e.reply不存在')
+    }
     if (this.e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
     let { recallMsg = 0, at = false } = data
     if (at) {

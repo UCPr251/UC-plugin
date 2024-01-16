@@ -157,6 +157,11 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
         '自动开启签名重启',
         '启动Bot后是否自动开启签名重启检测'
       ),
+      自动清理日志: s(
+        'isAutoClearLog',
+        '自动清理签名日志',
+        '是否开启每日零点自动清理签名日志'
+      ),
       隐藏: s(
         'windowsHide',
         '隐藏签名窗口',

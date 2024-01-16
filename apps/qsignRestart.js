@@ -1,4 +1,4 @@
-import { Path, Check, Data, log, UCPr, UCDate, common } from '../components/index.js'
+import { Path, Check, Data, log, UCPr, UCDate, common, file } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import { UCPlugin } from '../model/index.js'
 import { segment } from 'icqq'
@@ -56,7 +56,16 @@ async function checkQsignPort() {
     addLog('签名关闭')
     setTimeout(() => (ing = false), 60000)
   } else {
-    log.whiteblod('签名运行ing')
+    log.white('签名运行ing')
+  }
+}
+
+function clearQsignLog() {
+  const files = file.readdirSync(UCPr.qsignRestart.qsign || Path.qsign, { type: ['.log', '.mdmp'] })
+  if (files.length) {
+    const deleted = file.unlinkSync(UCPr.qsignRestart.qsign || Path.qsign, ...files)
+    log.yellow(`成功清理${deleted.length}个日志文件`)
+    return deleted.length
   }
 }
 
@@ -76,12 +85,16 @@ export default class UCQsignRestart extends UCPlugin {
           fnc: 'restartLog'
         },
         {
-          reg: /^#?(UC)?重启签名$/i,
+          reg: /^#(UC)?重启签名$/i,
           fnc: 'restart'
         },
         {
           reg: /^#?(UC)?签名测试$/i,
           fnc: 'test'
+        },
+        {
+          reg: /^#?(UC)?(清理|删除)签名日志$/i,
+          fnc: 'clear'
         }
       ]
     })
@@ -100,11 +113,18 @@ export default class UCQsignRestart extends UCPlugin {
         }
       }
     }
+    if (this.Cfg.isAutoClearLog) {
+      Data.loadTask({
+        cron: '0 0 0 * * ?',
+        name: 'UC-qsignRestart',
+        fnc: clearQsignLog
+      })
+    }
   }
 
   async autoRestart(e) {
     if (!this.GM) return false
-    if (process.platform !== 'win32') return e.reply('本功能仅可在Windows系统中使用')
+    if (process.platform !== 'win32') return e.reply('此功能只能在Windows系统中使用')
     const isOpen = /开启/.test(e.msg)
     if (isOpen) {
       if (!Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {
@@ -159,6 +179,13 @@ export default class UCQsignRestart extends UCPlugin {
   async test() {
     if (!this.GM) return false
     checkMsg('签名api异常')
+  }
+
+  async clear() {
+    if (!this.GM) return false
+    const count = clearQsignLog()
+    if (!count) return this.reply('当前不存在可清理的日志文件')
+    return this.reply(`成功清理${count}个日志文件`)
   }
 }
 
