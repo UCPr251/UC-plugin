@@ -57,10 +57,10 @@ function makeMsg(info) {
   let msg = `${group_name}（${group_id}）`
   msg += `\n总人数：${member_count}`
   msg += `\n群主：${owner_id}`
-  msg += `\n是否管理员：${admin_flag ? '是' : '否'}`
+  msg += `\n管理员：${admin_flag ? '是' : '否'}`
   const { active_member_count, create_time, last_join_time, last_sent_time, shutup_time_me, shutup_time_whole } = info
   if (active_member_count) msg += `\n活跃人数：${active_member_count}`
-  if (create_time) msg += `\n群创建时间：${UCDate.format(create_time * 1000)}`
+  if (create_time) msg += `\n创建时间：${UCDate.format(create_time * 1000)}`
   if (last_join_time) msg += `\n入群时间：${UCDate.format(last_join_time * 1000)}`
   if (last_sent_time) msg += `\n上次发言：${UCDate.format(last_sent_time * 1000)}`
   if (shutup_time_me) msg += `\n被禁言时刻：${UCDate.format(shutup_time_me * 1000)}`

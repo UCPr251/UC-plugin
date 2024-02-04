@@ -1,5 +1,6 @@
 import { Path, Check, Data, log, UCPr, UCDate, common, file } from '../components/index.js'
 import loader from '../../../lib/plugins/loader.js'
+import cfg from '../../../lib/config/config.js'
 import { UCPlugin } from '../models/index.js'
 import { segment } from 'icqq'
 import lodash from 'lodash'
@@ -210,7 +211,7 @@ function replaceReply() {
             text = lodash.truncate(e.sender.card, { length: 10 })
           }
           if (at === true) {
-            at = Number(e.user_id) || e.user_id
+            at = Number(e.user_id) || String(e.user_id)
           } else if (!isNaN(at)) {
             if (e.isGuild) {
               text = e.sender?.nickname
@@ -221,9 +222,9 @@ function replaceReply() {
             text = lodash.truncate(text, { length: 10 })
           }
           if (Array.isArray(msg)) {
-            msg = [segment.at(at, text), ...msg]
+            msg.unshift(segment.at(at, text), '\n')
           } else {
-            msg = [segment.at(at, text), msg]
+            msg = [segment.at(at, text), '\n', msg]
           }
         }
         let msgRes
@@ -238,6 +239,9 @@ function replaceReply() {
           logger.error(err)
           // 改动
           checkMsg(err.message)
+          if (cfg.bot.sendmsg_error) {
+            Bot[Bot.uin].pickUser(cfg.masterQQ[0]).sendMsg(`发送消息错误:${msg}`)
+          }
         }
         // 频道一下是不是频道
         if (!e.isGuild && recallMsg > 0 && msgRes?.message_id) {
@@ -268,4 +272,5 @@ function replaceReply() {
       }
     }
   }
+
 }
