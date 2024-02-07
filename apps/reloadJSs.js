@@ -17,11 +17,11 @@ export default class UCReloadJSs extends UCPlugin {
           fnc: 'UCdeveloper'
         },
         {
-          reg: /^#?UC重载插件(.*)/i,
+          reg: /^#?UC重载(插件)?(.*)/i,
           fnc: 'UCreloadJSs'
         },
         {
-          reg: /^#?UC卸载插件(.+)/i,
+          reg: /^#?UC卸载(插件)?(.+)/i,
           fnc: 'UCunloadJS'
         },
         {
@@ -131,7 +131,7 @@ export default class UCReloadJSs extends UCPlugin {
   async UCreloadJSs(e) {
     if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
     if (ing) return e.reply('当前已处于开发模式，无需手动重载插件')
-    const jsName = e.msg.match(/重载插件(.*)/)[1].trim() + '.js'
+    const jsName = e.msg.match(/重载(?:插件)?(.*)/)[1].trim() + '.js'
     if (jsName === '.js') {
       const num = await reloadJSs(false)
       const EventNum = await reloadEvents('Event', false)
@@ -146,7 +146,7 @@ export default class UCReloadJSs extends UCPlugin {
 
   async UCunloadJS(e) {
     if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
-    const jsName = e.msg.match(/卸载插件(.*)/)[1].trim() + '.js'
+    const jsName = e.msg.match(/卸载(?:插件)?(.*)/)[1].trim() + '.js'
     const appPath = Path.get('apps', jsName)
     if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
     if (ing && !Check.str(JSs, jsName)) return e.reply('当前未载入' + jsName)

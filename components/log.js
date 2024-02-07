@@ -38,7 +38,7 @@ const log = {
   },
 
   warn(...log) {
-    logger.warn(chalk.yellow('[UC][Warn]' + common.toString(log)))
+    logger.warn(chalk.yellow(prefix + '[Warn]' + common.toString(log)))
     return false
   },
 

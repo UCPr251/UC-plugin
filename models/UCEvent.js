@@ -125,7 +125,13 @@ export default class UCEvent extends UCPlugin {
     const msgRes = await this.e.reply(msg, quote).catch(err => {
       log.error('[UCEvent.reply]发送消息错误', err)
     })
-    if (recallMsg) setTimeout(() => this.e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
+    if (recallMsg) {
+      if (this.e.group) {
+        setTimeout(() => this.e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
+      } else if (this.e.friend) {
+        setTimeout(() => this.e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
+      }
+    }
     return msgRes
   }
 
@@ -208,7 +214,9 @@ async function UCdealMsg(type, e) {
         const result = await app[userHook.type](e)
         if (result !== false) _.remove(hook, userHook)
       } catch (err) {
-        log.error(`执行${event.name} 上下文${userHook.type}错误`, err)
+        const errMsg = `执行${event.name} 上下文${userHook.type}错误`
+        const errInfo = log.error(errMsg, err)
+        e.reply?.(errMsg + '\n' + errInfo)
       }
       return true
     }

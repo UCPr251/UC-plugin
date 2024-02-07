@@ -59,7 +59,7 @@ export default class UCRandomWife extends UCPlugin {
         } else {
           msg.push(segment.image(imgPath))
         }
-        msg.push('\n老婆虽好，可不要贪多哦~')
+        msg.push('老婆虽好，可不要贪多哦~')
         return e.reply(msg, true)
       }
     }

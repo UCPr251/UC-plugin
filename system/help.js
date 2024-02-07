@@ -564,7 +564,8 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
       ),
       s(
         '#开启/关闭直播推送',
-        '开关当前或指定位置直播推送'
+        '开关当前或指定位置直播推送',
+        'BlivePush.use'
       ),
       s(
         '#开启/关闭直播推送艾特全员',
