@@ -7,6 +7,7 @@ const botConfig = path.join(_path, 'config', 'config')
 const plugins = path.join(_path, 'plugins')
 const example = path.join(plugins, 'example')
 const UC = path.join(plugins, Plugin_Name)
+const packagejson = path.join(UC, 'package.json')
 const apps = path.join(UC, 'apps')
 const Event = path.join(apps, 'Event')
 const groupAdmin = path.join(Event, 'groupAdmin')
@@ -71,6 +72,8 @@ const Path = {
   example,
   /** ../UC-plugin */
   UC,
+  /** ../UC-plugin/package.json */
+  packagejson,
   /** ../UC-plugin/apps */
   apps,
   /** ../UC-plugin/apps/Event */

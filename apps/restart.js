@@ -54,7 +54,7 @@ export default class UCRestart extends UCPlugin {
       log.warn(warnInfo)
       await e.reply(warnInfo, true)
     } else {
-      await e.reply('开始进行前台重启')
+      await e.reply('开始进行前台重启，请关注控制台')
     }
     const start = Date.now()
     const data = {

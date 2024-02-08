@@ -139,11 +139,17 @@ export default class UCEvent extends UCPlugin {
   setFunction(type = this.setFnc, time = UCPr.GAconfig.overTime) {
     const key = this.conKey()
     if (_.some(hook, { key })) return
-    hook.push({
+    const info = {
       key,
       type
-    })
+    }
+    hook.push(info)
     this.setContext(type, false, time)
+    setTimeout(() => {
+      if (_.remove(hook, info).length) {
+        log.yellow(`${key}操作超时已取消`)
+      }
+    }, time * 1000)
   }
 
 }

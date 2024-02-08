@@ -92,10 +92,13 @@ class UCPr {
     this.group_CFG = {}
     /** 签名崩溃检测计时器 */
     this.intervalId = null
+    /** package.json */
+    this.package = null
   }
 
   /** 初始化数据 */
   async init() {
+    this.package = file.JSONreader(Path.packagejson)
     getNewConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))
     Data.watch(Path.GAconfigyaml, () => getNewConfig(2))
@@ -184,11 +187,6 @@ class UCPr {
   groupCFG(groupId) {
     if (!this.group_CFG[groupId]) return this.defaultCFG
     return _.merge({}, this.group_CFG[groupId], this.CFG.lock)
-  }
-
-  /** package.json */
-  get package() {
-    return file.JSONreader(Path.get('UC', 'package.json'))
   }
 
   /** UC插件版本 */

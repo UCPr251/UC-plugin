@@ -221,7 +221,12 @@ export default class UCPlugin extends plugin {
   /** 获取序号指定数据 */
   _getNum() {
     if (this.isCancel('_getNum')) return
-    const data = this.getContext()._getNum.data
+    const data = this.getContext()._getNum?.data
+    if (!data) {
+      this.finish('_getNum')
+      log.warn(`上下文hook数据丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
+      return
+    }
     const { list, fnc } = data
     let numMatch = this.msg.match(/\d+/g)
     if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {

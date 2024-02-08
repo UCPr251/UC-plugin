@@ -4,6 +4,14 @@
 
 ### 2月
 
+#### 2-9
+
+**ver 2.3.7**
+
+- 处理Event类`上下文hook`时data丢失的情景，自动结束hook
+- 修复Event类`上下文hook`超时导致的数据异常问题
+- 修改[UCPr](./components/UCPr.js)`package.json`数据为仅启动时读取一次
+
 #### 2-7
 
 - 更新资源、部分小细节修改
