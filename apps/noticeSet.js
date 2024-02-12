@@ -14,7 +14,7 @@ export default class UCNoticeSet extends UCPlugin {
         }
       ]
     })
-    this.setFnc = 'getToken'
+    this.setFnc = '_getToken'
   }
 
   async setAview(e) {
@@ -44,7 +44,7 @@ export default class UCNoticeSet extends UCPlugin {
     return e.reply(`修改${type} tk成功：\n${tk}`)
   }
 
-  getToken() {
+  _getToken() {
     if (this.isCancel()) return false
     const tk = this.msg.trim()
     if (tk.length < 10) return this.reply('请输入正确的token')

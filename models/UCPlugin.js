@@ -181,7 +181,8 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    const { quote = true, ...data } = option
+    let { quote = true, ...data } = option
+    if (this.e.file) quote = false
     this.reply(msg, quote, data)
     const setContext = setFnc || this.setFnc
     log.debug(`结束上下文hook：${this.name} ${setContext}`)

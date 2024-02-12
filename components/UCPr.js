@@ -93,11 +93,12 @@ class UCPr {
     /** 签名崩溃检测计时器 */
     this.intervalId = null
     /** package.json */
-    this.package = null
+    this.package = {}
   }
 
   /** 初始化数据 */
   async init() {
+    if (this.status) return log.debug('UCPr已就绪，跳过本次初始化')
     this.package = file.JSONreader(Path.packagejson)
     getNewConfig()
     Data.watch(Path.configyaml, () => getNewConfig(1))

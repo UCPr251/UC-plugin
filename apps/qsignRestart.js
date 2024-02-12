@@ -39,9 +39,13 @@ async function checkMsg(msg) {
       ing = true
       log.red(`检测到签名异常${errorTimes}次，尝试重启签名`)
       errorTimes = 0
-      killQsign()
-      startQsign()
-      addLog('签名异常')
+      try {
+        killQsign()
+        startQsign()
+        addLog('签名异常')
+      } catch (e) {
+        log.error(e)
+      }
       setTimeout(() => (ing = false), 60000)
     }
   }
@@ -53,8 +57,12 @@ async function checkQsignPort() {
   if (output) {
     ing = true
     log.red('检测到签名已关闭，尝试启动签名')
-    startQsign()
-    addLog('签名关闭')
+    try {
+      startQsign()
+      addLog('签名关闭')
+    } catch (e) {
+      log.error(e)
+    }
     setTimeout(() => (ing = false), 60000)
   } else {
     log.white('签名运行ing')

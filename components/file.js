@@ -89,6 +89,16 @@ const file = {
     return fs.existsSync(_path)
   },
 
+  /** 路径是否是文件夹 */
+  isDirectory(_path) {
+    return fs.lstatSync(_path).isDirectory()
+  },
+
+  /** 路径是否是文件 */
+  isFile(_path) {
+    return fs.lstatSync(_path).isFile()
+  },
+
   unlink(_path) {
     return fs.unlink(_path, (err) => {
       if (err) throw err
@@ -139,6 +149,19 @@ const file = {
     try {
       fs.rmdirSync(dir)
     } catch (e) { }
+  },
+
+  /** 递归复制文件夹 */
+  copyFolderRecursively(orlFilePath, targetFilePath, removes = []) {
+    fs.mkdirSync(targetFilePath, { recursive: true })
+    fs.readdirSync(orlFilePath).forEach(element => {
+      if (fs.lstatSync(path.join(orlFilePath, element)).isFile()) {
+        fs.copyFileSync(path.join(orlFilePath, element), path.join(targetFilePath, element))
+      } else {
+        if (removes.includes(element)) return
+        this.copyFolderRecursively(path.join(orlFilePath, element), path.join(targetFilePath, element))
+      }
+    })
   },
 
   /** 复制文件 */
