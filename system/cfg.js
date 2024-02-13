@@ -8,7 +8,7 @@ import _ from 'lodash'
  * @param {string} title 展示的小标题，仅展示
  * @param {string} desc 功能描述，仅展示
  * @param {'num'|'input'|'switch'|'power'|'select'} [type='switch'] 指令修改value类型，数据处理分类
- * @param {string} def 默认值
+ * @param {string|number} def 默认值
  * @param {Function} input 对输入值的处理函数
  * @param {{}} [optional={}] 额外条件
  */
@@ -113,6 +113,19 @@ const 系统 = {
       'input',
       '纳西妲'
     ),
+    默认年份: s(
+      'defaultYear',
+      '默认年份',
+      '部分功能不指定年份时默认补全年份',
+      'num',
+      2024
+    ),
+    自动年份: s(
+      'autoYear',
+      '自动年份',
+      '是否自动以当前年份为准补全年份，开启后将无视默认年份',
+      'switch'
+    ),
     过码提醒: s(
       'loveMysNotice',
       '过码剩余提醒',
@@ -165,7 +178,7 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
       隐藏: s(
         'windowsHide',
         '隐藏签名窗口',
-        '隐藏重启的签名的窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启'
+        '隐藏重启的签名窗口。注意：开启此项后，关闭机器人将同时关闭签名。不建议开启'
       ),
       崩溃检测: s(
         'switch1',

@@ -271,9 +271,14 @@ class UCPr {
     return this.config.loveMysNotice ?? 50
   }
 
-  /** UC插件部分功能不指定年份时默认补全年份 */
+  /** 部分功能不指定年份时默认补全年份 */
   get defaultYear() {
-    return this.config.defaultYear ?? 2023
+    return this.autoYear ? new Date().getFullYear() : (this.config.defaultYear ?? 2023)
+  }
+
+  /** 是否自动以当前年份为准补全年份，开启后将无视默认年份defaultYear */
+  get autoYear() {
+    return this.config.autoYear ?? true
   }
 
   /** 用户无权限回复 */

@@ -14,8 +14,10 @@ priority: 251
 server: 1
 # UC插件的机器人自称，用于个别时候的机器人回复或开关Bot的指令等
 BotName: 纳西妲
-# UC插件部分功能不指定年份时默认补全年份
-defaultYear: 2023
+# 默认年份，部分功能不指定年份时默认补全年份
+defaultYear: 2024
+# 是否自动以当前年份为准补全年份，开启后将无视默认年份defaultYear
+autoYear: true
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 用户无权限进行某操作时，机器人的回复
