@@ -87,13 +87,14 @@ export default class Permission {
     return false
   }
   /**
-   * 是否有权限操作，判断优先级 主人>全局仅主人=黑名单>功能仅主人>
-   * 允许群聊=允许私聊>允许任何人>允许插件管理员=允许群管理员
+   * 是否有权限操作，判断优先级 主人>全局仅主人>黑名单>功能仅主人>
+   * 不允许群聊=不允许私聊>允许任何人>允许插件管理员=允许群管理员
    */
   get isPer() {
-    if (this.M) return true // 是主人
-    if (UCPr.onlyMaster || this.B) return false // 是仅主人或黑名单
-    if (this.isM && !this.M) return false // 是功能仅主人
+    if (this.M) return true // 是全局主人或群主人
+    if (UCPr.onlyMaster) return false // 已开启全局仅主人
+    if (this.B) return false // 是全局黑名单或群黑名单
+    if (this.isM) return false // 已开启功能仅主人
     if (this.isGroup && !this.isG) return false // 不允许群聊
     if (!this.isGroup && !this.isP) return false // 不允许私聊
     if (this.isE) return true // 允许任何人

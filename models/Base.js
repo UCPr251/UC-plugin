@@ -34,7 +34,7 @@ export default class Base {
       saveId: this.userId,
       cwd: this._path,
       tempPath: `${Path.Plugin_Name}/${this.model}`,
-      tplFile: `./plugins/UC-plugin/resources/html/${this.model}/${this.model}.html`,
+      tplFile: `./plugins/${Path.Plugin_Name}/resources/html/${this.model}/${this.model}.html`,
       pluResPath: this.pluResPath,
       imgType: 'jpeg',
       quality: 95,
