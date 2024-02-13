@@ -68,11 +68,11 @@ function getNewConfig(mode) {
 
 /** 系统数据 */
 class UCPr {
-  constructor(name) {
+  constructor({ Author, Plugin_Name }) {
     /** UCPr */
-    this.Author = Path.Author
+    this.Author = Author
     /** UC-plugin */
-    this.Plugin_Name = name
+    this.Plugin_Name = Plugin_Name
     /** 数据状态 */
     this.status = false
     /** 各配置数据 */
@@ -273,7 +273,7 @@ class UCPr {
 
   /** 部分功能不指定年份时默认补全年份 */
   get defaultYear() {
-    return this.autoYear ? new Date().getFullYear() : (this.config.defaultYear ?? 2023)
+    return this.autoYear ? new Date().getFullYear() : (this.config.defaultYear ?? 2024)
   }
 
   /** 是否自动以当前年份为准补全年份，开启后将无视默认年份defaultYear */
@@ -394,4 +394,4 @@ class UCPr {
 
 }
 
-export default new UCPr(Path.Plugin_Name)
+export default new UCPr(Path)
