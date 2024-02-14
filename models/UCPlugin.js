@@ -123,7 +123,7 @@ export default class UCPlugin extends plugin {
   }
 
   /**
-   * 权限等级验证，向0覆盖
+   * 权限等级验证
    * - 全局主人：4
    * - 群主人：3
    * - 全局管理：2

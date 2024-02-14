@@ -18,6 +18,16 @@ function getFncChain(error) {
   return fncChain.join('←')
 }
 
+function transformErrorLog(log) {
+  log = log.map(_log => {
+    if (_log?.message) {
+      return common.toString(_log.message) + '\n' + getFncChain(_log)
+    }
+    return _log
+  })
+  return common.toString(log, '\n')
+}
+
 const prefix = '[UC]'
 
 /** 输出日志 */
@@ -38,19 +48,12 @@ const log = {
   },
 
   warn(...log) {
-    logger.warn(chalk.yellow(prefix + '[Warn]' + common.toString(log)))
+    logger.warn(chalk.yellow(prefix + '[Warn]' + transformErrorLog(log)))
     return false
   },
 
   error(...log) {
-    log = log.map(_log => {
-      if (_log?.message) {
-        return common.toString(_log.message) + '\n' + getFncChain(_log)
-      }
-      return _log
-    })
-    log = common.toString(log, '\n')
-    logger.error(chalk.red(prefix + '[error]' + log))
+    logger.error(chalk.red(prefix + '[error]' + transformErrorLog(log)))
     Data.addLog(Path.errorLogjson, log)
     return log
   },
@@ -87,6 +90,10 @@ const log = {
     if (UCPr.log) {
       logger.mark(chalk.bold(prefix + common.toString(log)))
     }
+  },
+
+  info(...log) {
+    logger.info(prefix + common.toString(log))
   }
 }
 

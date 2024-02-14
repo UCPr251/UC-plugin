@@ -244,7 +244,7 @@ async function UCdealMsg(type, e) {
         log.white(msg)
         const start = Date.now()
         const logInfo = `[${event.name}][${rule.fnc}]${_.truncate(msg, { length: 50 })}`
-        log.white(logInfo)
+        log.info(logInfo)
         const app = new event.class(e)
         const result = await app[rule.fnc](e)?.catch?.(err => {
           const errInfo = log.error(`执行${logInfo}错误`, err)

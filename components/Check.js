@@ -93,7 +93,7 @@ const Check = {
    */
   level(userId, groupId, need) {
     if (this.e) {
-      return Check.level(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
+      return Check.level(this.userId ?? this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
     }
     if (!userId) return 0
     if (!isNaN(need)) {

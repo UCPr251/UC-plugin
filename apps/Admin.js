@@ -223,69 +223,74 @@ export default class UCAdmin extends UCPlugin {
     const group = new RegExp(Cfg.groupReg(type)).exec(str1)?.[0] ?? ''
     log.debug('修改设置group类：' + group)
     const str2 = str1.replace(group, '').trim()
-    const set = Cfg.settingReg(type, group).exec(str2)?.[0] ?? ''
+    const set = Cfg.setReg(type, group).exec(str2)?.[0] ?? ''
     log.debug('修改设置set类：' + set)
     const str3 = str2.replace(set, '').trim()
-    const num = str3.match(/\d{5,10}/)?.[0]
-    const groupId = this.GM ? (num ?? e.group_id) : e.group_id
-    if (!groupId) {
+    const num = str3.match(/\d{7,10}/)?.[0]
+    const groupId = this.GM ? (num ?? this.groupId) : this.groupId
+    if (!this.isGroup && !groupId) {
       if (this.GM) isGlobal = true
       else return e.reply('请于群内使用')
     }
+    let showGroup
     // 修改全局设置或群设置
     if (group || set) {
       const setData = UCPr.CFG.cfgData[type][group]?.cfg?.[set]
-      log.debug(setData)
       if (setData) {
-        // 获取新设置值
-        let operation
-        if (setData.type === 'switch') {
-          if (/开启|启动/.test(str3)) operation = true
-          else if (/关闭|禁用/.test(str3)) operation = false
-        } else if (setData.type === 'num') {
-          if (setData.input) {
-            const setNum = setData.input(str3)
-            if (setNum || setNum === 0) {
-              operation = setNum
-            } else {
-              operation = setData.def
-            }
-          } else {
-            operation = parseInt(str3.match(/\d+/)?.[0] ?? setData.def)
-          }
-        } else if (setData.type === 'power') {
-          const numMatch = str3.match(/0|1/g)
-          if (numMatch && numMatch.length === setData.options?.length) {
-            for (const i in numMatch) {
-              if (isGlobal) {
-                Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
+        log.debug(setData)
+        const [g, s] = setData.path.split('.')
+        if (isGlobal || (s && !isGlobal && s in UCPr.groupCFG(groupId)[type][g])) {
+          showGroup = group
+          // 获取新设置值
+          let operation
+          if (setData.type === 'switch') {
+            if (/开启|启动/.test(str3)) operation = true
+            else if (/关闭|禁用/.test(str3)) operation = false
+          } else if (setData.type === 'num') {
+            if (setData.input) {
+              const setNum = setData.input(str3)
+              if (setNum || setNum === 0) {
+                operation = setNum
               } else {
-                Admin.groupCfg(groupId, setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
+                // operation = setData.def
+              }
+            } else {
+              operation = parseInt(str3.match(/\d+/)?.[0] ?? setData.def)
+            }
+          } else if (setData.type === 'power') {
+            const numMatch = str3.match(/0|1/g)
+            if (numMatch && numMatch.length === setData.options?.length) {
+              for (const i in numMatch) {
+                if (isGlobal) {
+                  Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
+                } else {
+                  Admin.groupCfg(groupId, setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
+                }
               }
             }
-          }
-        } else {
-          if (setData.input) {
-            operation = setData.input(str3)
           } else {
-            operation = str3
+            if (setData.input) {
+              operation = setData.input(str3)
+            } else {
+              operation = str3
+            }
           }
-        }
-        // 保存新设置
-        if (operation !== undefined) {
-          if (isGlobal) {
-            Admin.globalCfg(setData.path, operation, type)
-          } else {
-            Admin.newConfig(groupId)
-            Admin.groupCfg(groupId, setData.path, operation, type)
+          // 保存新设置
+          if (operation !== undefined) {
+            if (isGlobal) {
+              Admin.globalCfg(setData.path, operation, type)
+            } else {
+              Admin.newConfig(groupId)
+              Admin.groupCfg(groupId, setData.path, operation, type)
+            }
           }
+          // 等等更健康
+          await common.sleep(0.12)
         }
       }
-      // 等等更健康
-      await common.sleep(0.12)
     }
     // 发送新设置图
-    const data = Cfg.get(e, type, groupId, isGlobal)
+    const data = Cfg.get(e, { type, groupId, isGlobal, group: showGroup })
     if (!data) return
     return await common.render(e, data)
   }

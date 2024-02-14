@@ -86,7 +86,7 @@ const Admin = {
       }
       return false
     }
-    return log.warn(`操作失败：${groupId}.yaml配置中不存在${path}属性`)
+    return log.warn(`[Admin][groupCfg]操作失败：${groupId}.yaml配置中不存在${path}属性`)
   },
 
   /**
@@ -108,7 +108,7 @@ const Admin = {
       }
       return false
     }
-    return log.warn(`操作失败：${cfg}配置中不存在${path}属性`)
+    return log.warn(`[Admin][globalCfg]操作失败：${cfg}配置中不存在${path}属性`)
   },
 
   /**
@@ -142,7 +142,7 @@ const Admin = {
     this.newConfig(groupId)
     setTimeout(() => {
       const _cfg = UCPr.groupCFG(groupId)
-      if (!_cfg) return log.warn('无群设置信息：' + groupId)
+      if (!_cfg) return log.warn('[Admin][groupPermission]无群设置信息：' + groupId)
       const _permission = _cfg.permission
       if (isAdd) {
         if (!_.isArray(_permission[type])) _permission[type] = []

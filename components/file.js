@@ -7,7 +7,7 @@ import _ from 'lodash'
 const file = {
   /** 读取yaml */
   YAMLreader(_path, defaultValue = null) {
-    if (!this.existsSync(_path)) return defaultValue
+    if (!_path || !this.existsSync(_path)) return defaultValue
     return yaml.parse(fs.readFileSync(_path, 'utf8'))
   },
 
@@ -18,7 +18,7 @@ const file = {
 
   /** 读取json */
   JSONreader(_path, defaultValue = null) {
-    if (!this.existsSync(_path)) return defaultValue
+    if (!_path || !this.existsSync(_path)) return defaultValue
     return JSON.parse(fs.readFileSync(_path, 'utf8'))
   },
 
@@ -43,7 +43,7 @@ const file = {
     removes: null,
     withFileTypes: false
   }) {
-    if (!this.existsSync(_path)) return []
+    if (!_path || !this.existsSync(_path)) return []
     let files = fs.readdirSync(_path, option)
     if (option.removes) {
       const removes = _.castArray(option.removes)
@@ -134,7 +134,7 @@ const file = {
   },
 
   unlinkFilesRecursively(dir) {
-    if (!file.existsSync(dir)) {
+    if (!dir || !file.existsSync(dir)) {
       return
     }
     const files = fs.readdirSync(dir, { withFileTypes: true })
