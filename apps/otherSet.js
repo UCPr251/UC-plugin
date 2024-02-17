@@ -100,6 +100,7 @@ export default class UCOtherSet extends UCPlugin {
     else if (/加白/.test(msg)) { type = 7; mode = '白名单群' }
     else { type = 8; mode = '白名单群' }
     const numMatch = e.msg.match(/\d+/g)
+    if (!numMatch) return e.reply('请将指令需要操作的q号一同发出')
     const len = arrTemp[type]?.length
     log.debug(len)
     log.debug(numMatch)

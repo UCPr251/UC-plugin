@@ -13,10 +13,11 @@ export default class UCEvent extends UCPlugin {
     name = 'UC插件·事件',
     dsc = 'UC插件·事件',
     event = 'message.group',
+    priority,
     rule,
     Cfg
   }) {
-    super({ e, name, dsc, event, rule, Cfg })
+    super({ e, name, dsc, event, priority, rule, Cfg })
     /**
      * message.group: normal anonymous
      *

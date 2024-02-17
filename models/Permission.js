@@ -10,7 +10,7 @@ export default class Permission {
     /** 是否群聊 */
     this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group' || this.e.isGroup
     /** 用户id */
-    this.userId = this.sender?.user_id ?? this.e.user_id
+    this.userId = e.sub_type === 'poke' ? e.operator_id : this.sender?.user_id ?? e.user_id
     /** 权限级别Set */
     this.levelSet = Check.levelSet.call(this)
     /** 权限级别 */

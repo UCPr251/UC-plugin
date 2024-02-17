@@ -132,10 +132,10 @@ export default class UCPlugin extends plugin {
    * - 群黑名单：-1
    * - 全局黑名单：-2
    */
-  verifyLevel(need = 0) {
+  verifyLevel(need = 0, reply = true) {
     if (this.B) return false
     if (UCPr.onlyMaster && !this.M) return false
-    if (this.level < need) return this.noPerReply()
+    if (this.level < need) return reply && this.noPerReply()
     return true
   }
 

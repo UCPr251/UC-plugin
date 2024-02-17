@@ -14,7 +14,7 @@ export default class UCRandomWife extends UCPlugin {
       e,
       name: 'UC-randomWife',
       dec: '随机二次元老婆',
-      event: 'message.group',
+      event: 'message',
       Cfg: 'config.randomWife',
       rule: [
         {
@@ -47,6 +47,7 @@ export default class UCRandomWife extends UCPlugin {
   async randomwife(e) {
     if (!this.verifyLevel()) return false
     if (!this.Cfg.isOpen) return false
+    if (!this.isGroup) return this.reply('请在群聊中使用本功能哦~')
     const userData = await Data.redisGet(this.redisData + e.sender.user_id, {})
     const data_wifes = await Data.redisGet(this.redisData2, [])
     let now_times = userData.now_times ?? 0

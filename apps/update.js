@@ -113,7 +113,7 @@ export default class UCUpdate extends UCPlugin {
   async refresh(e) {
     if (!this.GM) return false
     if (/强制/.test(e.msg)) {
-      Data.execSync('git reset --hard', Path.UC_plugin_decrypt)
+      Data.execSync('git clean -fd && git reset --hard', Path.UC_plugin_decrypt)
     }
     const output = Data.refresh()
     return e.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))

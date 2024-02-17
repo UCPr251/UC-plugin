@@ -254,7 +254,7 @@ const UCDate = {
    */
   daysCount(count, unit) {
     count = parseInt(count)
-    unit = daysMap.get(unit)
+    unit = daysMap.get(unit.toLowerCase())
     if (!unit) {
       return false
     }
@@ -276,7 +276,7 @@ const UCDate = {
     return count * unit
   },
 
-  /** 年月日是否有效 */
+  /** 年月日是否真实存在 */
   isValidDate(year, month, day) {
     month--
     const date = new Date(year, month, day)
@@ -335,7 +335,7 @@ const UCDate = {
   },
 
   /** 简单汉字时长转秒数 */
-  transformChineseSecongds(time) {
+  transformChineseSeconds(time) {
     if (!time) return false
     const isHalf = /半/.test(time)
     time = time

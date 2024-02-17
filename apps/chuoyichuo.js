@@ -118,7 +118,7 @@ export default class UCChuoyichuo extends UCPlugin {
     }
     // 头像表情包
     if (randomNum < (Cfg.textimg + Cfg.face)) {
-      return e.reply(segment.image(Buffer.from(await this.fetch('qiao', e.operator_id))), true)
+      return e.reply(segment.image(Buffer.from(await this.fetch('qiao', this.userId))), true)
     }
     // 禁言
     if (await common.botIsGroupAdmin(e.group) && randomNum < (Cfg.textimg + Cfg.face, Cfg.mute)) {
@@ -126,7 +126,7 @@ export default class UCChuoyichuo extends UCPlugin {
       if (mutetype === 1) {
         await e.reply('说了不要戳了！\n坏孩子要接受' + this.BotName + '的惩罚！')
         await common.sleep(1)
-        await e.group.muteMember(e.operator_id, Cfg.muteTime * 60)
+        await e.group.muteMember(this.userId, Cfg.muteTime * 60)
         await common.sleep(2)
         return e.reply('哼~')
       } else {
@@ -136,13 +136,13 @@ export default class UCChuoyichuo extends UCPlugin {
         await common.sleep(1.5)
         await e.reply('戳！！')
         await common.sleep(1)
-        return await e.group.muteMember(e.operator_id, Cfg.MuteTime * 60)
+        return await e.group.muteMember(this.userId, Cfg.MuteTime * 60)
       }
     }
     // 反击
     await e.reply('还戳是吧，看我戳洗你！')
     await common.sleep(1)
-    await e.group.pokeMember(e.operator_id)
+    await e.group.pokeMember(this.userId)
   }
 
 }

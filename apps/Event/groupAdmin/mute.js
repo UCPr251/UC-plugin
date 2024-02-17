@@ -44,7 +44,7 @@ class UCMute extends UCEvent {
     if (timeChinese === '') {
       seconds = this.Cfg.defaultMute
     } else {
-      seconds = UCDate.transformChineseSecongds(timeChinese)
+      seconds = UCDate.transformChineseSeconds(timeChinese)
     }
     if (!this.M) seconds = Math.min(seconds, this.Cfg.MUTE_MAX)
     seconds = Math.min(seconds, 2592000)
