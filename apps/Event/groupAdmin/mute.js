@@ -10,15 +10,15 @@ class UCMute extends UCEvent {
       Cfg: 'GAconfig.mute',
       rule: [
         {
-          reg: /^#?(UC)?(全体)?禁言(?!信息|列表)(.*)/,
+          reg: /^#(UC)?(全体)?禁言(?!信息|列表)(.*)/,
           fnc: 'muteMember'
         },
         {
-          reg: /^#?(UC)?(全体|全部)?解禁$/,
+          reg: /^#(UC)?(全体|全部)?解禁$/,
           fnc: 'releaseMute'
         },
         {
-          reg: /^#?(UC)?群?禁言(信息|列表)$/,
+          reg: /^#(UC)?禁言(信息|列表)$/,
           fnc: 'groupMuteInfo'
         }
       ]
@@ -40,12 +40,8 @@ class UCMute extends UCEvent {
     if (!this.checkUserPower(this.at)) return this.noPerReply()
     if (!this.checkBotPower(this.at)) return this.noPowReply()
     const timeChinese = this.msg.match(/#?禁言(.*)/)?.[1].trim()
-    let seconds
-    if (timeChinese === '') {
-      seconds = this.Cfg.defaultMute
-    } else {
-      seconds = UCDate.transformChineseSeconds(timeChinese)
-    }
+    let seconds = timeChinese === '' ? this.Cfg.defaultMute : UCDate.transformChineseSeconds(timeChinese)
+    seconds ||= this.Cfg.defaultMute
     if (!this.M) seconds = Math.min(seconds, this.Cfg.MUTE_MAX)
     seconds = Math.min(seconds, 2592000)
     await e.group.muteMember(this.at, seconds).catch(err => log.error(err))
@@ -74,7 +70,7 @@ class UCMute extends UCEvent {
     if (!this.at) return this.reply('请艾特要解除禁言的群员')
     const memClient = e.group.pickMember(this.at)
     if (!memClient.mute_left) return this.reply('对方没有被禁言哦~')
-    await common.muteMember(this.at, e.group_id, 0)
+    await common.muteMember(this.at, this.groupId, 0)
     const name = this.getMemName(this.at)
     const info = `<${name}>（${this.at}）`
     return this.reply(this.Cfg.releaseReply.replace('info', info))
@@ -82,8 +78,9 @@ class UCMute extends UCEvent {
 
   async groupMuteInfo(e) {
     if (!this.defaultVerify()) return false
+    if (e.group.all_muted) return this.reply('当前处于全体禁言中')
     const muteInfoList = await common.getMuteList(e.group, true)
-    if (muteInfoList.length === 0) return this.reply('当前没有人被禁言哦~')
+    if (!muteInfoList.length) return this.reply('当前没有人被禁言哦~')
     const title = '群员禁言信息'
     const replyMsg = await common.makeForwardMsg(e, [title, ...muteInfoList], title)
     return this.reply(replyMsg)

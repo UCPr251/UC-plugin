@@ -1,6 +1,7 @@
-import { Path, Data, Check, common, UCPr } from '../components/index.js'
+import { Path, Data, Check, common, UCPr, file } from '../components/index.js'
 import { loadJs, unloadJs } from './reloadJSs.js'
 import { UCPlugin } from '../models/index.js'
+import _ from 'lodash'
 
 export default class UCAddJS extends UCPlugin {
   constructor(e) {
@@ -12,27 +13,35 @@ export default class UCAddJS extends UCPlugin {
         {
           reg: /^#?UC安装(插件|JS)$/i,
           fnc: 'addJS'
+        },
+        {
+          reg: /^#?UC搜索JS.+/i,
+          fnc: 'searchJS'
+        },
+        {
+          reg: /^#?UC(卸载|删除)JS/i,
+          fnc: 'delJS'
         }
       ]
     })
-    this.setFnc = 'getFile'
-    this.setFnc2 = 'makeSure'
+    this.setFnc = '_getFile'
+    this.setFnc2 = '_makeSure'
   }
 
   async addJS(e) {
     if (!this.GM) return false
-    e.isUCJS = /插件/.test(e.msg)
-    // if (e.isUCJS && e.isGroup) return e.reply('请私聊安装UC插件')
+    e.isUCJS = /插件/.test(this.msg)
+    // if (e.isUCJS && e.isGroup) return this.reply('请私聊安装UC插件')
     this.setContext(this.setFnc, false, 60)
-    return e.reply('请在60s内发送js文件')
+    return this.reply('请在60s内发送js文件')
   }
 
-  async getFile() {
+  async _getFile() {
     if (this.isCancel()) return false
-    if (!this.e.friend) return this.finishReply('请先添加好友')
+    if (!this.isGroup && !this.e.friend) return this.finishReply('请先添加好友')
     if (!this.e.file) return this.reply('请发送js文件')
     else {
-      const { isUCJS } = this.getContext().getFile
+      const { isUCJS } = this.getContext()._getFile
       const [fileUrl, filename] = await common.getFileUrl(this.e)
       const filePath = Path.get(isUCJS ? 'apps' : 'example', filename)
       const dirPath = isUCJS ? 'plugins/UC-plugin/apps/' : 'plugins/example/'
@@ -57,11 +66,14 @@ export default class UCAddJS extends UCPlugin {
     }
   }
 
-  async makeSure() {
+  async _makeSure() {
+    if (this.isCancel()) return
     if (this.isSure()) {
-      const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getContext().makeSure
+      const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getContext()._makeSure
       if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
-      if (await Data.download(fileUrl, Path.apps, filename)) {
+      file.unlinkSync(filePath)
+      await common.sleep(0.2)
+      if (await Data.download(fileUrl, isUCJS ? Path.apps : Path.example, filename)) {
         if (!UCPr.isWatch && isUCJS) loadJs(filePath)
         this.reply(`操作成功，已覆盖${dirPath}${filename}，${isUCJS ? '已自动载入该UC插件' : '可能需要重启'}`)
         Data.refresh()
@@ -71,6 +83,53 @@ export default class UCAddJS extends UCPlugin {
       return this.finish(this.setFnc2)
     }
     this.finishReply(this, undefined, this.setFnc2)
+  }
+
+  async searchJS() {
+    if (!this.GM) return false
+    const jsName = this.msg.match(/JS(.+)/i)[1].trim()
+    const search = await file.searchFiles(Path.example, jsName.replace(/\.js$/, ''), { type: '.js' })
+    if (!search.length) return this.reply(`未找到${jsName}及其相关文件`)
+    return this.reply(`搜索到以下js：\n${Data.makeArrStr(search, { property: 'file' })}`)
+  }
+
+  async delJS(e) {
+    if (!this.GM) return false
+    let jsName = this.msg.match(/JS(.+)/i)?.[1].trim()
+    if (!jsName) {
+      const JSs = file.readdirSync(Path.example, { type: '.js' })
+      e.data = {
+        fnc: '_delJS',
+        list: JSs
+      }
+      this.setContext('_getNum')
+      const title = '请选择要删除的JS'
+      const info = Data.makeArrStr(JSs, { chunkSize: 100, length: 2000 })
+      const replyMsg = await common.makeForwardMsg(e, [title, '请选择要删除的js的序号\n间隔可一次删除多个\n也可使用1-10可一次删除多个', ...info], title)
+      return this.reply(replyMsg)
+    }
+    if (!jsName.endsWith('.js')) jsName += '.js'
+    if (Check.file(Path.get('example', jsName))) {
+      file.unlinkSync(Path.get('example', jsName))
+      return this.reply(`删除成功：${jsName}`)
+    }
+    const search = await file.searchFiles(Path.example, jsName.replace(/\.js$/, ''), { type: '.js' })
+    if (!search.length) return this.reply(`未找到${jsName}及其相关文件`)
+    e.data = {
+      fnc: '_delJS',
+      list: _.map(search, 'file')
+    }
+    this.setContext('_getNum')
+    const info = Data.makeArrStr(search, { chunkSize: 100, length: 2000, property: 'name' })
+    const title = '请选择要删除的JS'
+    const replyMsg = await common.makeForwardMsg(e, [`未找到${jsName}插件，自动搜索相关文件，请选择要删除的js的序号`, ...info], title)
+    return this.reply(replyMsg)
+  }
+
+  _delJS(jsArr) {
+    const JSsPath = jsArr.map(v => Path.get('example', v))
+    const deleted = file.unlinkSync(JSsPath)
+    return this.reply(`删除成功：\n${Data.makeArrStr(deleted)}`)
   }
 
 }

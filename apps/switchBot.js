@@ -44,7 +44,7 @@ export default class UCSwitchBot extends UCPlugin {
     })
     if (!this.isGroup) return
     this.groupData = UCPr.defaultCfg.getConfig('group')
-    this.isClose = _.isEqual(_.get(this.groupData, `${e.group_id}.enable`), ['UC-switchBot'])
+    this.isClose = _.isEqual(_.get(this.groupData, `${this.groupId}.enable`), ['UC-switchBot'])
   }
 
   init() {
@@ -62,15 +62,15 @@ export default class UCSwitchBot extends UCPlugin {
     }
   }
 
-  async openBot(e) {
+  async openBot() {
     if (!this.verifyPermission(this.Cfg.use)) return false
     if (!this.isClose) {
-      return e.reply('当前已经是开启状态了哦~', true)
+      return this.reply('当前已经是开启状态了哦~', true)
     }
     this.open()
     Data.remove(switchBotData, this.groupId)
     file.JSONsaver(Path.switchBotjson, switchBotData)
-    return e.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
+    return this.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
   }
 
   open() {
@@ -82,14 +82,14 @@ export default class UCSwitchBot extends UCPlugin {
     }
   }
 
-  async closeBot(e) {
+  async closeBot() {
     if (!this.verifyPermission(this.Cfg.use)) return false
     if (this.isClose) {
-      return e.reply('当前已经是关闭状态了哦~', true)
+      return this.reply('当前已经是关闭状态了哦~', true)
     }
     _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
     switchBotData.push(this.groupId)
     file.JSONsaver(Path.switchBotjson, switchBotData)
-    return e.reply(this.Cfg.closeMsg.replace('BotName', this.BotName))
+    return this.reply(this.Cfg.closeMsg.replace('BotName', this.BotName))
   }
 }

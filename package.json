@@ -1,7 +1,7 @@
 {
   "name": "UC-plugin",
-  "version": "2.3.10",
-  "description": "UC插件，为更多有趣的功能",
+  "version": "2.4.0",
+  "description": "UC插件，提供便捷操作、娱乐、群管等功能",
   "type": "module",
   "repository": {
     "type": "git",

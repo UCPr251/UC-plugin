@@ -1,4 +1,4 @@
-import { log, UCDate, file, Path, UCPr } from './index.js'
+import { UCDate, file, Path, UCPr } from './index.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import _ from 'lodash'
 import { segment } from 'icqq'
@@ -17,11 +17,15 @@ const common = {
    * @param {'Group'|'Private'} type
    */
   async sendMsgTo(loc, msg, type) {
-    Bot[`send${type}Msg`](loc, msg).catch((err) => {
+    try {
+      return await Bot[`send${type}Msg`](loc, msg)
+    } catch (err) {
       log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误`, msg, err)
-    })
+      return false
+    }
   },
 
+  /** 根据message制作reply[] */
   makeMsg(message, replaceKey = [], replaceValue = []) {
     if (!_.isArray(message)) return null
     replaceKey = _.castArray(replaceKey)
@@ -40,9 +44,32 @@ const common = {
         case 'image':
           reply.push(segment.image(val.url ?? val.path))
           break
+        case 'face':
+        case 'sface':
+          reply.push(segment[val.type](val.id, val.text))
+          break
       }
     }
     return reply
+  },
+
+  /** 根据message提取数据，支持text at image fase sface */
+  getMsg(message) {
+    const new_message = []
+    for (const v of message) {
+      switch (v.type) {
+        case 'face':
+        case 'sface':
+        case 'text':
+        case 'image':
+          new_message.push(v)
+          break
+        case 'at':
+          v.qq !== UCPr.qq && new_message.push(v)
+          break
+      }
+    }
+    return new_message
   },
 
   /**
@@ -58,6 +85,7 @@ const common = {
 
   /** 转换为字符串 */
   toString(value, sep = '，') {
+    if (typeof value === 'string') return value
     if (_.isArray(value)) return value.map(v => this.toString(v, sep)).join(sep)
     if (_.isPlainObject(value)) return JSON.stringify(value, null, 2)
     return _.toString(value)
@@ -66,7 +94,7 @@ const common = {
   /** 获取群实例 */
   pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
-      if (!Number(group)) return {}
+      if (!+group) return {}
       group = Bot.pickGroup(group)
     }
     return group
@@ -176,7 +204,7 @@ const common = {
       const time = info.shut_up_timestamp ?? info.shutup_time
       const secondes = parseInt(time - Date.now() / 1000)
       return [
-        segment.image(`https://q1.qlogo.cn/g?b=qq&s=100&nk=${info.user_id}`),
+        segment.image(this.getAvatarUrl(info.user_id, 'user')),
         `\n昵称：${info.card || info.nickname}\n`,
         `QQ：${info.user_id}\n`,
         `禁言剩余时间：${UCDate.diff(secondes, 's').toStr()}\n`,
@@ -193,6 +221,7 @@ const common = {
     for (const mem of mutelist) {
       await groupClient.muteMember(mem.user_id, 0)
     }
+    await this.sleep(0.1)
     const end = (await this.getMuteList(group)).length
     return start - end
   },
@@ -276,12 +305,10 @@ const common = {
   }) {
     log.debug('[common.sendFile]发送文件' + name + '，消息撤回：' + option.recallMsg + '，文件撤回：' + option.recallFile)
     const { quote, recallFile, ...data } = option
-    if (data.at === undefined) data.at = true
+    data.at ??= true
     if (!Buffer.isBuffer(buffer)) {
       if (file.existsSync(buffer)) {
-        if (!name) {
-          name = Path.parse(buffer).base
-        }
+        name ||= Path.parse(buffer).base
         buffer = file.readFileSync(buffer, null)
       } else {
         log.debug('[common.sendFile]指定路径不存在：' + buffer)
@@ -295,7 +322,7 @@ const common = {
       const fileStat = await e.group.fs.upload(buffer, undefined, name, (percentage) => {
         log.debug(`[common.sendFile]上传群${e.group_id}文件${name}，进度：${parseInt(percentage)}%`)
       })
-      if (replyMsg) e.reply('\n' + replyMsg, quote, data)
+      replyMsg && e.reply('\n' + replyMsg, quote, data)
       if (recallFile) {
         const fid = fileStat?.fid
         setTimeout(() => {
@@ -335,7 +362,7 @@ const common = {
     const user_id = isBot ? Bot.uin : e.sender.user_id
     if (e.isGroup && isBot) {
       const info = await Bot.getGroupMemberInfo(e.group_id, Bot.uin)
-      nickname = info.card || info.nickname
+      nickname = info?.card || info?.nickname || user_id
     }
     const userInfo = {
       user_id,

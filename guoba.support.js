@@ -3,11 +3,6 @@ import { Path, file, Data, UCPr } from './components/index.js'
 import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
 
-try {
-  Data.refresh()
-} catch (err) {
-  logger.error(err)
-}
 /** config前缀 */
 let cfgPrefix = 'config.'
 /** field前缀 */
@@ -84,13 +79,13 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
       label: '【UC】指定群开关Bot设置',
       component: 'Divider'
     },
-    s('openReg', '开启触发词', 'Input',
-      '让Bot上班的指令：BotName+关键词即可触发，多个用|间隔'),
-    s('closeReg', '关闭触发词', 'Input',
-      '让Bot下班的指令：BotName+关键词即可触发，多个用|间隔'),
-    s('openMsg', '开启Bot回复', 'Input',
+    s('openReg', '开启指令', 'Input',
+      '让Bot上班的指令：BotName+指令即可触发，多个用|间隔'),
+    s('closeReg', '关闭指令', 'Input',
+      '让Bot下班的指令：BotName+指令即可触发，多个用|间隔'),
+    s('openMsg', '开启回复', 'Input',
       '开启Bot的回复，BotName会被替换为上面设置的BotName的名称'),
-    s('closeMsg', '关闭Bot回复', 'Input',
+    s('closeMsg', '关闭回复', 'Input',
       '关闭Bot的回复，BotName会被替换为上面设置的BotName的名称'),
     ...sPRO('群开关Bot', undefined, [0, 0, 1, 1, 1, 0]),
     s('isPrefix', '响应前缀', 'Switch',
@@ -115,6 +110,9 @@ if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
       '被戳是否自动更新群名片'),
     s('groupCard', '更新群名片后缀', 'Input',
       '开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数'),
+    s('picPath', '图包', 'Select',
+      '戳一戳使用的图包，如果新加图包此处未展示，请使用指令#UC设置戳一戳图包+图包名',
+      { options: file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.js' }).map(item => ({ label: item, value: item })) }),
     s('textimg', '文本+图片概率', 'InputNumber',
       '被戳回复文本+图片概率', { min: 0, max: 1 }),
     s('chuoimg', '次数+图片概率', 'InputNumber',
@@ -187,11 +185,13 @@ if (file.existsSync(Path.get('apps', 'sqtj.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.get('apps', 'BlivePush.js'))) {
+Data.refresh()
+
+if (Data.check('BlivePush') && file.existsSync(Path.get('apps', 'BlivePush.js'))) {
   prefix = 'BlivePush.'
   const newCfg = [
     {
-      label: `【UC】B站直播推送设置${Data.check('BlivePush') ? '' : '（您当前未购买此插件）'}`,
+      label: '【UC】B站直播推送设置',
       component: 'Divider'
     },
     s('isGroup', '群聊推送开关', 'Switch',
@@ -206,11 +206,11 @@ if (file.existsSync(Path.get('apps', 'BlivePush.js'))) {
   js = js.concat(newCfg)
 }
 
-if (file.existsSync(Path.get('apps', 'bigjpg.js'))) {
+if (Data.check('bigjpg') && file.existsSync(Path.get('apps', 'bigjpg.js'))) {
   prefix = 'bigjpg.'
   const newCfg = [
     {
-      label: `【UC】放大图片设置${Data.check('bigjpg') ? '' : '（您当前未购买此插件）'}`,
+      label: '【UC】放大图片设置',
       component: 'Divider'
     },
     s('isOpen', '放大图片开关', 'Switch'),
@@ -453,7 +453,8 @@ export function supportGuoba() {
             value = _.sortBy(value
               .split('，')
               .filter(num => num.length >= 7 && num.length <= 10)
-            ).map(Number)
+              .map(Number)
+            )
           }
           if (Admin.globalCfg(path, value, cfg)) changed = true
         }

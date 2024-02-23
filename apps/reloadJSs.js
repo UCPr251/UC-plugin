@@ -102,6 +102,9 @@ export default class UCReloadJSs extends UCPlugin {
         delete UCPr.watcher[delAppPath]
         Data.remove(JSs, jsName)
       })
+      if (Check.file(Path.get('components', 'reloadModule.js'))) {
+        import('file:///' + Path.get('components', 'reloadModule.js')).then(res => res.default())
+      }
       // JSs.forEach(JS => log.yellow(JS))
       log.red(`总计载入UC插件${JSs.length}项功能`)
     }
@@ -120,55 +123,55 @@ export default class UCReloadJSs extends UCPlugin {
     return msg
   }
 
-  async UCdeveloper(e) {
-    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
-    if (ing) return e.reply('当前已处于开发模式，请勿重复开启')
+  async UCdeveloper() {
+    if (!this.GM) return this.reply('你想做甚？！', true, { at: true })
+    if (ing) return this.reply('当前已处于开发模式，请勿重复开启')
     await this.init(true)
     const msg = this.getGeneralView()
-    return e.reply('成功进入UC开发者模式\n' + msg)
+    return this.reply('成功进入UC开发者模式\n' + msg)
   }
 
-  async UCreloadJSs(e) {
-    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
-    if (ing) return e.reply('当前已处于开发模式，无需手动重载插件')
-    const jsName = e.msg.match(/重载(?:插件)?(.*)/)[1].trim() + '.js'
+  async UCreloadJSs() {
+    if (!this.GM) return this.reply('你想做甚？！', true, { at: true })
+    if (ing) return this.reply('当前已处于开发模式，无需手动重载插件')
+    const jsName = this.msg.match(/重载(?:插件)?(.*)/)[1].trim() + '.js'
     if (jsName === '.js') {
       const num = await reloadJSs(false)
       const EventNum = await reloadEvents('Event', false)
       const GAnum = await reloadEvents('groupAdmin', false)
-      return e.reply(`成功重载${num}个UC插件、${EventNum}个普通Event、${GAnum}个UC群管插件`)
+      return this.reply(`成功重载${num}个UC插件、${EventNum}个普通Event、${GAnum}个UC群管插件`)
     }
     const jsPath = Path.get('apps', jsName)
-    if (!Check.file(jsPath)) return e.reply(jsName + '插件不存在，请检查')
+    if (!Check.file(jsPath)) return this.reply(jsName + '插件不存在，请检查')
     await reloadJS(jsPath)
-    return e.reply('成功重载插件' + jsName)
+    return this.reply('成功重载插件' + jsName)
   }
 
-  async UCunloadJS(e) {
-    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
-    const jsName = e.msg.match(/卸载(?:插件)?(.*)/)[1].trim() + '.js'
+  async UCunloadJS() {
+    if (!this.GM) return this.reply('你想做甚？！', true, { at: true })
+    const jsName = this.msg.match(/卸载(?:插件)?(.*)/)[1].trim() + '.js'
     const appPath = Path.get('apps', jsName)
-    if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
-    if (ing && !Check.str(JSs, jsName)) return e.reply('当前未载入' + jsName)
+    if (!Check.file(appPath)) return this.reply(jsName + '插件不存在，请检查')
+    if (ing && !Check.str(JSs, jsName)) return this.reply('当前未载入' + jsName)
     await unloadJs(appPath)
-    return e.reply(`成功卸载${jsName}插件。注意卸载非删除，重启机器人后仍会加载该插件，如需彻底删除，请使用#UC删除插件`)
+    return this.reply(`成功卸载${jsName}插件。注意卸载非删除，重启机器人后仍会加载该插件，如需彻底删除，请使用#UC删除插件`)
   }
 
-  async UCunlinkJS(e) {
-    if (!this.GM) return e.reply('你想做甚？！', true, { at: true })
-    const jsName = e.msg.match(/删除插件(.*)/)[1].trim() + '.js'
+  async UCunlinkJS() {
+    if (!this.GM) return this.reply('你想做甚？！', true, { at: true })
+    const jsName = this.msg.match(/删除插件(.*)/)[1].trim() + '.js'
     const appPath = Path.get('apps', jsName)
-    if (!Check.file(appPath)) return e.reply(jsName + '插件不存在，请检查')
+    if (!Check.file(appPath)) return this.reply(jsName + '插件不存在，请检查')
     await unloadJs(appPath)
     file.unlinkSync(appPath)
-    return e.reply(`成功卸载并删除${jsName}插件`)
+    return this.reply(`成功卸载并删除${jsName}插件`)
   }
 
-  async generalView(e) {
+  async generalView() {
     if (!this.GM) return false
-    if (JSs.length === 1) return e.reply('当前非开发环境')
+    if (JSs.length === 1) return this.reply('当前非开发环境')
     const msg = this.getGeneralView()
-    return e.reply(msg)
+    return this.reply(msg)
   }
 
   async viewJSs() {
@@ -237,13 +240,14 @@ export async function loadJs(jsPath) {
   try {
     const temp = await import(`file:///${jsPath}?${Date.now()}`)
     const app = temp.default ?? temp[Object.keys(temp)[0]]
+    if (!app?.prototype) return
     const plugin = new app()
     log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
     const jsName = Path.basename(jsPath)
     if (plugin.task.name) {
       Data.loadTask(plugin.task)
       const taskName = plugin.task.name ?? plugin.name
-      log.blue('[载入定时任务]' + taskName)
+      log.blue('[载入任务]' + taskName)
     }
     JSs.push(jsName)
     try {

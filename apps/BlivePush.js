@@ -99,13 +99,13 @@ export default class UCBlivePush extends UCPlugin {
     }
   }
 
-  async bLiveHelp(e) {
-    return e.reply(help + err_reply)
+  async bLiveHelp() {
+    return this.reply(help + err_reply)
   }
 
-  async bQueryUp(e) {
+  async bQueryUp() {
     if (!this.verifyLevel()) return false
-    const uid = e.msg.match(/\d+/)[0]
+    const uid = this.msg.match(/\d+/)[0]
     const data = await getUpInfo.call(this, uid)
     if (data === false) return false
     if (data === null) return this.fetchErrReply()
@@ -120,23 +120,23 @@ export default class UCBlivePush extends UCPlugin {
       ]
       if (room != 0) msg.push(`\n直播间链接：${BLive + room}`)
     }
-    return e.reply(msg)
+    return this.reply(msg)
   }
 
-  async bLiveSubscribe(e) {
+  async bLiveSubscribe() {
     if (!this.verifyPermission(this.Cfg.use)) return false
-    const [location_id, room_id, type] = await this.getIdType(e)
+    const [location_id, room_id, type] = await this.getIdType()
     if (!room_id) {
-      return e.reply('请输入正确的直播间id')
+      return this.reply('请输入正确的直播间id')
     }
     if (location_id.length < 5 || location_id.length > 10) {
-      return e.reply('请输入正确的推送群号')
+      return this.reply('请输入正确的推送群号')
     }
     const data = getData(type)
     const loc = type === 'Group' ? '群聊' : '私聊'
     const info = data[location_id]
     if (info && Check.str(info.room, room_id)) {
-      return e.reply(`订阅失败，${loc}：${location_id}已订阅直播间：${room_id}`)
+      return this.reply(`订阅失败，${loc}：${location_id}已订阅直播间：${room_id}`)
     }
     const up_data = await this.fetch('BlivePush1', room_id)
     if (!up_data) return this.fetchErrReply()
@@ -155,7 +155,7 @@ export default class UCBlivePush extends UCPlugin {
       } else {
         msg.push(err_reply)
       }
-      return e.reply(msg)
+      return this.reply(msg)
     }
     if (!info) {
       data[location_id] = {
@@ -168,33 +168,33 @@ export default class UCBlivePush extends UCPlugin {
       room_id
     })
     savaData(type, data)
-    return e.reply([
+    return this.reply([
       `订阅成功！\n直播间id：${room_id}\nB站用户：${nickname}`,
       segment.image(up_data.data.up.face),
       `${loc}：${location_id}\n当前处于${data[location_id].push ? '开启' : '关闭'}直播推送状态`
     ])
   }
 
-  async bLiveDelete(e) {
+  async bLiveDelete() {
     if (!this.verifyPermission(this.Cfg.use)) return false
-    const [location_id, room_id, type] = await this.getIdType(e)
+    const [location_id, room_id, type] = await this.getIdType()
     if (location_id.length < 5 || location_id.length > 10) {
-      return e.reply('请输入正确的推送群号')
+      return this.reply('请输入正确的推送群号')
     }
     if (!room_id || room_id.length > 8) {
-      return e.reply('请输入正确的直播间id')
+      return this.reply('请输入正确的直播间id')
     }
     const loc = type === 'Group' ? '群聊' : '私聊'
     const data = getData(type)
     const info = data[location_id]
     if (!info) {
-      return e.reply(`${loc}：${location_id}未开启推送`)
+      return this.reply(`${loc}：${location_id}未开启推送`)
     }
     if (!_.some(info.room, { room_id })) {
-      return e.reply(`操作失败：${loc}：${location_id}` +
+      return this.reply(`操作失败：${loc}：${location_id}` +
         `\n未订阅直播间：${room_id}`)
     }
-    e.reply(`操作成功！\n推送${loc}：${location_id}\n取消直播推送：${room_id}`)
+    this.reply(`操作成功！\n推送${loc}：${location_id}\n取消直播推送：${room_id}`)
     data[location_id].room = _.reject(data[location_id].room, { room_id })
     if (data[location_id].room.length == 0) {
       delete data[location_id]
@@ -217,41 +217,41 @@ export default class UCBlivePush extends UCPlugin {
 
   }
 
-  async bLiveList(e) {
+  async bLiveList() {
     if (!this.verifyLevel()) return false
-    if (isNaN(e.msg.replace(/#?(直播)?推送列表/, ''))) {
+    if (isNaN(this.msg.replace(/#?(直播)?推送列表/, ''))) {
       return false
     }
-    const [location_id, type] = await this.getIdType(e, false)
+    const [location_id, type] = await this.getIdType(false)
     if (location_id.length < 5 || location_id.length > 10) {
-      return e.reply('请输入正确的推送群号')
+      return this.reply('请输入正确的推送群号')
     }
     const loc = type === 'Group' ? '群聊' : '私聊'
     const data = getData(type)
     if (!data[location_id]) {
-      return e.reply(`${loc}：${location_id}未订阅推送`)
+      return this.reply(`${loc}：${location_id}未订阅推送`)
     }
     const title = `${loc}：${location_id}直播推送订阅列表：\n\n`
     let reply = title + Data.makeArrStr(data[location_id].room.map(v => `${v.nickname}-${v.room_id}`))
     if (type === 'Group') reply += `\n${data[location_id].atAll ? '已' : '未'}开启直播推送艾特全员`
     reply += `\n\n直播推送当前处于${this.Cfg[`is${type}`] && data[location_id].push ? '开启' : '关闭'}状态`
-    return e.reply(reply)
+    return this.reply(reply)
   }
 
-  async bLiveSwitch(e) {
+  async bLiveSwitch() {
     if (!this.verifyPermission(this.Cfg.use)) return false
-    const regtest = e.msg.match(/推送(.*)/)[1]
+    const regtest = this.msg.match(/推送(.*)/)[1]
     if (isNaN(regtest)) return false
-    const [location_id, type] = await this.getIdType(e, false)
+    const [location_id, type] = await this.getIdType(false)
     const loc = type === 'Group' ? '群聊' : '私聊'
-    if (!this.Cfg[`is${type}`]) return e.reply(`主人已关闭${loc}B站直播推送`)
+    if (!this.Cfg[`is${type}`]) return this.reply(`主人已关闭${loc}B站直播推送`)
     const data = getData(type)
     if (!data[location_id]) {
-      return e.reply(`${loc}：${location_id}未订阅直播间，订阅直播间自动开启推送`)
+      return this.reply(`${loc}：${location_id}未订阅直播间，订阅直播间自动开启推送`)
     }
-    const mode = /开启/.test(e.msg)
+    const mode = /开启/.test(this.msg)
     if (data[location_id].push === mode) {
-      return e.reply(`${loc}：${location_id}已经处于${mode ? '开启' : '关闭'}直播推送状态啦~`)
+      return this.reply(`${loc}：${location_id}已经处于${mode ? '开启' : '关闭'}直播推送状态啦~`)
     }
     data[location_id].push = mode
     savaData(type, data)
@@ -259,7 +259,7 @@ export default class UCBlivePush extends UCPlugin {
     if (mode) {
       msg.push(`\n当前订阅主播：\n${Data.makeArrStr(_.map(data[location_id].room, 'nickname'))}`)
     }
-    return e.reply(msg)
+    return this.reply(msg)
   }
 
   async bLivePush() {
@@ -368,15 +368,15 @@ export default class UCBlivePush extends UCPlugin {
     ing = false
   }
 
-  async bLiving(e) {
+  async bLiving() {
     if (!this.verifyLevel()) return false
-    const [location_id, type] = await this.getIdType(e, false)
+    const [location_id, type] = await this.getIdType(false)
     if (location_id.length < 5 || location_id.length > 10) {
-      return e.reply('请输入正确的推送群号')
+      return this.reply('请输入正确的推送群号')
     }
     const data = getData(type)
     if (!data[location_id]) {
-      return e.reply(`${type === 'Group' ? '群聊' : '私聊'}：${location_id}未订阅推送`)
+      return this.reply(`${type === 'Group' ? '群聊' : '私聊'}：${location_id}未订阅推送`)
     }
     const pushed = (await Data.redisGet(type === 'Group' ? this.GroupPushed : this.PrivatePushed, {})) || {}
     if (pushed[location_id]?.length > 0) {
@@ -393,7 +393,7 @@ export default class UCBlivePush extends UCPlugin {
         await common.sleep(1)
       }
     } else {
-      return e.reply('当前还没有订阅up主开播哦~')
+      return this.reply('当前还没有订阅up主开播哦~')
     }
   }
 
@@ -402,38 +402,38 @@ export default class UCBlivePush extends UCPlugin {
     redis.del(this.PushedInfo)
     redis.del(this.GroupPushed)
     redis.del(this.PrivatePushed)
-    e.reply('操作成功，推送缓存数据已全部清空')
+    this.reply('操作成功，推送缓存数据已全部清空')
   }
 
   async bLiveAtall(e) {
     if (!this.verifyPermission(this.Cfg.use)) return false
-    let [location_id, type] = await this.getIdType(e, false)
+    let [location_id, type] = await this.getIdType(false)
     if (type == 'Private') {
       if (e.sender.user_id === location_id) {
-        return e.reply('只能在群里开启直播推送艾特全员哦~')
+        return this.reply('只能在群里开启直播推送艾特全员哦~')
       }
       type = 'Group'
     }
     const data = getData(type)
     if (!data[location_id]) {
-      return e.reply(`群聊：${location_id}未开启推送`)
+      return this.reply(`群聊：${location_id}未开启推送`)
     }
-    const mode = /开启/.test(e.msg)
+    const mode = /开启/.test(this.msg)
     if (mode && !await common.botIsGroupAdmin(location_id)) {
       return this.noPowReply()
     }
     data[location_id].atAll = mode
     savaData(type, data)
-    if (e.group_id == location_id) {
-      return e.reply(`成功${mode ? '开启' : '关闭'}本群直播推送艾特全员`)
+    if (this.groupId == location_id) {
+      return this.reply(`成功${mode ? '开启' : '关闭'}本群直播推送艾特全员`)
     }
-    return e.reply(`成功${mode ? '开启' : '关闭'}群聊${location_id}的直播推送艾特全员`)
+    return this.reply(`成功${mode ? '开启' : '关闭'}群聊${location_id}的直播推送艾特全员`)
   }
 
-  async getIdType(e, isRoom = true) {
-    const numMatch = e.msg.match(/\d+/g)
-    const type = e.isGroup ? 'Group' : 'Private'
-    const self = e.group_id || this.userId
+  async getIdType(isRoom = true) {
+    const numMatch = this.msg.match(/\d+/g)
+    const type = this.isGroup ? 'Group' : 'Private'
+    const self = this.groupId || this.userId
     const isAppoint = numMatch && this.GM
     if (!isRoom) {
       const location_id = isAppoint ? numMatch[0] : self
@@ -471,7 +471,7 @@ async function atall(isGroup, loc, msg, info) {
 
 Data.loadTask({
   cron: '0 0 0 * * ?',
-  name: '每天清理一下已经退出的群的推送数据',
+  name: '清理已退出的群聊的推送数据',
   fnc: function () {
     const pushGroupData = file.JSONreader(Path.BLPGroupjson)
     const pushGroups = Object.keys(pushGroupData)

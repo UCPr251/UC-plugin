@@ -1,3 +1,11 @@
+## 2.4
+
+- [内定老婆](./apps/randomWife.js)`#内定老婆XXX` `#取消内定老婆`
+- [戳一戳图包切换](./apps/chuoyichuo.js)图包`#UC切换戳一戳图包` `#UC设置戳一戳图包`
+- [代发言](./apps/Event/Represent.js) `@XXX#代 XXX` `#代123456789 XXX`
+- [搜索、卸载js](./apps/addJS.js) `#UC搜索js XXX` `#UC卸载jsXXX`
+- [备份、还原](./apps/BackupRestore.js)`#UC备份数据` `#UC还原备份` `#UC删除备份`
+
 ## 2.3
 
 - [noticeSet](./apps/noticeSet.js) `#注入iyuu tk` `#注入sct tk`

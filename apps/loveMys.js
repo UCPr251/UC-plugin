@@ -37,12 +37,12 @@ export default class UCLoveMys extends UCPlugin {
       ]
     })
     if (Check.floder(loveMys)) {
+      this.redisData = '[UC]loveMysTokenQuery'
       this.task = {
         name: 'UC-loveMys',
         fnc: this.refresh.bind(this),
         cron: '0 0 0 * * ?'
       }
-      this.redisData = '[UC]loveMysTokenQuery'
     }
   }
 
@@ -58,26 +58,26 @@ export default class UCLoveMys extends UCPlugin {
     return true
   }
 
-  async loveMysHelp(e) {
-    if (!this.verifyLevel()) return false
+  async loveMysHelp() {
+    if (!this.verifyLevel()) return
     const hlepMsg = 'UC-plugin过码管理\n安装过码：#UC安装过码\n注入token：#UC注入过码tk你的tk\n查询剩余次数：#UC验证码查询\n更新过码插件：#UC更新过码'
-    return e.reply(hlepMsg)
+    return this.reply(hlepMsg)
   }
 
-  async installLoveMys(e) {
-    if (!this.verifyLevel(4)) return false
-    if (Check.floder(loveMys)) return e.reply('你已安装该插件，无需再次安装')
+  async installLoveMys() {
+    if (!this.verifyLevel(4)) return
+    if (Check.floder(loveMys)) return this.reply('你已安装该插件，无需再次安装')
     Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
-    return e.reply('安装成功，重启后生效')
+    return this.reply('安装成功，重启后生效')
   }
 
-  async insertApiToken(e) {
-    if (!this.verifyLevel(4)) return false
-    if (!this._verify()) return false
+  async insertApiToken() {
+    if (!this.verifyLevel(4)) return
+    if (!this._verify()) return
     const yamlData = file.YAMLreader(apiyaml)
-    const isApi = /api/i.test(e.msg)
-    const str = e.msg.match(/注入过码(?:api|tk)(.*)/)[1].trim()
-    if (!str) return e.reply(`请一同填写${isApi ? 'Api' : 'Token'}后重试`)
+    const isApi = /api/i.test(this.msg)
+    const str = this.msg.match(/注入过码(?:api|tk)(.*)/)[1].trim()
+    if (!str) return this.reply(`请一同填写${isApi ? 'Api' : 'Token'}后重试`)
     if (isApi) {
       yamlData.api = str
     } else {
@@ -87,20 +87,20 @@ export default class UCLoveMys extends UCPlugin {
       }
     }
     file.YAMLsaver(apiyaml, yamlData)
-    e.reply(`注入${isApi ? 'Api' : 'Token'}成功`)
+    this.reply(`注入${isApi ? 'Api' : 'Token'}成功`)
     const { api, token } = file.YAMLreader(apiyaml)
     const times = await remainingTimes(api, token)
-    if (!Number(times)) return e.reply(`无效api或tk：${str}\n剩余次数${times}\n请检查注入的api或者tk是否有误`)
+    if (!Number(times)) return this.reply(`无效api或tk：${str}\n剩余次数${times}\n请检查注入的api或者tk是否有误`)
     Data.redisSet(this.redisData, times)
-    return e.reply('剩余次数：' + times)
+    return this.reply('剩余次数：' + times)
   }
 
-  async queryToken(e) {
-    if (!this.verifyLevel(4)) return false
-    if (!this._verify()) return false
+  async queryToken() {
+    if (!this.verifyLevel(4)) return
+    if (!this._verify()) return
     const { api, token } = file.YAMLreader(apiyaml)
-    if (!token) return e.reply('请先注入token，#UC注入过码tk加你的token')
-    if (!api) return e.reply('请先注入api，#UC注入过码api加你的api')
+    if (!token) return this.reply('请先注入token，#UC注入过码tk加你的token')
+    if (!api) return this.reply('请先注入api，#UC注入过码api加你的api')
     const yes_times = await Data.redisGet(this.redisData, 0) || 0
     const now_times = await remainingTimes(api, token)
     let todayUsed = yes_times - now_times
@@ -108,17 +108,17 @@ export default class UCLoveMys extends UCPlugin {
       todayUsed = 0
       Data.redisSet(this.redisData, now_times)
     }
-    return await e.reply(`剩余次数：${now_times}次\n今日已用${todayUsed}次`)
+    return await this.reply(`剩余次数：${now_times}次\n今日已用${todayUsed}次`)
   }
 
-  async gitpull(e) {
-    if (!this.verifyLevel(4)) return false
-    if (!this._verify()) return false
+  async gitpull() {
+    if (!this.verifyLevel(4)) return
+    if (!this._verify()) return
     const Update_Plugin = new update()
-    Update_Plugin.e = e
-    Update_Plugin.reply = e.reply
+    Update_Plugin.e = this.e
+    Update_Plugin.reply = this.reply
     if (Update_Plugin.getPlugin(Plugin_Name)) {
-      if (/强制/.test(e.msg)) {
+      if (/强制/.test(this.msg)) {
         Data.execSync('git reset --hard', loveMys)
       }
       await Update_Plugin.runUpdate(Plugin_Name)

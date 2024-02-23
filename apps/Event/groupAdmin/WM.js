@@ -20,9 +20,8 @@ class UCWelcome extends UCEvent {
       name: 'UC-Welcome',
       dsc: 'UC群管·入群欢迎',
       Cfg: 'GAconfig.welcome',
-      event: 'notice.group'
+      event: 'notice.group.increase'
     })
-    this.sub_type = 'increase'
   }
 
   async accept(e, isGlobal, isView = false) {
@@ -39,9 +38,9 @@ class UCWelcome extends UCEvent {
       replyMsg.push(segment.image(avatarUrl))
     }
     const info = `<${e.nickname ?? this.userId}>（${this.userId}）`
-    log.white(`[群员增加]${info}`)
+    log.white(`[群员增加]${info} 群号：${this.groupId}`)
     const message = isGlobal ? globalWelcome : file.JSONreader(Path.get('WM', this.groupId, 'welcome.json')) ?? globalWelcome
-    replyMsg.push(common.makeMsg(message, 'info', info))
+    replyMsg.push(...common.makeMsg(message, 'info', info))
     if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送入群欢迎`)
     return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
   }
@@ -80,9 +79,9 @@ class UCMourn extends UCEvent {
       replyMsg.push(segment.image(avatarUrl))
     }
     if (e.operator_id === this.userId) {
-      log.white(`[群员退群]${info}`)
+      log.white(`[群员退群]${info} 群号：${this.groupId}`)
       const message = isGlobal ? globalMourn : file.JSONreader(Path.get('WM', this.groupId, 'mourn.json')) ?? globalMourn
-      replyMsg.push(common.makeMsg(message, 'info', info))
+      replyMsg.push(...common.makeMsg(message, 'info', info))
       if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送退群通知`)
       return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
     } else if (e.operator_id !== this.qq) {
@@ -104,11 +103,11 @@ class UCWMset extends UCEvent {
       dsc: 'UC群管·进退群通知',
       rule: [
         {
-          reg: /^#?(UC)?查看(全局)?(入群欢迎|退群通知)(\s*\d{5,10})?$/i,
+          reg: /^#(UC)?查看(全局)?(入群欢迎|退群通知)(\s*\d{5,10})?$/i,
           fnc: 'view'
         },
         {
-          reg: /^#?(UC)?修改(全局)?(入群欢迎|退群通知)(\s*\d{5,10})?$/i,
+          reg: /^#(UC)?修改(全局)?(入群欢迎|退群通知)(\s*\d{5,10})?$/i,
           fnc: 'set'
         }
       ]
@@ -185,34 +184,23 @@ class UCWMset extends UCEvent {
       return this.errorReply()
     }
     const { type, floderPath, jsonPath, string, isGlobal, data, isAP } = oriData
-    const reply = []
-    let imgCount = 0
     Check.floder(floderPath, true)
     if (!isGlobal && !_.isEmpty(data)) {
       const imgs = _.filter(data, { type: 'image' })
       _.map(imgs, 'path').forEach(path => file.unlinkSync(path))
     }
-    for (const v of e.message) {
-      switch (v.type) {
-        case 'text':
-          reply.push(v)
-          break
-        case 'image':
-          reply.push({
-            type: 'image',
-            path: await Data.download(v.url, floderPath, type + ++imgCount)
-          })
-          break
-        case 'at':
-          if (v.qq !== this.qq) {
-            reply.push(v)
-          }
-          break
-      }
+    const reply = common.getMsg(e.message)
+    let imgCount = 0
+    for (const v of reply) {
+      if (v.type !== 'image') continue
+      v.path = await Data.download(v.url, floderPath, type + ++imgCount)
+      _.unset(v, 'url')
+      _.unset(v, 'file')
+      _.unset(v, 'asface')
     }
     if (_.isEmpty(reply)) return this.finishReply('无有效参数，请重新修改')
     file.JSONsaver(jsonPath, reply)
-    return this.finishReply(`修改${isGlobal ? '全局' : (isAP ? `群${isAP}` : '本群')}${string}成功\n可通过#查看${string}${isAP ?? ''}\n查看效果`)
+    return this.finishReply(`修改${isGlobal ? '全局' : (isAP ? `群${isAP}` : '本群')}${string}成功\n可通过#查看${string}${isAP ?? ''}\n查看效果`, undefined, { quote: false })
   }
 }
 

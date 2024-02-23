@@ -13,7 +13,7 @@ export default class UCRandomMember extends UCPlugin {
       Cfg: 'config.randomMember',
       rule: [
         {
-          reg: new RegExp(`^#*${UCPr.randomMember?.keyWords?.trim() || '随机群友'}$`, 'i'),
+          reg: new RegExp(`^#*${UCPr.randomMember.keyWords?.trim() || '随机群友'}$`, 'i'),
           fnc: 'randomMember'
         }
       ]
@@ -27,6 +27,6 @@ export default class UCRandomMember extends UCPlugin {
     const mem = _.sample(Array.from(map.values()))
     const msg = [this.Cfg.reply.replace('info', `${mem.nickname}（${mem.user_id}）`), segment.image(common.getAvatarUrl(mem.user_id, 'user', '0'))]
     if (this.Cfg.isAt) msg.unshift(segment.at(mem.user_id))
-    return e.reply(msg)
+    return this.reply(msg)
   }
 }

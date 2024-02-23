@@ -11,7 +11,7 @@ onlyMaster: false
 # UC插件优先级，优先级越小越优先响应，可为任意整数
 priority: 251
 # 插件api服务的服务器，建议1，如遇api网络问题可以尝试切换
-server: 1
+server: 2
 # UC插件的机器人自称，用于个别时候的机器人回复或开关Bot的指令等
 BotName: 纳西妲
 # 默认年份，部分功能不指定年份时默认补全年份
@@ -21,11 +21,11 @@ autoYear: true
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 用户无权限进行某操作时，机器人的回复
-noPerReply: 无权限或权限不足
+noPerReply: 无权限
 # 机器人无权限进行某操作时，机器人的回复
 noPowReply: 主淫，小的权限不足，无法执行该操作嘤嘤嘤~
 # api服务连接失败时机器人的回复
-fetchErrReply: 服务连接失败，请稍后重试
+fetchErrReply: API连接失败，请稍后或切换服务后重试
 
 # qsign重启设置
 qsignRestart:
@@ -93,6 +93,8 @@ chuoyichuo:
   isAutoSetCard: true
   # 开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数
   groupCard: 今日已被戳num次~
+  # 戳一戳使用的图包的名称
+  picPath: 纳西妲
   # 被戳回复文本+图片概率
   textimg: 0.8
   # 被戳回复被戳次数+文本+图片概率，此概率独立于整体概率，意为触发文本+图片回复时又有多少概率在文本前加上被戳次数，可选0-1

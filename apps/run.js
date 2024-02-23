@@ -6,10 +6,10 @@ export default class UCRun extends UCPlugin {
     super({
       e,
       name: 'UC-run',
-      dsc: 'UC一键卸载',
+      dsc: '根目录执行指令等',
       rule: [
         {
-          reg: /^#?UC运行.+/i,
+          reg: /^#?UC(确认)?(运|执)行.+/i,
           fnc: 'cmd'
         },
         {
@@ -27,23 +27,38 @@ export default class UCRun extends UCPlugin {
 
   async cmd(e) {
     if (!this.GM) return false
-    e.command = this.msg.replace(/#?UC运行/i, '').trim()
+    const command = this.msg.match(/行(.*)/)[1].trim()
+    if (/确认/.test(this.msg)) {
+      return this.runCommand(command)
+    }
+    e.command = command
     this.setContext(this.setFnc)
     return this.reply(`将在云崽根目录运行指令：\n${e.command}\n是否确认？`)
   }
 
   _makeSure() {
-    this.isSure(() => {
+    if (this.isCancel()) return
+    this.isSure(async () => {
       const { command } = this.getContext()._makeSure
-      const stdout = Data.execSync(command, Path._path)
-      this.finishReply(`运行结果：\n${stdout}`)
+      this.finish()
+      this.runCommand(command)
     })
   }
 
-  async run(e) {
+  runCommand(command) {
+    Data.exec(command, Path._path, true, {}, (err, stdout) => {
+      if (err) {
+        const errorInfo = log.error(err)
+        return this.reply(`${command}执行失败：\n${errorInfo}`)
+      }
+      return this.reply(`${command}执行成功：\n${stdout}`)
+    })
+  }
+
+  async run() {
     if (!this.GM) return false
     await Data.run(true)
-    return e.reply('UC-plugin已卸载，无需重启')
+    return this.reply('UC-plugin已卸载，无需重启')
   }
 
 }

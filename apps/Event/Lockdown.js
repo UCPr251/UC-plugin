@@ -13,7 +13,7 @@ class UCLockdown extends UCEvent {
       e,
       name: 'UC-Lockdown',
       dsc: '锁定功能，禁止使用',
-      event: 'message.all',
+      event: 'message',
       rule: [
         {
           reg: /^#?(UC)?(锁定|解锁)功能(?!列表).*/i,
@@ -25,7 +25,6 @@ class UCLockdown extends UCEvent {
         }
       ]
     })
-    this.sub_type = 'all'
     this.setFnc = '_getNum'
   }
 
@@ -70,7 +69,7 @@ class UCLockdown extends UCEvent {
         return acc
       }, [])
       if (!toOperate.length) {
-        return e.reply(`无有效参数：${fncStr}`)
+        return this.reply(`无有效参数：${fncStr}`)
       }
       return this[fnc](toOperate)
     }
@@ -83,16 +82,15 @@ class UCLockdown extends UCEvent {
       fnc
     }
     this.setFunction(undefined, 300)
-    return e.reply(replyMsg)
+    return this.reply(replyMsg)
   }
 
-  async lockdownList(e) {
+  async lockdownList() {
     if (!this.GM) return false
-    return e.reply(`已锁定功能如下：\n\n${Data.empty(Data.makeArrStr(lockedData, { length: 2000, property: 'name', property2: 'key' }))}\n\n可通过#UC解锁功能 解除锁定`)
+    return this.reply(`已锁定功能如下：\n\n${Data.empty(Data.makeArrStr(lockedData, { length: 2000, property: 'name', property2: 'key' }))}\n\n可通过#UC解锁功能 解除锁定`)
   }
 
   _newLock(arr) {
-    arr = _.castArray(arr)
     const newData = _.uniqWith(_.concat(lockedData, arr), _.isEqual)
     file.JSONsaver(Path.lockdownjson, newData)
     this.refreshLocked()
@@ -102,7 +100,6 @@ class UCLockdown extends UCEvent {
   }
 
   _unlock(arr) {
-    arr = _.castArray(arr)
     for (const { name } of arr) {
       const info = removes[name]
       if (info) {

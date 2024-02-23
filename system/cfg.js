@@ -1,4 +1,5 @@
-import { Data, Path, Check } from '../components/index.js'
+/* eslint-disable comma-dangle */
+import { Data, Path, Check, file } from '../components/index.js'
 import { judgeInfo } from '../components/Admin.js'
 import _ from 'lodash'
 
@@ -16,13 +17,16 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
   if (prefix) {
     path = prefix + path
   }
-  if (typeof def === 'string') {
-    def = _.truncate(def, { length: 8 })
-  }
+  def &&= _.truncate(def, { length: 10, omission: '…' })
   if (type === 'select') {
-    def = input.join('/')
-    const ret = input
-    input = (str) => _.find(ret, v => v == str)
+    if (optional.refresher) { // 选择时动态刷新列表
+      def = _.truncate(optional.refresher().join('/'), { length: 18, omission: '…' })
+      input = (str) => _.find(optional.refresher(), v => v == str)
+    } else {
+      def = _.truncate(input.join('/'), { length: 18, omission: '…' })
+      const ret = input
+      input = (str) => _.find(ret, v => v == str)
+    }
   }
   return _.merge({
     path,
@@ -68,7 +72,7 @@ const 系统 = {
     开发环境: s(
       'isWatch',
       '开发环境',
-      '用于开发环境的功能，可热更新apps，如果有需要可以开启'
+      '用于开发环境的功能，可热更新apps，重启生效'
     ),
     日志: s(
       'log',
@@ -126,34 +130,34 @@ const 系统 = {
       '是否自动以当前年份为准补全年份，开启后将无视默认年份',
       'switch'
     ),
-    过码提醒: s(
-      'loveMysNotice',
-      '过码剩余提醒',
-      '每日零点loveMys（如果有）剩余过码次数小于等于该值时自动提醒主人，0则不提醒',
-      'num',
-      50
-    ),
-    用户无权限回复: s(
-      'noPerReply',
-      '用户无权限回复',
-      '用户无权限进行某操作时，机器人的回复',
-      'input',
-      '无权限'
-    ),
-    机器人无权限回复: s(
-      'noPowReply',
-      '无权限回复',
-      '机器人无权限进行某操作时，机器人的回复',
-      'input',
-      '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
-    ),
-    连接失败回复: s(
-      'fetchErrReply',
-      '连接失败回复',
-      'api服务连接失败时机器人的回复',
-      'input',
-      '服务连接失败，请稍后重试'
-    )
+    // 过码提醒: s(
+    //   'loveMysNotice',
+    //   '过码剩余提醒',
+    //   '每日零点loveMys（如果有）剩余过码次数小于等于该值时自动提醒主人，0则不提醒',
+    //   'num',
+    //   50
+    // ),
+    // 用户无权限回复: s(
+    //   'noPerReply',
+    //   '用户无权限回复',
+    //   '用户无权限进行某操作时，机器人的回复',
+    //   'input',
+    //   '无权限'
+    // ),
+    // 机器人无权限回复: s(
+    //   'noPowReply',
+    //   '无权限回复',
+    //   '机器人无权限进行某操作时，机器人的回复',
+    //   'input',
+    //   '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
+    // ),
+    // 连接失败回复: s(
+    //   'fetchErrReply',
+    //   '连接失败回复',
+    //   'api服务连接失败时机器人的回复',
+    //   'input',
+    //   '服务连接失败，请稍后重试'
+    // )
   }
 }
 
@@ -246,30 +250,30 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
   config.开关机器人 = {
     title: '开关机器人——指定群开关机器人设置',
     cfg: {
-      开启触发词: s(
+      开启指令: s(
         'openReg',
-        '开启机器人触发词',
-        '让Bot上班的指令：BotName+关键词即可触发，多个用|间隔',
+        '开启指令',
+        '让Bot上班的指令：BotName+指令即可触发，多个用|间隔',
         'input',
         '上班|工作'
       ),
-      关闭触发词: s(
+      关闭指令: s(
         'closeReg',
-        '关闭机器人触发词',
-        '让Bot下班的指令：BotName+关键词即可触发，多个用|间隔',
+        '关闭指令',
+        '让Bot下班的指令：BotName+指令即可触发，多个用|间隔',
         'input',
         '下班|休息'
       ),
       开启回复: s(
         'openMsg',
-        '开启机器人回复',
+        '开启回复',
         '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
         'input',
         '好哒，BotName开始上班啦！'
       ),
       关闭回复: s(
         'closeMsg',
-        '关闭机器人回复',
+        '关闭回复',
         '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
         'input',
         'BotName休息去啦~'
@@ -300,17 +304,26 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '戳一戳开关',
         '是否开启UC戳一戳'
       ),
-      更新群名片: s(
+      群名片: s(
         'isAutoSetCard',
-        '被戳更新群名片',
+        '自动群名片',
         '被戳是否自动更新群名片：BotName|后缀'
       ),
-      群名片后缀: s(
+      后缀: s(
         'groupCard',
         '群名片后缀',
         '更新群名片后缀内容，num会被替换为当前被戳次数',
         'input',
         '今日已被戳num次~'
+      ),
+      图包: s(
+        'picPath',
+        '图包',
+        '戳一戳使用的图包',
+        'select',
+        '',
+        '',
+        { refresher: () => file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.js' }) }
       ),
       文本图片概率: s(
         'textimg',

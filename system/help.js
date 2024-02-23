@@ -227,6 +227,119 @@ helpData.push({
 })
 
 helpData.push({
+  group: 'UC工具',
+  require: 2,
+  cfg: 'config',
+  list: [
+    s(
+      '@XXX#UC代 #XXX',
+      '代发言，以他人身份处理命令',
+      3
+    ),
+    s(
+      `#${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})`,
+      '群内开启Bot',
+      'switchBot.use'
+    ),
+    s(
+      `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
+      '群内关闭Bot',
+      'switchBot.use'
+    ),
+    s(
+      '#UC安装/卸载js',
+      '安装/卸载机器人js插件',
+      4
+    ),
+    s(
+      '#UC搜索js',
+      '搜索机器人已安装的js插件',
+      4
+    ),
+    s(
+      '#UC全部(强制)?更新',
+      '全部更新，但不会自动重启',
+      4
+    ),
+    s(
+      '#UC重启',
+      '前台重启云崽，不转后台',
+      4,
+      isWin
+    ),
+    s(
+      '#UC锁定/解锁功能',
+      '锁定功能，全局禁用',
+      4
+    ),
+    s(
+      '#UC锁定功能列表',
+      '锁定功能列表',
+      4
+    ),
+    s(
+      '#UC备份数据',
+      '备份云崽、各大型插件数据',
+      4
+    ),
+    s(
+      '#UC还原备份',
+      '还原备份的数据',
+      4
+    ),
+    s(
+      '#UC删除备份',
+      '删除备份的数据',
+      4
+    ),
+    s(
+      '#UC安装过码',
+      '安装过验证码插件loveMys',
+      4
+    ),
+    s(
+      '#UC注入过码tk',
+      '注入loveMys过码token',
+      4
+    ),
+    s(
+      '#UC验证码查询',
+      '查询当前token剩余次数',
+      4
+    ),
+    s(
+      '#UC更新过码',
+      '更新过码插件loveMys',
+      4
+    ),
+    s(
+      '#开启/关闭签名自动重启',
+      '开启/关闭签名自动重启',
+      4,
+      isWin
+    ),
+    s(
+      '#清理签名日志',
+      '删除签名产生的日志文件',
+      4,
+      isWin
+    ),
+    s(
+      '#签名重启日志',
+      '查看当日签名重启日志',
+      4,
+      isWin
+    ),
+    s(
+      '#重启签名',
+      '指令重启签名',
+      4,
+      isWin
+    )
+  ]
+})
+
+helpData.push({
   group: 'UC娱乐功能',
   require: 0,
   cfg: 'config',
@@ -275,128 +388,6 @@ helpData.push({
     )
   ]
 })
-
-helpData.push({
-  group: 'UC工具',
-  require: 2,
-  cfg: 'config',
-  list: [
-    s(
-      '#开启/关闭签名自动重启',
-      '开启/关闭签名自动重启',
-      4,
-      isWin
-    ),
-    s(
-      '#清理签名日志',
-      '删除签名产生的日志文件',
-      4,
-      isWin
-    ),
-    s(
-      '#签名重启日志',
-      '查看当日签名重启日志',
-      4,
-      isWin
-    ),
-    s(
-      '#重启签名',
-      '指令重启签名',
-      4,
-      isWin
-    ),
-    s(
-      '#UC安装js',
-      '安装机器人js插件',
-      4
-    ),
-    s(
-      '#UC安装过码',
-      '安装过验证码插件loveMys',
-      4
-    ),
-    s(
-      '#UC注入过码tk',
-      '注入loveMys过码token',
-      4
-    ),
-    s(
-      '#UC验证码查询',
-      '查询当前token剩余次数',
-      4
-    ),
-    s(
-      '#UC更新过码',
-      '更新过码插件loveMys',
-      4
-    ),
-    s(
-      `#${UCPr.BotName}(${UCPr.switchBot?.openReg?.trim() || '上班|工作'})`,
-      '群内开启Bot',
-      'switchBot.use'
-    ),
-    s(
-      `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
-      '群内关闭Bot',
-      'switchBot.use'
-    ),
-    s(
-      '#UC全部(强制)?更新',
-      '全部更新，但不会自动重启',
-      4
-    ),
-    s(
-      '#UC重启',
-      '前台重启云崽，不转后台',
-      4,
-      isWin
-    ),
-    s(
-      '#UC锁定/解锁功能',
-      '锁定功能，全局禁用',
-      4
-    ),
-    s(
-      '#UC锁定功能列表',
-      '锁定功能列表',
-      4
-    )
-  ]
-})
-
-if (Check.file(Path.get('apps', 'queueUp.js'))) {
-  helpData.push({
-    group: 'UC工具——群内排队',
-    require: 1,
-    cfg: 'config',
-    list: [
-      s(
-        '#创建排队',
-        '初始化群内排队任务'
-      ),
-      s(
-        '#排队',
-        '群员参与排队，添加至待处理'
-      ),
-      s(
-        '@XXX #完成',
-        '完成某人排队，添加至已完成'
-      ),
-      s(
-        '#队列',
-        '查看当前待处理队列'
-      ),
-      s(
-        '#排队信息',
-        '查看当前排队详细信息'
-      ),
-      s(
-        '#开始/结束排队',
-        '开关#排队，不会删除排队信息'
-      )
-    ]
-  })
-}
 
 helpData.push({
   group: 'UC工具——otherSet',
@@ -529,6 +520,40 @@ if (Check.file(Path.get('apps', 'accredit.js'))) {
   })
 }
 
+if (Check.file(Path.get('apps', 'queueUp.js'))) {
+  helpData.push({
+    group: 'UC工具——群内排队',
+    require: 1,
+    cfg: 'config',
+    list: [
+      s(
+        '#创建排队',
+        '初始化群内排队任务'
+      ),
+      s(
+        '#排队',
+        '群员参与排队，添加至待处理'
+      ),
+      s(
+        '@XXX #完成',
+        '完成某人排队，添加至已完成'
+      ),
+      s(
+        '#队列',
+        '查看当前待处理队列'
+      ),
+      s(
+        '#排队信息',
+        '查看当前排队详细信息'
+      ),
+      s(
+        '#开始/结束排队',
+        '开关#排队，不会删除排队信息'
+      )
+    ]
+  })
+}
+
 if (Check.file(Path.get('apps', 'BLivePush.js'))) {
   helpData.push({
     group: 'UC直播推送',
@@ -582,7 +607,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
 }
 
 if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('bigjpg')) {
-  helpData[2].list.push(
+  helpData.find(v => v.group === 'UC娱乐功能').list.push(
     s(
       '#放大图片',
       'AI无损放大图片',

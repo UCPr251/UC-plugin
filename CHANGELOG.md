@@ -4,6 +4,45 @@
 
 ### 2月
 
+#### 2-23
+
+**ver 2.4.0**
+
+- 鉴于UC功能的增多，创建交流群：866527417，欢迎加入
+
+**修改**
+
+- 被锅巴提前载入guoba.support.js导致循环依赖报错折磨的一天
+- 修改部分底层逻辑，对大部分功能进行了一次测试检查，优化了部分体验
+- 修改[群管功能](./apps/Event/groupAdmin/)指令响应，必须带上前缀 `#` 避免误触发
+- 修改[随机老婆](./apps/randomWife.js)和[戳一戳](./apps/chuoyichuo.js)图片资源位置
+- 修改[执行指令](./apps/run.js)执行命令为异步避免阻挡其他任务
+
+**修复**
+
+- 修复使用锅巴修改全局主人、全局管理员、全局黑名单时的错误排序
+- 修复[入群欢迎、退群通知](./apps/Event/groupAdmin/WM.js)修改回复时引用可能导致的报错`bad file param: undefined`
+- 修复[安装js](./apps/addJS.js)错误安装至UC插件内
+- 修复[设置CD](./apps/groupSet.js)无法设置为0
+- 修复[开关自动好友申请](./apps/otherSet.js)无效
+- 修复[删除私聊字符串](./apps/otherSet.js)不回复等问题
+
+**优化**
+
+- 优化[设置图](./system/cfg.js)展示效果
+- 优化[日志](./components/log.js)逻辑和效果
+- 优化[入群欢迎、退群通知](./apps/Event/groupAdmin/WM.js)支持消息类型，支持`face`和`sface`
+- 优化[签名重启](./apps/qsignRestart.js)，通过代理`logger.error`对报错信息进行检查，不再修改`e.reply`
+
+**新增**
+
+- 新增[内定老婆](./apps/randomWife.js)`#内定老婆XXX` `#取消内定老婆`
+- 新增[戳一戳图包切换](./apps/chuoyichuo.js)图包`#UC切换戳一戳图包` `#UC设置戳一戳图包`
+- 新增[搜索js](./apps/addJS.js)`#UC搜索js`功能，可根据关键词搜索`example`目录下所有js文件
+- 新增[删除js](./apps/addJS.js)`#UC删除js`功能，支持自动搜索
+- 新增[代发言](./apps/Event/Represent.js)`@XXX#UC代 XXX`，以他人身份执行命令
+- 新增[备份、还原](./apps/BackupRestore.js)`#UC备份数据` `#UC还原备份` `#UC删除备份`
+
 #### 2-17
 
 **ver 2.3.10**

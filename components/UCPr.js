@@ -79,19 +79,22 @@ class UCPr {
     this.CFG = CFG
     /** 事件监听器 */
     this.event = {
+      message: [],
       'message.group': [],
-      'message.all': [],
+      'message.private': [],
       'notice.group': [],
       'request.group': []
     }
     /** 文件监听器{ path: watcher } */
     this.watcher = {}
-    /** cron定时任务[ { cron, fnc, name, job } ] */
+    /** cron任务管理器[ { cron, fnc, name, job } ] */
     this.task = []
-    /** 群配置 */
-    this.group_CFG = {}
+    /** proxy代理管理器{ name: new Proxy() } */
+    this.proxy = {}
     /** 签名崩溃检测计时器 */
     this.intervalId = null
+    /** 群配置 */
+    this.group_CFG = {}
     /** package.json */
     this.package = {}
   }
@@ -167,19 +170,26 @@ class UCPr {
 
   /** 注册监听事件 */
   EventInit(EventClass) {
-    const app = new EventClass({})
-    const events = this.event[app.event]
-    if (!events) {
-      return log.warn('错误的监听事件：' + app.event)
+    if (!EventClass?.prototype) return
+    const app = new EventClass()
+    let { event, name, rule, sub_type } = app
+    const sp = event.split('.')
+    if (sp.length === 3) {
+      sub_type = sp.pop()
+      event = sp.join('.')
     }
-    Data.remove(events, app.name, 'name')
-    log.debug(`注册${app.event}监听事件：${app.name}`)
+    const events = this.event[event]
+    if (!events) {
+      return log.warn('错误的监听事件：' + event)
+    }
+    Data.remove(events, name, 'name')
+    log.debug(`注册${event}.${sub_type ||= 'all'}监听事件：${name}`)
     app.init && app.init()
     events.push({
-      name: app.name,
+      name,
       class: EventClass,
-      rule: app.rule,
-      sub_type: app.sub_type,
+      rule,
+      sub_type,
       accept: !!app.accept
     })
   }
@@ -231,7 +241,7 @@ class UCPr {
     return this.CFG.lock || {}
   }
 
-  /** 机器人设置 */
+  /** 机器人本体设置 */
   get defaultCfg() {
     return defaultCfg || {}
   }
@@ -293,7 +303,7 @@ class UCPr {
 
   /** api连接失败回复 */
   get fetchErrReply() {
-    return this.config.fetchErrReply ?? '连接失败，请稍后重试'
+    return this.config.fetchErrReply ?? 'API连接失败，请稍后或切换服务后重试'
   }
 
   /** 指定群主人对象 */

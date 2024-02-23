@@ -42,7 +42,7 @@ export default class Help extends Base {
         return per.isPer
       })
       data[i].list = filterPower
-      if (_.isEmpty(data[i].list)) data.splice(i, 1)
+      _.isEmpty(data[i].list) && data.splice(i, 1)
     }
     const iconNum = data.reduce((a, b) => a + b.list.length, 0)
     const randomNumArr = Data.generateRandomArray(1, 350, iconNum)

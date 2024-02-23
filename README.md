@@ -7,16 +7,21 @@
 </p>
 
 # [UC-plugin](https://gitee.com/UCPr251/UC-plugin)
+[![访问量(自2.4.0)](https://profile-counter.glitch.me/UC-plugin/count.svg)](https://gitee.com/UCPr251/UC-plugin)
 
 </div>
 
 ---
 
-## 安装插件
+## 安装方法
+
+（Node.js版本需大于等于16）
+
+#### 1、安装插件本体
 
 云崽根目录运行
 
-- 使用Gitee
+- 使用Gitee（国内推荐）
 
 ```Bash
 git clone https://gitee.com/UCPr251/UC-plugin ./plugins/UC-plugin
@@ -30,6 +35,14 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 :innocent:
 
+#### 2、安装所需依赖
+
+云崽根目录运行
+
+```Bash
+pnpm i --filter=UC-plugin
+```
+
 <div align="center">
 
 </div>
@@ -40,6 +53,8 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 - **UC帮助** 为动态帮助图，会根据当前[插件设置](#插件设置)、[用户权限](#关于插件权限)等自动调整帮助图展示项
 
   > 比如主人未开启或触发指令的用户没有使用权限的功能，将不会在帮助图中进行展示，可在插件设置项中开关、设置功能，详见[插件设置](#插件设置)
+
+[<<<点击查看帮助图>>>](./resources/img/README/help_example.jpg)
 
 ## 插件设置
 
@@ -52,10 +67,13 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 - **群设置**：只在对应群内生效的UC设置
 
   > 在群内发送 **#UC设置** 和 **#UC群管设置** 指令，查看的都是当前群设置
+  > [<<<点击查看群设置>>>](./resources/img/README/cfg_group_example.jpg) [<<<点击查看群内群管设置>>>](./resources/img/README/GAcfg_group_example.jpg)
+
 
 - **全局设置**：在全局范围内生效的UC设置。当某个群没有进行单独的群设置时，会以全局设置为准；反之会忽略全局设置，以群设置为准
 
-  > 发送 **#UC全局设置** 和 **#UC全局群管设置** 或**私聊**发送 **#UC设置** 和 **#UC群管设置** 查看的都是全局设置
+  > 发送 **#UC全局设置** 和 **#UC全局群管设置** 或 **私聊** 发送 **#UC设置** 和 **#UC群管设置** 查看的都是全局设置
+  > [<<<点击查看全局设置>>>](./resources/img/README/cfg_global_example.jpg) [<<<点击查看全局群管设置>>>](./resources/img/README/GAcfg_global_example.jpg)
 
 注意：部分设置仅以全局设置为准，如底层基础设置、签名设置等
 
@@ -63,12 +81,22 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 插件设置按照管理范围分类可分为 **普通设置** 和 **群管设置**
 
-结合设置的[生效范围](#按照生效范围分类)共有2*2=4类：
+- **普通设置**：UC插件基础设置（目前即群管设置以外的设置）
 
-- **#UC设置** 群聊：当前群的基础设置；私聊：全局基础设置
-- **#UC群管设置** 群聊：当前群的群管设置；私聊：全局群管设置
-- **#UC全局设置**
-- **#UC全局群管设置**
+  > [<<<点击查看群设置>>>](./resources/img/README/cfg_group_example.jpg) [<<<点击查看全局设置>>>](./resources/img/README/cfg_global_example.jpg)
+
+- **群管设置**：UC插件群管部分功能的设置
+
+  > [<<<点击查看群内群管设置>>>](./resources/img/README/GAcfg_group_example.jpg) [<<<点击查看全局群管设置>>>](./resources/img/README/GAcfg_global_example.jpg)
+
+#### 综合分类
+
+综合[生效范围](#按照生效范围分类)和[管理范围](#按照管理范围分类)，设置共有2*2=4类：
+
+- **[#UC设置](./resources/img/README/cfg_group_example.jpg)** 群聊：当前群的 **#UC设置**；私聊：相当于 **#UC全局设置**
+- **[#UC群管设置](./resources/img/README/GAcfg_group_example.jpg)** 群聊：当前群的 **#UC群管设置**；私聊：相当于 **#UC全局群管设置**
+- **[#UC全局设置](./resources/img/README/cfg_global_example.jpg)**
+- **[#UC全局群管设置](./resources/img/README/GAcfg_global_example.jpg)**
 
 很简单的，上手逝一逝就知道区别了:innocent:
 
@@ -105,6 +133,10 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 ~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371 "游戏人生")第 2 季啥时候才能出啊~~
 
+诈尸了，要新出BD了
+
+[<<<《游戏人生 NO GAME NO LIFE》COMPLETE Blu-ray BOX 发售告知CM公开！>>>](https://www.bilibili.com/video/BV14t421h7yk)
+
 </details>
 
 ## 关于插件权限
@@ -113,7 +145,7 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 #### 插件主人
 
-- **插件主人**可以独立于**Bot主人**，默认合并机器人主人为插件全局主人
+- **插件主人**可以独立于**Bot主人**，默认合并机器人主人为插件全局主人，可在锅巴或#UC全局设置中进行修改
 
 - **插件主人**有两类：
   > - **全局主人**：在所有群、私聊都拥有插件的主人权限，权限等级 **4**
@@ -214,13 +246,17 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 - 以上功能普通用户、黑名单用户皆不可使用
 
+- 权限等级主要用于功能使用权限区分和群管权限区分
+
 </details>
 
 <div align="center">
 
-## 声明
+## 交流群
 
-**请勿在其他任何公共场合传播本插件**
+**QQ群：866527417** 欢迎加入（正在筹备中）
+
+
 
 </div>
 

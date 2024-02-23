@@ -21,11 +21,13 @@ export default class UCEvent extends UCPlugin {
     /**
      * message.group: normal anonymous
      *
+     * message.private: group friend other self
+     *
      * notice.group: increase decrease recall sign admin ban transfer poke
      *
-     * request.froup: invite add
+     * request.group: invite add
      */
-    this.sub_type = 'normal'
+    this.sub_type = ''
     if (!e) return
     /** bot是否为管理员 */
     this.botIsAdmin = this.e.group?.is_admin
@@ -104,38 +106,6 @@ export default class UCEvent extends UCPlugin {
     return card || nickname || memId
   }
 
-  async reply(msg, quote, data = { recallMsg: 0, at: false }) {
-    if (_.isEmpty(msg)) return
-    if (!this.e.reply) {
-      if (this.isGroup) {
-        this.e.reply = common.pickGroup(this.groupId)?.sendMsg
-      } else if (this.userId) {
-        this.e.reply = Bot.pickFriend(this.userId)?.sendMsg
-      }
-    }
-    if (!this.e.reply) {
-      return log.warn('[UCEvent.reply]发送消息错误，e.reply不存在')
-    }
-    if (this.e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
-    let { recallMsg = 0, at = false } = data
-    if (at) {
-      msg = _.castArray(msg)
-      if (isNaN(at)) at = this.userId
-      msg = [segment.at(at), '\n', ...msg]
-    }
-    const msgRes = await this.e.reply(msg, quote).catch(err => {
-      log.error('[UCEvent.reply]发送消息错误', err)
-    })
-    if (recallMsg) {
-      if (this.e.group) {
-        setTimeout(() => this.e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
-      } else if (this.e.friend) {
-        setTimeout(() => this.e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
-      }
-    }
-    return msgRes
-  }
-
   /** 创建上下文，false再处理 */
   setFunction(type = this.setFnc, time = UCPr.GAconfig.overTime) {
     const key = this.conKey()
@@ -151,6 +121,10 @@ export default class UCEvent extends UCPlugin {
         log.yellow(`${key}操作超时已取消`)
       }
     }, time * 1000)
+  }
+
+  async BotPluginsDeal(e = this.e) {
+    return await BotPluginsDeal(e).catch(err => log.error('[UCEvent]执行消息处理错误', err))
   }
 
 }
@@ -178,9 +152,7 @@ class UCSwitchBotEvent extends UCEvent {
     const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
     if (this.Cfg.isPrefix && reg.test(this.msg)) {
       e.isUCSwitchBot = true
-      e.message.forEach(v => {
-        if (v.text) v.text = v.text.replace(reg, '')
-      })
+      e.message.forEach(v => (v.text &&= v.text.replace(reg, '')))
       return await this.dealMsg(e, type)
     }
     return false
@@ -190,7 +162,7 @@ class UCSwitchBotEvent extends UCEvent {
     _.unset(this.groupData, `${this.groupId}.enable`)
     let result = await UCdealMsg(type, e)
     await common.sleep(0.2) // 等待本体loader.deal执行完毕和本体CD
-    if (result === false && type === 'message.all' && !e.atme) {
+    if (result === false && type === 'message.group' && !e.atme) {
       result = await BotPluginsDeal(e).catch(err => log.error('执行消息处理错误', err))
     }
     _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
@@ -219,11 +191,11 @@ async function UCdealMsg(type, e) {
       const app = new event.class(e)
       try {
         const result = await app[userHook.type](e)
-        if (result !== false) _.remove(hook, userHook)
+        result !== false && _.remove(hook, userHook)
       } catch (err) {
-        const errMsg = `执行${event.name} 上下文${userHook.type}错误`
+        const errMsg = `执行${event.name}上下文${userHook.type}错误`
         const errInfo = log.error(errMsg, err)
-        e.reply?.(errMsg + '\n' + errInfo)
+        e.reply?.(errInfo)
       }
       return true
     }
@@ -242,19 +214,20 @@ async function UCdealMsg(type, e) {
     for (const rule of event.rule) {
       // log.debug('检查功能正则' + rule.reg)
       if (new RegExp(rule.reg).test(msg)) {
-        log.white(msg)
+        // log.white(msg)
         const start = Date.now()
         const logInfo = `[${event.name}][${rule.fnc}]${_.truncate(msg, { length: 50 })}`
-        log.info(logInfo)
+        log.white(logInfo)
         const app = new event.class(e)
         const result = await app[rule.fnc](e)?.catch?.(err => {
           const errInfo = log.error(`执行${logInfo}错误`, err)
-          e.reply?.(logInfo + ' 执行错误：\n' + errInfo)
+          e.reply?.(errInfo)
         })
         if (result !== false) {
           log.white(`${logInfo} 处理完成 ${Date.now() - start}ms`)
           return true
         }
+        log.white(`${logInfo} 向下传递`)
       }
     }
   }
@@ -270,9 +243,10 @@ export async function EventLoader() {
   }
   if (!Bot?.on) return log.warn('非正常启动流程，跳过监听事件注册')
   Bot.on('message', async (e) => {
-    const result = await UCdealMsg('message.all', e)
+    const result = await UCdealMsg('message', e)
     if (result === false) {
       if (e.message_type === 'group') UCdealMsg('message.group', e)
+      else if (e.message_type === 'private') UCdealMsg('message.private', e)
     }
   })
   Bot.on('notice.group', (e) => {
@@ -290,10 +264,7 @@ async function BotPluginsDeal(e) {
   const priority = []
   if (!e.runtime) await Runtime.init(e)
   if (e.msg === undefined && _.some(e.message, { type: 'text' })) loader.dealMsg(e)
-  if (e.msg) {
-    const reg = new RegExp(`^\\s*(${UCPr.BotName})+`, 'i')
-    e.msg = e.msg.replace(reg, '')
-  }
+  e.msg &&= e.msg.replace(new RegExp(`^\\s*(${UCPr.BotName})+`, 'i'), '')
   loader.priority.forEach(v => {
     const p = new v.class(e)
     p.e = e
@@ -322,6 +293,10 @@ async function BotPluginsDeal(e) {
     }
   }
   if (!loader.onlyReplyAt(e)) return false
+  if (loader.srReg.test(e.msg)) {
+    e.game = 'sr'
+    e.msg = e.raw_message = e.original_msg = e.msg.replace(loader.srReg, '#星铁')
+  }
   for (const plugin of priority) {
     if (plugin.accept) {
       const res = await plugin.accept(e)
@@ -352,8 +327,7 @@ async function BotPluginsDeal(e) {
               return true
             }
           } catch (err) {
-            logger.error(`${e.logFnc}`)
-            logger.error(err.stack)
+            log.error(`${e.logFnc}`, err)
             return false
           }
         }

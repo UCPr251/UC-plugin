@@ -87,22 +87,21 @@ export default class UCGroupSet extends UCPlugin {
     return { isGlobal, groupId }
   }
 
-  async CD(e) {
+  async CD() {
     if (!this.verifyLevel(3)) return
     const locData = this.getLoc()
     if (!locData) return
     const { isGlobal, groupId } = locData
     const cd = Number(this.msg.match(/\d+/)?.[0])
     const locStr = isGlobal ? '默认' : `群${groupId}`
-    if (!cd) return e.reply(`请同时指定${locStr}配置中要设置的CD值，单位毫秒`)
     const isGroupCD = /群/.test(this.msg)
     const path = (isGlobal ? 'default' : groupId) + (isGroupCD ? '.groupGlobalCD' : '.singleCD')
     _.set(Cfg, path, cd)
     this.save()
-    return e.reply(`操作成功，修改${locStr}配置${isGroupCD ? '群' : '个人'}CD为${cd}`)
+    return this.reply(`操作成功，修改${locStr}配置${isGroupCD ? '群' : '个人'}CD为${cd}`)
   }
 
-  async onlyReplyAt(e) {
+  async onlyReplyAt() {
     if (!this.verifyLevel(3)) return
     const locData = this.getLoc()
     if (!locData) return
@@ -111,21 +110,21 @@ export default class UCGroupSet extends UCPlugin {
     const path = (isGlobal ? 'default' : groupId) + '.onlyReplyAt'
     _.set(Cfg, path, operation)
     this.save()
-    return e.reply(`操作成功，${operation ? '开启' : '关闭'}${isGlobal ? '默认' : `群${groupId}`}配置仅回复艾特`)
+    return this.reply(`操作成功，${operation ? '开启' : '关闭'}${isGlobal ? '默认' : `群${groupId}`}配置仅回复艾特`)
   }
 
-  async singleCD(e) {
+  async singleCD() {
     if (!this.verifyLevel(3)) return
     const locData = this.getLoc()
     if (!locData) return
     const { isGlobal, groupId } = locData
     const cd = Number(this.msg.match(/\d+/)?.[0])
     const locStr = isGlobal ? '默认' : `群${groupId}`
-    if (!cd) return e.reply(`请同时指定${locStr}配置中要设置的CD值，单位毫秒`)
+    if (!cd) return this.reply(`请同时指定${locStr}配置中要设置的CD值，单位毫秒`)
     const path = isGlobal ? 'default.groupGlobalCD' : `${groupId}.groupGlobalCD`
     _.set(Cfg, path, cd)
     this.save()
-    return e.reply(`操作成功，修改${locStr}配置群CD为${cd}`)
+    return this.reply(`操作成功，修改${locStr}配置群CD为${cd}`)
   }
 
   async disable(e) {
@@ -143,7 +142,7 @@ export default class UCGroupSet extends UCPlugin {
     if (fncStr) {
       const toOperate = fncStr.split(/\s+/).filter(str => list.includes(str))
       if (!toOperate.length) {
-        return e.reply(`无有效参数：${fncStr}`)
+        return this.reply(`无有效参数：${fncStr}`)
       }
       return this[fnc](toOperate, { path, disabled, groupId })
     }
@@ -161,7 +160,7 @@ export default class UCGroupSet extends UCPlugin {
       groupId
     }
     this.setContext(this.setFnc, false, 300)
-    return e.reply(replyMsg)
+    return this.reply(replyMsg)
   }
 
   async disableList(e) {
@@ -170,11 +169,12 @@ export default class UCGroupSet extends UCPlugin {
     if (!locData) return
     const { isGlobal, groupId } = locData
     const disabled = this.getDisabled(isGlobal, groupId)
+    if (!disabled.length) return this.reply(`${isGlobal ? '默认' : `群${groupId}`}未禁用任何功能`)
     const infoData = _.sortBy(disabled.map(name => pluginsData.find(obj => obj.name === name)).filter(v => v), 'key')
     const infoMsg = Data.makeArrStr(infoData, { chunkSize: 50, length: 2000, property: 'name', property2: 'key' })
     const title = `${isGlobal ? '默认' : `群${groupId}`}禁用功能`
     const replyMsg = await common.makeForwardMsg(e, [title, ...infoMsg, '如需解禁功能可使用#解禁功能'])
-    return e.reply(replyMsg)
+    return this.reply(replyMsg)
   }
 
   async _disable(toDisable, data) {

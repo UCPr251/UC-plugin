@@ -27,8 +27,7 @@ let status = true
 for (const i in files) {
     const name = files[i].replace('.js', '')
     if (ret[i].status !== 'fulfilled') {
-        logger.error(`载入插件错误：${logger.red(name)}`)
-        logger.error(ret[i].reason)
+        log.error(`载入插件错误：${name}`, ret[i].reason)
         status = false
         continue
     }

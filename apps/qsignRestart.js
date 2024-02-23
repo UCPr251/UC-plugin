@@ -1,9 +1,6 @@
 import { Path, Check, Data, log, UCPr, UCDate, common, file } from '../components/index.js'
-import loader from '../../../lib/plugins/loader.js'
-import cfg from '../../../lib/config/config.js'
 import { UCPlugin } from '../models/index.js'
-import { segment } from 'icqq'
-import lodash from 'lodash'
+import _ from 'lodash'
 
 /** 全局变量 */
 let isCheckMsg, ing
@@ -32,7 +29,7 @@ async function addLog(msg = '') {
   Data.redisSet(redisData, data, UCDate.EXsecondes)
 }
 
-async function checkMsg(msg) {
+const checkMsg = _.throttle(async function (msg) {
   if (ing || !isCheckMsg) return
   if (/签名api异常/i.test(msg)) {
     if (++errorTimes >= (UCPr.qsignRestart?.errorTimes ?? 3)) {
@@ -49,7 +46,7 @@ async function checkMsg(msg) {
       setTimeout(() => (ing = false), 60000)
     }
   }
-}
+}, 100, { trailing: false })
 
 async function checkQsignPort() {
   if (ing) return
@@ -117,7 +114,7 @@ export default class UCQsignRestart extends UCPlugin {
       if (Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {
         if (this.Cfg.switch1) UCPr.intervalId = setInterval(checkQsignPort, this.Cfg.sleep * 1000)
         if (this.Cfg.switch2) {
-          replaceReply()
+          this.proxyLogError()
           isCheckMsg = true
         }
       }
@@ -131,39 +128,39 @@ export default class UCQsignRestart extends UCPlugin {
     }
   }
 
-  async autoRestart(e) {
+  async autoRestart() {
     if (!this.GM) return false
-    if (process.platform !== 'win32') return e.reply('此功能只能在Windows系统中使用')
-    const isOpen = /开启/.test(e.msg)
+    if (process.platform !== 'win32') return this.reply('此功能只能在Windows系统中使用')
+    const isOpen = /开启/.test(this.msg)
     if (isOpen) {
       if (!Check.file(Path.join(this.Cfg.qsign || Path.qsign, this.Cfg.qsingRunner))) {
-        return e.reply('请根据本地配置在锅巴，UC-plugin配置中修改签名启动器路径及名称')
+        return this.reply('请根据本地配置在锅巴，UC-plugin配置中修改签名启动器路径及名称')
       }
       if (UCPr.intervalId || isCheckMsg) {
-        return e.reply('当前已经开启签名自动重启')
+        return this.reply('当前已经开启签名自动重启')
       }
       this.setContext(this.setFnc)
-      return e.reply(`请确认签名配置：\n监听host：${this.Cfg.host}\n监听port：${this.Cfg.port}\n签名路径：${this.Cfg.qsign || Path.qsign}\n签名启动器名称：${this.Cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
+      return this.reply(`请确认签名配置：\n监听host：${this.Cfg.host}\n监听port：${this.Cfg.port}\n签名路径：${this.Cfg.qsign || Path.qsign}\n签名启动器名称：${this.Cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
     } else {
       if (!UCPr.intervalId && !isCheckMsg) {
-        return e.reply('当前未启动签名自动重启')
+        return this.reply('当前未启动签名自动重启')
       }
       if (this.Cfg.switch1) clearInterval(UCPr.intervalId)
       if (this.Cfg.switch2) isCheckMsg = false
-      return e.reply('已关闭签名自动重启，将不再自动重启签名')
+      return this.reply('已关闭签名自动重启，将不再自动重启签名')
     }
   }
 
   async verify() {
     if (this.isCancel()) return false
-    if (/确认|确定/.test(this.e.msg)) {
+    if (/确认|确定/.test(this.msg)) {
       const choices = []
       if (this.Cfg.switch1) {
         UCPr.intervalId = setInterval(checkQsignPort, this.Cfg.sleep * 1000)
         choices.push('签名崩溃检测')
       }
       if (this.Cfg.switch2) {
-        replaceReply()
+        this.proxyLogError()
         isCheckMsg = true
         choices.push('签名异常检测')
       }
@@ -171,18 +168,18 @@ export default class UCQsignRestart extends UCPlugin {
     }
   }
 
-  async restartLog(e) {
+  async restartLog() {
     if (!this.GM) return false
     const data = await Data.redisGet(redisData, []) || []
-    return e.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
+    return this.reply('今日签名重启记录：\n\n' + Data.empty(Data.makeArrStr(data)), true)
   }
 
-  async restart(e) {
+  async restart() {
     if (!this.GM) return false
     killQsign()
     startQsign()
-    await common.sleep(3)
-    return e.reply('签名指令重启成功')
+    await common.sleep(5)
+    return this.reply('签名指令重启成功')
   }
 
   async test() {
@@ -196,88 +193,16 @@ export default class UCQsignRestart extends UCPlugin {
     if (!count) return this.reply('当前不存在可清理的日志文件')
     return this.reply(`成功清理${count}个日志文件`)
   }
-}
 
-function replaceReply() {
-  loader.reply = function (e) {
-    if (e.reply) {
-      e.replyNew = e.reply
-      /**
-       * @param msg 发送的消息
-       * @param quote 是否引用回复
-       * @param data.recallMsg 群聊是否撤回消息，0-120秒，0不撤回
-       * @param data.at 是否at用户
-       */
-      e.reply = async (msg = '', quote = false, data = {}) => {
-        if (!msg) return false
-        /** 禁言中 */
-        if (e.isGroup && e?.group?.mute_left > 0) return false
-        let { recallMsg = 0, at = '' } = data
-        if (at && e.isGroup) {
-          let text = ''
-          if (e?.sender?.card) {
-            text = lodash.truncate(e.sender.card, { length: 10 })
-          }
-          if (at === true) {
-            at = Number(e.user_id) || String(e.user_id)
-          } else if (!isNaN(at)) {
-            if (e.isGuild) {
-              text = e.sender?.nickname
-            } else {
-              const info = e.group.pickMember(at).info
-              text = info?.card ?? info?.nickname
-            }
-            text = lodash.truncate(text, { length: 10 })
-          }
-          if (Array.isArray(msg)) {
-            msg.unshift(segment.at(at, text), '\n')
-          } else {
-            msg = [segment.at(at, text), '\n', msg]
-          }
+  proxyLogError() {
+    if (UCPr.proxy[this.name]) return
+    if (global.logger?.error) {
+      logger.error = UCPr.proxy[this.name] = new Proxy(logger.error, {
+        apply(logger_error, thisArg, args) {
+          checkMsg(args[0])
+          logger_error.apply(thisArg, args)
         }
-        let msgRes
-        try {
-          msgRes = await e.replyNew(msg, quote)
-        } catch (err) {
-          if (typeof msg != 'string') {
-            if (msg.type == 'image' && Buffer.isBuffer(msg?.file)) msg.file = {}
-            msg = lodash.truncate(JSON.stringify(msg), { length: 300 })
-          }
-          logger.error(`发送消息错误:${msg}`)
-          logger.error(err)
-          // 改动
-          checkMsg(err.message)
-          if (cfg.bot.sendmsg_error) {
-            Bot[Bot.uin].pickUser(cfg.masterQQ[0]).sendMsg(`发送消息错误:${msg}`)
-          }
-        }
-        // 频道一下是不是频道
-        if (!e.isGuild && recallMsg > 0 && msgRes?.message_id) {
-          if (e.isGroup) {
-            setTimeout(() => e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
-          } else if (e.friend) {
-            setTimeout(() => e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
-          }
-        }
-        this.count(e, msg)
-        return msgRes
-      }
-    } else {
-      e.reply = async (msg = '', quote = false, data = {}) => {
-        if (!msg) return false
-        this.count(e, msg)
-        if (e.group_id) {
-          return await e.group.sendMsg(msg).catch((err) => {
-            logger.warn(err)
-          })
-        } else {
-          const friend = e.bot.fl.get(e.user_id)
-          if (!friend) return
-          return await e.bot.pickUser(e.user_id).sendMsg(msg).catch((err) => {
-            logger.warn(err)
-          })
-        }
-      }
+      })
     }
   }
 

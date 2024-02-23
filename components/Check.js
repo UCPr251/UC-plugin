@@ -3,13 +3,15 @@ import UCPr from './UCPr.js'
 
 function getLevel(userId, groupId) {
   const groupCfg = UCPr.groupCFG(groupId)
-  if (Check.str(UCPr.GlobalMaster, userId)) return 4
-  if (Check.str(groupCfg.permission?.Master, userId)) return 3
-  if (Check.str(UCPr.GlobalAdmin, userId)) return 2
-  if (Check.str(groupCfg.permission?.Admin, userId)) return 1
-  if (Check.str(UCPr.GlobalBlackQQ, userId)) return -2
-  if (Check.str(groupCfg.permission?.BlackQQ, userId)) return -1
-  return 0
+  switch (true) {
+    case Check.str(UCPr.GlobalMaster, userId): return 4
+    case Check.str(groupCfg.permission?.Master, userId): return 3
+    case Check.str(UCPr.GlobalAdmin, userId): return 2
+    case Check.str(groupCfg.permission?.Admin, userId): return 1
+    case Check.str(UCPr.GlobalBlackQQ, userId): return -2
+    case Check.str(groupCfg.permission?.BlackQQ, userId): return -1
+    default: return 0
+  }
 }
 
 const temp = {}
@@ -17,9 +19,7 @@ const temp = {}
 // eslint-disable-next-line no-unused-vars
 function logLevel(userId, level) {
   if (!UCPr.debugLog) return
-  if (temp[userId]) {
-    clearTimeout(temp[userId])
-  }
+  temp[userId] && clearTimeout(temp[userId])
   temp[userId] = setTimeout(() => log.debug(`用户${userId}权限等级：${level}`), 5)
 }
 
@@ -28,9 +28,7 @@ const Check = {
   /** 检查、递归创建文件夹 */
   floder(path, mode = false) {
     if (!file.existsSync(path)) {
-      if (mode) {
-        file.mkdirSync(path, true)
-      }
+      mode && file.mkdirSync(path, true)
       return false
     }
     return true

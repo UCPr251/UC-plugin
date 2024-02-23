@@ -9,19 +9,18 @@ class UCGroupInfo extends UCEvent {
       e,
       name: 'UC-groupInfo',
       dsc: 'UC群管·获取群信息',
-      event: 'message.all',
+      event: 'message',
       rule: [
         {
-          reg: /^#?(UC)?获取群列表$/i,
+          reg: /^#(UC)?获取群列表$/i,
           fnc: 'GroupList'
         },
         {
-          reg: /^#?(UC)?获取群信息(\d+)?$/i,
+          reg: /^#(UC)?获取群信息(\d+)?$/i,
           fnc: 'GroupInfo'
         }
       ]
     })
-    this.sub_type = 'all'
   }
 
   async GroupList() {
@@ -36,7 +35,7 @@ class UCGroupInfo extends UCEvent {
     if (!this.isOpen) return false
     if (!this.verifyLevel(4)) return
     const GroupsInfo = Object.fromEntries(Bot.gl)
-    const groupId = e.msg.match(/\d+/)?.[0]
+    const groupId = this.msg.match(/\d+/)?.[0]
     if (groupId) {
       const info = GroupsInfo[groupId]
       if (!info) return this.reply(`我不在群${groupId}中哦~`)

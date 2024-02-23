@@ -30,12 +30,12 @@ const file = {
   /**
    * 获取文件夹内文件名数组
    * @param {path} _path
-   * @param {object} option
-   * @param {string|Array} option.removes 要排除的文件的全名
-   * @param {boolean} option.withFileTypes 同时读取文件types，true则不会筛选类型或只保留文件名
-   * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'|'.png'} option.type 筛选文件类型
-   * @param {boolean} option.basename 只保留文件名
-   * @returns {string[]}
+   * @param {object} [option]
+   * @param {string|Array} [option.removes] 要排除的文件的全名
+   * @param {boolean} [option.withFileTypes] 同时读取文件types，true则不会筛选类型或只保留文件名
+   * @param {'.js'|'.yaml'|'.json'|'.txt'|'.epub'|'.png'|'Directory'|'File'} [option.type] 筛选文件类型
+   * @param {boolean} [option.basename] 只保留文件名
+   * @returns {string[]} 符合要求的文件名数组
    */
   readdirSync(_path, option = {
     type: null,
@@ -55,11 +55,19 @@ const file = {
     }
     if (option.withFileTypes) return files
     if (option.type) {
-      const type = _.castArray(option.type)
-      files = files.filter(file => type.includes(path.extname(file).toLowerCase()))
+      if (option.type === 'Directory' || option.type === 'File') {
+        files = files.filter(_file => this[`is${option.type}`](path.join(_path, _file)))
+      } else if (Array.isArray(option.type)) {
+        if (option.type.includes('File')) {
+          files = files.filter(_file => this.isFile(path.join(_path, _file)))
+        }
+        files = files.filter(_file => option.type.includes(path.extname(_file).toLowerCase()))
+      } else {
+        files = files.filter(_file => option.type === path.extname(_file).toLowerCase())
+      }
     }
     if (option.basename) {
-      files = files.map(file => path.parse(file).name)
+      files = files.map(_file => path.parse(_file).name)
     }
     return files
   },
@@ -152,14 +160,15 @@ const file = {
   },
 
   /** 递归复制文件夹 */
-  copyFolderRecursively(orlFilePath, targetFilePath, removes = []) {
+  copyFolderRecursively(orlFilePath, targetFilePath, removes = [], glbalRemoves = []) {
     fs.mkdirSync(targetFilePath, { recursive: true })
     fs.readdirSync(orlFilePath).forEach(element => {
       if (fs.lstatSync(path.join(orlFilePath, element)).isFile()) {
         fs.copyFileSync(path.join(orlFilePath, element), path.join(targetFilePath, element))
       } else {
         if (removes.includes(element)) return
-        this.copyFolderRecursively(path.join(orlFilePath, element), path.join(targetFilePath, element))
+        if (glbalRemoves.includes(element)) return
+        this.copyFolderRecursively(path.join(orlFilePath, element), path.join(targetFilePath, element), [], glbalRemoves)
       }
     })
   },
@@ -209,10 +218,11 @@ const file = {
   }, isSort = true) {
     /** 下标越小匹配度越高 */
     let searchLevelArr = []
+    keywords = _.castArray(keywords)
     for (const i in keywords) searchLevelArr[i] = []
     const len = keywords.length
-    if (option.type) option.type = _.castArray(option.type)
-    const reg = new RegExp(_.castArray(keywords).join('|'), 'gi')
+    option.type &&= _.castArray(option.type)
+    const reg = new RegExp(keywords.join('|'), 'gi')
     const processFile = async (dir, _file) => {
       const filePath = path.join(dir, _file)
       const stats = await fs.promises.stat(filePath)
@@ -235,8 +245,8 @@ const file = {
     const processDir = async (dir) => {
       let files = await fs.promises.readdir(dir, { withFileTypes: true })
       if (option.type) {
-        files = files.filter(file => {
-          const ext = path.parse(file.name).ext
+        files = files.filter(_file => {
+          const ext = path.parse(_file.name).ext
           if (ext === '') return true
           if (option.type.includes(ext)) return true
           return false

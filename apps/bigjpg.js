@@ -35,16 +35,16 @@ export default class UCBigjpg extends UCPlugin {
       const now_times = await Data.redisGet(this.redisData + e.sender.user_id, 0) || 0
       if (now_times) {
         if (now_times >= this.Cfg.limits) {
-          return e.reply(`你今天已经放大了${now_times}次了，明天再来吧~`)
+          return this.reply(`你今天已经放大了${now_times}次了，明天再来吧~`)
         }
         new_times = now_times
       }
       new_times++
       await Data.redisSet(this.redisData + e.sender.user_id, new_times, UCDate.EXsecondes)
     }
-    if (!e.img) {
+    if (!this.img) {
       this.setContext(this.setFnc)
-      return e.reply('⚠ 喜欢的涩图图快发来吧')
+      return this.reply('⚠ 喜欢的涩图图快发来吧')
     }
     Data.bigjpgRequest(e.img[0])
   }
@@ -71,7 +71,7 @@ export default class UCBigjpg extends UCPlugin {
     if (this.isCancel(this.setFnc2)) return false
     const { url } = this.getContext()._magnificationContext
     this.e.url = url
-    this.e.magnification = parseInt(this.e.msg)
+    this.e.magnification = parseInt(this.msg)
     if (isNaN(this.e.magnification) || !Check.str([2, 4, 8, 16], this.e.magnification)) {
       this.reply('无效参数，自动选择放大倍数：' + this.Cfg.magnification)
       this.e.magnification = this.Cfg.magnification
@@ -86,7 +86,7 @@ export default class UCBigjpg extends UCPlugin {
   _noiseContext() {
     if (this.isCancel(this.setFnc3)) return false
     const { url, magnification } = this.getContext()._noiseContext
-    let noise = parseInt(this.e.msg)
+    let noise = parseInt(this.msg)
     if (isNaN(noise) || !Check.str([0, 1, 2, 3, 4], noise)) {
       this.reply('无效参数，自动选择降噪系数：' + this.Cfg.noise)
       noise = this.Cfg.noise
@@ -96,12 +96,11 @@ export default class UCBigjpg extends UCPlugin {
   }
 
   async sendImage(buffer) {
-    const name = `${this.e.sender.user_id}-${UCDate.NowTimeNum}.png`
-    if (buffer.length > 5242880) {
-      await common.sendFile(this.e, buffer, name, '放大成功咯，图片较大将会直接上传文件，注意查收哦~')
-    } else {
-      this.e.reply([segment.at(this.e.user_id), '放大成功咯'])
-      this.e.reply(segment.image(buffer), true)
+    const name = `${this.userId}-${UCDate.NowTimeNum}.png`
+    if (buffer.length > (1 << 20 << 3)) {
+      return await common.sendFile(this.e, buffer, name, '放大成功咯，图片较大将会直接上传文件，注意查收哦~')
     }
+    this.reply('放大成功咯', true, { at: true })
+    return this.reply(segment.image(buffer), true)
   }
 }

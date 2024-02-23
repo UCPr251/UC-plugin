@@ -58,13 +58,13 @@ export default class UCSqtj extends UCPlugin {
     if (!this.verifyPermission(this.Cfg.use)) return false
     if (!this.Cfg.isOpen) return false
     if (ing[this.groupId]) {
-      return e.reply('当前正在生成中，请等待……', true)
+      return this.reply('当前正在生成中，请等待……', true)
     }
     if (!this.isToday) {
       const today = UCDate.date_time[0]
       if (this.date === today) this.isToday = true
       if (this.date > today) {
-        return e.reply('你是要我预测未来吗？？？', true)
+        return this.reply('你是要我预测未来吗？？？', true)
       }
     }
     ing[this.groupId] = 1
@@ -75,13 +75,13 @@ export default class UCSqtj extends UCPlugin {
       if (!this.isToday && !this.isYesterday) {
         const isAnalyze = /分析/.test(this.msg)
         if (isAnalyze) {
-          e.reply(`开始分析${this.date}水群统计，请等待……`)
+          this.reply(`开始分析${this.date}水群统计，请等待……`)
         } else if (!chatHistoryArr.length) {
           ing[this.groupId] = 0
-          return e.reply(`本地无${this.date}水群统计数据记录，可尝试#分析${this.date}水群统计`)
+          return this.reply(`本地无${this.date}水群统计数据记录，可尝试#分析${this.date}水群统计`)
         }
       } else {
-        e.reply(`开始分析${this.isYesterday ? '昨' : '今'}日水群统计，请等待……`)
+        this.reply(`开始分析${this.isYesterday ? '昨' : '今'}日水群统计，请等待……`)
       }
       sqtjData.isWholeDay = !this.isToday
       const { start, end } = this.getDayTimestamps()
@@ -95,7 +95,7 @@ export default class UCSqtj extends UCPlugin {
     if (this.Cfg.isSave && !_.isEqual(sqtjData, localData)) this.saveLocalData(sqtjData)
     if (_.isEmpty(filterData)) {
       ing[this.groupId] = 0
-      return e.reply('额(⊙o⊙)……暂时没有数据捏')
+      return this.reply('额(⊙o⊙)……暂时没有数据捏')
     }
     const data = await this.getImgData(filterData, count)
     const imgData = Sqtj.get(e, { ...data, count, date: this.date })

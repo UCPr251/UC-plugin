@@ -1,4 +1,4 @@
-import { UCPr, log, Data, Check } from '../components/index.js'
+import { UCPr, log, Data, Check, common, Path } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import Permission from './Permission.js'
 import _ from 'lodash'
@@ -71,6 +71,15 @@ export default class UCPlugin extends plugin {
   /** 插件使用权限 */
   get check() {
     return Data.check.call(this)
+  }
+
+  /** 检查UC unNecRes */
+  checkUnNecRes() {
+    if (!Check.floder(Path.unNecRes)) {
+      this.reply('未拉取UC资源，无法使用此功能，请先#UC更新资源')
+      return false
+    }
+    return true
   }
 
   /** 用户无权限回复 */
@@ -153,7 +162,7 @@ export default class UCPlugin extends plugin {
 
   /** 用户是否确认操作 */
   isSure(fnc) {
-    if (/是|确认|确定|确信|肯定/.test(this.msg)) {
+    if (/是|确认|确定|确信|肯定|yes/.test(this.msg)) {
       fnc && fnc()
       return true
     }
@@ -167,9 +176,6 @@ export default class UCPlugin extends plugin {
     recallMsg: 0
   }) {
     if (/取消/.test(this.msg)) {
-      if (setFnc) {
-        this.setFnc = setFnc
-      }
       return this.finishReply(undefined, setFnc, option)
     }
     return false
@@ -181,12 +187,11 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    let { quote = true, ...data } = option
-    if (this.e.file) quote = false
+    const { quote = true, ...data } = option
     this.reply(msg, quote, data)
-    const setContext = setFnc || this.setFnc
-    log.debug(`结束上下文hook：${this.name} ${setContext}`)
-    this.finish(setContext)
+    setFnc ||= this.setFnc
+    log.debug(`结束上下文hook：${this.name} ${setFnc}`)
+    this.finish(setFnc)
     return true
   }
 
@@ -200,13 +205,11 @@ export default class UCPlugin extends plugin {
             msgArr.push(msg.text?.replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim())
             break
           case 'image':
-            if (!this.img) {
-              this.img = []
-            }
+            this.img ??= []
             this.img.push(msg.url)
             break
           case 'at':
-            this.at = msg.id ?? msg.qq
+            this.at ??= msg.qq ?? msg.id // 与底层e.at相反，以第一个艾特为准
             break
           case 'file':
             this.file = { name: msg.name, fid: msg.fid }
@@ -248,6 +251,38 @@ export default class UCPlugin extends plugin {
       this.finish('_getNum')
       this[fnc](arr, data)
     }
+  }
+
+  async reply(msg, quote, data = { recallMsg: 0, at: false }) {
+    if (_.isEmpty(msg)) return
+    if (!this.e.reply) {
+      if (this.isGroup) {
+        this.e.reply = common.pickGroup(this.groupId)?.sendMsg
+      } else if (this.userId) {
+        this.e.reply = Bot.pickFriend(this.userId)?.sendMsg
+      }
+    }
+    if (!this.e.reply) {
+      return log.warn('发送消息错误，e.reply不存在')
+    }
+    if (this.e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
+    let { recallMsg = 0, at = false } = data
+    if (at && this.isGroup) {
+      msg = _.castArray(msg)
+      if (at === true || !+at) at = this.userId
+      msg.unshift(segment.at(at))
+    }
+    const msgRes = await this.e.reply(msg, quote && !this.e.file).catch(err => {
+      log.error('发送消息错误', err)
+    })
+    if (recallMsg) {
+      if (this.e.group) {
+        setTimeout(() => this.e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
+      } else if (this.e.friend) {
+        setTimeout(() => this.e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
+      }
+    }
+    return msgRes
   }
 
 }

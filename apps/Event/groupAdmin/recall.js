@@ -11,11 +11,11 @@ class UCRecall extends UCEvent {
       Cfg: 'GAconfig.recall',
       rule: [
         {
-          reg: /^#?(UC)?清屏\s*\d*$/,
+          reg: /^#(UC)?清屏\s*\d*$/,
           fnc: 'clear'
         },
         {
-          reg: /^#?(UC)?撤回\s*\d*$/,
+          reg: /^#(UC)?撤回\s*\d*$/,
           fnc: 'recall'
         }
       ]
@@ -43,12 +43,14 @@ class UCRecall extends UCEvent {
     const numMatch = this.msg.match(/\d+/)
     if (e.source && !numMatch) {
       const msg = (await common.getChatHistoryArr(e.group, seq, 1)).pop()
-      return e.group.recallMsg(msg.message_id).catch(err => log.error('[recall]撤回消息错误', err))
+      if (!msg) return this.reply('消息不存在')
+      return e.group.recallMsg(msg.message_id)
     }
     const recallNum = Math.min(numMatch?.[0] ?? 1, this.Cfg.RECALL_MAX)
     const start = Date.now()
-    this.reply(`开始执行任务：撤回指定人群消息\n待清理：${recallNum}`, false, { recallMsg: 60 })
-    const msgHistoryArr = await common.getPersonalChatHistoryArr(e.group, userId, seq + 1, recallNum)
+    await this.reply(`开始执行任务：撤回指定人群消息\n待清理：${recallNum}`, false, { recallMsg: 60 })
+    await common.sleep(0.2)
+    const msgHistoryArr = await common.getPersonalChatHistoryArr(e.group, userId, seq, recallNum)
     if (_.isEmpty(msgHistoryArr)) return this.errorReply()
     const count = await common.recallMsgArr(e.group, msgHistoryArr)
     const memName = this.getMemName(userId)

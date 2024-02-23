@@ -38,23 +38,23 @@ export default class UCRestart extends UCPlugin {
     }
   }
 
-  async restart(e) {
+  async restart() {
     if (!this.GM) return false
-    if (process.platform !== 'win32') return e.reply('此功能只能在Windows系统中使用')
+    if (process.platform !== 'win32') return this.reply('此功能只能在Windows系统中使用')
     if (!Check.file(Path.get('UC', 'restart.bat'))) {
-      return e.reply('[UC]restart.bat文件丢失，无法重启')
+      return this.reply('[UC]restart.bat文件丢失，无法重启')
     }
     if (!Check.file(Path.get('_path', 'app.js'))) {
-      return e.reply('云崽根目录app.js文件丢失，无法重启')
+      return this.reply('云崽根目录app.js文件丢失，无法重启')
     }
     let isPM2 = false
     if (process.argv[1].includes('pm2')) {
       isPM2 = true
       const warnInfo = '当前云崽正在后台运行，重启后将尝试关闭云崽pm2进程，请关注控制台'
       log.warn(warnInfo)
-      await e.reply(warnInfo, true)
+      await this.reply(warnInfo, true)
     } else {
-      await e.reply('开始进行前台重启，请关注控制台')
+      await this.reply('开始进行前台重启，请关注控制台')
     }
     const start = Date.now()
     const data = {

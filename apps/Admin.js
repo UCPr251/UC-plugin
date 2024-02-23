@@ -72,28 +72,28 @@ export default class UCAdmin extends UCPlugin {
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
     const numMatch = this.msg.match(/\d{5,10}/g) ?? []
-    const userId = e.at ?? numMatch[0]
-    if (!userId) return e.reply('请艾特或指定要操作的对象')
-    const groupId = this.GM ? ((e.at ? numMatch[0] : numMatch[1]) ?? this.groupId) : this.groupId
-    if (!groupId) return e.reply('请同时指定要设置的群')
-    const isAdd = /设置|加|拉/.test(e.msg)
+    const userId = this.at ?? numMatch[0]
+    if (!userId) return this.reply('请艾特或指定要操作的对象')
+    const groupId = this.GM ? ((this.at ? numMatch[0] : numMatch[1]) ?? this.groupId) : this.groupId
+    if (!groupId) return this.reply('请同时指定要设置的群')
+    const isAdd = /设置|加|拉/.test(this.msg)
     if (!Check.file(Admin.getCfgPath(groupId))) {
       Admin.newConfig(groupId)
       await common.sleep(0.1)
     }
     if (isAdd === Check.str(UCPr.groupCFG(groupId).permission[type], userId)) {
-      return e.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
+      return this.reply(`群聊${groupId}${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
     Admin.newConfig(groupId)
     Admin.groupPermission(type, userId, groupId, isAdd)
-    return e.reply(`操作成功，群聊${groupId}${isAdd ? '新增' : '删除'}${name}<${userId}>`)
+    return this.reply(`操作成功，群聊${groupId}${isAdd ? '新增' : '删除'}${name}<${userId}>`)
   }
 
   async globalPermission(e) {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need)) return false
-    const isAdd = /设置|加|拉/.test(e.msg)
+    const isAdd = /设置|加|拉/.test(this.msg)
     const numMatch = this.msg.match(/\d{5,10}/g)
     if (numMatch && numMatch.length > 1) {
       const filter = numMatch.filter(userId => isAdd !== Check.str(UCPr[`Global${type}`], userId))
@@ -108,35 +108,35 @@ export default class UCAdmin extends UCPlugin {
         const infoMsg = Data.makeArrStr(allready, { length: 500 })
         replyMsg.push(`以下用户${isAdd ? '已经' : '不'}存在于全局${name}中：\n${infoMsg}`)
       }
-      return e.reply(replyMsg.join('\n\n'))
+      return this.reply(replyMsg.join('\n\n'))
     }
-    const userId = e.at ?? numMatch?.[0]
-    if (_.isEmpty(userId)) return e.reply('请艾特或指定要操作的对象')
+    const userId = this.at ?? numMatch?.[0]
+    if (_.isEmpty(userId)) return this.reply('请艾特或指定要操作的对象')
     if (isAdd === Check.str(UCPr[`Global${type}`], userId)) {
-      return e.reply(`全局${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
+      return this.reply(`全局${name}中${isAdd ? '已经' : '不'}存在<${userId}>`)
     }
     Admin.globalPermission(type, userId, isAdd)
-    return e.reply(`操作成功，全局${name}${isAdd ? '新增' : '删除'}<${userId}>`)
+    return this.reply(`操作成功，全局${name}${isAdd ? '新增' : '删除'}<${userId}>`)
   }
 
   /** 按照全局或群查找 */
   async permissionList(e) {
     const { type, name, need } = this.getInfo()
     if (!this.verifyLevel(need > 3 ? 3 : need)) return false
-    const numMatch = e.msg.match(/\d+/)
+    const numMatch = this.msg.match(/\d+/)
     const groupId = (this.GM ? numMatch?.[0] : this.groupId) ?? this.groupId
     const title = `UC插件${name}列表`
     let replyMsg
-    if ((/全局/.test(e.msg) || !groupId) && this.level === 4) {
+    if ((/全局/.test(this.msg) || !groupId) && this.level === 4) {
       const { global, globalLen, group, groupLen } = Admin.permissionList(type)
       const info = title + `\n总计${globalLen}个全局${name}\n${groupLen}个群${name}配置`
       replyMsg = await common.makeForwardMsg(e, [info, '全局：', ...global, '指定群：', ...group], title)
     } else if (!groupId) {
-      return e.reply('请指定群号或于群内使用本功能')
+      return this.reply('请指定群号或于群内使用本功能')
     } else {
       const list = UCPr.groupCFG(groupId).permission?.[type]
-      if (!list) return e.reply(`群${groupId}尚未生成群配置`)
-      if (_.isEmpty(list)) return e.reply(`群聊${groupId}${name}列表为空`)
+      if (!list) return this.reply(`群${groupId}尚未生成群配置`)
+      if (_.isEmpty(list)) return this.reply(`群聊${groupId}${name}列表为空`)
       const memberObj = await common.getMemberObj(groupId)
       const listInfo = {}
       list.forEach(user => {
@@ -146,21 +146,21 @@ export default class UCAdmin extends UCPlugin {
       const info = Data.makeObjStr(listInfo, { isSort: true, chunkSize: 50 })
       replyMsg = await common.makeForwardMsg(e, [title + `（群${groupId}）`, ...info], title)
     }
-    return e.reply(replyMsg)
+    return this.reply(replyMsg)
   }
 
   async searchUser(e) {
     if (e.atme) return false
     if (!this.verifyLevel(3)) return false
-    const numMatch = e.msg.match(/\d+/)
-    const userId = e.at || (this.GM ? numMatch?.[0] : undefined)
-    if (!userId) return e.reply(`请艾特${this.GM ? '或指定' : ''}需要查询的用户`)
+    const numMatch = this.msg.match(/\d+/)
+    const userId = this.at || (this.GM ? numMatch?.[0] : undefined)
+    if (!userId) return this.reply(`请艾特${this.GM ? '或指定' : ''}需要查询的用户`)
     const level = Check.levelSet(userId, this.groupId)
     const replyMsg = []
     let title = `用户${userId}权限`
     if (!this.GM) {
       if (!Check.file(Admin.getCfgPath(this.groupId))) {
-        return e.reply(`群${this.groupId}尚未生成群配置`)
+        return this.reply(`群${this.groupId}尚未生成群配置`)
       }
       title += `（群${this.groupId}）\n\n`
       if (level.has(3)) {
@@ -172,7 +172,7 @@ export default class UCAdmin extends UCPlugin {
       if (level.has(-1)) {
         replyMsg.push('群插件黑名单用户')
       }
-      return e.reply(title + Data.empty(replyMsg.join('\n')))
+      return this.reply(title + Data.empty(replyMsg.join('\n')))
     }
     if (level.has(4)) replyMsg.push('全局插件主人')
     if (UCPr.Master[userId]) {
@@ -189,21 +189,21 @@ export default class UCAdmin extends UCPlugin {
       const info = UCPr.BlackQQ[userId]
       replyMsg.push('群插件黑名单，权限范围：\n\t' + Data.makeArr(info).join('\n\t'))
     }
-    if (_.isEmpty(replyMsg)) return e.reply(title + '无')
+    if (_.isEmpty(replyMsg)) return this.reply(title + '：无')
     const msg = await common.makeForwardMsg(e, [title, ...replyMsg], title)
-    return e.reply(msg)
+    return this.reply(msg)
   }
 
   async errorLog(e) {
     if (!this.verifyLevel(4)) return false
-    if (/删除/.test(e.msg)) {
+    if (/删除/.test(this.msg)) {
       Data.delErrorLog()
-      return e.reply('删除成功')
+      return this.reply('删除成功')
     }
     const errorLog = Data.getLogArr(Path.errorLogjson, { num: 30 })
-    if (!errorLog) return e.reply('当前无错误日志哦~')
+    if (!errorLog) return this.reply('当前无错误日志哦~')
     const replyMsg = await common.makeForwardMsg(e, errorLog, 'UC插件错误日志')
-    return e.reply(replyMsg, false)
+    return this.reply(replyMsg, false)
   }
 
   async UC_HELP(e) {
@@ -216,10 +216,10 @@ export default class UCAdmin extends UCPlugin {
   async UC_CFG(e) {
     if (!this.verifyLevel(1)) return false
     // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
-    let isGlobal = /全局/.test(e.msg)
+    let isGlobal = /全局/.test(this.msg)
     if (isGlobal && !this.GM) return false
-    const str1 = e.msg.replace(/#?UC(全局)?(群管)?设置/i, '').trim()
-    const type = /群管/.test(e.msg) ? 'GAconfig' : 'config'
+    const str1 = this.msg.replace(/#?UC(全局)?(群管)?设置/i, '').trim()
+    const type = /群管/.test(this.msg) ? 'GAconfig' : 'config'
     const group = new RegExp(Cfg.groupReg(type)).exec(str1)?.[0] ?? ''
     log.debug('修改设置group类：' + group)
     const str2 = str1.replace(group, '').trim()
@@ -230,7 +230,7 @@ export default class UCAdmin extends UCPlugin {
     const groupId = this.GM ? (num ?? this.groupId) : this.groupId
     if (!this.isGroup && !groupId) {
       if (this.GM) isGlobal = true
-      else return e.reply('请于群内使用')
+      else return this.reply('请于群内使用')
     }
     let showGroup
     // 修改全局设置或群设置
@@ -295,24 +295,24 @@ export default class UCAdmin extends UCPlugin {
     return await common.render(e, data)
   }
 
-  async lockConfig(e) {
+  async lockConfig() {
     if (!this.verifyLevel(4)) return false
     const { lock } = UCPr.CFG
-    const lockPath = e.msg.match(/设置(.*)/)?.[1]
+    const lockPath = this.msg.match(/设置(.*)/)?.[1]
     if (!lockPath) {
-      return e.reply('已锁定设置：\n\n' + Data.empty(Data.makeArrStr(getAllKeyPaths(lock))) + '\n\n#UC取消锁定设置 + 键路径可解除锁定')
+      return this.reply('已锁定设置：\n\n' + Data.empty(Data.makeArrStr(getAllKeyPaths(lock))) + '\n\n#UC取消锁定设置 + 键路径可解除锁定')
     }
-    const isLock = /锁定/.test(e.msg)
+    const isLock = /锁定/.test(this.msg)
     const spArr = lockPath.split('.')
     if (isLock === (_.get(lock, lockPath) !== undefined)) {
-      return e.reply(`锁定设置中${isLock ? '已经' : '不'}存在<${lockPath}>`)
+      return this.reply(`锁定设置中${isLock ? '已经' : '不'}存在<${lockPath}>`)
     } else if (!/config/.test(spArr[0])) {
-      return e.reply('请以config/GAconfig开头，用点号连接每个键')
+      return this.reply('请以config/GAconfig开头，用点号连接每个键')
     } else if (_.get(UCPr, lockPath) === undefined) {
-      return e.reply(`无效路径${lockPath}`)
+      return this.reply(`无效路径${lockPath}`)
     }
     Admin.lockConfig(lockPath, isLock)
-    return e.reply(`成功${isLock ? '锁定' : '解锁'}${lockPath}`)
+    return this.reply(`成功${isLock ? '锁定' : '解锁'}${lockPath}`)
   }
 
 }

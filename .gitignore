@@ -11,6 +11,8 @@
 /test.js
 /UC功能解析.md
 /node_modules
+/components/reloadModule.js
+/resources/unNecRes
 /system/UC-plugin-decrypt/
 /apps/accredit.js
 /apps/BdynamicPush.js
@@ -22,7 +24,6 @@
 /apps/atMute.js
 /apps/chuoMute.js
 /apps/ji.js
-/apps/RA_Accredit.js
 /apps/Event/groupAdmin/*
 !/apps/Event/groupAdmin/kick.js
 !/apps/Event/groupAdmin/mute.js

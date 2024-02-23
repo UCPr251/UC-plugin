@@ -11,7 +11,7 @@ class UCKick extends UCEvent {
       Cfg: 'GAconfig.kick',
       rule: [
         {
-          reg: /^#?(UC)?(全局)?踢(黑名单\s*\d*)?$/,
+          reg: /^#(UC)?(全局)?踢(黑名单\s*\d*)?$/,
           fnc: 'kickMember'
         }
       ]
@@ -43,7 +43,7 @@ class UCKick extends UCEvent {
     const isGlobal = /全局/.test(this.msg)
     const GroupsInfo = Object.fromEntries(e.bot?.gl ?? Bot.gl)
     if (!isGlobal) {
-      const groupId = this.GM ? (this.msg.match(/\d+/)?.[0] || e.group_id) : e.group_id
+      const groupId = this.GM ? (this.msg.match(/\d+/)?.[0] || this.groupId) : this.groupId
       GroupsArr = [groupId]
     } else {
       if (!this.verifyLevel(4)) return
@@ -64,7 +64,7 @@ class UCKick extends UCEvent {
       for (const memId of _.keys(memberObj)) {
         if (this.isB(memId, groupId)) {
           const info = memberObj[memId]
-          const name = info.card || info.nickname || memId
+          const name = info?.card || info?.nickname || memId
           memToKick.push({
             memId,
             name

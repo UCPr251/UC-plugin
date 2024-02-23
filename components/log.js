@@ -1,5 +1,12 @@
-import { UCPr, Data, common, Path } from './index.js'
 import chalk from 'chalk'
+import _ from 'lodash'
+
+function toString(value, sep = '，') {
+  if (typeof value === 'string') return value
+  if (_.isArray(value)) return value.map(v => toString(v, sep)).join(sep)
+  if (_.isPlainObject(value)) return JSON.stringify(value, null, 2)
+  return _.toString(value)
+}
 
 function getFncChain(error) {
   if (!error?.stack) return '[Empty Error Stack]'
@@ -21,79 +28,100 @@ function getFncChain(error) {
 function transformErrorLog(log) {
   log = log.map(_log => {
     if (_log?.message) {
-      return common.toString(_log.message) + '\n' + getFncChain(_log)
+      return toString(_log.message) + '\n' + getFncChain(_log)
     }
     return _log
   })
-  return common.toString(log, '\n')
+  return toString(log, '\n')
 }
 
-const prefix = '[UC]'
+const red = chalk.rgb(251, 50, 50)
+const yellow = chalk.rgb(255, 220, 20)
+const blue = chalk.rgb(0, 155, 255)
+const purple = chalk.rgb(180, 110, 255)
 
-/** 输出日志 */
-const log = {
-  red() {
-    logger.mark(chalk.red(prefix + common.toString(Array.from(arguments))))
-  },
+const _UCPr = Symbol('UCPr')
+const _Path = Symbol('Path')
+const _log = Symbol('log')
+const _prefix = Symbol('prefix')
+const _debugLog = Symbol('debugLog')
 
-  mark(...log) {
-    logger.mark(prefix + common.toString(log))
-  },
+/** 日志class */
+class log {
+  constructor(UCPr, Path, writeErrLogFnc) {
+    this[_UCPr] = UCPr
+    this[_Path] = Path
+    /** 写入错误日志函数 */
+    this.writeErrLogFnc = writeErrLogFnc
+    /** 节流mark */
+    // this.whiteT = _.throttle(this.white, 20, { trailing: false })
+  }
 
-  /** debug */
-  debug(...log) {
-    if (UCPr.debugLog || UCPr.isWatch) {
-      this.yellow('[debug]' + common.toString(log))
-    }
-  },
+  /** 日志前缀 */
+  get [_prefix]() {
+    return this[_Path].prefix
+  }
 
-  warn(...log) {
-    logger.warn(chalk.yellow(prefix + '[Warn]' + transformErrorLog(log)))
-    return false
-  },
+  /** 是否输出一般日志 */
+  get [_log]() {
+    return this[_UCPr].log
+  }
 
-  error(...log) {
-    logger.error(chalk.red(prefix + '[error]' + transformErrorLog(log)))
-    Data.addLog(Path.errorLogjson, log)
-    return log
-  },
+  /** 是否输出debug日志 */
+  get [_debugLog]() {
+    return this[_UCPr].debugLog || this[_UCPr].isWatch
+  }
+
+  red(...log) {
+    this[_log] && logger.mark(red(this[_prefix] + toString(log)))
+  }
 
   purple(...log) {
-    if (UCPr.log) {
-      logger.mark(logger.magenta(prefix + common.toString(log)))
-    }
-  },
+    this[_log] && logger.mark(purple(this[_prefix] + toString(log)))
+  }
 
   yellow(...log) {
-    if (UCPr.log) {
-      logger.mark(chalk.yellow(prefix + common.toString(log)))
-    }
-  },
+    this[_log] && logger.mark(yellow(this[_prefix] + toString(log)))
+  }
 
   blue(...log) {
-    if (UCPr.log) {
-      logger.mark(chalk.blue(prefix + common.toString(log)))
-    }
-  },
+    this[_log] && logger.mark(blue(this[_prefix] + toString(log)))
+  }
 
   bluebold(...log) {
-    logger.mark(chalk.blue.bold(prefix + common.toString(log)))
-  },
+    this[_log] && logger.mark(blue.bold(this[_prefix] + toString(log)))
+  }
 
   white(...log) {
-    if (UCPr.log) {
-      logger.mark(prefix + common.toString(log))
-    }
-  },
+    this[_log] && logger.mark(this[_prefix] + toString(log))
+  }
 
   whiteblod(...log) {
-    if (UCPr.log) {
-      logger.mark(chalk.bold(prefix + common.toString(log)))
-    }
-  },
+    this[_log] && logger.mark(chalk.bold(this[_prefix] + toString(log)))
+  }
+
+  debug(...log) {
+    this[_debugLog] && logger.mark(yellow(this[_prefix] + '[debug]' + toString(log)))
+  }
+
+  warn(...log) {
+    logger.warn(yellow(this[_prefix] + '[Warn]' + transformErrorLog(log)))
+    return false
+  }
+
+  error(...log) {
+    const errorLogInfo = transformErrorLog(log)
+    logger.error(red(this[_prefix] + '[error]' + errorLogInfo))
+    this.writeErrLogFnc?.(errorLogInfo)
+    return errorLogInfo
+  }
+
+  mark(...log) {
+    logger.mark(this[_prefix] + toString(log))
+  }
 
   info(...log) {
-    logger.info(prefix + common.toString(log))
+    logger.info(this[_prefix] + toString(log))
   }
 }
 

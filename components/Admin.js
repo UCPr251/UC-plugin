@@ -29,9 +29,7 @@ const tempData = {}
  * @param {Function} fnc 保存新数据后调用函数
  */
 function saver(key, data, path, fnc) {
-  if (!tempData[key]) {
-    tempData[key] = {}
-  }
+  tempData[key] ??= {}
   if (!tempData[key].timer) {
     tempData[key].data = data
   } else {
@@ -79,7 +77,7 @@ const Admin = {
     const old = _.get(groupConfig[cfg], path)
     if (old !== undefined) {
       if (!_.isEqual(old, operation)) {
-        log.debug(`修改${groupId}.yaml文件${path}为` + common.toString(operation))
+        log.debug(`修改${groupId}.yaml文件${path}为：` + common.toString(operation))
         _.set(groupConfig[cfg], path, operation)
         saver(groupId, groupConfig, this.getCfgPath(groupId))
         return true
@@ -101,7 +99,7 @@ const Admin = {
     const old = _.get(config, path)
     if (old !== undefined) {
       if (!_.isEqual(old, operation)) {
-        log.debug(`修改${cfg}文件${path}为` + common.toString(operation))
+        log.debug(`修改${cfg}文件${path}为：` + common.toString(operation))
         _.set(config, path, operation)
         saver(cfg, config, Path[`${cfg}yaml`], Data.refreshLock)
         return true

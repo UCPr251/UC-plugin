@@ -1,7 +1,9 @@
-import { Path, Data, file, common, UCPr } from '../components/index.js'
+import { Path, Data, file, common, UCPr, Check } from '../components/index.js'
 import { update } from '../../other/update.js'
 import { UCPlugin } from '../models/index.js'
 import _ from 'lodash'
+
+const notice = '成功，重启生效' + (process.platform === 'win32' ? '\n可使用#UC重启 前台重启机器人' : '')
 
 export default class UCUpdate extends UCPlugin {
   constructor(e) {
@@ -15,7 +17,11 @@ export default class UCUpdate extends UCPlugin {
           fnc: 'update'
         },
         {
-          reg: /^#?UC(强制)?更新.+/i,
+          reg: /^#?UC(强制)?更新资源$/i,
+          fnc: 'updateUnNecRes'
+        },
+        {
+          reg: /^#?UC(强制)?更新(?!资源).+/i,
           fnc: 'updatePlugin'
         },
         {
@@ -39,11 +45,40 @@ export default class UCUpdate extends UCPlugin {
       await Update_Plugin.runUpdate(UCPr.Plugin_Name)
       Data.refresh()
       if (Update_Plugin.isUp) {
-        this.reply('UC-plugin更新成功，重启生效\n可使用#UC重启以前台重启云崽')
+        this.reply(`UC-plugin更新${notice}`)
         Data.execSync(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
       }
     }
     return true
+  }
+
+  async updateUnNecRes() {
+    if (!this.GM) return false
+    if (!Check.floder(Path.unNecRes)) {
+      this.reply('开始拉取UC资源')
+      return Data.updateRes(true, (err) => {
+        if (err) {
+          const errInfo = log.error('拉取UC资源失败', err)
+          return this.reply(errInfo)
+        }
+        return this.reply('拉取UC资源成功')
+      })
+    }
+    if (/强制/.test(this.msg)) {
+      if (!Data.execSync('git reset --hard', Path.unNecRes)) {
+        return this.reply('强制更新UC资源失败，请查看控制台手动处理冲突')
+      }
+    }
+    return Data.updateRes(false, (err, stdout) => {
+      if (err) {
+        const errInfo = log.error(this.msg + '失败', err)
+        return this.reply(errInfo)
+      }
+      if (/Already/.test(stdout)) {
+        return this.reply('UC资源已是最新')
+      }
+      return this.reply(this.msg + '成功')
+    })
   }
 
   async updatePlugin(e) {
@@ -64,16 +99,16 @@ export default class UCUpdate extends UCPlugin {
       await Update_Plugin.runUpdate(name)
       if (Update_Plugin.isUp) {
         await common.sleep(2.51)
-        return this.reply('更新成功，重启生效\n可使用#UC重启 前台重启机器人')
+        return this.reply(`更新${notice}`)
       }
     } else if (name === '') {
       await Update_Plugin.runUpdate(name)
       if (Update_Plugin.isUp) {
         await common.sleep(2.51)
-        return this.reply('云崽更新成功，重启生效\n可使用#UC重启 前台重启机器人')
+        return this.reply(`云崽更新${notice}`)
       }
     } else {
-      return e.reply(`不匹配的插件名称：${name}`)
+      return this.reply(`不匹配的插件名称：${name}`)
     }
   }
 
@@ -104,18 +139,25 @@ export default class UCUpdate extends UCPlugin {
         Data.execSync(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
       }
       await common.sleep(2.51)
-      return e.reply(`${command}执行成功，重启生效\n可使用#UC重启 前台重启机器人`)
+      return this.reply(`${command}执行${notice}`)
     } else {
-      return e.reply(`本次${command} 没有插件更新，无需重启`)
+      return this.reply(`本次${command} 没有插件更新，无需重启`)
     }
   }
 
-  async refresh(e) {
+  async refresh() {
     if (!this.GM) return false
-    if (/强制/.test(e.msg)) {
+    if (/强制/.test(this.msg)) {
       Data.execSync('git clean -fd && git reset --hard', Path.UC_plugin_decrypt)
     }
     const output = Data.refresh()
-    return e.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))
+    return this.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))
   }
 }
+
+Data.loadTask({
+  // 每天检查更新一次UC资源
+  cron: '0 0 4 * * 0',
+  name: 'UC-updateUnNecRes',
+  fnc: Data.updateRes.bind(Data, false, (err) => err && log.error('UC自动更新资源失败', err))
+})

@@ -12,6 +12,7 @@ const apps = path.join(UC, 'apps')
 const Event = path.join(apps, 'Event')
 const groupAdmin = path.join(Event, 'groupAdmin')
 const config = path.join(UC, 'config')
+const components = path.join(UC, 'components')
 const groupCfg = path.join(config, 'groupCfg')
 const defSet = path.join(UC, 'defSet')
 const system = path.join(UC, 'system')
@@ -23,8 +24,9 @@ const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
 const resources = path.join(UC, 'resources')
 const resdata = path.join(resources, 'data')
 const img = path.join(resources, 'img')
-const chuoyichuo = path.join(resources, 'chuoyichuo')
-const wife = path.join(resources, 'wife')
+const unNecRes = path.join(resources, 'unNecRes')
+const chuoyichuo = path.join(unNecRes, 'chuoyichuo')
+const wife = path.join(unNecRes, 'wife')
 const configyaml = path.join(config, 'config.yaml')
 const GAconfigyaml = path.join(config, 'GAconfig.yaml')
 const lockyaml = path.join(config, 'lock.yaml')
@@ -49,7 +51,7 @@ const Path = {
   ...path,
   /**
    * 获取路径
-   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'botConfig'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'img'|'example'|'sqtj'} rootDir 上级文件夹
+   * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'botConfig'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'unNecRes'|'img'|'example'|'sqtj'} rootDir 上级文件夹
    * @param {string} basename 文件夹或文件basename
    * @returns 目标路径
    */
@@ -58,6 +60,8 @@ const Path = {
   },
   /** UCPr */
   Author: 'UCPr',
+  /** [UC] */
+  prefix: '[UC]',
   /** UC-plugin */
   Plugin_Name,
   /** 云崽工作目录路径 */
@@ -84,6 +88,8 @@ const Path = {
   config,
   /** ./config/groupCfg */
   groupCfg,
+  /** ./components */
+  components,
   /** ./defSet */
   defSet,
   /** ./system */
@@ -104,9 +110,11 @@ const Path = {
   resdata,
   /** ./resources/img */
   img,
-  /** ./resources/chuoyichuo */
+  /** ./resources/unNecRes */
+  unNecRes,
+  /** ./resources/unNecRes/chuoyichuo */
   chuoyichuo,
-  /** ./resources/wife */
+  /** ./resources/unNecRes/wife */
   wife,
   /** ./config/config.yaml */
   configyaml,
