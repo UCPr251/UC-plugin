@@ -48,3 +48,7 @@
   name: Xs-plugin
 - reg: 鸢尾花|logier
   name: logier-plugin
+- reg: 枫叶|fengye
+  name: fengye-plugin
+- reg: 换头|egg
+  name: egg-plugin
