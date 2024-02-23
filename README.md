@@ -67,12 +67,14 @@ pnpm i --filter=UC-plugin
 - **群设置**：只在对应群内生效的UC设置
 
   > 在群内发送 **#UC设置** 和 **#UC群管设置** 指令，查看的都是当前群设置
+
   > [<<<点击查看群设置>>>](./resources/img/README/cfg_group_example.jpg) [<<<点击查看群内群管设置>>>](./resources/img/README/GAcfg_group_example.jpg)
 
 
 - **全局设置**：在全局范围内生效的UC设置。当某个群没有进行单独的群设置时，会以全局设置为准；反之会忽略全局设置，以群设置为准
 
   > 发送 **#UC全局设置** 和 **#UC全局群管设置** 或 **私聊** 发送 **#UC设置** 和 **#UC群管设置** 查看的都是全局设置
+
   > [<<<点击查看全局设置>>>](./resources/img/README/cfg_global_example.jpg) [<<<点击查看全局群管设置>>>](./resources/img/README/GAcfg_global_example.jpg)
 
 注意：部分设置仅以全局设置为准，如底层基础设置、签名设置等
