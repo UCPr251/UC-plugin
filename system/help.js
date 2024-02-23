@@ -227,7 +227,57 @@ helpData.push({
 })
 
 helpData.push({
-  group: 'UC工具',
+  group: 'UC娱乐功能',
+  require: 0,
+  cfg: 'config',
+  list: [
+    s(
+      `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
+      '随机挑选一名幸运群友',
+      'randomMember.use',
+      'randomMember.isOpen'
+    ),
+    s(
+      '#随机老婆',
+      '随机二次元老婆',
+      '',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#随机老婆列表',
+      '随机二次元老婆列表',
+      '',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#上传随机老婆+名称',
+      '新增随机老婆图片',
+      'randomWife.add',
+      'randomWife.isOpen'
+    ),
+    s(
+      '#删除随机老婆+名称',
+      '删除指定随机老婆图片',
+      'randomWife.del',
+      'randomWife.isOpen'
+    ),
+    s(
+      'UC戳一戳#poke#',
+      '开启功能后戳一戳生效',
+      '',
+      'chuoyichuo.isOpen'
+    ),
+    s(
+      '#今/昨日水群统计',
+      '查看群聊水群统计',
+      'sqtj.use',
+      'sqtj.isOpen'
+    )
+  ]
+})
+
+helpData.push({
+  group: 'UC工具——杂项',
   require: 2,
   cfg: 'config',
   list: [
@@ -278,21 +328,6 @@ helpData.push({
       4
     ),
     s(
-      '#UC备份数据',
-      '备份云崽、各大型插件数据',
-      4
-    ),
-    s(
-      '#UC还原备份',
-      '还原备份的数据',
-      4
-    ),
-    s(
-      '#UC删除备份',
-      '删除备份的数据',
-      4
-    ),
-    s(
       '#UC安装过码',
       '安装过验证码插件loveMys',
       4
@@ -311,83 +346,43 @@ helpData.push({
       '#UC更新过码',
       '更新过码插件loveMys',
       4
-    ),
-    s(
-      '#开启/关闭签名自动重启',
-      '开启/关闭签名自动重启',
-      4,
-      isWin
-    ),
-    s(
-      '#清理签名日志',
-      '删除签名产生的日志文件',
-      4,
-      isWin
-    ),
-    s(
-      '#签名重启日志',
-      '查看当日签名重启日志',
-      4,
-      isWin
-    ),
-    s(
-      '#重启签名',
-      '指令重启签名',
-      4,
-      isWin
     )
   ]
 })
 
-helpData.push({
-  group: 'UC娱乐功能',
-  require: 0,
-  cfg: 'config',
-  list: [
-    s(
-      `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
-      '随机挑选一名幸运群友',
-      'randomMember.use',
-      'randomMember.isOpen'
-    ),
-    s(
-      '#随机老婆',
-      '随机二次元老婆',
-      '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#随机老婆列表',
-      '随机二次元老婆列表',
-      '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#上传随机老婆+名称',
-      '新增随机老婆图片',
-      'randomWife.add',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#删除随机老婆+名称',
-      '删除指定随机老婆图片',
-      'randomWife.del',
-      'randomWife.isOpen'
-    ),
-    s(
-      'UC戳一戳#poke#',
-      '开启功能后戳一戳生效',
-      '',
-      'chuoyichuo.isOpen'
-    ),
-    s(
-      '#今/昨日水群统计',
-      '查看群聊水群统计',
-      'sqtj.use',
-      'sqtj.isOpen'
-    )
-  ]
-})
+if (isWin) {
+  helpData.push({
+    group: 'UC工具——签名自动重启',
+    require: 4,
+    cfg: 'config',
+    list: [
+      s(
+        '#开启签名自动重启',
+        '开启签名自动重启'
+      ),
+      s(
+        '#关闭签名自动重启',
+        '关闭签名自动重启'
+      ),
+      s(
+        '#UC设置签名自动重启开启',
+        '无需每次启动后手动开启签名重启'
+      ),
+      s(
+        '#清理签名日志',
+        '删除签名产生的日志文件'
+      ),
+      s(
+        '#签名重启日志',
+        '查看当日签名重启日志'
+      ),
+      s(
+        '#重启签名',
+        '指令重启签名'
+      )
+    ]
+  })
+}
 
 helpData.push({
   group: 'UC工具——otherSet',
@@ -494,6 +489,26 @@ helpData.push({
     s(
       '#查看iyuu/sct tk',
       '查看iyuu或sct通知token'
+    )
+  ]
+})
+
+helpData.push({
+  group: 'UC工具——备份数据',
+  require: 4,
+  cfg: 'config',
+  list: [
+    s(
+      '#UC备份数据',
+      '备份云崽、各大型插件数据'
+    ),
+    s(
+      '#UC还原备份',
+      '还原备份的数据'
+    ),
+    s(
+      '#UC删除备份',
+      '删除备份的数据'
     )
   ]
 })
