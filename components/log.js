@@ -35,11 +35,6 @@ function transformErrorLog(log) {
   return toString(log, '\n')
 }
 
-const red = chalk.rgb(251, 50, 50)
-const yellow = chalk.rgb(255, 220, 20)
-const blue = chalk.rgb(0, 155, 255)
-const purple = chalk.rgb(180, 110, 255)
-
 const _UCPr = Symbol('UCPr')
 const _Path = Symbol('Path')
 const _log = Symbol('log')
@@ -53,6 +48,14 @@ class log {
     this[_Path] = Path
     /** 写入错误日志函数 */
     this.writeErrLogFnc = writeErrLogFnc
+    /** 转红色 */
+    this._red = chalk.rgb(251, 50, 50)
+    /** 转黄色 */
+    this._yellow = chalk.rgb(255, 220, 20)
+    /** 转蓝色 */
+    this._blue = chalk.rgb(0, 155, 255)
+    /** 转紫色 */
+    this._purple = chalk.rgb(180, 110, 255)
     /** 节流mark */
     // this.whiteT = _.throttle(this.white, 20, { trailing: false })
   }
@@ -73,23 +76,23 @@ class log {
   }
 
   red(...log) {
-    this[_log] && logger.mark(red(this[_prefix] + toString(log)))
+    this[_log] && logger.mark(this._red(this[_prefix] + toString(log)))
   }
 
   purple(...log) {
-    this[_log] && logger.mark(purple(this[_prefix] + toString(log)))
+    this[_log] && logger.mark(this._purple(this[_prefix] + toString(log)))
   }
 
   yellow(...log) {
-    this[_log] && logger.mark(yellow(this[_prefix] + toString(log)))
+    this[_log] && logger.mark(this._yellow(this[_prefix] + toString(log)))
   }
 
   blue(...log) {
-    this[_log] && logger.mark(blue(this[_prefix] + toString(log)))
+    this[_log] && logger.mark(this._blue(this[_prefix] + toString(log)))
   }
 
   bluebold(...log) {
-    this[_log] && logger.mark(blue.bold(this[_prefix] + toString(log)))
+    this[_log] && logger.mark(this._blue.bold(this[_prefix] + toString(log)))
   }
 
   white(...log) {
@@ -101,17 +104,17 @@ class log {
   }
 
   debug(...log) {
-    this[_debugLog] && logger.mark(yellow(this[_prefix] + '[debug]' + toString(log)))
+    this[_debugLog] && logger.mark(this._yellow(this[_prefix] + '[debug]' + toString(log)))
   }
 
   warn(...log) {
-    logger.warn(yellow(this[_prefix] + '[Warn]' + transformErrorLog(log)))
+    logger.warn(this._yellow(this[_prefix] + '[warn]' + transformErrorLog(log)))
     return false
   }
 
   error(...log) {
     const errorLogInfo = transformErrorLog(log)
-    logger.error(red(this[_prefix] + '[error]' + errorLogInfo))
+    logger.error(this._red(this[_prefix] + '[error]' + errorLogInfo))
     this.writeErrLogFnc?.(errorLogInfo)
     return errorLogInfo
   }

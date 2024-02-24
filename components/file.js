@@ -163,7 +163,7 @@ const file = {
   copyFolderRecursively(orlFilePath, targetFilePath, removes = [], glbalRemoves = []) {
     fs.mkdirSync(targetFilePath, { recursive: true })
     fs.readdirSync(orlFilePath).forEach(element => {
-      if (fs.lstatSync(path.join(orlFilePath, element)).isFile()) {
+      if (this.isFile(path.join(orlFilePath, element))) {
         fs.copyFileSync(path.join(orlFilePath, element), path.join(targetFilePath, element))
       } else {
         if (removes.includes(element)) return
