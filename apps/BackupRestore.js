@@ -31,7 +31,7 @@ export default class UCBackupRestore extends UCPlugin {
     if (!this.GM) return false
     const folderName = UCDate.today
     this.backupPath = Path.join(_backupPath, folderName)
-    if (Check.floder(this.backupPath)) return this.reply('今日已备份，若需重新备份请先删除原今日备份数据：#UC删除备份')
+    if (Check.floder(this.backupPath)) return this.reply('今日已备份，若需重新备份请先删除原今日备份数据：\n#UC删除备份')
     await this.reply('开始备份云崽数据，备份期间机器人不可用，备份时长视文件数量而定，请关注控制台')
     await common.sleep(1)
     let backed
@@ -42,12 +42,12 @@ export default class UCBackupRestore extends UCPlugin {
       const errInfo = log.error('备份云崽数据失败', err)
       return this.reply(errInfo)
     }
-    const replyMsg = ['云崽数据备份完成', '已备份本体config和data数据']
+    const replyMsg = ['云崽数据备份完成', '已备份本体：config、data']
     replyMsg.push('备份的插件数据：', ...Data.makeArrStr(backed, { chunkSize: 20 }))
     replyMsg.push(`备份数据位于UC-plugin/data/backup/${folderName}/内\n请自行留存\n还原：#UC还原备份\n删除：#UC删除备份`)
     const title = '备份完成，请查看备份数据'
     const reply = await common.makeForwardMsg(this.e, replyMsg, title)
-    return this.reply(reply)
+    return await this.reply(reply)
   }
 
   backupYunzaiData() {
@@ -94,7 +94,7 @@ export default class UCBackupRestore extends UCPlugin {
       list: backups
     }
     this.setContext(this.setFnc)
-    return this.reply('请选择要还原的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
+    return await this.reply('请选择要还原的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
   }
 
   async _restore([folderName]) {
@@ -111,9 +111,11 @@ export default class UCBackupRestore extends UCPlugin {
       const errInfo = log.error('还原云崽数据失败', err)
       return this.reply(errInfo)
     }
-    const replyMsg = ['云崽数据成功还原至：' + folderName, '已还原本体config和data数据']
-    uninstalled.length && replyMsg.push('未安装插件：', ...Data.makeArrStr(uninstalled, { chunkSize: 20 }))
-    replyMsg.push('还原的插件数据：', ...Data.makeArrStr(restored, { chunkSize: 20 }))
+    const replyMsg = ['云崽数据成功还原至：' + folderName, '已还原本体：config、data']
+    uninstalled.length && replyMsg.push('未安装的插件：', ...Data.makeArrStr(uninstalled, { chunkSize: 20 }))
+    replyMsg.push('还原的插件数据：')
+    replyMsg.push(...Data.makeArrStr(restored, { chunkSize: 20 }))
+    replyMsg.push('建议重启以应用还原的数据')
     const title = '还原完成，请查看还原数据'
     const reply = await common.makeForwardMsg(this.e, replyMsg, title)
     return this.reply(reply)
