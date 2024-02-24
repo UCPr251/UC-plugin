@@ -47,6 +47,39 @@ pnpm i --filter=UC-plugin
 
 </div>
 
+## 关于[UC-plugin](#uc-plugin)
+
+- 开发环境：Windows11-Nodejs20
+
+- 测试环境：Windows11-Nodejs20、Windows server2022-Nodejs16
+
+- 为方便统一开发插件和其他集成功能打造而成
+
+- 本人目前只用喵崽，暂不考虑主动适配其他崽
+
+- 若有报错欢迎提issue和pr，也可加入[QQ交流群](#交流群)一起讨论
+
+- 本插件不会采集、上传使用者的任何信息，使用本插件即视为你同意本插件对UC插件自身的一切操作
+
+<details>
+<summary>PS</summary>
+
+~~给大家介绍一下，这是我老婆：~~ :innocent:
+
+<p align="center">
+  <a href="https://www.bilibili.com/read/cv13428981">
+    <img width="400" src="./resources/img/xiubi2.jpg" title="她真好看">
+  </a>
+</p>
+
+~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371 "游戏人生")第 2 季啥时候才能出啊~~
+
+诈尸了，要新出BD了
+
+[<<<《游戏人生 NO GAME NO LIFE》COMPLETE Blu-ray BOX 发售告知CM公开！>>>](https://www.bilibili.com/video/BV14t421h7yk)
+
+</details>
+
 ## 插件帮助
 
 - 详见 **#UC帮助**
@@ -117,37 +150,6 @@ pnpm i --filter=UC-plugin
 - 受图片展示限制，设置图中部分设置不会进行完整展示，建议在 **锅巴 → 插件管理 → UC-plugin → 配置** 进行全局设置的查看和更改
 
 > 锅巴中展示的设置相当于 **#UC全局设置** + **#UC全局群管设置** ，单独的群设置仅可通过指令或直接修改文件进行修改
-
-## 关于[UC-plugin](#uc-plugin)
-
-- 开发环境：Windows11-Nodejs20
-
-- 测试环境：Windows11-Nodejs20、Windows server2022-Nodejs16
-
-- 为方便统一开发插件和其他集成功能打造而成
-
-- 本人目前只用喵崽，暂不考虑主动适配其他崽
-
-- 本插件不会采集、上传使用者的任何信息，使用本插件即视为你同意本插件对UC插件自身的一切操作
-
-<details>
-<summary>PS</summary>
-
-~~给大家介绍一下，这是我老婆：~~ :innocent:
-
-<p align="center">
-  <a href="https://www.bilibili.com/read/cv13428981">
-    <img width="400" src="./resources/img/xiubi2.jpg" title="她真好看">
-  </a>
-</p>
-
-~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371 "游戏人生")第 2 季啥时候才能出啊~~
-
-诈尸了，要新出BD了
-
-[<<<《游戏人生 NO GAME NO LIFE》COMPLETE Blu-ray BOX 发售告知CM公开！>>>](https://www.bilibili.com/video/BV14t421h7yk)
-
-</details>
 
 ## 关于插件权限
 
@@ -268,6 +270,6 @@ pnpm i --filter=UC-plugin
 
 如果喜欢本插件，请点亮 :star: **star** :star: 支持！
 
-[:arrow_up:返回顶层:arrow_up:](#uc-plugin)
+[:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
 
 ---
