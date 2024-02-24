@@ -10,6 +10,8 @@
 
 - 修改[Path](./components/Path.js)，可在非云崽环境中作为单独的工具使用
 - 新增[备份&还原shell版](./备份&还原shell版.js)，可直接在 **UC根目录下** `node 备份&还原shell版.js`直接运行进行备份和还原，无需先运行云崽（交互有点麻烦）
+- 将[备份&还原交互版](./tools/BackupRestore.js)和[图包重命名](./tools/renamePictures.js)移动至`tools`内
+  新增相应bat启动脚本，便于Windows用户使用。如有问题可进入[tools](./tools/)目录直接使用`node`运行源文件
 
 #### 2-23
 

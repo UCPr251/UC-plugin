@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import { log } from 'console'
 import readline from 'readline'
 
-// 请保证此脚本在UC插件根目录下运行
+// 请保证此脚本在以UC-plugin/tools/为工作目录的情况下运行
 
 process.exitCode = 0 // 正常退出
 process.exitCode = 1 // 路径错误
@@ -17,9 +17,9 @@ log.yellow = (...args) => log(yellow(...args))
 const purple = chalk.rgb(180, 110, 255)
 log.purple = (...args) => log(purple(...args))
 
-const file = await import('./components/file.js').then((module) => module.default).catch((err) => { log.red('file.js导入失败：', err.message); process.exit(1) })
-const UCDate = await import('./components/UCDate.js').then((module) => module.default).catch((err) => { log.red('UCDate.js导入失败：', err.message); process.exit(1) })
-const Path = await import('./components/Path.js').then((module) => module.getPath(path.resolve(process.cwd(), '..', '..'))).catch((err) => { log.red('Path.js导入失败：', err.message); process.exit(1) })
+const file = await import('../components/file.js').then((module) => module.default).catch((err) => { log.red('file.js导入失败：', err.message); process.exit(1) })
+const UCDate = await import('../components/UCDate.js').then((module) => module.default).catch((err) => { log.red('UCDate.js导入失败：', err.message); process.exit(1) })
+const Path = await import('../components/Path.js').then((module) => module.getPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.red('Path.js导入失败：', err.message); process.exit(1) })
 
 if (!file.existsSync(Path.UC)) {
   log.red('错误路径')
@@ -150,7 +150,7 @@ function restore(folderName) {
     log.red('\n还原云崽数据失败：', err.message)
     process.exit(3)
   }
-  uninstalled.length && log.purple('\n未安装的插件：\n', uninstalled.join('\n'))
+  uninstalled.length && log.purple(yellow('\n未安装的插件：\n') + uninstalled.join('\n'))
   log.red('\n云崽数据成功还原至：' + folderName)
 }
 
