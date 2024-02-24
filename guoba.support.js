@@ -407,6 +407,8 @@ export function supportGuoba() {
         s('debugLog', '调试日志输出', 'Switch', '是否输出调试日志'),
         s('isDefaultMaster', '合并主人', 'Switch',
           '是否合并插件主人和机器人主人，不影响管理员设置'),
+        s('autoBackup', '每日自动备份', 'Switch',
+          '是否每日零点前自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用'),
         s('onlyMaster', '仅主人可操作', 'Switch',
           '开启后仅主人可操作本插件'),
         s('priority', '插件优先级', 'InputNumber',

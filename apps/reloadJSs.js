@@ -247,7 +247,7 @@ export async function loadJs(jsPath) {
     if (plugin.task.name) {
       Data.loadTask(plugin.task)
       const taskName = plugin.task.name ?? plugin.name
-      log.blue('[载入任务]' + taskName)
+      log.blue(`[载入任务]${taskName} ${plugin.task.cron}`)
     }
     JSs.push(jsName)
     try {

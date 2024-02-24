@@ -6,6 +6,8 @@ log: true
 debugLog: false
 # 插件主人是否和机器人主人合并，不影响插件管理员设置
 isDefaultMaster: true
+# 是否每日零点前自动备份云崽和插件数据，开启前请尝试指令主动备份一次避免错误
+autoBackup: false
 # 是否仅主人可操作UC插件
 onlyMaster: false
 # UC插件优先级，优先级越小越优先响应，可为任意整数

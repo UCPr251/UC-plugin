@@ -141,22 +141,19 @@ const file = {
     return path.parse(_path).name
   },
 
-  unlinkFilesRecursively(dir) {
-    if (!dir || !file.existsSync(dir)) {
-      return
-    }
-    const files = fs.readdirSync(dir, { withFileTypes: true })
+  unlinkFilesRecursively(dir, removes = [], glbalRemoves = []) {
+    const files = file.readdirSync(dir, { withFileTypes: true })
     for (const _file of files) {
       const currentPath = path.join(dir, _file.name)
       if (_file.isDirectory()) {
-        this.unlinkFilesRecursively(currentPath)
+        if (removes.includes(_file.name)) continue
+        if (glbalRemoves.includes(_file.name)) continue
+        this.unlinkFilesRecursively(currentPath, [], glbalRemoves)
       } else {
         file.unlinkSync(currentPath)
       }
     }
-    try {
-      fs.rmdirSync(dir)
-    } catch (e) { }
+    try { fs.rmdirSync(dir) } catch (e) { }
   },
 
   /** 递归复制文件夹 */

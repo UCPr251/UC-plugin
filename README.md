@@ -19,7 +19,7 @@
 
 #### 1、安装插件本体
 
-云崽根目录运行
+喵崽根目录运行
 
 - 使用Gitee（国内推荐）
 
@@ -37,7 +37,7 @@ git clone https://github.com/UCPr251/UC-plugin ./plugins/UC-plugin
 
 #### 2、安装所需依赖
 
-云崽根目录运行
+喵崽根目录运行
 
 ```Bash
 pnpm i --filter=UC-plugin
@@ -118,9 +118,17 @@ pnpm i --filter=UC-plugin
 
 > 锅巴中展示的设置相当于 **#UC全局设置** + **#UC全局群管设置** ，单独的群设置仅可通过指令或直接修改文件进行修改
 
-## 关于[UC-plugin](#uc-plugin测试)
+## 关于[UC-plugin](#uc-plugin)
+
+- 开发环境：Windows11-Nodejs20
+
+- 测试环境：Windows11-Nodejs20、Windows server2022-Nodejs16
 
 - 为方便统一开发插件和其他集成功能打造而成
+
+- 本人目前只用喵崽，暂不考虑主动适配其他崽
+
+- 本插件不会采集、上传使用者的任何信息，使用本插件即视为你同意本插件对UC插件自身的一切操作
 
 <details>
 <summary>PS</summary>
@@ -252,14 +260,14 @@ pnpm i --filter=UC-plugin
 
 </details>
 
-<div align="center">
-
 ## 交流群
 
-**QQ群：866527417** 欢迎加入（正在筹备中）
+**QQ群：866527417** [<<<点击加入>>>](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=ZpUTceJnrHlgqZRwJL9gacd6aSYpaLUn&authKey=k9faku9SACSxn7BzV50ZcK82mVZkZjOjg8hRn2CnkONhXoSigtftQO15dA3rPan2&noverify=0&group_code=866527417)
 
+欢迎加入（群正在筹备中，现在加入就是元老咯~）
 
+如果喜欢本插件，请点亮 :star: **star** :star: 支持！
 
-</div>
+[:arrow_up:返回顶层:arrow_up:](#uc-plugin)
 
 ---

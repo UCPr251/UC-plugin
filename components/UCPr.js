@@ -251,6 +251,11 @@ class UCPr {
     return this.config.isDefaultMaster ?? true
   }
 
+  /** 是否每日零点前自动备份云崽和插件数据 */
+  get autoBackup() {
+    return this.config.autoBackup ?? false
+  }
+
   /** 是否仅主人可操作 */
   get onlyMaster() {
     return this.config.onlyMaster ?? false

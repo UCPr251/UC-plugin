@@ -1,5 +1,6 @@
-import { Path, Data, Check, file, common, log, UCDate } from '../components/index.js'
+import { Path, Data, Check, file, common, log, UCDate, UCPr } from '../components/index.js'
 import { UCPlugin } from '../models/index.js'
+import { spawn } from 'child_process'
 
 const _backupPath = Path.get('data', 'backup')
 
@@ -178,3 +179,23 @@ export default class UCBackupRestore extends UCPlugin {
   }
 
 }
+
+Data.loadTask({
+  cron: '0 59 23 * * *',
+  name: 'autoBackup',
+  fnc: () => {
+    if (!UCPr.autoBackup) return
+    const today = UCDate.today
+    log.red(today + '自动备份开始')
+    const child = spawn('node', ['BackupRestore.js'], { cwd: Path.tools })
+    child.stdout.on('data', (data) => {
+      log.purple(common.toString(data).trim?.())
+    })
+    child.on('exit', (code) => {
+      log.red(today + `自动备份结束，退出码${code}：${['正常退出', '路径错误', '备份过程中发生错误'][code]}`)
+    })
+    child.stdin.write('1\n', () => {
+      child.stdin.write('end\n')
+    })
+  }
+})
