@@ -328,7 +328,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'select',
         '',
         '',
-        { refresher: () => file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.js' }) }
+        { refresher: () => file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.bat' }) }
       ),
       文本图片概率: s(
         'textimg',

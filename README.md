@@ -55,7 +55,9 @@ pnpm i --filter=UC-plugin
 
 - 本人目前只用[喵崽][Miao-Yunzai]，暂不考虑主动适配其他崽
 
-- 若有报错欢迎提[issue]和[pr]，也可加入[QQ交流群](#交流群)一起讨论
+- 不出意外的话本插件会由本人长期维护，欢迎发表感想、建议，感谢支持
+
+- 若有报错请提[issue]或[pr]，也可加入[QQ交流群](#交流群)一起讨论
 
 - 本插件不会采集、上传使用者的任何信息，使用本插件即视为你同意本插件对UC插件自身的一切操作
 
@@ -72,7 +74,7 @@ pnpm i --filter=UC-plugin
 
 ~~都 3202 年了，[游戏人生](https://www.bilibili.com/bangumi/play/ep4371 "游戏人生")第 2 季啥时候才能出啊~~
 
-诈尸了，要新出BD了
+诈尸了，要出新BD了
 
 [<<<《游戏人生 NO GAME NO LIFE》COMPLETE Blu-ray BOX 发售告知CM公开！>>>](https://www.bilibili.com/video/BV14t421h7yk)
 

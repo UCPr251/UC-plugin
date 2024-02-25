@@ -167,7 +167,7 @@ class UCChuoyichuoSwitchPicPath extends UCEvent {
 
   async switchPicPath() {
     if (!this.M) return false
-    const picPaths = file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.js' })
+    const picPaths = file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.bat' })
     return this.reply(`可选的戳一戳图包：\n${Data.makeArrStr(picPaths)}\n当前使用：${this.Cfg.picPath}\n使用#UC设置戳一戳图包+图包名 切换图包`)
   }
 
