@@ -137,7 +137,7 @@ export default class UCChuoyichuo extends UCPlugin {
         await common.sleep(1.5)
         await this.reply('戳！！')
         await common.sleep(1)
-        return await e.group.muteMember(this.userId, Cfg.MuteTime * 60)
+        return e.group.muteMember(this.userId, Cfg.MuteTime * 60)
       }
     }
     // 反击

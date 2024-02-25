@@ -112,7 +112,7 @@ export default class UCPlugin extends plugin {
    * @returns Fetch result
    */
   async fetch(urlCode, ...parameters) {
-    return await UCPr.fetch(urlCode, ...parameters)
+    return UCPr.fetch(urlCode, ...parameters)
   }
 
   /** 获取权限实例 */

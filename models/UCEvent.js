@@ -19,13 +19,13 @@ export default class UCEvent extends UCPlugin {
   }) {
     super({ e, name, dsc, event, priority, rule, Cfg })
     /**
-     * message.group: normal anonymous
-     *
-     * message.private: group friend other self
-     *
-     * notice.group: increase decrease recall sign admin ban transfer poke
-     *
-     * request.group: invite add
+     * - `message.group`: normal anonymous
+     * <br>
+     * - `message.private`: group friend other self
+     * <br>
+     * - `notice.group`: increase decrease recall sign admin ban transfer poke
+     * <br>
+     * - `request.group`: invite add
      */
     this.sub_type = ''
     if (!e) return
@@ -124,7 +124,7 @@ export default class UCEvent extends UCPlugin {
   }
 
   async BotPluginsDeal(e = this.e) {
-    return await BotPluginsDeal(e).catch(err => log.error('[UCEvent]执行消息处理错误', err))
+    return BotPluginsDeal(e).catch(err => log.error('[UCEvent]执行消息处理错误', err))
   }
 
 }
@@ -141,19 +141,18 @@ class UCSwitchBotEvent extends UCEvent {
   }
 
   async deal(e, type) {
-    if (e.isUCSwitchBot) {
-      return await this.dealMsg(e, type)
-    }
+    // 第二次处理，直接deal
+    if (e.isUCSwitchBot) return this.dealMsg(e, type)
     if (!this.verifyPermission(this.Cfg.closedCommand, { isReply: false })) return false
     if (this.Cfg.isAt && e.atme) {
       e.isUCSwitchBot = true
-      return await this.dealMsg(e, type)
+      return this.dealMsg(e, type)
     }
     const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
     if (this.Cfg.isPrefix && reg.test(this.msg)) {
       e.isUCSwitchBot = true
-      e.message.forEach(v => (v.text &&= v.text.replace(reg, '')))
-      return await this.dealMsg(e, type)
+      e.message.forEach(v => (v.type === 'text' && (v.text &&= v.text.replace(reg, ''))))
+      return this.dealMsg(e, type)
     }
     return false
   }
@@ -172,18 +171,15 @@ class UCSwitchBotEvent extends UCEvent {
 
 async function UCdealMsg(type, e) {
   const groupId = e.group_id || e.group?.gid
+  // 是群内并且UC下线了Bot
   if (groupId && _.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${groupId}.enable`), ['UC-switchBot'])) {
-    if (type.startsWith('message')) {
-      const a = new UCSwitchBotEvent(e)
-      return await a.deal(e, type)
-    }
-    return
+    const a = new UCSwitchBotEvent(e)
+    return a.deal(e, type)
   }
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
-  const events = UCPr.event[type]
+  const events = UCPr.event[type].filter(({ sub_type }) => sub_type === 'all' || sub_type === e.sub_type)
+  /** 处理hook */
   for (const event of events) {
-    // log.debug('检查插件：' + event.name)
-    if (event.sub_type !== 'all' && event.sub_type !== e.sub_type) continue
     const key = `${event.name}.${e.sender?.user_id ?? e.user_id}`
     const userHook = _.find(hook, { key })
     if (userHook) {
@@ -199,6 +195,9 @@ async function UCdealMsg(type, e) {
       }
       return true
     }
+  }
+  /** 处理accept */
+  for (const event of events) {
     if (event.accept) {
       // log.debug('执行accept方法：' + event.name)
       const app = new event.class(e)
@@ -209,6 +208,9 @@ async function UCdealMsg(type, e) {
         log.error(`执行${event.name} accept错误`, err)
       }
     }
+  }
+  for (const event of events) {
+    // log.debug('检查插件：' + event.name)
     if (!_.isArray(event.rule)) continue
     // log.debug('检查插件正则' + event.name)
     for (const rule of event.rule) {

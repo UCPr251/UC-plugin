@@ -4,6 +4,15 @@
 
 ### 2月
 
+#### 2-26
+
+**ver 2.4.2**
+
+- 优化[对监听事件的处理](./models/UCEvent.js)
+- 优化[备份&还原](./apps/BackupRestore.js)对报错的处理，自动备份报错会通知主人
+- 修复[开发者模式](./apps/reloadJSs.js)下[Event](./apps/Event/)插件数据统计错误的情况
+- 针对icqq有时进退群监听会重复的现象对[进退群通知](./apps/Event/groupAdmin/WM.js)加个1小时的CD
+
 #### 2-24
 
 **ver 2.4.1**

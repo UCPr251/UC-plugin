@@ -20,7 +20,7 @@ export default class UCBackupRestore extends UCPlugin {
           fnc: 'restore'
         },
         {
-          reg: /^#?UC删除备份(数据)?$/i,
+          reg: /^#?UC删除备份(数据)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
           fnc: 'unlink'
         }
       ]
@@ -48,7 +48,7 @@ export default class UCBackupRestore extends UCPlugin {
     replyMsg.push(`备份数据位于UC-plugin/data/backup/${folderName}/内\n请自行留存\n还原：#UC还原备份\n删除：#UC删除备份`)
     const title = '备份完成，请查看备份数据'
     const reply = await common.makeForwardMsg(this.e, replyMsg, title)
-    return await this.reply(reply)
+    return this.reply(reply)
   }
 
   backupYunzaiData() {
@@ -95,7 +95,7 @@ export default class UCBackupRestore extends UCPlugin {
       list: backups
     }
     this.setContext(this.setFnc)
-    return await this.reply('请选择要还原的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
+    return this.reply('请选择要还原的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
   }
 
   async _restore([folderName]) {
@@ -165,6 +165,11 @@ export default class UCBackupRestore extends UCPlugin {
   unlink() {
     const backups = file.readdirSync(_backupPath, { type: 'Directory' })
     if (!backups.length) return this.reply('本地没有备份数据，请先#UC备份数据')
+    const date = UCDate.getFormatedDate(this.msg)
+    if (date) {
+      if (!backups.includes(date)) return this.reply(`本地没有${date}的备份数据`)
+      return this._unlink([date])
+    }
     this.e.data = {
       fnc: '_unlink',
       list: backups
@@ -173,9 +178,9 @@ export default class UCBackupRestore extends UCPlugin {
     return this.reply('请选择要删除的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
   }
 
-  _unlink([folderName]) {
-    file.unlinkFilesRecursively(Path.join(_backupPath, folderName))
-    return this.reply('已删除备份数据：' + folderName)
+  _unlink(foldersName) {
+    foldersName.forEach(folderName => file.unlinkFilesRecursively(Path.join(_backupPath, folderName)))
+    return this.reply('已删除备份数据：\n' + Data.makeArrStr(foldersName))
   }
 
 }
@@ -190,6 +195,10 @@ Data.loadTask({
     const child = spawn('node', ['BackupRestore.js'], { cwd: Path.tools })
     child.stdout.on('data', (data) => {
       log.purple(common.toString(data).trim?.())
+    })
+    child.stderr.on('data', (data) => {
+      const errInfo = log.error(today + '自动备份失败', data)
+      common.sendMsgTo(UCPr.GlobalMaster[0], errInfo, 'Private')
     })
     child.on('exit', (code) => {
       log.red(today + `自动备份结束，退出码${code}：${['正常退出', '路径错误', '备份过程中发生错误'][code]}`)

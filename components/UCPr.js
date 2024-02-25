@@ -165,7 +165,7 @@ class UCPr {
    * @returns Fetch result
    */
   async fetch(urlCode, ...parameters) {
-    return await UCfetch.call(this, urlCode, parameters)
+    return UCfetch.call(this, urlCode, parameters)
   }
 
   /** 注册监听事件 */

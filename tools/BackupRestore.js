@@ -16,13 +16,14 @@ const yellow = chalk.rgb(255, 220, 20)
 log.yellow = (...args) => log(yellow(...args))
 const purple = chalk.rgb(180, 110, 255)
 log.purple = (...args) => log(purple(...args))
+log.error = (...args) => console.error(red(...args))
 
-const file = await import('../components/file.js').then((module) => module.default).catch((err) => { log.red('file.js导入失败：', err.message); process.exit(1) })
-const UCDate = await import('../components/UCDate.js').then((module) => module.default).catch((err) => { log.red('UCDate.js导入失败：', err.message); process.exit(1) })
-const Path = await import('../components/Path.js').then((module) => module.getPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.red('Path.js导入失败：', err.message); process.exit(1) })
+const file = await import('../components/file.js').then((module) => module.default).catch((err) => { log.error('file.js导入失败：\n', err); process.exit(1) })
+const UCDate = await import('../components/UCDate.js').then((module) => module.default).catch((err) => { log.error('UCDate.js导入失败：\n', err); process.exit(1) })
+const Path = await import('../components/Path.js').then((module) => module.getPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.error('Path.js导入失败：\n', err); process.exit(1) })
 
 if (!file.existsSync(Path.UC)) {
-  log.red('错误路径')
+  log.error('错误路径')
   process.exit(1)
 }
 
@@ -45,7 +46,7 @@ function displayMenu(options, info = '') {
 /** 处理选择操作项 */
 function handleChoice(choice) {
   if (choice.toLowerCase() === 'e' || choice.toLowerCase() === 'end') {
-    log('\n拜拜!')
+    log('\n拜拜!\n')
     process.exit(0)
   }
   choice = parseInt(choice)
@@ -74,7 +75,7 @@ function handleChoice(choice) {
 /** 处理选择文件夹 */
 function chooseFolder(choice, backups, type) {
   if (choice.toLowerCase() === 'e' || choice.toLowerCase() === 'end') {
-    log('\n拜拜!')
+    log('\n拜拜!\n')
     process.exit(0)
   }
   choice = parseInt(choice)
@@ -100,7 +101,7 @@ function backup(folderName) {
     backupYunzaiData(backupPath)
     backupPluginsData(backupPath)
   } catch (err) {
-    log.red('\n备份云崽数据失败：' + err.message)
+    log.error('\n备份云崽数据失败：\n', err)
     return process.exit(2)
   }
   log(`\n备份${purple(folderName)}成功！\n备份数据位于${purple(`UC-plugin/data/backup/${folderName}`)}/内\n请自行留存`)
@@ -147,7 +148,7 @@ function restore(folderName) {
     restoreYunzaiData(backupPath)
     uninstalled = restorePluginsData(backupPath)
   } catch (err) {
-    log.red('\n还原云崽数据失败：', err.message)
+    log.error('\n还原云崽数据失败：\n', err)
     process.exit(3)
   }
   uninstalled.length && log.purple(yellow('\n未安装的插件：\n') + uninstalled.join('\n'))

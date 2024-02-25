@@ -22,11 +22,17 @@ class UCWelcome extends UCEvent {
       Cfg: 'GAconfig.welcome',
       event: 'notice.group.increase'
     })
+    this.redisData = '[UC]Welcome'
   }
 
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
+      // 有时候icqq的监听会重复，做个限制
+      const key = `${this.redisData}:${this.groupId}:${this.userId}`
+      const data = await Data.redisGet(key)
+      if (data) return true
+      Data.redisSet(key, '1', 3600)
       if (this.user_id === this.qq) return log.white(`[新增群聊]${this.groupId}`)
     }
     if (isGlobal) this.Cfg = UCPr.defaultCFG.GAconfig.welcome
@@ -42,7 +48,7 @@ class UCWelcome extends UCEvent {
     const message = isGlobal ? globalWelcome : file.JSONreader(Path.get('WM', this.groupId, 'welcome.json')) ?? globalWelcome
     replyMsg.push(...common.makeMsg(message, 'info', info))
     if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送入群欢迎`)
-    return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
+    return common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
   }
 }
 
@@ -58,11 +64,17 @@ class UCMourn extends UCEvent {
       event: 'notice.group'
     })
     this.sub_type = 'decrease'
+    this.redisData = '[UC]Mourn'
   }
 
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
+      // 有时候icqq的监听会重复，做个限制
+      const key = `${this.redisData}:${this.groupId}:${this.userId}`
+      const data = await Data.redisGet(key)
+      if (data) return true
+      Data.redisSet(key, '1', 3600)
       if (e.dismiss) return log.white(`[群聊解散]${this.groupId}`)
       if (this.user_id === this.qq) {
         if (e.operator_id !== this.qq) return log.white(`[被踢出群聊]${this.groupId}，操作者：${e.operator_id}`)
@@ -83,11 +95,11 @@ class UCMourn extends UCEvent {
       const message = isGlobal ? globalMourn : file.JSONreader(Path.get('WM', this.groupId, 'mourn.json')) ?? globalMourn
       replyMsg.push(...common.makeMsg(message, 'info', info))
       if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送退群通知`)
-      return await common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
+      return common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
     } else if (e.operator_id !== this.qq) {
       log.white(`[群员被踢]${info} 操作人：${e.operator_id}`)
       if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送退群通知`)
-      return await common.sendMsgTo(isView || this.groupId, `${info}被管理员${e.operator_id ?? ''}踢出群聊`, 'Group')
+      return common.sendMsgTo(isView || this.groupId, `${info}被管理员${e.operator_id ?? ''}踢出群聊`, 'Group')
     }
     log.white(`[机器人踢人]${info}`)
   }
@@ -162,7 +174,7 @@ class UCWMset extends UCEvent {
       e.operator_id = this.userId
       app = new UCMourn(e)
     }
-    return await app.accept(e, this.isGlobal, oriGroup)
+    return app.accept(e, this.isGlobal, oriGroup)
   }
 
   async set(e) {

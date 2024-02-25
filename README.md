@@ -6,8 +6,8 @@
   </a>
 </p>
 
-# [UC-plugin](https://gitee.com/UCPr251/UC-plugin)
-[![访问量(自2.4.0)](https://profile-counter.glitch.me/UC-plugin/count.svg)](https://gitee.com/UCPr251/UC-plugin)
+# [UC-plugin][UC]
+[![访问量(自2.4.0)](https://profile-counter.glitch.me/UC-plugin/count.svg "访问量(自2.4.0版本)")][UC]
 
 </div>
 
@@ -49,15 +49,13 @@ pnpm i --filter=UC-plugin
 
 ## 关于[UC-plugin](#uc-plugin)
 
-- 开发环境：Windows11-Nodejs20
+- 为便于统一开发插件和各种集成功能打造而成
 
-- 测试环境：Windows11-Nodejs20、Windows server2022-Nodejs16
+- 开发、测试环境：Windows11-Nodejs20
 
-- 为方便统一开发插件和其他集成功能打造而成
+- 本人目前只用[喵崽][Miao-Yunzai]，暂不考虑主动适配其他崽
 
-- 本人目前只用喵崽，暂不考虑主动适配其他崽
-
-- 若有报错欢迎提issue和pr，也可加入[QQ交流群](#交流群)一起讨论
+- 若有报错欢迎提[issue]和[pr]，也可加入[QQ交流群](#交流群)一起讨论
 
 - 本插件不会采集、上传使用者的任何信息，使用本插件即视为你同意本插件对UC插件自身的一切操作
 
@@ -85,7 +83,8 @@ pnpm i --filter=UC-plugin
 - 详见 **#UC帮助**
 - **UC帮助** 为动态帮助图，会根据当前[插件设置](#插件设置)、[用户权限](#关于插件权限)等自动调整帮助图展示项
 
-  > 比如主人未开启或触发指令的用户没有使用权限的功能，将不会在帮助图中进行展示，可在插件设置项中开关、设置功能，详见[插件设置](#插件设置)
+  > 比如主人未开启或触发指令的用户没有使用权限的功能，将不会在帮助图中进行展示。
+  > 可在插件设置项中开关功能或设置功能权限等，详见[插件设置](#插件设置)
 
 [<<<点击查看帮助图>>>](./resources/img/README/help_example.jpg)
 
@@ -210,7 +209,8 @@ pnpm i --filter=UC-plugin
 <details>
 <summary>权限判断代码逻辑片段</summary>
 
-   <img src="./resources/img/README/permission.png" width = "600" title="权限判断代码逻辑片段">
+![权限判断代码逻辑片段](./resources/img/README/permission.png "权限判断代码逻辑片段")
+
 
 </details>
 
@@ -270,6 +270,13 @@ pnpm i --filter=UC-plugin
 
 如果喜欢本插件，请点亮 :star: **star** :star: 支持！
 
+若有报错欢迎提[issue]和[pr]！
+
 [:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
 
 ---
+
+[UC]:https://gitee.com/UCPr251/UC-plugin
+[issue]:https://gitee.com/UCPr251/UC-plugin/issues
+[pr]:https://gitee.com/UCPr251/UC-plugin/pulls
+[Miao-Yunzai]:https://gitee.com/yoimiya-kokomi/Miao-Yunzai

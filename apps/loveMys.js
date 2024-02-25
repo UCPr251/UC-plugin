@@ -108,7 +108,7 @@ export default class UCLoveMys extends UCPlugin {
       todayUsed = 0
       Data.redisSet(this.redisData, now_times)
     }
-    return await this.reply(`剩余次数：${now_times}次\n今日已用${todayUsed}次`)
+    return this.reply(`剩余次数：${now_times}次\n今日已用${todayUsed}次`)
   }
 
   async gitpull() {

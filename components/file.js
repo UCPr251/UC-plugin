@@ -13,7 +13,8 @@ const file = {
 
   /** 保存yaml */
   YAMLsaver(_path, newData) {
-    return fs.writeFileSync(_path, yaml.stringify(newData), 'utf8')
+    fs.writeFileSync(_path, yaml.stringify(newData), 'utf8')
+    return newData
   },
 
   /** 读取json */
@@ -24,7 +25,8 @@ const file = {
 
   /** 保存json */
   JSONsaver(_path, newData) {
-    return fs.writeFileSync(_path, JSON.stringify(newData, null, 2), 'utf8')
+    fs.writeFileSync(_path, JSON.stringify(newData, null, 2), 'utf8')
+    return newData
   },
 
   /**
@@ -150,7 +152,7 @@ const file = {
         if (glbalRemoves.includes(_file.name)) continue
         this.unlinkFilesRecursively(currentPath, [], glbalRemoves)
       } else {
-        file.unlinkSync(currentPath)
+        fs.unlinkSync(currentPath)
       }
     }
     try { fs.rmdirSync(dir) } catch (e) { }

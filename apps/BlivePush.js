@@ -100,10 +100,12 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveHelp() {
+    if (!this.check) return false
     return this.reply(help + err_reply)
   }
 
   async bQueryUp() {
+    if (!this.check) return false
     if (!this.verifyLevel()) return false
     const uid = this.msg.match(/\d+/)[0]
     const data = await getUpInfo.call(this, uid)
@@ -124,6 +126,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveSubscribe() {
+    if (!this.check) return false
     if (!this.verifyPermission(this.Cfg.use)) return false
     const [location_id, room_id, type] = await this.getIdType()
     if (!room_id) {
@@ -176,6 +179,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveDelete() {
+    if (!this.check) return false
     if (!this.verifyPermission(this.Cfg.use)) return false
     const [location_id, room_id, type] = await this.getIdType()
     if (location_id.length < 5 || location_id.length > 10) {
@@ -218,6 +222,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveList() {
+    if (!this.check) return false
     if (!this.verifyLevel()) return false
     if (isNaN(this.msg.replace(/#?(直播)?推送列表/, ''))) {
       return false
@@ -239,6 +244,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveSwitch() {
+    if (!this.check) return false
     if (!this.verifyPermission(this.Cfg.use)) return false
     const regtest = this.msg.match(/推送(.*)/)[1]
     if (isNaN(regtest)) return false
@@ -369,6 +375,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiving() {
+    if (!this.check) return false
     if (!this.verifyLevel()) return false
     const [location_id, type] = await this.getIdType(false)
     if (location_id.length < 5 || location_id.length > 10) {
@@ -397,7 +404,7 @@ export default class UCBlivePush extends UCPlugin {
     }
   }
 
-  async bLiveClean(e) {
+  async bLiveClean() {
     if (!this.GM) return false
     redis.del(this.PushedInfo)
     redis.del(this.GroupPushed)
@@ -406,6 +413,7 @@ export default class UCBlivePush extends UCPlugin {
   }
 
   async bLiveAtall(e) {
+    if (!this.check) return false
     if (!this.verifyPermission(this.Cfg.use)) return false
     let [location_id, type] = await this.getIdType(false)
     if (type == 'Private') {

@@ -98,7 +98,7 @@ export default class UCBigjpg extends UCPlugin {
   async sendImage(buffer) {
     const name = `${this.userId}-${UCDate.NowTimeNum}.png`
     if (buffer.length > (1 << 20 << 3)) {
-      return await common.sendFile(this.e, buffer, name, '放大成功咯，图片较大将会直接上传文件，注意查收哦~')
+      return common.sendFile(this.e, buffer, name, '放大成功咯，图片较大将会直接上传文件，注意查收哦~')
     }
     this.reply('放大成功咯', true, { at: true })
     return this.reply(segment.image(buffer), true)

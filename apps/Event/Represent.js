@@ -59,7 +59,7 @@ class UCRepresent extends UCEvent {
     e.msg = msg
     e.raw_message = msg
     e.original_msg = msg
-    return await this.BotPluginsDeal(e)
+    return this.BotPluginsDeal(e)
   }
 }
 

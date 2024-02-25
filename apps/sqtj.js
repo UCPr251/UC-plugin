@@ -163,7 +163,7 @@ export default class UCSqtj extends UCPlugin {
 
   async test() {
     if (!this.GM) return false
-    return await autoSendSqtj()
+    return autoSendSqtj()
   }
 
 }

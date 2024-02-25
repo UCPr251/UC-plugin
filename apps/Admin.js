@@ -210,7 +210,7 @@ export default class UCAdmin extends UCPlugin {
     if (!this.verifyLevel()) return false
     const data = Help.get(e, this.groupId)
     if (!data) return
-    return await common.render(e, data)
+    return common.render(e, data)
   }
 
   async UC_CFG(e) {
@@ -292,7 +292,7 @@ export default class UCAdmin extends UCPlugin {
     // 发送新设置图
     const data = Cfg.get(e, { type, groupId, isGlobal, group: showGroup })
     if (!data) return
-    return await common.render(e, data)
+    return common.render(e, data)
   }
 
   async lockConfig() {
