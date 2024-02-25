@@ -3,6 +3,15 @@ import { UCEvent } from '../../../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
+/** 有时候icqq的监听会重复，做个CD限制 */
+async function checkCD() {
+  const key = `${this.redisData}:${this.groupId}:${this.userId}`
+  const data = await Data.redisGet(key)
+  if (data) return false
+  Data.redisSet(key, '1', 3600)
+  return true
+}
+
 const globalFloder = Path.get('WM', 'global')
 
 const WM = {
@@ -28,11 +37,7 @@ class UCWelcome extends UCEvent {
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
-      // 有时候icqq的监听会重复，做个限制
-      const key = `${this.redisData}:${this.groupId}:${this.userId}`
-      const data = await Data.redisGet(key)
-      if (data) return true
-      Data.redisSet(key, '1', 3600)
+      if (!await checkCD.call(this)) return true
       if (this.user_id === this.qq) return log.white(`[新增群聊]${this.groupId}`)
     }
     if (isGlobal) this.Cfg = UCPr.defaultCFG.GAconfig.welcome
@@ -70,11 +75,7 @@ class UCMourn extends UCEvent {
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
-      // 有时候icqq的监听会重复，做个限制
-      const key = `${this.redisData}:${this.groupId}:${this.userId}`
-      const data = await Data.redisGet(key)
-      if (data) return true
-      Data.redisSet(key, '1', 3600)
+      if (!await checkCD.call(this)) return true
       if (e.dismiss) return log.white(`[群聊解散]${this.groupId}`)
       if (this.user_id === this.qq) {
         if (e.operator_id !== this.qq) return log.white(`[被踢出群聊]${this.groupId}，操作者：${e.operator_id}`)

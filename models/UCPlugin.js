@@ -228,7 +228,7 @@ export default class UCPlugin extends plugin {
     const data = this.getContext()._getNum?.data
     if (!data) {
       this.finish('_getNum')
-      log.warn(`上下文hook数据丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
+      log.warn(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
       return
     }
     const { list, fnc } = data

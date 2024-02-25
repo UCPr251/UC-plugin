@@ -209,6 +209,7 @@ async function UCdealMsg(type, e) {
       }
     }
   }
+  /** 处理消息 */
   for (const event of events) {
     // log.debug('检查插件：' + event.name)
     if (!_.isArray(event.rule)) continue
