@@ -116,28 +116,30 @@ const file = {
   },
 
   /**
-   * (批量)删除文件，返回删除文件name
-   * 支持一目录多文件 或 _path多文件路径数组
+   * 删除文件，返回删除成功文件name(s)，支持
+   * - 单文件路径
+   * - 一根目录多子文件
+   * - 多文件路径数组
    */
   unlinkSync(_path, ...filesArr) {
     if (_.isArray(_path)) {
-      const deleted = []
-      _path.forEach(__path => {
+      return _path.reduce((acc, __path) => {
         if (this.existsSync(__path)) {
-          deleted.push(this.unlinkSync(__path))
+          const result = this.unlinkSync(__path)
+          result && acc.push(result)
         }
-      })
-      return deleted
+        return acc
+      }, [])
     }
     if (!_.isEmpty(filesArr)) {
-      const filesPath = filesArr.map(_file => path.join(_path, _file))
-      return this.unlinkSync(filesPath)
+      return this.unlinkSync(filesArr.map(_file => path.join(_path, _file)))
     }
     if (file.existsSync(_path)) {
       try {
         fs.unlinkSync(_path)
       } catch (err) {
         log.error(err)
+        return
       }
     }
     return path.parse(_path).name

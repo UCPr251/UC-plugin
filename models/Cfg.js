@@ -71,6 +71,7 @@ export default class Cfg extends Base {
       ...this.screenData,
       cfgData,
       isGlobal,
+      hasFile: isGlobal ? true : !!UCPr.group_CFG[groupId],
       type,
       groupId,
       saveId: 'UC-cfg'

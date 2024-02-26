@@ -25,7 +25,6 @@ export default class UCBackupRestore extends UCPlugin {
         }
       ]
     })
-    this.setFnc = '_getNum'
   }
 
   async backup() {
@@ -94,7 +93,7 @@ export default class UCBackupRestore extends UCPlugin {
       fnc: '_restore',
       list: backups
     }
-    this.setContext(this.setFnc)
+    this.setUCcontext()
     return this.reply('请选择要还原的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
   }
 
@@ -104,10 +103,8 @@ export default class UCBackupRestore extends UCPlugin {
     await common.sleep(1)
     let restored, uninstalled
     try {
-      this.restoreYunzaiData()
-      const result = this.restorePluginsData()
-      restored = result[0]
-      uninstalled = result[1]
+      this.restoreYunzaiData();
+      [restored, uninstalled] = this.restorePluginsData()
     } catch (err) {
       const errInfo = log.error('还原云崽数据失败', err)
       return this.reply(errInfo)
@@ -174,8 +171,8 @@ export default class UCBackupRestore extends UCPlugin {
       fnc: '_unlink',
       list: backups
     }
-    this.setContext(this.setFnc)
-    return this.reply('请选择要删除的备份数据日期：\n' + Data.makeArrStr(backups, { length: 2000 }))
+    this.setUCcontext()
+    return this.reply('请选择要删除的备份数据日期：\n' + Data.makeArrStr(backups, { length: 3000 }))
   }
 
   _unlink(foldersName) {
@@ -203,8 +200,6 @@ Data.loadTask({
     child.on('exit', (code) => {
       log.red(today + `自动备份结束，退出码${code}：${['正常退出', '路径错误', '备份过程中发生错误'][code]}`)
     })
-    child.stdin.write('1\n', () => {
-      child.stdin.write('end\n')
-    })
+    child.stdin.write('1\n', () => child.stdin.write('end\n'))
   }
 })

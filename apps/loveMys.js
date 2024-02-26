@@ -37,7 +37,7 @@ export default class UCLoveMys extends UCPlugin {
       ]
     })
     if (Check.floder(loveMys)) {
-      this.redisData = '[UC]loveMysTokenQuery'
+      this.redisData = '[UC]loveMys'
       this.task = {
         name: 'UC-loveMys',
         fnc: this.refresh.bind(this),

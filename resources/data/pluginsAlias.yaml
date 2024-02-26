@@ -52,3 +52,5 @@
   name: fengye-plugin
 - reg: 换头|egg
   name: egg-plugin
+- reg: 星点|starlight
+  name: starlight-qsign

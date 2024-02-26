@@ -125,7 +125,7 @@ class UCWMset extends UCEvent {
         }
       ]
     })
-    this.setFnc = 'setReply'
+    this.setFnc = '_replyContext'
     if (!this.groupId) return
     this.string = this.msg?.match(/入群欢迎|退群通知/)?.[0]
     if (!this.string) return
@@ -184,25 +184,21 @@ class UCWMset extends UCEvent {
     if (this.isGlobal && !this.verifyLevel(4)) return false
     const { type, string, floderPath, jsonPath, isGlobal, data, isAP } = this
     e.oriData = { type, string, floderPath, jsonPath, isGlobal, data, isAP }
-    this.setFunction()
+    this.setUCcontext()
     return this.reply(`请发送要修改的${isGlobal ? '全局' : (isAP ? `群${isAP}` : '本群')}${this.string}\n注：info会被替换为“用户名（QQ）”\n支持文字、图片、艾特组合`)
   }
 
-  async setReply(e) {
+  async _replyContext() {
     if (this.isCancel()) return
-    if (!e.message) return this.finishReply('错误的内容')
-    const { oriData } = this.getContext().setReply
-    if (_.isEmpty(oriData)) {
-      this.finish(this.setFnc)
-      return this.errorReply()
-    }
+    if (!this.e.message) return this.finishReply('错误的内容')
+    const { oriData } = this.getUCcontext()
     const { type, floderPath, jsonPath, string, isGlobal, data, isAP } = oriData
     Check.floder(floderPath, true)
     if (!isGlobal && !_.isEmpty(data)) {
       const imgs = _.filter(data, { type: 'image' })
       _.map(imgs, 'path').forEach(path => file.unlinkSync(path))
     }
-    const reply = common.getMsg(e.message)
+    const reply = common.getMsg(this.e.message)
     let imgCount = 0
     for (const v of reply) {
       if (v.type !== 'image') continue

@@ -48,7 +48,6 @@ export default class UCGroupSet extends UCPlugin {
       ]
     })
     this.init = getNewCfg
-    this.setFnc = '_getNum'
   }
 
   save() {
@@ -159,7 +158,7 @@ export default class UCGroupSet extends UCPlugin {
       disabled,
       groupId
     }
-    this.setContext(this.setFnc, false, 300)
+    this.setUCcontext(300)
     return this.reply(replyMsg)
   }
 

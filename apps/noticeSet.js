@@ -14,7 +14,7 @@ export default class UCNoticeSet extends UCPlugin {
         }
       ]
     })
-    this.setFnc = '_getToken'
+    this.setFnc = '_tokenContext'
   }
 
   async setAview(e) {
@@ -31,7 +31,7 @@ export default class UCNoticeSet extends UCPlugin {
       e.type = type
       e.path = path
       e.noticeData = noticeData
-      this.setContext(this.setFnc)
+      this.setUCcontext()
       return this.reply('请发送要设置的token')
     }
     if (tk.length < 10) return this.reply('请输入正确的token')
@@ -44,11 +44,11 @@ export default class UCNoticeSet extends UCPlugin {
     return this.reply(`修改${type} tk成功：\n${tk}`)
   }
 
-  _getToken() {
+  _tokenContext() {
     if (this.isCancel()) return false
     const tk = this.msg.trim()
     if (tk.length < 10) return this.reply('请输入正确的token')
-    const { type, noticeData, path } = this.getContext()[this.setFnc]
+    const { type, noticeData, path } = this.getUCcontext()
     noticeData[type] = tk
     file.YAMLsaver(path, noticeData)
     return this.finishReply(`修改${type} tk成功：\n${tk}`)

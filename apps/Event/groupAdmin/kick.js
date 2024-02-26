@@ -16,7 +16,7 @@ class UCKick extends UCEvent {
         }
       ]
     })
-    this.setFnc = 'makeSure'
+    this.setFnc = '_makeSure'
   }
 
   async kickMember(e) {
@@ -89,7 +89,7 @@ class UCKick extends UCEvent {
     const noPowInfo = Data.makeArrStr(noPow, { property: 'name', property2: 'groupId' })
     const noPowerMsg = '权限不足无法执行操作的群聊：\n\n' + noPowInfo
     e.groupToKick = groupToKick
-    this.setFunction()
+    this.setUCcontext()
     this.reply('待清理人员信息如下，请查看。[取消|确认]')
     await common.sleep(1)
     const title = '待清理人员信息'
@@ -97,8 +97,8 @@ class UCKick extends UCEvent {
     return this.reply(waitToClearMsg, false)
   }
 
-  makeSure() {
-    const { groupToKick } = this.getContext().makeSure
+  _makeSure() {
+    const { groupToKick } = this.getUCcontext()
     if (this.isCancel()) return
     if (this.isSure()) {
       this.kickBlackMem(groupToKick)

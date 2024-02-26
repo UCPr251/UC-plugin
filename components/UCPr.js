@@ -273,7 +273,7 @@ class UCPr {
 
   /** 选择服务 */
   get server() {
-    return this.config.server ?? 1
+    return this.config.server ?? 2
   }
 
   /** 设置的Bot名称 */
@@ -288,17 +288,12 @@ class UCPr {
 
   /** 部分功能不指定年份时默认补全年份 */
   get defaultYear() {
-    return this.autoYear ? new Date().getFullYear() : (this.config.defaultYear ?? 2024)
-  }
-
-  /** 是否自动以当前年份为准补全年份，开启后将无视默认年份defaultYear */
-  get autoYear() {
-    return this.config.autoYear ?? true
+    return new Date().getFullYear()
   }
 
   /** 用户无权限回复 */
   get noPerReply() {
-    return this.config.noPerReply ?? '无权限或权限不足'
+    return this.config.noPerReply ?? '无权限'
   }
 
   /** Bot无权限回复 */
@@ -337,7 +332,7 @@ class UCPr {
     return this.permission.BlackQQ ?? {}
   }
 
-  /** 黑名单列表 */
+  /** 全局黑名单列表 */
   get GlobalBlackQQ() {
     return this.permission.GlobalBlackQQ ?? []
   }
@@ -352,7 +347,7 @@ class UCPr {
     return this.config.debugLog ?? false
   }
 
-  /** 机器人qq */
+  /** 机器人qq号 */
   get qq() {
     return Number(Bot.uin ?? this.defaultCfg.qq)
   }
@@ -360,16 +355,6 @@ class UCPr {
   /** 签名自动重启设置 */
   get qsignRestart() {
     return this.config.qsignRestart ?? {}
-  }
-
-  /** 直播推送设置 */
-  get BlivePush() {
-    return this.config.BlivePush ?? {}
-  }
-
-  /** 放大图片设置 */
-  get bigjpg() {
-    return this.config.bigjpg ?? {}
   }
 
   /** 开关Bot设置 */
@@ -390,6 +375,16 @@ class UCPr {
   /** 随机群友设置 */
   get randomMember() {
     return this.config.randomMember ?? {}
+  }
+
+  /** 直播推送设置 */
+  get BlivePush() {
+    return this.config.BlivePush ?? {}
+  }
+
+  /** 放大图片设置 */
+  get bigjpg() {
+    return this.config.bigjpg ?? {}
   }
 
   /** 群撤回设置 */

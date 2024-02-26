@@ -421,13 +421,8 @@ export function supportGuoba() {
               { label: '服务2', value: 2 }
             ]
           }),
-        s('BotName', '机器人自称', 'Input',
-          '机器人个别时候回复消息时的自称，不填写则取QQ昵称'),
-        s('defaultYear', '默认年份', 'InputNumber',
-          '部分功能不指定年份时默认补全年份',
-          { min: 2000, max: 2510 }),
-        s('autoYear', '自动年份', 'Switch',
-          '是否自动以当前年份为准补全年份，开启后将无视默认年份'),
+        s('BotName', '机器人名称', 'Input',
+          '机器人个别时候回复消息时的名称，不填写则取QQ昵称'),
         s('loveMysNotice', '过码次数预警值', 'InputNumber',
           '每日0点自动检测过码剩余次数，低于该值则提醒主人，0则不提醒',
           { min: 0 }),

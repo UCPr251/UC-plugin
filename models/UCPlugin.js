@@ -56,6 +56,8 @@ export default class UCPlugin extends plugin {
     this.B = this.UC.B
     /** 是否全局黑名单 */
     this.GB = this.UC.GB
+    /** 上下文hook调用函数名称 */
+    this.setFnc = '__chooseContext'
   }
 
   /** 设置的Bot名称 */
@@ -160,9 +162,56 @@ export default class UCPlugin extends plugin {
     return Check.str(this.groupCFG.permission?.BlackQQ, userId)
   }
 
+  /** 创建上下文 */
+  setUCcontext(fnc = this.setFnc, time = 120) {
+    if (typeof fnc === 'number') [fnc, time] = [this.setFnc, fnc]
+    super.setContext(fnc, false, time)
+  }
+
+  /** 获取上文e */
+  getUCcontext(fnc = this.setFnc) {
+    return _.get(super.getContext(), fnc, {})
+  }
+
+  /** 结束上下文 */
+  finishUCcontext(fnc = this.setFnc) {
+    super.finish(fnc)
+  }
+
+  /** 获取序号指定数据 */
+  __chooseContext() {
+    if (this.isCancel('__chooseContext')) return
+    const data = this.getUCcontext('__chooseContext.data')
+    if (!data) {
+      this.finishUCcontext('__chooseContext')
+      log.warn(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
+      return
+    }
+    const { list, fnc } = data
+    let numMatch = this.msg.match(/\d+/g)
+    if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
+      const [start, end] = this.msg.match(/\d+/g).map(Number)
+      if (start > end) {
+        this.reply('???')
+        return false
+      }
+      numMatch = _.range(start, Math.min(end, list.length) + 1)
+    } else {
+      numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
+    }
+    if (_.isEmpty(numMatch)) {
+      this.reply('请输入有效的序号或取消操作')
+      return false
+    } else {
+      const arr = numMatch.map(num => list[num - 1])
+      this.finishUCcontext('__chooseContext')
+      this[fnc](arr, data)
+    }
+  }
+
   /** 用户是否确认操作 */
   isSure(fnc) {
-    if (/是|确认|确定|确信|肯定|yes/.test(this.msg)) {
+    if (/^(是|确认|确定|确信|肯定|yes)$/.test(this.msg)) {
       fnc && fnc()
       return true
     }
@@ -220,37 +269,6 @@ export default class UCPlugin extends plugin {
       return msgArr.join(' ').replace(/\s+/g, ' ').trim()
     }
     return this.msg ?? this.e.msg ?? ''
-  }
-
-  /** 获取序号指定数据 */
-  _getNum() {
-    if (this.isCancel('_getNum')) return
-    const data = this.getContext()._getNum?.data
-    if (!data) {
-      this.finish('_getNum')
-      log.warn(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
-      return
-    }
-    const { list, fnc } = data
-    let numMatch = this.msg.match(/\d+/g)
-    if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
-      const [start, end] = this.msg.match(/\d+/g).map(Number)
-      if (start > end) {
-        this.reply('???')
-        return false
-      }
-      numMatch = _.range(start, Math.min(end, list.length) + 1)
-    } else {
-      numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
-    }
-    if (_.isEmpty(numMatch)) {
-      this.reply('请输入有效的序号或取消操作')
-      return false
-    } else {
-      const arr = numMatch.map(num => list[num - 1])
-      this.finish('_getNum')
-      this[fnc](arr, data)
-    }
   }
 
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {

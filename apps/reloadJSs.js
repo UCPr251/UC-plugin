@@ -57,7 +57,6 @@ export default class UCReloadJSs extends UCPlugin {
         }
       ]
     })
-    this.redisData = '[UC]reloadPlugins'
   }
 
   async init(force) {

@@ -10,7 +10,7 @@
   <div class="container" id="container">
     <div class="head-box">
       <!-- 标题文字 -->
-      <div class="title">UC-plugin{{if isGlobal}}全局{{else}}群{{groupId}}{{/if}}{{if type === 'GAconfig'}}群管{{/if}}系统设置</div>
+      <div class="title">UC-plugin{{if isGlobal}}全局{{else}}群{{groupId}}{{/if}}{{if type === 'GAconfig'}}群管{{/if}}系统设置{{if !hasFile}}*{{/if}}</div>
     </div>
     <!-- 遍历每一个cfg组 cfgGroup -->
     {{each cfgData cfgGroup cfgGroupKey}}

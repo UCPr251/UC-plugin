@@ -3,7 +3,7 @@ isOpen: false
 # 黑名单发言是否撤回并踢出
 isDetecteBlack: false
 # 群管上下文操作的超时时间
-overTime: 120
+overTime: 251
 
 # 进群欢迎设置
 welcome:

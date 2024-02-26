@@ -32,21 +32,21 @@ export default class UCRun extends UCPlugin {
       return this.runCommand(command)
     }
     e.command = command
-    this.setContext(this.setFnc)
+    this.setUCcontext()
     return this.reply(`将在云崽根目录运行指令：\n${e.command}\n是否确认？`)
   }
 
   _makeSure() {
     if (this.isCancel()) return
     this.isSure(async () => {
-      const { command } = this.getContext()._makeSure
+      const { command } = this.getUCcontext()
       this.finish()
       this.runCommand(command)
     })
   }
 
   runCommand(command) {
-    Data.exec(command, Path._path, true, {}, (err, stdout) => {
+    command && Data.exec(command, Path._path, true, {}, (err, stdout) => {
       if (err) {
         const errorInfo = log.error(err)
         return this.reply(`${command}执行失败：\n${errorInfo}`)

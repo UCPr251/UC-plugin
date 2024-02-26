@@ -144,7 +144,7 @@ const common = {
     if (e.img) {
       url = e.img[0]
     } else if (e.file) {
-      url = await this.getFileUrl(e)?.[0]
+      url = (await this.getFileUrl(e))?.[0]
     }
     return url
   },

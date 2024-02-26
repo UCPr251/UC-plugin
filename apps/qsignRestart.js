@@ -104,7 +104,7 @@ export default class UCQsignRestart extends UCPlugin {
         }
       ]
     })
-    this.setFnc = 'verify'
+    this.setFnc = '_makeSure'
     this.Cfg = UCPr.qsignRestart
   }
 
@@ -139,7 +139,7 @@ export default class UCQsignRestart extends UCPlugin {
       if (UCPr.intervalId || isCheckMsg) {
         return this.reply('当前已经开启签名自动重启')
       }
-      this.setContext(this.setFnc)
+      this.setUCcontext()
       return this.reply(`请确认签名配置：\n监听host：${this.Cfg.host}\n监听port：${this.Cfg.port}\n签名路径：${this.Cfg.qsign || Path.qsign}\n签名启动器名称：${this.Cfg.qsingRunner}\n\n请确保以上配置和你本地配置一致，否则本功能无法发挥作用，如有不一致，请于 锅巴 → UC-plugin → 配置 修改\n\n确认开启？[确认|取消]`)
     } else {
       if (!UCPr.intervalId && !isCheckMsg) {
@@ -151,9 +151,9 @@ export default class UCQsignRestart extends UCPlugin {
     }
   }
 
-  async verify() {
+  _makeSure() {
     if (this.isCancel()) return false
-    if (/确认|确定/.test(this.msg)) {
+    this.isSure(() => {
       const choices = []
       if (this.Cfg.switch1) {
         UCPr.intervalId = setInterval(checkQsignPort, this.Cfg.sleep * 1000)
@@ -165,7 +165,7 @@ export default class UCQsignRestart extends UCPlugin {
         choices.push('签名异常检测')
       }
       this.finishReply(`已开启${choices.join('、')}，\n可通过#签名重启记录 查看今日签名重启记录`)
-    }
+    })
   }
 
   async restartLog() {

@@ -24,7 +24,7 @@ export default class UCAddJS extends UCPlugin {
         }
       ]
     })
-    this.setFnc = '_getFile'
+    this.setFnc = '_fileContext'
     this.setFnc2 = '_makeSure'
   }
 
@@ -32,16 +32,16 @@ export default class UCAddJS extends UCPlugin {
     if (!this.GM) return false
     e.isUCJS = /插件/.test(this.msg)
     // if (e.isUCJS && e.isGroup) return this.reply('请私聊安装UC插件')
-    this.setContext(this.setFnc, false, 60)
+    this.setUCcontext(60)
     return this.reply('请在60s内发送js文件')
   }
 
-  async _getFile() {
+  async _fileContext() {
     if (this.isCancel()) return false
     if (!this.isGroup && !this.e.friend) return this.finishReply('请先添加好友')
     if (!this.e.file) return this.reply('请发送js文件')
     else {
-      const { isUCJS } = this.getContext()._getFile
+      const { isUCJS } = this.getUCcontext()
       const [fileUrl, filename] = await common.getFileUrl(this.e)
       const filePath = Path.get(isUCJS ? 'apps' : 'example', filename)
       const dirPath = isUCJS ? 'plugins/UC-plugin/apps/' : 'plugins/example/'
@@ -52,7 +52,7 @@ export default class UCAddJS extends UCPlugin {
         this.e.filename = filename
         this.e.dirPath = dirPath
         this.finish(this.setFnc)
-        this.setContext(this.setFnc2)
+        this.setUCcontext(this.setFnc2)
         return this.reply(`你已经安装过${dirPath}${filename}插件了，是否覆盖原插件？[是|否]`)
       }
       if (await Data.download(fileUrl, isUCJS ? Path.apps : Path.example, filename)) {
@@ -69,7 +69,7 @@ export default class UCAddJS extends UCPlugin {
   async _makeSure() {
     if (this.isCancel()) return
     if (this.isSure()) {
-      const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getContext()._makeSure
+      const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getUCcontext(this.setFnc2)
       if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
       file.unlinkSync(filePath)
       await common.sleep(0.2)
@@ -102,7 +102,7 @@ export default class UCAddJS extends UCPlugin {
         fnc: '_delJS',
         list: JSs
       }
-      this.setContext('_getNum')
+      this.setUCcontext('__chooseContext')
       const title = '请选择要删除的JS'
       const info = Data.makeArrStr(JSs, { chunkSize: 100, length: 2000 })
       const replyMsg = await common.makeForwardMsg(e, [title, '请选择要删除的js的序号\n间隔可一次删除多个\n也可使用1-10可一次删除多个', ...info], title)
@@ -110,7 +110,7 @@ export default class UCAddJS extends UCPlugin {
     }
     if (!jsName.endsWith('.js')) jsName += '.js'
     if (Check.file(Path.get('example', jsName))) {
-      file.unlinkSync(Path.get('example', jsName))
+      file.unlinkSync(Path.example, jsName)
       return this.reply(`删除成功：${jsName}`)
     }
     const search = await file.searchFiles(Path.example, jsName.replace(/\.js$/, ''), { type: '.js' })
@@ -119,17 +119,15 @@ export default class UCAddJS extends UCPlugin {
       fnc: '_delJS',
       list: _.map(search, 'file')
     }
-    this.setContext('_getNum')
+    this.setUCcontext('__chooseContext')
     const info = Data.makeArrStr(search, { chunkSize: 100, length: 2000, property: 'name' })
     const title = '请选择要删除的JS'
     const replyMsg = await common.makeForwardMsg(e, [`未找到${jsName}插件，自动搜索相关文件，请选择要删除的js的序号`, ...info], title)
     return this.reply(replyMsg)
   }
 
-  _delJS(jsArr) {
-    const JSsPath = jsArr.map(v => Path.get('example', v))
-    const deleted = file.unlinkSync(JSsPath)
-    return this.reply(`删除成功：\n${Data.makeArrStr(deleted)}`)
+  _delJS(JSsArr) {
+    return this.reply(`删除成功：\n${Data.makeArrStr(file.unlinkSync(Path.example, ...JSsArr))}`)
   }
 
 }

@@ -106,16 +106,16 @@ export default class UCEvent extends UCPlugin {
     return card || nickname || memId
   }
 
-  /** 创建上下文，false再处理 */
-  setFunction(type = this.setFnc, time = UCPr.GAconfig.overTime) {
+  /** 创建上下文，返回false再处理 */
+  setUCcontext(fnc = this.setFnc || '__chooseContext', time = UCPr.GAconfig.overTime) {
     const key = this.conKey()
     if (_.some(hook, { key })) return
     const info = {
       key,
-      type
+      fnc
     }
     hook.push(info)
-    this.setContext(type, false, time)
+    super.setUCcontext(fnc, time)
     setTimeout(() => {
       if (_.remove(hook, info).length) {
         log.yellow(`${key}操作超时已取消`)
@@ -183,13 +183,13 @@ async function UCdealMsg(type, e) {
     const key = `${event.name}.${e.sender?.user_id ?? e.user_id}`
     const userHook = _.find(hook, { key })
     if (userHook) {
-      log.white(`执行hook方法：${event.name} ${userHook.type}`)
+      log.white(`执行hook方法：${event.name} ${userHook.fnc}`)
       const app = new event.class(e)
       try {
-        const result = await app[userHook.type](e)
+        const result = await app[userHook.fnc](e)
         result !== false && _.remove(hook, userHook)
       } catch (err) {
-        const errMsg = `执行${event.name}上下文${userHook.type}错误`
+        const errMsg = `执行${event.name}上下文${userHook.fnc}错误`
         const errInfo = log.error(errMsg, err)
         e.reply?.(errInfo)
       }

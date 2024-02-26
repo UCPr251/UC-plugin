@@ -1,5 +1,5 @@
 import { Path, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
-import { UCPlugin, UCEvent } from '../models/index.js'
+import { UCPlugin } from '../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -148,7 +148,7 @@ export default class UCChuoyichuo extends UCPlugin {
 
 }
 
-class UCChuoyichuoSwitchPicPath extends UCEvent {
+class UCChuoyichuoSwitchPicPath extends UCPlugin {
   constructor(e) {
     super({
       e,
