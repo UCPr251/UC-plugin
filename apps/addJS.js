@@ -67,8 +67,8 @@ export default class UCAddJS extends UCPlugin {
   }
 
   async _makeSure() {
-    if (this.isCancel()) return
-    if (this.isSure()) {
+    if (this.isCancel(this.setFnc2)) return
+    if (this.isSure(this.setFnc2)) {
       const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getUCcontext(this.setFnc2)
       if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
       file.unlinkSync(filePath)
@@ -82,7 +82,6 @@ export default class UCAddJS extends UCPlugin {
       }
       return this.finish(this.setFnc2)
     }
-    this.finishReply(this, undefined, this.setFnc2)
   }
 
   async searchJS() {
