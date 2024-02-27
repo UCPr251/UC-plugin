@@ -1,5 +1,7 @@
 # 是否开启UC群管功能，总开关
 isOpen: false
+# 开启UC群管后，UC群管是否只响应以UC为前缀的指令（防冲突用）
+isPrefix: false
 # 黑名单发言是否撤回并踢出
 isDetecteBlack: false
 # 群管上下文操作的超时时间

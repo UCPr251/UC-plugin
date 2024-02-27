@@ -21,7 +21,7 @@ function s(title, desc, require = 0, swh) {
 const helpData = []
 
 helpData.push({
-  group: 'UC系统管理(支持艾特)',
+  group: 'UC系统管理（支持艾特）',
   require: 2,
   cfg: 'config',
   list: [
@@ -56,12 +56,12 @@ helpData.push({
     ),
     s(
       '#UC(主人|管理)列表',
-      '查看UC插件群主人/管理',
+      '查看UC插件群主人/管理列表',
       3
     ),
     s(
       '#UC全局(主人|管理)列表',
-      '查看UC插件所有主人/管理',
+      '查看UC插件所有主人/管理列表',
       4
     ),
     s(
@@ -75,7 +75,7 @@ helpData.push({
     ),
     s(
       '#UC查',
-      '查某用户的插件权限',
+      '查某用户的UC权限',
       3
     ),
     s(
@@ -118,6 +118,11 @@ helpData.push({
     s(
       '#UC(强制)?更新',
       '(强制)?更新UC插件',
+      4
+    ),
+    s(
+      '#UC(强制)?更新资源',
+      '(强制)?更新UC插件资源',
       4
     )
   ]
@@ -535,40 +540,6 @@ if (Check.file(Path.get('apps', 'accredit.js'))) {
   })
 }
 
-if (Check.file(Path.get('apps', 'queueUp.js'))) {
-  helpData.push({
-    group: 'UC工具——群内排队',
-    require: 1,
-    cfg: 'config',
-    list: [
-      s(
-        '#创建排队',
-        '初始化群内排队任务'
-      ),
-      s(
-        '#排队',
-        '群员参与排队，添加至待处理'
-      ),
-      s(
-        '@XXX #完成',
-        '完成某人排队，添加至已完成'
-      ),
-      s(
-        '#队列',
-        '查看当前待处理队列'
-      ),
-      s(
-        '#排队信息',
-        '查看当前排队详细信息'
-      ),
-      s(
-        '#开始/结束排队',
-        '开关#排队，不会删除排队信息'
-      )
-    ]
-  })
-}
-
 if (Check.file(Path.get('apps', 'BLivePush.js'))) {
   helpData.push({
     group: 'UC直播推送',
@@ -616,6 +587,40 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
         '#清空直播推送缓存',
         '故障用，删除直播推送全部缓存',
         4
+      )
+    ]
+  })
+}
+
+if (Check.file(Path.get('apps', 'queueUp.js'))) {
+  helpData.push({
+    group: 'UC工具——群内排队',
+    require: 1,
+    cfg: 'config',
+    list: [
+      s(
+        '#创建排队',
+        '初始化群内排队任务'
+      ),
+      s(
+        '#排队',
+        '群员参与排队，添加至待处理'
+      ),
+      s(
+        '@XXX #完成',
+        '完成某人排队，添加至已完成'
+      ),
+      s(
+        '#队列',
+        '查看当前待处理队列'
+      ),
+      s(
+        '#排队信息',
+        '查看当前排队详细信息'
+      ),
+      s(
+        '#开始/结束排队',
+        '开关#排队，不会删除排队信息'
       )
     ]
   })

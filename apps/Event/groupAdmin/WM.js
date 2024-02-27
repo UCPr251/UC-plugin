@@ -1,5 +1,5 @@
 import { Check, Data, common, log, UCPr, Path, file } from '../../../components/index.js'
-import { UCEvent } from '../../../models/index.js'
+import { UCGAPlugin } from '../../../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
@@ -22,7 +22,7 @@ const WM = {
 
 let globalWelcome, globalMourn
 
-class UCWelcome extends UCEvent {
+class UCWelcome extends UCGAPlugin {
   constructor(e) {
     super({
       e,
@@ -59,7 +59,7 @@ class UCWelcome extends UCEvent {
 
 UCPr.EventInit(UCWelcome)
 
-class UCMourn extends UCEvent {
+class UCMourn extends UCGAPlugin {
   constructor(e) {
     super({
       e,
@@ -108,7 +108,7 @@ class UCMourn extends UCEvent {
 
 UCPr.EventInit(UCMourn)
 
-class UCWMset extends UCEvent {
+class UCWMset extends UCGAPlugin {
   constructor(e) {
     super({
       e,

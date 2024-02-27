@@ -37,7 +37,7 @@ export default class UCAddJS extends UCPlugin {
   }
 
   async _fileContext() {
-    if (this.isCancel()) return false
+    if (this.isCancel()) return
     if (!this.isGroup && !this.e.friend) return this.finishReply('请先添加好友')
     if (!this.e.file) return this.reply('请发送js文件')
     else {
@@ -51,7 +51,7 @@ export default class UCAddJS extends UCPlugin {
         this.e.isUCJS = isUCJS
         this.e.filename = filename
         this.e.dirPath = dirPath
-        this.finish(this.setFnc)
+        this.finishUCcontext(this.setFnc)
         this.setUCcontext(this.setFnc2)
         return this.reply(`你已经安装过${dirPath}${filename}插件了，是否覆盖原插件？[是|否]`)
       }
@@ -62,12 +62,12 @@ export default class UCAddJS extends UCPlugin {
       } else {
         this.errorReply()
       }
-      this.finish(this.setFnc)
+      this.finishUCcontext(this.setFnc)
     }
   }
 
   async _makeSure() {
-    if (this.isCancel()) return
+    if (this.isCancel(this.setFnc2)) return
     if (this.isSure()) {
       const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getUCcontext(this.setFnc2)
       if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
@@ -80,9 +80,8 @@ export default class UCAddJS extends UCPlugin {
       } else {
         this.errorReply()
       }
-      return this.finish(this.setFnc2)
+      return this.finishUCcontext(this.setFnc2)
     }
-    this.finishReply(this, undefined, this.setFnc2)
   }
 
   async searchJS() {

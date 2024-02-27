@@ -1,7 +1,7 @@
 import { common, UCDate, UCPr } from '../../../components/index.js'
-import { UCEvent } from '../../../models/index.js'
+import { UCGAPlugin } from '../../../models/index.js'
 
-class UCMute extends UCEvent {
+class UCMute extends UCGAPlugin {
   constructor(e) {
     super({
       e,
@@ -10,15 +10,15 @@ class UCMute extends UCEvent {
       Cfg: 'GAconfig.mute',
       rule: [
         {
-          reg: /^#(UC)?(全体)?禁言(?!信息|列表)(.*)/,
+          reg: /^#(UC)?(全体)?禁言(?!信息|列表)(.*)/i,
           fnc: 'muteMember'
         },
         {
-          reg: /^#(UC)?(全体|全部)?解禁$/,
+          reg: /^#(UC)?(全体|全部)?解禁$/i,
           fnc: 'releaseMute'
         },
         {
-          reg: /^#(UC)?禁言(信息|列表)$/,
+          reg: /^#(UC)?禁言(信息|列表)$/i,
           fnc: 'groupMuteInfo'
         }
       ]

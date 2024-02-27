@@ -1,8 +1,8 @@
 import { common, UCPr, Admin, Data } from '../../../components/index.js'
-import { UCEvent } from '../../../models/index.js'
+import { UCGAPlugin } from '../../../models/index.js'
 import _ from 'lodash'
 
-class UCKick extends UCEvent {
+class UCKick extends UCGAPlugin {
   constructor(e) {
     super({
       e,
@@ -11,7 +11,7 @@ class UCKick extends UCEvent {
       Cfg: 'GAconfig.kick',
       rule: [
         {
-          reg: /^#(UC)?(全局)?踢(黑名单\s*\d*)?$/,
+          reg: /^#(UC)?(全局)?踢(黑名单\s*\d*)?$/i,
           fnc: 'kickMember'
         }
       ]

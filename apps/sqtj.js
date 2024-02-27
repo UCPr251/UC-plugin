@@ -194,9 +194,7 @@ async function autoSendSqtj() {
       message: [{ type: 'text', text: '#昨日水群统计' }],
       user_id: UCPr.GlobalMaster[0],
       isGroup: true,
-      reply(base64) {
-        group.sendMsg(base64)
-      }
+      reply: group.sendMsg
     }
     const sqtj = new UCSqtj(e)
     const localData = sqtj.getLocalData()

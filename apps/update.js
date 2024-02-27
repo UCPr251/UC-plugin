@@ -151,6 +151,8 @@ export default class UCUpdate extends UCPlugin {
       Data.execSync('git clean -fd && git reset --hard', Path.UC_plugin_decrypt)
     }
     const output = Data.refresh()
+    UCPr.getConfig(5)
+    UCPr.getConfig(6)
     return this.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))
   }
 }

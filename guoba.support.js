@@ -271,6 +271,8 @@ const GAconfig = [
   },
   s('isOpen', '群管开关', 'Switch',
     '是否开启UC群管系统，群管总开关'),
+  s('isPrefix', '仅响应UC前缀指令', 'Switch',
+    '开启UC群管后，UC群管是否只响应以UC为前缀的指令（防冲突用）'),
   s('overTime', '超时时长', 'InputNumber',
     '群管上下文操作的超时时间')
 ]

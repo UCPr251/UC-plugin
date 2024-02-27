@@ -1,8 +1,8 @@
 import { common, UCPr } from '../../../components/index.js'
-import { UCEvent } from '../../../models/index.js'
+import { UCGAPlugin } from '../../../models/index.js'
 import _ from 'lodash'
 
-class UCRecall extends UCEvent {
+class UCRecall extends UCGAPlugin {
   constructor(e) {
     super({
       e,
@@ -11,11 +11,11 @@ class UCRecall extends UCEvent {
       Cfg: 'GAconfig.recall',
       rule: [
         {
-          reg: /^#(UC)?清屏\s*\d*$/,
+          reg: /^#(UC)?清屏\s*\d*$/i,
           fnc: 'clear'
         },
         {
-          reg: /^#(UC)?撤回\s*\d*$/,
+          reg: /^#(UC)?撤回\s*\d*$/i,
           fnc: 'recall'
         }
       ]
