@@ -13,11 +13,11 @@ export default class UCRun extends UCPlugin {
           fnc: 'cmd'
         },
         {
-          reg: /^#?UC(一键)?(卸载|跑路|run)/i,
+          reg: /^#UC(一键)?(卸载|跑路|run)/i,
           fnc: 'run'
         },
         {
-          reg: /^#?卸载UC(插件)?/i,
+          reg: /^#卸载UC(插件)?/i,
           fnc: 'run'
         }
       ]
@@ -40,7 +40,7 @@ export default class UCRun extends UCPlugin {
     if (this.isCancel()) return
     this.isSure(async () => {
       const { command } = this.getUCcontext()
-      this.finish()
+      this.finishUCcontext()
       this.runCommand(command)
     })
   }

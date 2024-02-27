@@ -75,6 +75,11 @@ export default class UCPlugin extends plugin {
     return Data.check.call(this)
   }
 
+  /** UC指令前缀检查 */
+  checkPrefix() {
+    return /^#?UC/i.test(this.msg)
+  }
+
   /** 检查UC unNecRes */
   checkUnNecRes() {
     if (!Check.floder(Path.unNecRes)) {
@@ -86,25 +91,25 @@ export default class UCPlugin extends plugin {
 
   /** 用户无权限回复 */
   noPerReply(quote = true, data = {}) {
-    this.e.reply(UCPr.noPerReply, quote, data)
+    this.reply(UCPr.noPerReply, quote, data)
     return false
   }
 
   /** Bot无权限回复 */
   noPowReply(quote = true, data = {}) {
-    this.e.reply(UCPr.noPowReply, quote, data)
+    this.reply(UCPr.noPowReply, quote, data)
     return false
   }
 
   /** api连接失败回复 */
   fetchErrReply(quote = true, data = {}) {
-    this.e.reply(UCPr.fetchErrReply, quote, data)
+    this.reply(UCPr.fetchErrReply, quote, data)
     return false
   }
 
   /** 错误回复 */
   errorReply(quote = true, data = {}) {
-    this.e.reply('未知错误，请查看错误日志', quote, data)
+    this.reply('未知错误，请查看错误日志', quote, data)
     return false
   }
 
@@ -175,6 +180,7 @@ export default class UCPlugin extends plugin {
 
   /** 结束上下文 */
   finishUCcontext(fnc = this.setFnc) {
+    log.debug(`结束上下文hook：${this.name} ${fnc}`)
     super.finish(fnc)
   }
 
@@ -224,23 +230,21 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    if (/取消/.test(this.msg)) {
-      return this.finishReply(undefined, setFnc, option)
+    if (/^(取消|否|no)$/.test(this.msg)) {
+      return this.finishReply('取消已操作', setFnc, option)
     }
     return false
   }
 
   /** 完成hook并回复 */
-  finishReply(msg = '取消已操作', setFnc, option = {
+  finishReply(msg, setFnc, option = {
     quote: true,
     at: false,
     recallMsg: 0
   }) {
     const { quote = true, ...data } = option
     this.reply(msg, quote, data)
-    setFnc ||= this.setFnc
-    log.debug(`结束上下文hook：${this.name} ${setFnc}`)
-    this.finish(setFnc)
+    this.finishUCcontext(setFnc)
     return true
   }
 
@@ -268,7 +272,7 @@ export default class UCPlugin extends plugin {
       }
       return msgArr.join(' ').replace(/\s+/g, ' ').trim()
     }
-    return this.msg ?? this.e.msg ?? ''
+    return (this.msg ?? this.e.msg) || ''
   }
 
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {
@@ -280,9 +284,7 @@ export default class UCPlugin extends plugin {
         this.e.reply = Bot.pickFriend(this.userId)?.sendMsg
       }
     }
-    if (!this.e.reply) {
-      return log.warn('发送消息错误，e.reply不存在')
-    }
+    if (!this.e.reply) return log.error('发送消息错误，e.reply不存在')
     if (this.e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
     let { recallMsg = 0, at = false } = data
     if (at && this.isGroup) {

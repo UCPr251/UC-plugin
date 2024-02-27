@@ -553,7 +553,7 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
       保存本地: s(
         'isSave',
         '自动保存图片',
-        '放大的图片是否自动保存本地。保存路径：' + Path.bigjpg
+        '放大的图片是否自动保存本地。保存路径：UC-plugin/data/bigjpg'
       ),
       四倍: s(
         'x4',
@@ -588,6 +588,11 @@ const 群管 = {
       'isOpen',
       '群管开关',
       '是否开启UC群管系统，群管总开关'
+    ),
+    仅前缀: s(
+      'isPrefix',
+      '仅响应UC前缀指令',
+      '开启UC群管后，UC群管是否只响应以UC为前缀的指令（防冲突用）'
     ),
     超时时长: s(
       'overTime',

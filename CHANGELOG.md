@@ -4,6 +4,16 @@
 
 ### 2月
 
+#### 2-28
+
+**ver 2.4.4**
+
+- 修复[#UC安装js](./apps/addJS.js)错误代码报错
+- 修复指令对[UC群管设置](./defSet/GAconfig.yaml)`plainObject`类的修改无效的问题
+- 新增[UCGAPlugin类](./models/UCGAPlugin.js)，专用于UC群管
+- 新增群管设置[仅响应UC前缀](./defSet/GAconfig.yaml)，开启后UC群管强制加上UC前缀才响应，用于冲突时开启
+- 优化底层若干小修改
+
 #### 2-27
 
 **ver 2.4.3**

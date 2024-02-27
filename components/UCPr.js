@@ -77,6 +77,8 @@ class UCPr {
     this.status = false
     /** 各配置数据 */
     this.CFG = CFG
+    /** 数据更新函数 5：help.js 6：cfg.js */
+    this.getConfig = getConfig
     /** 事件监听器 */
     this.event = {
       message: [],
@@ -289,6 +291,10 @@ class UCPr {
   /** 部分功能不指定年份时默认补全年份 */
   get defaultYear() {
     return new Date().getFullYear()
+  }
+
+  get emptyStr() {
+    return '暂无'
   }
 
   /** 用户无权限回复 */

@@ -1,9 +1,9 @@
 import { Data, UCDate, UCPr, common } from '../../../components/index.js'
-import { UCEvent } from '../../../models/index.js'
+import { UCGAPlugin } from '../../../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-class UCGroupInfo extends UCEvent {
+class UCGroupInfo extends UCGAPlugin {
   constructor(e) {
     super({
       e,
