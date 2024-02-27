@@ -68,7 +68,7 @@ export default class UCAddJS extends UCPlugin {
 
   async _makeSure() {
     if (this.isCancel(this.setFnc2)) return
-    if (this.isSure(this.setFnc2)) {
+    if (this.isSure()) {
       const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getUCcontext(this.setFnc2)
       if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
       file.unlinkSync(filePath)
