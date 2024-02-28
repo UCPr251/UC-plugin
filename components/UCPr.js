@@ -93,12 +93,14 @@ class UCPr {
     this.task = []
     /** proxy代理管理器{ name: new Proxy() } */
     this.proxy = {}
-    /** 签名崩溃检测计时器 */
-    this.intervalId = null
     /** 群配置 */
     this.group_CFG = {}
     /** package.json */
     this.package = {}
+    /** 签名崩溃检测计时器 */
+    this.intervalId = null
+    /** 因锁定被移除的功能的数据 */
+    this.removedFncData = {}
   }
 
   /** 初始化数据 */

@@ -39,12 +39,6 @@ export default class UCQueueUp extends UCPlugin {
     })
   }
 
-  init() {
-    if (!Check.file(Path.queueUpjson)) {
-      file.JSONsaver(Path.queueUpjson, {})
-    }
-  }
-
   async setQueueUp() {
     if (!this.verifyPermission()) return false
     const queueUpData = getData()
@@ -145,7 +139,7 @@ export default class UCQueueUp extends UCPlugin {
     if (!this.verifyLevel()) return false
     const queueUpData = getData()
     const info = queueUpData[this.groupId]
-    if (!info) return this.reply('本群尚未创建排队', true)
+    if (!info) return false
     if (_.isEmpty(info.joining)) return this.reply('排队队列为空')
     const memberData = await common.getMemberObj(e.group)
     const playersInfo = info.joining
@@ -165,7 +159,7 @@ export default class UCQueueUp extends UCPlugin {
 }
 
 function getData() {
-  return file.JSONreader(Path.queueUpjson)
+  return file.JSONreader(Path.queueUpjson, {})
 }
 
 function savaData(data) {

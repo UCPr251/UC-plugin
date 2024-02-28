@@ -92,15 +92,6 @@ export default class UCBlivePush extends UCPlugin {
     this.setFnc = '_bLiveAtall'
   }
 
-  init() {
-    if (!Check.file(Path.BLPGroupjson)) {
-      file.JSONsaver(Path.BLPGroupjson, {})
-    }
-    if (!Check.file(Path.BLPPrivatejson)) {
-      file.JSONsaver(Path.BLPPrivatejson, {})
-    }
-  }
-
   async bLiveHelp() {
     if (!this.check) return false
     return this.reply(help + err_reply)
@@ -481,7 +472,7 @@ export default class UCBlivePush extends UCPlugin {
 }
 
 function getData(type) {
-  return file.JSONreader(Path[`BLP${type}json`])
+  return file.JSONreader(Path[`BLP${type}json`], {})
 }
 
 function savaData(type, data) {
@@ -508,8 +499,9 @@ Data.loadTask({
   cron: '0 0 0 * * ?',
   name: '清理已退出的群聊的推送数据',
   fnc: function () {
-    const pushGroupData = file.JSONreader(Path.BLPGroupjson)
+    const pushGroupData = file.JSONreader(Path.BLPGroupjson, {})
     const pushGroups = Object.keys(pushGroupData)
+    if (!pushGroups.length) return
     const groupList = Array.from(Bot.gl.keys())
     pushGroups.forEach(groupId => {
       if (!Check.str(groupList, groupId)) {

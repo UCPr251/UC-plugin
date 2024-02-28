@@ -1,9 +1,7 @@
-import { Path, Check, Data, common, file, UCPr } from '../../components/index.js'
+import { Path, Data, common, file, UCPr } from '../../components/index.js'
 import { UCEvent } from '../../models/index.js'
 import loader from '../../../../lib/plugins/loader.js'
 import _ from 'lodash'
-
-const removes = {}
 
 let pluginsData, lockedData
 
@@ -28,31 +26,27 @@ class UCLockdown extends UCEvent {
   }
 
   async init() {
-    if (!Check.file(Path.lockdownjson)) {
-      file.JSONsaver(Path.lockdownjson, [])
-    } else {
-      this.refreshLocked()
-      let len
-      do {
-        len = loader.priority.length
-        await common.sleep(3)
-      } while (loader.priority.length !== len)
-      log.debug('插件加载完毕，开始锁定功能')
-      this.lock()
-    }
+    this.refreshLocked()
+    let len
+    do {
+      len = loader.priority.length
+      await common.sleep(3)
+    } while (loader.priority.length !== len)
+    await common.sleep(1)
+    log.debug('插件加载完毕，开始锁定功能')
+    this.lock()
   }
 
   lock() {
     lockedData.forEach(({ name }) => {
       const info = Data.remove(loader.priority, name, 'name')[0]
-      if (!removes[name] && info) {
-        removes[name] = info
-      }
+      if (!info) return
+      UCPr.removedFncData[name] ||= info
     })
   }
 
   refreshLocked() {
-    lockedData = file.JSONreader(Path.lockdownjson)
+    lockedData = file.JSONreader(Path.lockdownjson, [])
   }
 
   refreshPluginsData() {
@@ -101,15 +95,15 @@ class UCLockdown extends UCEvent {
     this.refreshLocked()
     this.lock()
     const msg = Data.makeArrStr(_.map(arr, 'name'))
-    this.reply(`操作成功，锁定功能：\n${msg}`)
+    return this.reply(`操作成功，锁定功能：\n${msg}`)
   }
 
   _unlock(arr) {
     for (const { name } of arr) {
-      const info = removes[name]
+      const info = UCPr.removedFncData[name]
       if (info) {
         loader.priority.push(info)
-        delete removes[name]
+        delete UCPr.removedFncData[name]
       }
     }
     loader.priority = _.sortBy(loader.priority, 'priority')
@@ -117,8 +111,7 @@ class UCLockdown extends UCEvent {
     const newData = _.difference(lockedData, arr)
     file.JSONsaver(Path.lockdownjson, newData)
     this.refreshLocked()
-    const msg = Data.makeArrStr(_.map(arr, 'name'))
-    this.reply(`操作成功，解锁功能：\n${msg}`)
+    return this.reply(`操作成功，解锁功能：\n${Data.makeArrStr(arr, { property: 'name' })}`)
   }
 
 }

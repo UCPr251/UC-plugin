@@ -600,7 +600,7 @@ if (Check.file(Path.get('apps', 'queueUp.js'))) {
     list: [
       s(
         '#创建排队',
-        '初始化群内排队任务'
+        '初始化或重置群内排队任务'
       ),
       s(
         '#排队',
