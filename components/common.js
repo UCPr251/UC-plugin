@@ -95,11 +95,12 @@ const common = {
   pickGroup(group) {
     if (typeof group === 'number' || typeof group === 'string') {
       if (!+group) return {}
-      group = Bot.pickGroup(group)
+      group = Bot.pickGroup(+group)
     }
     return group
   },
 
+  /** 判断memberInfo是否群主或管理员 */
   isAdminOrOwner(obj) {
     if (obj.role) {
       return obj.role === 'admin' || obj.role === 'owner'
@@ -126,7 +127,7 @@ const common = {
 
   /** 返回群用户昵称 */
   async getName(groupId, userId) {
-    const info = await Bot.getGroupMemberInfo(groupId, userId)
+    const info = await Bot.getGroupMemberInfo(+groupId, userId)
     return info.card || info.nickname
   },
 
@@ -295,28 +296,17 @@ const common = {
    * @param {Buffer|string} buffer buffer或路径
    * @param {string} name 上传文件名
    * @param {string} replyMsg 回复消息
-   * @param {{ quote: boolean; at: boolean; recallMsg: number; recallFile: number }} [option] 继承reply的参数
+   * @param {{ quote: boolean; at: boolean; recallMsg: number; recallFile: number }} 继承reply的参数
    */
-  async sendFile(e, buffer, name, replyMsg = '', option = {
-    quote: false,
-    at: true,
-    recallMsg: 0,
-    recallFile: 0
-  }) {
-    log.debug('[common.sendFile]发送文件' + name + '，消息撤回：' + option.recallMsg + '，文件撤回：' + option.recallFile)
-    const { quote, recallFile, ...data } = option
-    data.at ??= true
-    if (!Buffer.isBuffer(buffer)) {
-      if (file.existsSync(buffer)) {
-        name ||= Path.parse(buffer).base
-        buffer = file.readFileSync(buffer, null)
-      } else {
-        log.debug('[common.sendFile]指定路径不存在：' + buffer)
-        return false
-      }
-    } else if (!name) {
-      name = `${e.sender.user_id}-${UCDate.NowTimeNum}`
-    }
+  async sendFile(e, buffer, name, replyMsg = '', {
+    quote = false,
+    at = true,
+    recallMsg = 0,
+    recallFile = 0
+  } = {}) {
+    log.debug('[common.sendFile]发送文件' + name + '，消息撤回：' + recallMsg + '，文件撤回：' + recallFile)
+    const data = { at, recallMsg }
+    name ||= `${e.sender.user_id}-${UCDate.NowTimeNum}`
     name = file.formatFilename(name)
     if (e.isGroup) {
       const fileStat = await e.group.fs.upload(buffer, undefined, name, (percentage) => {
@@ -325,29 +315,34 @@ const common = {
       replyMsg && e.reply('\n' + replyMsg, quote, data)
       if (recallFile) {
         const fid = fileStat?.fid
-        setTimeout(() => {
+        fid && setTimeout(() => {
           log.debug('[common.sendFile]撤回群文件' + fid)
           e.group.fs.rm(fid)
         }, recallFile * 1000)
         return fid
       }
     } else if (e.friend) {
-      await e.friend.sendFile(buffer, name, (percentage) => {
+      const fid = await e.friend.sendFile(buffer, name, (percentage) => {
         log.debug(`[common.sendFile]发送好友${e.sender.user_id}文件${name}，进度：${parseInt(percentage)}%`)
       })
       e.reply(replyMsg, quote, data)
-      if (recallFile) {
-        const msgData = await e.friend.getChatHistory(undefined, 3)
+      if (recallFile && recallFile > 3) {
+        await this.sleep(3)
+        const msgData = await e.friend.getChatHistory(undefined, 5) // 私聊总不会一直刷屏吧？？？
         const mid = this.getFileMid(msgData).pop()
-        setTimeout(() => {
-          log.debug('[common.sendFile]撤回好友文件' + mid)
+        mid && setTimeout(() => {
+          log.debug('[common.sendFile]撤回好友文件消息' + mid)
           e.friend.recallMsg(mid)
-        }, recallFile * 1000)
+        }, (recallFile - 3) * 1000)
+        fid && setTimeout(() => {
+          log.debug('[common.sendFile]撤回好友离线文件' + fid)
+          e.friend.recallFile(fid)
+        }, (recallFile - 3) * 1000)
       }
-    } else {
-      log.debug('[common.sendFile]非群或好友，取消发送文件')
-      return false
+      return fid
     }
+    log.warn('[common.sendFile]非群或好友，取消发送文件')
+    return false
   },
 
   /**

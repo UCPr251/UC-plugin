@@ -6,6 +6,16 @@
 
 #### 2-28
 
+**ver 2.4.5**
+
+- 修复[放大图片](./apps/bigjpg.js)无法选择2倍放大
+- 修复[锁定功能](./apps/Event/Lockdown.js)在功能加载完成前进行锁定导致遗漏
+- 修复[直播推送](./apps/BlivePush.js)无法艾特全员
+- 优化[直播推送](./apps/BlivePush.js)，艾特全员改为可针对单独的主播设置也可直接全部开启
+- 优化[删除随机老婆](./apps/randomWife.js)函数调用，改为共享方法
+
+#### 2-28
+
 **ver 2.4.4**
 
 - 修复[#UC安装js](./apps/addJS.js)错误代码报错
