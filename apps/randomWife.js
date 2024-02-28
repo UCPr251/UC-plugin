@@ -144,49 +144,17 @@ export default class UCRandomWife extends UCPlugin {
     if (!this.Cfg.isOpen) return false
     if (!this.verifyLevel(3)) return
     if (!this.checkUnNecRes()) return
-    this.userId = this.at || this.msg.match(/\d{5,10}/)?.[0] || this.userId
-    const _wifeName = this.msg.replace(/#?内定老婆/, '').replace(this.userId, '').trim()
-    return this.searchWife(_wifeName, '_chooseWife')
+    const userId = this.at || this.msg.match(/\d{5,10}/)?.[0] || this.userId
+    const wifeName = this.msg.replace(/#?内定老婆/, '').replace(this.userId, '').trim()
+    return this.searchFiles(Path.wife, wifeName, '_chooseWife', { data: { userId }, basename: true, note: '要内定的老婆' })
   }
 
   async delWife() {
     if (!this.Cfg.isOpen) return false
     if (!this.verifyPermission(this.Cfg.del)) return
     if (!this.checkUnNecRes()) return
-    const _wifeName = this.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
-    return this.searchWife(_wifeName, '_delWife')
-  }
-
-  async searchWife(_wifeName, fnc) {
-    const userId = this.userId
-    if (!_wifeName) {
-      const wifes = getWifes()
-      this.e.data = {
-        fnc,
-        list: wifes,
-        userId
-      }
-      this.setUCcontext('__chooseContext')
-      const title = '请选择老婆序号'
-      const replyMsg = [title]
-      replyMsg.push(...Data.makeArrStr(wifes, { chunkSize: 100, length: 3000 }))
-      const reply = await common.makeForwardMsg(this.e, replyMsg, title)
-      return this.reply(reply)
-    }
-    const search = await file.searchFiles(Path.wife, _wifeName)
-    if (search.length === 0) return this.reply('未找到相关老婆图片')
-    if (search.length !== 1) {
-      const list = _.map(search, 'file').filter(v => Path.extname(v))
-      this.e.data = {
-        fnc,
-        list,
-        userId
-      }
-      this.setUCcontext('__chooseContext')
-      return this.reply('找到多个相关老婆图片，请选择老婆序号：\n' + Data.makeArrStr(list, { length: 3000 }))
-    }
-    const wifeFile = search[0].file
-    return this[fnc]([wifeFile], { userId })
+    const wifeName = this.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
+    return this.searchFiles(Path.wife, wifeName, '_delWife', { basename: true, note: '要删除的随机老婆' })
   }
 
   _chooseWife([wifeFile], { userId }) {
@@ -217,7 +185,6 @@ export default class UCRandomWife extends UCPlugin {
     saveChooseWifeData(chooseWifeData)
     return this.reply(`成功取消内定${userId}老婆：${choosedWife}`)
   }
-
 }
 
 function getWifes(basename = false) {

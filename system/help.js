@@ -579,8 +579,8 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
         'BlivePush.use'
       ),
       s(
-        '#开启/关闭直播推送艾特全员',
-        '推送时是否艾特全员(群聊)',
+        '#开启/关闭直播推送(全部)?艾特全员',
+        '推送是否艾特全员(全部/指定主播)',
         'BlivePush.use'
       ),
       s(

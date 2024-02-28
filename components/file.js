@@ -69,13 +69,19 @@ const file = {
       }
     }
     if (option.basename) {
-      files = files.map(_file => path.parse(_file).name)
+      files = this.getFilesBasename(files)
     }
     return files
   },
 
+  /** 获取文件全名对应文件名数组 */
+  getFilesBasename(files) {
+    return files.map(_file => path.parse(_file).name)
+  },
+
   /** 读取文件 */
-  readFileSync(_path, encoding = 'utf8', flag) {
+  readFileSync(_path, encoding, flag) {
+    encoding === undefined && (encoding = 'utf8')
     return fs.readFileSync(_path, { encoding, flag })
   },
 
@@ -205,11 +211,37 @@ const file = {
   },
 
   /**
+   * 搜索字符串并返回匹配的字符串数组，优先排序：匹配度高→字符串短
+   * @param {string[]} strings 搜索的字符串数组
+   * @param {string|Array} keywords 关键词数组
+   * @param {boolean} [isSort=true] 是否排序
+   * @returns {string[]|Array[]} 搜索结果
+   */
+  searchStrings(strings, keywords, isSort = true) {
+    /** 下标越小匹配度越高 */
+    const searchLevelArr = []
+    keywords = _.castArray(keywords)
+    for (const i in keywords) searchLevelArr[i] = []
+    const len = keywords.length
+    const reg = new RegExp(keywords.join('|'), 'gi')
+    strings.forEach(str => {
+      const matchLevel = str.match(reg)?.length
+      if (matchLevel) {
+        const level = len - matchLevel
+        searchLevelArr[level < 0 ? 0 : level].push(str)
+      }
+    })
+    if (!isSort) return searchLevelArr
+    return _.flatMap(searchLevelArr.map((arr) => _.sortBy(arr, 'length')))
+  },
+
+  /**
    * 搜索文件并返回文件数据数组，优先排序：匹配度高→文件名短
    * @param {string|Array} dirs 搜索根目录
    * @param {string|Array} keywords 关键词
-   * @param {string|Array} option.type 文件类型
-   * @param {boolean} option.recursive 是否递归查找子文件夹
+   * @param {object} [option] 可选项
+   * @param {string|Array} [option.type] 文件类型
+   * @param {boolean} [option.recursive] 是否递归查找子文件夹
    * @param {boolean} [isSort=true] 是否排序
    * @returns {Promise<object[]|Array[]>} 搜索结果
    */
@@ -248,8 +280,8 @@ const file = {
       if (option.type) {
         files = files.filter(_file => {
           const ext = path.parse(_file.name).ext
-          if (ext === '') return true
-          if (option.type.includes(ext)) return true
+          if (!ext) return true
+          if (option.type.includes(ext.toLowerCase())) return true
           return false
         })
       }

@@ -72,7 +72,7 @@ export default class UCBigjpg extends UCPlugin {
     if (isNaN(this.e.magnification) || !Check.str([2, 4, 8, 16], this.e.magnification)) {
       this.reply('无效参数，自动选择放大倍数：' + this.Cfg.magnification)
       this.e.magnification = this.Cfg.magnification
-    } else if (!this.M && !this.Cfg[`x${this.e.magnification}`]) {
+    } else if (this.e.magnification !== 2 && !this.M && !this.Cfg[`x${this.e.magnification}`]) {
       this.reply(`当前未开启${this.e.magnification}倍放大哦~`)
     } else {
       this.setUCcontext(this.setFnc3)

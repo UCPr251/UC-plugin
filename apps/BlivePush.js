@@ -12,7 +12,8 @@ const help = `[UC]B站直播推送插件
 #直播推送列表
 #关闭直播推送
 #谁正在直播
-#开启直播推送艾特全员
+#开启直播推送艾特全员（指定主播）
+#开启直播推送全部艾特全员（全部主播）
 #清空直播推送缓存（故障用）
 主人可在指令末尾加上群号指定操作该群
 注意uid≠直播间id，可通过uid#查询up+uid获取直播间id，手动获取：`
@@ -35,7 +36,7 @@ export default class UCBlivePush extends UCPlugin {
       Cfg: 'config.BlivePush',
       rule: [
         {
-          reg: '^#?直播推送测试$',
+          reg: '^#?UC直播推送测试$',
           fnc: 'bLivePush',
           permission: 'master'
         },
@@ -72,7 +73,7 @@ export default class UCBlivePush extends UCPlugin {
           fnc: 'bLiveClean'
         },
         {
-          reg: /^#?(UC)?(开启|关闭)直播推送艾特全员(.*)/i,
+          reg: /^#?(UC)?(开启|关闭)直播推送(全部)?艾特全员(.*)/i,
           fnc: 'bLiveAtall'
         }
       ]
@@ -88,6 +89,7 @@ export default class UCBlivePush extends UCPlugin {
     this.PrivatePushed = '[UC]P_BLivePushed'
     /** 直播间信息 */
     this.PushedInfo = '[UC]BLPushedInfo'
+    this.setFnc = '_bLiveAtall'
   }
 
   init() {
@@ -163,6 +165,7 @@ export default class UCBlivePush extends UCPlugin {
     if (!info) {
       data[location_id] = {
         push: true,
+        atAll: false,
         room: []
       }
     }
@@ -296,7 +299,7 @@ export default class UCBlivePush extends UCPlugin {
                 segment.image(info[room].cover),
                 `快去占座吧！\n${BLive + room}`
               ]
-              atall(isGroup, loc, msg, push_data[loc])
+              atall(isGroup, loc, msg, push_data[loc], room)
               await common.sendMsgTo(loc, msg, type)
               await common.sleep(1)
               continue
@@ -329,7 +332,7 @@ export default class UCBlivePush extends UCPlugin {
                   segment.image(data.live.cover),
                   `快去占座吧！\n${BLive + room}`
                 ]
-                atall(isGroup, loc, msg, push_data[loc])
+                atall(isGroup, loc, msg, push_data[loc], room)
                 await common.sendMsgTo(loc, msg, type)
                 const info = {
                   uid: data.up.uid,
@@ -423,19 +426,42 @@ export default class UCBlivePush extends UCPlugin {
       type = 'Group'
     }
     const data = getData(type)
-    if (!data[location_id]) {
+    const groupData = data[location_id]
+    if (!groupData) {
       return this.reply(`群聊：${location_id}未开启推送`)
     }
     const mode = /开启/.test(this.msg)
-    if (mode && !await common.botIsGroupAdmin(location_id)) {
+    const operation = mode ? '开启' : '关闭'
+    if (mode && !common.botIsGroupAdmin(location_id)) {
       return this.noPowReply()
     }
-    data[location_id].atAll = mode
-    savaData(type, data)
-    if (this.groupId == location_id) {
-      return this.reply(`成功${mode ? '开启' : '关闭'}本群直播推送艾特全员`)
+    if (/全部/.test(this.msg)) {
+      groupData.atAll = mode
+      savaData(type, data)
+      return this.reply(`成功${operation}群聊${location_id}全部直播推送艾特全员啦~`)
     }
-    return this.reply(`成功${mode ? '开启' : '关闭'}群聊${location_id}的直播推送艾特全员`)
+    const rooms = groupData.room.filter(v => !!v.atAll !== mode)
+    e.data = {
+      fnc: this.setFnc,
+      list: rooms,
+      location_id,
+      data,
+      type,
+      mode,
+      operation
+    }
+    if (rooms.length > 1) {
+      this.setUCcontext('__chooseContext')
+      return this.reply(`请选择要${operation}直播推送艾特全员的直播间：\n` + Data.makeArrStr(rooms, { property: 'room_id', property2: 'nickname' }))
+    }
+    return this._bLiveAtall(rooms, e.data)
+  }
+
+  _bLiveAtall(rooms, oriData) {
+    const { location_id, data, type, mode, operation } = oriData
+    rooms.forEach(room => (room.atAll = mode))
+    savaData(type, data)
+    return this.reply(`成功${operation}群聊${location_id}：\n\n${Data.makeArrStr(rooms, { property: 'room_id', property2: 'nickname' })}\n\n直播推送艾特全员啦~`)
   }
 
   async getIdType(isRoom = true) {
@@ -466,10 +492,11 @@ function getUpInfo(uid) {
   return Data.getUpInfo.call(this, uid)
 }
 
-async function atall(isGroup, loc, msg, info) {
+function atall(isGroup, loc, msg, info, room) {
   if (isGroup) {
-    if (await common.botIsGroupAdmin(loc)) {
-      if (info.atAll) {
+    if (common.botIsGroupAdmin(loc)) {
+      const roomData = info.room.find(v => v.room_id == room) || {}
+      if (info.atAll || roomData.atAll) {
         msg.unshift('\n')
         msg.unshift(segment.at('all'))
       }

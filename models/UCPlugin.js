@@ -1,4 +1,4 @@
-import { UCPr, log, Data, Check, common, Path } from '../components/index.js'
+import { UCPr, log, Data, Check, common, Path, file } from '../components/index.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import Permission from './Permission.js'
 import _ from 'lodash'
@@ -190,7 +190,7 @@ export default class UCPlugin extends plugin {
     const data = this.getUCcontext('__chooseContext.data')
     if (!data) {
       this.finishUCcontext('__chooseContext')
-      log.warn(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
+      log.error(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
       return
     }
     const { list, fnc } = data
@@ -213,6 +213,55 @@ export default class UCPlugin extends plugin {
       this.finishUCcontext('__chooseContext')
       this[fnc](arr, data)
     }
+  }
+
+  /**
+   * 搜索文件并操作
+   * @param {string} path 路径
+   * @param {string} name 文件名
+   * @param {Function} fnc 操作函数
+   * @param {Object} options 选项
+   * @param {string|Array} options.type 文件类型
+   * @param {string} [options.note='要操作的文件'] 提示
+   * @param {boolean} [options.basename=false] 只保留文件名
+   * @param {Object} [options.data={}] 附加数据
+   */
+  async searchFiles(path, name, fnc, {
+    type,
+    note = '要操作的文件',
+    basename = false,
+    data = {}
+  } = {}) {
+    if (!name) {
+      const list = file.readdirSync(path, { type })
+      if (!list.length) return this.reply('目标文件夹为空')
+      this.e.data = {
+        fnc,
+        list,
+        ...data
+      }
+      this.setUCcontext('__chooseContext')
+      const list_ = basename ? file.getFilesBasename(list) : list
+      const info = Data.makeArrStr(list_, { chunkSize: 100, length: 3000 })
+      const title = '请选择' + note
+      const replyMsg = await common.makeForwardMsg(this.e, [title + '的序号\n间隔序号或使用“1-10”可一次操作多个', ...info], title)
+      return this.reply(replyMsg)
+    }
+    const search = await file.searchFiles(path, name, { type })
+    if (search.length === 0) return this.reply(`未找到【${name}】相关文件`)
+    if (search.length !== 1) {
+      const list = _.map(search, 'file').filter(v => Path.extname(v))
+      this.e.data = {
+        fnc,
+        list,
+        ...data
+      }
+      this.setUCcontext('__chooseContext')
+      const list_ = basename ? _.map(search, 'name') : list
+      const info = Data.makeArrStr(list_, { length: 3000 })
+      return this.reply('找到多个相关文件，请选择序号或取消：\n' + info)
+    }
+    return this[fnc]([search[0].file], data)
   }
 
   /** 用户是否确认操作 */

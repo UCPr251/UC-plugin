@@ -27,12 +27,18 @@ class UCLockdown extends UCEvent {
     })
   }
 
-  init() {
+  async init() {
     if (!Check.file(Path.lockdownjson)) {
       file.JSONsaver(Path.lockdownjson, [])
     } else {
       this.refreshLocked()
-      setImmediate(this.lock)
+      let len
+      do {
+        len = loader.priority.length
+        await common.sleep(3)
+      } while (loader.priority.length !== len)
+      log.debug('插件加载完毕，开始锁定功能')
+      this.lock()
     }
   }
 
