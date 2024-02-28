@@ -55,7 +55,7 @@ pnpm i --filter=UC-plugin
 
 - 本人目前只用[喵崽][Miao-Yunzai]，暂不考虑主动适配其他崽
 
-- 各版本更新内容请查看[CHANGELOG](./CHANGELOG.md)
+- 各版本更新内容请查看[更新日志CHANGELOG](./CHANGELOG.md)
 
 - 不出意外的话本插件会由本人长期维护，欢迎发表感想、建议，感谢支持
 
