@@ -65,8 +65,8 @@ class UCMourn extends UCGAPlugin {
       e,
       name: 'UC-Mourn',
       dsc: 'UC群管·退群通知',
-      Cfg: 'GAconfig.mourn.decrease',
-      event: 'notice.group'
+      Cfg: 'GAconfig.mourn',
+      event: 'notice.group.decrease'
     })
     this.redisData = '[UC]Mourn'
   }

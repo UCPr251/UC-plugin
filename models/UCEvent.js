@@ -109,7 +109,7 @@ class UCSwitchBotEvent extends UCEvent {
 async function UCdealMsg(type, e) {
   const msg = _.filter(e.message, { type: 'text' }).map(v => v.text).join(' ').trim()
   const groupId = e.group_id || e.group?.gid
-  // 是群内并且UC下线了Bot
+  // 是群message事件并且下线了Bot
   if (msg && groupId && _.isEqual(_.get(UCPr.defaultCfg.getConfig('group'), `${groupId}.enable`), ['UC-switchBot'])) {
     const a = new UCSwitchBotEvent(e)
     return a.deal(e, type)
