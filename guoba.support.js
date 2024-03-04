@@ -207,7 +207,7 @@ if (file.existsSync(Path.get('apps', 'JSsystem.js'))) {
       'recallFilePrivate',
       '私聊文件撤回时间',
       '私聊发送文件后自动撤回时长，4-120秒，0为不撤回',
-      'num',
+      'InputNumber',
       { min: 0, max: 120 }
     )
   ]
