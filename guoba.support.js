@@ -894,7 +894,6 @@ if (file.existsSync(Path.get('groupAdmin', 'floodScreen.js'))) {
       'Select',
       {
         options: [
-          { label: '无', value: 'null' },
           { label: '禁言', value: 'mute' },
           { label: '踢出', value: 'kick' }
         ]
