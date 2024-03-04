@@ -4,6 +4,35 @@
 
 ### 3月
 
+#### 3-5
+
+**ver 2.5.0**
+
+- 该版本群管部分尚未完全测试完毕，不保熟
+
+- 修改拼写错误
+- 进一步开放热更新
+- 删除群配置文件中无效部分（始终以全局设置为准的部分设置）
+- 修改[戳一戳](./apps/chuoyichuo.js)被戳修改群名片中的昵称取当前所选图包名称
+- 修改[锅巴定义函数](./guoba.support.js#L19)与[设置图定义函数](./system/cfg.js#L6)一致，便于同步cv
+- 修改[帮助图](./system/help.js)部分展示
+- 若干修改
+
+- 修复[戳一戳](./apps/chuoyichuo.js)禁言无效
+
+- 优化服务连接等
+- 优化[权限系统](./models/Permission.js)，引入`target目标对象`，便于进行三方权限比较
+- 优化[锁定功能](./apps/Event/Lockdown.js)，支持模糊查找
+- 优化[事件注册、处理流程](./models/UCEvent.js)，删除单独的`message.all`事件类，将`message.all`事件同时注册在`message.group`和`message.private`中，使每个事件类互相独立，避免干扰`hook`、`accept`方法的优先响应权
+
+- 新增[伪装群员](./apps/camouflage.js)娱乐功能
+- 新增[JS插件管理系统·JSsystem](./apps/JSsystem.js)，用于管理`example`中的JS插件
+- 新增[群管·查询群员信息](./apps/Event/groupAdmin/memberInfo.js) `@XXX #让我康康` 查看群u发育状况
+- 新增[群管·刷屏检测处理](./apps/Event/groupAdmin/floodScreen.js)
+- 新增[群管·入群申请处理](./apps/Event/groupAdmin/RequestAdd.js)
+- 新增[群管·群员增加处理](./apps/Event/groupAdmin/Increase.js)
+- 新增[群管·群员减少处理](./apps/Event/groupAdmin/Decrease.js)
+
 #### 3-2
 
 **ver 2.4.6**

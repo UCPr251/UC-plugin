@@ -4,14 +4,14 @@ import Base from './Base.js'
 import _ from 'lodash'
 
 export default class Cfg extends Base {
-  constructor(e) {
-    super(e)
+  constructor(thisArg) {
+    super(thisArg)
     this.model = 'cfg'
   }
 
   /**
    * 获取设置图数据
-   * @param {*} e
+   * @param {*} thisArg UCPlugin实例
    * @param {{}} data 参数
    * @param {*} data.groupId
    * @param {*} data.isGlobal 是否全局设置
@@ -19,8 +19,8 @@ export default class Cfg extends Base {
    * @param {string} data.group 组类
    * @returns {object}
    */
-  static get(e, data = {}) {
-    const cfg = new Cfg(e)
+  static get(thisArg, data = {}) {
+    const cfg = new Cfg(thisArg)
     return cfg.getData(data)
   }
 

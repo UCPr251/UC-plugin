@@ -206,14 +206,14 @@ export default class UCAdmin extends UCPlugin {
     return this.reply(replyMsg, false)
   }
 
-  async UC_HELP(e) {
+  async UC_HELP() {
     if (!this.verifyLevel()) return false
-    const data = Help.get(e, this.groupId)
+    const data = Help.get(this)
     if (!data) return
-    return common.render(e, data)
+    return common.render(this, data)
   }
 
-  async UC_CFG(e) {
+  async UC_CFG() {
     if (!this.verifyLevel(1)) return false
     // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
     let isGlobal = /全局/.test(this.msg)
@@ -260,6 +260,10 @@ export default class UCAdmin extends UCPlugin {
           } else if (setData.type === 'power') {
             const numMatch = str3.match(/0|1/g)
             if (numMatch && numMatch.length === setData.options?.length) {
+              if (!isGlobal) {
+                Admin.newConfig(groupId)
+                await common.sleep(0.03)
+              }
               for (const i in numMatch) {
                 if (isGlobal) {
                   Admin.globalCfg(setData.path + '.' + judgeProperty[setData.options[i]], numMatch[i] === '1', type)
@@ -281,6 +285,7 @@ export default class UCAdmin extends UCPlugin {
               Admin.globalCfg(setData.path, operation, type)
             } else {
               Admin.newConfig(groupId)
+              await common.sleep(0.03)
               Admin.groupCfg(groupId, setData.path, operation, type)
             }
           }
@@ -290,9 +295,9 @@ export default class UCAdmin extends UCPlugin {
       }
     }
     // 发送新设置图
-    const data = Cfg.get(e, { type, groupId, isGlobal, group: showGroup })
+    const data = Cfg.get(this, { type, groupId, isGlobal, group: showGroup })
     if (!data) return
-    return common.render(e, data)
+    return common.render(this, data)
   }
 
   async lockConfig() {

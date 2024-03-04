@@ -1,4 +1,4 @@
-import { Path, Check, Data, UCDate, common } from '../components/index.js'
+import { Check, Data, UCDate, common } from '../components/index.js'
 import { UCPlugin } from '../models/index.js'
 import { segment } from 'icqq'
 
@@ -22,10 +22,6 @@ export default class UCBigjpg extends UCPlugin {
     this.setFnc3 = '_noiseContext'
   }
 
-  init() {
-    Check.floder(Path.bigjpg, true)
-  }
-
   async bigjpg(e) {
     if (!this.check) return false
     if (!this.Cfg.isOpen) return false
@@ -44,7 +40,7 @@ export default class UCBigjpg extends UCPlugin {
     }
     if (!this.img) {
       this.setUCcontext()
-      return this.reply('⚠ 喜欢的涩图图快发来吧')
+      return this.reply('⚠喜欢的涩图图快发来吧')
     }
     Data.bigjpgRequest(e.img[0])
   }

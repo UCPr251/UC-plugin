@@ -26,6 +26,24 @@ helpData.push({
   cfg: 'config',
   list: [
     s(
+      '#UC设置',
+      '查看当前UC插件设置'
+    ),
+    s(
+      '#UC全局设置',
+      '查看当前UC插件全局设置',
+      4
+    ),
+    s(
+      '#UC群管设置',
+      '查看当前UC插件群管设置'
+    ),
+    s(
+      '#UC全局群管设置',
+      '查看当前UC插件全局群管设置',
+      4
+    ),
+    s(
       '#UC(加|删)主人',
       '加删UC指定用户指定群主人',
       4
@@ -84,30 +102,12 @@ helpData.push({
       4
     ),
     s(
-      '#UC设置',
-      '查看当前UC插件设置'
-    ),
-    s(
-      '#UC全局设置',
-      '查看当前UC插件全局设置',
-      4
-    ),
-    s(
-      '#UC群管设置',
-      '查看当前UC插件群管设置'
-    ),
-    s(
-      '#UC全局群管设置',
-      '查看当前UC插件全局群管设置',
-      4
-    ),
-    s(
       '#UC帮助',
       '查看本插件帮助图(动态)'
     ),
     s(
       '#UC安装插件',
-      '安装UC插件',
+      '安装UC的插件',
       4
     ),
     s(
@@ -195,6 +195,10 @@ helpData.push({
       'kick.isOpen'
     ),
     s(
+      '@XXX #让我康康',
+      '康康群u发育正不正常'
+    ),
+    s(
       '#获取群列表',
       '获取Bot所在群列表',
       4
@@ -237,7 +241,7 @@ helpData.push({
   cfg: 'config',
   list: [
     s(
-      `#${UCPr.randomMember?.keyWords?.trim() || '随机群友'}`,
+      `#${UCPr.randomMember.keyWords?.trim() || '随机群友'}`,
       '随机挑选一名幸运群友',
       'randomMember.use',
       'randomMember.isOpen'
@@ -268,15 +272,21 @@ helpData.push({
     ),
     s(
       'UC戳一戳#poke#',
-      '开启功能后戳一戳生效',
+      '戳一戳生效',
       '',
       'chuoyichuo.isOpen'
     ),
     s(
       '#今/昨日水群统计',
-      '查看群聊水群统计',
+      '查看水群统计，指令前可指定日期',
       'sqtj.use',
       'sqtj.isOpen'
+    ),
+    s(
+      '#(结束)?伪装',
+      '(结束)?伪装群员',
+      'camouflage.use',
+      'camouflage.isOpen'
     )
   ]
 })
@@ -300,16 +310,6 @@ helpData.push({
       `#${UCPr.BotName}(${UCPr.switchBot?.closeReg?.trim() || '下班|休息'})`,
       '群内关闭Bot',
       'switchBot.use'
-    ),
-    s(
-      '#UC安装/卸载js',
-      '安装/卸载机器人js插件',
-      4
-    ),
-    s(
-      '#UC搜索js',
-      '搜索机器人已安装的js插件',
-      4
     ),
     s(
       '#UC全部(强制)?更新',
@@ -355,9 +355,55 @@ helpData.push({
   ]
 })
 
-if (isWin) {
+if (Check.file(Path.get('apps', 'JSsystem.js'))) {
   helpData.push({
-    group: 'UC工具——签名自动重启',
+    group: 'UC工具——JS插件管理系统',
+    require: 4,
+    cfg: 'config',
+    list: [
+      s(
+        '#安装JS',
+        '发送JS插件自动安装至example'
+      ),
+      s(
+        '#JS列表',
+        '查看已安装的JS插件列表'
+      ),
+      s(
+        '#停用JS列表',
+        '查看已停用的JS插件列表'
+      ),
+      s(
+        '#搜索JS',
+        '在已安装的JS插件中搜索'
+      ),
+      s(
+        '#查看JS',
+        '查看JS插件，发送源文件'
+      ),
+      s(
+        '#停用JS',
+        '停用JS插件，可重新启用'
+      ),
+      s(
+        '#启用JS',
+        '启用被停用了的JS插件'
+      ),
+      s(
+        '#卸载JS',
+        '⚠彻底卸载JS插件⚠'
+      ),
+      s(
+        '#重新查看JS',
+        '重新查看JS插件'
+      )
+    ]
+  })
+}
+
+if (isWin && Check.file(Path.get('apps', 'qsignRestart.js'))) {
+  helpData.push({
+    group: 'UC工具——签名自动重启系统',
     require: 4,
     cfg: 'config',
     list: [
@@ -389,134 +435,142 @@ if (isWin) {
   })
 }
 
-helpData.push({
-  group: 'UC工具——otherSet',
-  require: 4,
-  cfg: 'config',
-  list: [
-    s(
-      '注：本功能可批量操作',
-      '如#拉黑123456 456789……'
-    ),
-    s(
-      '#开启/关闭自动好友申请',
-      '开/关机器人QQ自动同意好友申请'
-    ),
-    s(
-      '#设置退群人数5000',
-      '设置拉群自动退出的群人数阈值'
-    ),
-    s(
-      '#增加/删除主人123',
-      '增删机器人主人(非UC主人)'
-    ),
-    s(
-      '#拉黑/解黑123456',
-      '拉/解黑名单用户'
-    ),
-    s(
-      '#拉黑/解黑群987654',
-      '拉/解黑名单群'
-    ),
-    s(
-      '#加白/解白群987654',
-      '加/解白名单群'
-    ),
-    s(
-      '#开启/关闭私聊',
-      '开关机器人允许私聊'
-    ),
-    s(
-      '#设置禁用私聊回复',
-      '机器人禁用私聊时的回复'
-    ),
-    s(
-      '#增加/删除通行字符串',
-      '增删允许的私聊通行字符串'
-    ),
-    s(
-      '#主人/通行字符串列表',
-      '主人/私聊通行字符串列表'
-    ),
-    s(
-      '#黑/白名单(群)?列表',
-      '查看黑白名单用户或群列表'
-    )
-  ]
-})
+if (Check.file(Path.get('apps', 'otherSet.js'))) {
+  helpData.push({
+    group: 'UC工具——otherSet（指令修改崽other.yaml）',
+    require: 4,
+    cfg: 'config',
+    list: [
+      s(
+        '注：本功能可批量操作',
+        '如#拉黑123456 456789……'
+      ),
+      s(
+        '#开启/关闭自动好友申请',
+        '开/关机器人QQ自动同意好友申请'
+      ),
+      s(
+        '#设置退群人数5000',
+        '设置拉群自动退出的群人数阈值'
+      ),
+      s(
+        '#增加/删除主人123',
+        '增删机器人主人(非UC主人)'
+      ),
+      s(
+        '#拉黑/解黑123456',
+        '拉/解黑名单用户'
+      ),
+      s(
+        '#拉黑/解黑群987654',
+        '拉/解黑名单群'
+      ),
+      s(
+        '#加白/解白群987654',
+        '加/解白名单群'
+      ),
+      s(
+        '#开启/关闭私聊',
+        '开关机器人允许私聊'
+      ),
+      s(
+        '#设置禁用私聊回复',
+        '机器人禁用私聊时的回复'
+      ),
+      s(
+        '#增加/删除通行字符串',
+        '增删允许的私聊通行字符串'
+      ),
+      s(
+        '#主人/通行字符串列表',
+        '主人/私聊通行字符串列表'
+      ),
+      s(
+        '#黑/白名单(群)?列表',
+        '查看黑白名单用户或群列表'
+      )
+    ]
+  })
+}
 
-helpData.push({
-  group: 'UC工具——groupSet',
-  require: 3,
-  cfg: 'config',
-  list: [
-    s(
-      '注：可接群号指定群',
-      '#全局+原指令 修改全局默认设置',
-      4
-    ),
-    s(
-      '#设置群CD 500',
-      '设置群整体CD 单位ms'
-    ),
-    s(
-      '#设置个人CD 500',
-      '设置群个人CD 单位ms'
-    ),
-    s(
-      '#开启/关闭仅艾特',
-      '仅响应艾特的指令'
-    ),
-    s(
-      '#禁用/解禁功能',
-      '群内禁用功能'
-    ),
-    s(
-      '#禁用功能列表',
-      '查看群禁用功能'
-    )
-  ]
-})
+if (Check.file(Path.get('apps', 'groupSet.js'))) {
+  helpData.push({
+    group: 'UC工具——groupSet（指令修改崽group.yaml）',
+    require: 3,
+    cfg: 'config',
+    list: [
+      s(
+        '注：可接群号指定群',
+        '#全局+原指令 修改全局默认设置',
+        4
+      ),
+      s(
+        '#设置群CD 500',
+        '设置群整体CD 单位ms'
+      ),
+      s(
+        '#设置个人CD 500',
+        '设置群个人CD 单位ms'
+      ),
+      s(
+        '#开启/关闭仅艾特',
+        '仅响应艾特的指令'
+      ),
+      s(
+        '#禁用/解禁功能',
+        '群内禁用功能'
+      ),
+      s(
+        '#禁用功能列表',
+        '查看群禁用功能'
+      )
+    ]
+  })
+}
 
-helpData.push({
-  group: 'UC工具——noticeSet',
-  require: 4,
-  cfg: 'config',
-  list: [
-    s(
-      '#设置iyuu tk',
-      '填写iyuu通知token'
-    ),
-    s(
-      '#设置sct tk',
-      '填写sct通知token'
-    ),
-    s(
-      '#查看iyuu/sct tk',
-      '查看iyuu或sct通知token'
-    )
-  ]
-})
+if (Check.file(Path.get('apps', 'noticeSet.js'))) {
+  helpData.push({
+    group: 'UC工具——noticeSet（指令修改崽notice.yaml）',
+    require: 4,
+    cfg: 'config',
+    list: [
+      s(
+        '#设置iyuu tk',
+        '填写iyuu通知token'
+      ),
+      s(
+        '#设置sct tk',
+        '填写sct通知token'
+      ),
+      s(
+        '#查看iyuu/sct tk',
+        '查看iyuu或sct通知token'
+      )
+    ]
+  })
+}
 
-helpData.push({
-  group: 'UC工具——备份数据',
-  require: 4,
-  cfg: 'config',
-  list: [
-    s(
-      '#UC备份数据',
-      '备份云崽、各大型插件数据'
-    ),
-    s(
-      '#UC还原备份',
-      '还原备份的数据'
-    ),
-    s(
-      '#UC删除备份',
-      '删除备份的数据'
-    )
-  ]
-})
+if (Check.file(Path.get('apps', 'BackupRestore.js'))) {
+  helpData.push({
+    group: 'UC工具——备份数据',
+    require: 4,
+    cfg: 'config',
+    list: [
+      s(
+        '#UC备份数据',
+        '备份云崽、各大型插件数据'
+      ),
+      s(
+        '#UC还原备份',
+        '还原备份的数据'
+      ),
+      s(
+        '#UC删除备份',
+        '删除备份的数据'
+      )
+    ]
+  })
+}
 
 if (Check.file(Path.get('apps', 'accredit.js'))) {
   helpData.push({

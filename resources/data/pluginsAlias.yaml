@@ -17,7 +17,7 @@
 - reg: 图鉴|tujian|Atlas
   name: Atlas
 - reg: 闲心|xianxin
-  name: xianxin-plugin
+  name: trss-xianxin-plugin
 - reg: 清凉|ql
   name: ql-plugin
 - reg: 土块|tukuai|earth

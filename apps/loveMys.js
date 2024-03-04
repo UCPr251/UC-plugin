@@ -36,7 +36,7 @@ export default class UCLoveMys extends UCPlugin {
         }
       ]
     })
-    if (Check.floder(loveMys)) {
+    if (Check.folder(loveMys)) {
       this.redisData = '[UC]loveMys'
       this.task = {
         name: 'UC-loveMys',
@@ -47,7 +47,7 @@ export default class UCLoveMys extends UCPlugin {
   }
 
   _verify() {
-    if (!Check.floder(loveMys)) {
+    if (!Check.folder(loveMys)) {
       this.reply('请先安装loveMys插件，指令：#UC安装过码')
       return false
     }
@@ -66,7 +66,7 @@ export default class UCLoveMys extends UCPlugin {
 
   async installLoveMys() {
     if (!this.verifyLevel(4)) return
-    if (Check.floder(loveMys)) return this.reply('你已安装该插件，无需再次安装')
+    if (Check.folder(loveMys)) return this.reply('你已安装该插件，无需再次安装')
     Data.execSync('git clone https://gitee.com/bbaban/loveMys.git loveMys-plugin/', Path.plugins)
     return this.reply('安装成功，重启后生效')
   }

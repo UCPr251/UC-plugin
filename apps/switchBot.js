@@ -64,7 +64,7 @@ export default class UCSwitchBot extends UCPlugin {
     this.open()
     Data.remove(switchBotData, this.groupId)
     file.JSONsaver(Path.switchBotjson, switchBotData)
-    return this.reply(this.Cfg.openMsg.replace('BotName', this.BotName))
+    return this.reply(this.Cfg.openMsg.replace(/BotName/gi, this.BotName))
   }
 
   open() {
@@ -81,6 +81,6 @@ export default class UCSwitchBot extends UCPlugin {
     _.set(this.groupData, `${this.groupId}.enable`, ['UC-switchBot'])
     switchBotData.push(this.groupId)
     file.JSONsaver(Path.switchBotjson, switchBotData)
-    return this.reply(this.Cfg.closeMsg.replace('BotName', this.BotName))
+    return this.reply(this.Cfg.closeMsg.replace(/BotName/gi, this.BotName))
   }
 }

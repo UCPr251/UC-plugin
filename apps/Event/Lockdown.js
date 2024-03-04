@@ -30,7 +30,7 @@ class UCLockdown extends UCEvent {
     let len
     do {
       len = loader.priority.length
-      await common.sleep(3)
+      await common.sleep(1)
     } while (loader.priority.length !== len)
     await common.sleep(1)
     log.debug('插件加载完毕，开始锁定功能')
@@ -58,19 +58,30 @@ class UCLockdown extends UCEvent {
     const isLock = /锁定/.test(this.msg)
     const lockedName = _.map(lockedData, 'name')
     this.refreshPluginsData()
-    const filterPlugins = isLock ? pluginsData.filter(({ name }) => !lockedName.includes(name)) : lockedData
+    let filterPlugins = isLock ? pluginsData.filter(({ name }) => !lockedName.includes(name)) : lockedData
     const fnc = isLock ? '_newLock' : '_unlock'
     const fncStr = this.msg.match(/功能(.*)/)?.[1].trim()
     if (fncStr) {
-      const toOperate = fncStr.split(/\s+/).reduce((acc, str) => {
-        const info = filterPlugins.find(v => v.name === str)
-        if (info) acc.push(info)
-        return acc
-      }, [])
-      if (!toOperate.length) {
-        return this.reply(`无有效参数：${fncStr}`)
+      const operations = fncStr.split(/\s+/)
+      if (operations.length === 1) {
+        const toSearch = file.searchStrings(filterPlugins, operations[0].trim(), 'name')
+        if (!toSearch.length) return this.reply(`无匹配的功能：${fncStr}`)
+        if (toSearch.length === 1) {
+          return this[fnc](toSearch)
+        } else {
+          filterPlugins = toSearch
+        }
+      } else {
+        const toOperate = operations.reduce((acc, str) => {
+          const info = filterPlugins.find(v => v.name === str)
+          if (info) acc.push(info)
+          return acc
+        }, [])
+        if (!toOperate.length) {
+          return this.reply(`无有效参数：${fncStr}`)
+        }
+        return this[fnc](toOperate)
       }
-      return this[fnc](toOperate)
     }
     const operate = isLock ? '锁定' : '解锁'
     const info = Data.makeArrStr(filterPlugins, { chunkSize: 100, length: 3500, property: 'name', property2: 'key' })
@@ -86,7 +97,7 @@ class UCLockdown extends UCEvent {
 
   async lockdownList() {
     if (!this.GM) return false
-    return this.reply(`已锁定功能如下：\n\n${Data.empty(Data.makeArrStr(lockedData, { length: 2000, property: 'name', property2: 'key' }))}\n\n可通过#UC解锁功能 解除锁定`)
+    return this.reply(`已锁定功能如下：\n\n${Data.empty(Data.makeArrStr(lockedData, { length: 3000, property: 'name', property2: 'key' }))}\n\n可通过#UC解锁功能 解除锁定`)
   }
 
   _newLock(arr) {
@@ -109,8 +120,8 @@ class UCLockdown extends UCEvent {
     loader.priority = _.sortBy(loader.priority, 'priority')
     log.red('刷新插件优先级排序')
     const newData = _.difference(lockedData, arr)
+    lockedData = newData
     file.JSONsaver(Path.lockdownjson, newData)
-    this.refreshLocked()
     return this.reply(`操作成功，解锁功能：\n${Data.makeArrStr(arr, { property: 'name' })}`)
   }
 

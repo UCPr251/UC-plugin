@@ -52,14 +52,14 @@ qsignRestart:
 
 # 单独上下班设置
 switchBot:
-  # 开启Bot的回复，BotName会被替换为上面设置的BotName的值
-  openMsg: 好哒，BotName开始上班啦！
-  # 关闭Bot的回复，BotName会被替换为上面设置的BotName的值
-  closeMsg: BotName休息去啦~
   # Bot上班的指令：插件中设置的BotName+下面的关键词即可触发，多个请用|间隔
   openReg: 上班|工作
   # Bot下班的指令：插件中设置的BotName+下面的关键词即可触发，多个请用|间隔
   closeReg: 下班|休息
+  # 开启Bot的回复，BotName会被替换为上面设置的BotName的值
+  openMsg: 好哒，BotName开始上班啦！
+  # 关闭Bot的回复，BotName会被替换为上面设置的BotName的值
+  closeMsg: BotName休息去啦~
   # 使用权限
   use:
     # 是否仅主人可使用
@@ -83,6 +83,17 @@ switchBot:
     # 是否允许任何人
     isE: false
 
+# JS插件管理系统
+JSsystem:
+  # 是否启用UC插件JS插件管理系统
+  isOpen: true
+  # 一次性查看多个JS文件时是否自动压缩为zip发送
+  isZip: false
+  # 群聊发送文件后自动撤回时长，0-120秒，0为不撤回
+  recallFileGroup: 0
+  # 私聊发送文件后自动撤回时长，4-120秒，0为不撤回
+  recallFilePrivate: 0
+
 # 戳一戳设置
 chuoyichuo:
   # 是否开启UC戳一戳
@@ -91,7 +102,7 @@ chuoyichuo:
   isAutoSetCard: true
   # 开启被戳自动更新群名片后，群名片后缀内容，num会被替换为被戳次数
   groupCard: 今日已被戳num次~
-  # 戳一戳使用的图包的名称
+  # 戳一戳使用的图包的名称（自动群名片会取此图包名称）
   picPath: 纳西妲
   # 被戳回复文本+图片概率
   textimg: 0.8
@@ -144,6 +155,31 @@ randomMember:
   # 随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）
   reply: 恭喜info成为天选之子！
   # 使用权限
+  use:
+    # 是否仅主人可使用
+    isM: false
+    # 是否允许群插件管理员使用
+    isA: true
+    # 是否允许群原生管理员使用
+    isGA: true
+    # 是否允许任何人使用
+    isE: true
+
+# 伪装群友设置
+camouflage:
+  # 是否开启UC伪装群友功能
+  isOpen: true
+  # 单次伪装时长，单位分钟
+  time: 10
+  # 单次伪装结束后CD，单位分钟
+  CD: 10
+  # 每群每人每天伪装次数限制，0为不限制，最多不超过10
+  timesLimit: 3
+  # 消息数量限制，单次伪装发送的消息数量超过此值会直接退出伪装，0为不限制
+  msgLimit: 251
+  # 伪装期间是否不响应指令（#结束伪装 除外）
+  isSilent: false
+  # 使用、结束权限
   use:
     # 是否仅主人可使用
     isM: false

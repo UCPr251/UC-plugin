@@ -35,13 +35,13 @@ export default class UCSqtj extends UCPlugin {
   }
 
   getLocalData() {
-    if (!this.Cfg.isSave && !Check.floder(this.floderPath)) return null
-    Check.floder(this.floderPath, true)
+    if (!this.Cfg.isSave && !Check.folder(this.floderPath)) return null
+    Check.folder(this.floderPath, true)
     return file.JSONreader(this.jsonPath)
   }
 
   saveLocalData(data) {
-    Check.floder(this.floderPath, true)
+    Check.folder(this.floderPath, true)
     return file.JSONsaver(this.jsonPath, data)
   }
 
@@ -98,7 +98,7 @@ export default class UCSqtj extends UCPlugin {
       return this.reply('额(⊙o⊙)……暂时没有数据捏')
     }
     const data = await this.getImgData(filterData, count)
-    const imgData = Sqtj.get(e, { ...data, count, date: this.date })
+    const imgData = Sqtj.get(this, { ...data, count, date: this.date })
     await common.render(e, imgData)
     ing[this.groupId] = 0
     return true
@@ -194,9 +194,7 @@ async function autoSendSqtj() {
       message: [{ type: 'text', text: '#昨日水群统计' }],
       user_id: UCPr.GlobalMaster[0],
       isGroup: true,
-      reply(base64) {
-        group.sendMsg(base64)
-      }
+      reply: group.sendMsg.bind(group)
     }
     const sqtj = new UCSqtj(e)
     const localData = sqtj.getLocalData()
@@ -217,7 +215,7 @@ async function autoSendSqtj() {
     }
     if (_.isEmpty(filterData)) return null
     const data = await sqtj.getImgData(filterData, count)
-    const imgData = Sqtj.get(e, { ...data, count, date })
+    const imgData = Sqtj.get(this, { ...data, count, date })
     return { e, imgData, groupId }
   }
   const processGroups = async function (groups) {

@@ -15,22 +15,21 @@ export default class UCPlugin extends plugin {
     Cfg
   }) {
     super({ name, dsc, event, priority, rule })
-    // this.UC = {}
     if (!e) return
     /** Client */
     this.e = e
     /** 格式化消息 */
     this.msg = this.formatMsg()
-    /** 空cfg权限实例 */
-    this.UC = this.Permission()
     /** e.sender */
-    this.sender = this.UC.sender
-    /** 用户id */
-    this.userId = this.UC.userId
+    this.sender = this.e.sender ?? this.e.member
     /** 是否群聊 */
-    this.isGroup = this.UC.isGroup
+    this.isGroup = this.e.message_type === 'group' || this.e.notice_type === 'group' || this.e.request_type === 'group' || this.e.isGroup
+    /** 用户id */
+    this.userId = this.e.sub_type === 'poke' ? this.e.operator_id : this.sender?.user_id ?? this.e.user_id
     /** 群号 */
-    this.groupId = this.UC.groupId
+    this.groupId = this.e.group_id ?? this.e.group?.group_id ?? this.e.group?.gid ?? this.e.groupId
+    /** 群实例 */
+    this.group = this.e.group
     /** 群所有配置config, GAconfig, permission，无则全局 */
     this.groupCFG = UCPr.groupCFG(this.groupId)
     /** 群config配置，无则全局 */
@@ -40,6 +39,10 @@ export default class UCPlugin extends plugin {
     /** 群功能配置 */
     this.Cfg = _.get(this.groupCFG, Cfg, {})
     if (!this.userId) return
+    /** 权限判断Class */
+    this.PermissionClass = Permission
+    /** 空cfg权限实例 */
+    this.UC = this.Permission()
     /** 权限级别Set */
     this.levelSet = this.UC.levelSet
     /** 权限级别 */
@@ -75,14 +78,9 @@ export default class UCPlugin extends plugin {
     return Data.check.call(this)
   }
 
-  /** UC指令前缀检查 */
-  checkPrefix() {
-    return /^#?UC/i.test(this.msg)
-  }
-
   /** 检查UC unNecRes */
   checkUnNecRes() {
-    if (!Check.floder(Path.unNecRes)) {
+    if (!Check.folder(Path.unNecRes)) {
       this.reply('未拉取UC资源，无法使用此功能，请先#UC更新资源')
       return false
     }
@@ -124,7 +122,7 @@ export default class UCPlugin extends plugin {
 
   /** 获取权限实例 */
   Permission(cfg = {}) {
-    return Permission.get(this.e, cfg)
+    return this.PermissionClass.get(this, cfg)
   }
 
   /** 默认权限判断(回复)? */
@@ -135,7 +133,7 @@ export default class UCPlugin extends plugin {
     recallMsg: 0
   }) {
     if (!this.verifyLevel()) return false
-    return Permission.verify(this.e, cfg, option)
+    return this.PermissionClass.verify(this, cfg, option)
   }
 
   /**
@@ -241,7 +239,7 @@ export default class UCPlugin extends plugin {
         ...data
       }
       this.setUCcontext('__chooseContext')
-      const list_ = basename ? file.getFilesBasename(list) : list
+      const list_ = basename ? file.getFilesName(list) : list
       const info = Data.makeArrStr(list_, { chunkSize: 100, length: 3000 })
       const title = '请选择' + note
       const replyMsg = await common.makeForwardMsg(this.e, [title + '的序号\n间隔序号或使用“1-10”可一次操作多个', ...info], title)
@@ -327,14 +325,16 @@ export default class UCPlugin extends plugin {
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {
     if (_.isEmpty(msg)) return
     if (!this.e.reply) {
-      if (this.isGroup) {
-        this.e.reply = common.pickGroup(this.groupId)?.sendMsg
+      if (this.isGroup && this.groupId) {
+        this.group ??= common.pickGroup(this.groupId)
+        this.e.reply = this.group.sendMsg.bind(this.group)
       } else if (this.userId) {
-        this.e.reply = Bot.pickFriend(this.userId)?.sendMsg
+        this.e.friend ??= Bot.pickFriend(this.userId)
+        this.e.reply = this.e.friend.sendMsg.bind(this.e.friend)
       }
     }
     if (!this.e.reply) return log.error('发送消息错误，e.reply不存在')
-    if (this.e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
+    if (this.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
     let { recallMsg = 0, at = false } = data
     if (at && this.isGroup) {
       msg = _.castArray(msg)
@@ -345,8 +345,8 @@ export default class UCPlugin extends plugin {
       log.error('发送消息错误', err)
     })
     if (recallMsg) {
-      if (this.e.group) {
-        setTimeout(() => this.e.group.recallMsg(msgRes.message_id), recallMsg * 1000)
+      if (this.group) {
+        setTimeout(() => this.group.recallMsg(msgRes.message_id), recallMsg * 1000)
       } else if (this.e.friend) {
         setTimeout(() => this.e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)
       }

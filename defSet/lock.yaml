@@ -1,10 +1,4 @@
 config:
-  randomMember:
-    keyWords: null
-  BlivePush:
-    mins: null
-    isGroup: null
-    isPrivate: null
   switchBot:
     openReg: null
     closeReg: null
@@ -14,6 +8,12 @@ config:
       isA: true
       isGA: true
       isE: false
+  randomMember:
+    keyWords: null
+  BlivePush:
+    mins: null
+    isGroup: null
+    isPrivate: null
   bigjpg:
     apiKey: null
   sqtj:

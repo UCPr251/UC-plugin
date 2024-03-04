@@ -30,12 +30,14 @@ export default class UCEvent extends UCPlugin {
     this.sub_type = ''
   }
 
+  /** 获取群员info */
   getMemInfo(memId) {
-    const memClient = this.e.group.pickMember(memId)
+    const memClient = this.group.pickMember(memId)
     if (!memClient?.info) return null
     return memClient.info
   }
 
+  /** 获取群员名称 */
   getMemName(memId) {
     const memberInfo = this.getMemInfo(memId)
     if (!memberInfo) return memId
@@ -44,7 +46,7 @@ export default class UCEvent extends UCPlugin {
   }
 
   /** 创建上下文，返回false再处理 */
-  setUCcontext(fnc = this.setFnc, time = UCPr.GAconfig.overTime) {
+  setUCcontext(fnc = this.setFnc, time = this.GAconfig.overTime) {
     const key = this.conKey()
     if (_.some(hook, { key })) return
     const info = {
@@ -53,7 +55,7 @@ export default class UCEvent extends UCPlugin {
     }
     hook.push(info)
     super.setUCcontext(fnc, time)
-    setTimeout(() => {
+    time && setTimeout(() => {
       if (_.remove(hook, info).length) {
         log.yellow(`${key}操作超时已取消`)
       }
@@ -183,13 +185,10 @@ export async function EventLoader() {
     const files = file.readdirSync(Path.groupAdmin, { type: '.js' })
     files.forEach(file => import(`file:///${Path.groupAdmin}/${file}`).catch(err => log.error(err)))
   }
-  if (!Bot?.on) return log.warn('非正常启动流程，跳过监听事件注册')
+  if (!global.Bot?.on) return log.warn('非正常启动流程，跳过监听事件注册')
   Bot.on('message', async (e) => {
-    const result = await UCdealMsg('message', e)
-    if (result === false) {
-      if (e.message_type === 'group') UCdealMsg('message.group', e)
-      else if (e.message_type === 'private') UCdealMsg('message.private', e)
-    }
+    if (e.message_type === 'group') UCdealMsg('message.group', e)
+    else if (e.message_type === 'private') UCdealMsg('message.private', e)
   })
   Bot.on('notice.group', (e) => {
     UCdealMsg('notice.group', e)

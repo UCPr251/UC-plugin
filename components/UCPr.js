@@ -81,7 +81,6 @@ class UCPr {
     this.getConfig = getConfig
     /** 事件监听器 */
     this.event = {
-      message: [],
       'message.group': [],
       'message.private': [],
       'notice.group': [],
@@ -93,14 +92,16 @@ class UCPr {
     this.task = []
     /** proxy代理管理器{ name: new Proxy() } */
     this.proxy = {}
-    /** 群配置 */
+    /** 群原始配置 */
     this.group_CFG = {}
     /** package.json */
     this.package = {}
-    /** 签名崩溃检测计时器 */
-    this.intervalId = null
     /** 因锁定被移除的功能的数据 */
     this.removedFncData = {}
+    /** 签名崩溃检测计时器 */
+    this.intervalId = null
+    /** 伪装数据 */
+    this.wz = {}
   }
 
   /** 初始化数据 */
@@ -115,8 +116,9 @@ class UCPr {
     const yamls = file.readdirSync(Path.groupCfg, { type: '.yaml' })
     const config = _.cloneDeep(this.CFG.config)
     const { GAconfig } = this.CFG
+    const removes = ['qsignRestart', 'JSsystem']
     for (const key in config) {
-      if (!_.isPlainObject(config[key])) {
+      if (!_.isPlainObject(config[key]) || removes.includes(key)) {
         delete config[key]
       }
     }
@@ -163,15 +165,6 @@ class UCPr {
     this.status = true
   }
 
-  /**
-   * @param {string} urlCode url代号
-   * @param {...any} parameters 参数
-   * @returns Fetch result
-   */
-  async fetch(urlCode, ...parameters) {
-    return UCfetch.call(this, urlCode, parameters)
-  }
-
   /** 注册监听事件 */
   EventInit(EventClass) {
     if (!EventClass?.prototype) return
@@ -184,18 +177,36 @@ class UCPr {
     }
     const events = this.event[event]
     if (!events) {
-      return log.warn('错误的监听事件：' + event)
+      if (event !== 'message') return log.warn('错误的监听事件：' + event)
+      Data.remove(this.event['message.group'], name, 'name')
+      Data.remove(this.event['message.private'], name, 'name')
+    } else {
+      Data.remove(events, name, 'name')
     }
-    Data.remove(events, name, 'name')
     log.debug(`注册${event}.${sub_type ||= 'all'}监听事件：${name}`)
     app.init && app.init()
-    events.push({
+    const data = {
       name,
       class: EventClass,
       rule,
       sub_type,
       accept: !!app.accept
-    })
+    }
+    if (event === 'message') { // 特殊处理message.all事件
+      this.event['message.group'].push(data)
+      this.event['message.private'].push(data)
+    } else {
+      events.push(data)
+    }
+  }
+
+  /**
+   * @param {string} urlCode url代号
+   * @param {...any} parameters 参数
+   * @returns Fetch result
+   */
+  async fetch(urlCode, ...parameters) {
+    return UCfetch.call(this, urlCode, parameters)
   }
 
   /** 群配置 */

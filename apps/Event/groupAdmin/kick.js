@@ -19,31 +19,28 @@ class UCKick extends UCGAPlugin {
     this.setFnc = '_makeSure'
   }
 
-  async kickMember(e) {
+  async kickMember() {
     if (!this.defaultVerify()) return
     if (/黑名单/.test(this.msg)) {
-      return this.kickBlack(e)
+      return this.kickBlack()
     }
-    if (!this.at) return this.reply('请艾特要踢的群员')
-    if (!this.checkUserPower(this.at)) return this.noPerReply()
-    if (!this.checkBotPower(this.at)) return this.noPowReply()
+    if (!this.targetId) return this.reply('请指定要踢的群员')
+    if (!this.checkUserPower()) return this.noPerReply()
+    if (!this.checkBotPower()) return this.noPowReply()
     if (this.Cfg.isAutoBlack) {
-      Admin.groupPermission('BlackQQ', this.at, this.groupId)
+      Admin.groupPermission('BlackQQ', this.targetId, this.groupId)
     }
-    if (this.Cfg.isAutoGlobalBlack) {
-      Admin.globalPermission('BlackQQ', this.at)
-    }
-    const status = await this.e.group.kickMember(this.at)
+    const status = await this.e.group.kickMember(this.targetId)
     if (status) return this.reply(this.Cfg.kickReply)
     return this.errorReply()
   }
 
-  async kickBlack(e) {
+  async kickBlack() {
     let GroupsArr
     const isGlobal = /全局/.test(this.msg)
-    const GroupsInfo = Object.fromEntries(e.bot?.gl ?? Bot.gl)
+    const GroupsInfo = Object.fromEntries(this.e.bot?.gl ?? Bot.gl)
     if (!isGlobal) {
-      const groupId = this.GM ? (this.msg.match(/\d+/)?.[0] || this.groupId) : this.groupId
+      const groupId = this.GM ? (this.numMatch?.[0] || this.groupId) : this.groupId
       GroupsArr = [groupId]
     } else {
       if (!this.verifyLevel(4)) return
@@ -53,7 +50,7 @@ class UCKick extends UCGAPlugin {
     const noPow = []
     for (const groupId of GroupsArr) {
       const memberObj = await common.getMemberObj(groupId)
-      if (!common.isAdminOrOwner(memberObj[e.self_id])) {
+      if (!common.isAdminOrOwner(memberObj[this.e.self_id])) {
         noPow.push({
           groupId,
           name: GroupsInfo[groupId].group_name
@@ -88,21 +85,21 @@ class UCKick extends UCGAPlugin {
     })
     const noPowInfo = Data.makeArrStr(noPow, { property: 'name', property2: 'groupId' })
     const noPowerMsg = '权限不足无法执行操作的群聊：\n\n' + noPowInfo
-    e.groupToKick = groupToKick
+    this.e.groupToKick = groupToKick
     this.setUCcontext()
-    this.reply('待清理人员信息如下，请查看。[取消|确认]')
+    this.reply('待清理人员信息如下，是否确认操作？[取消|确认]')
     await common.sleep(1)
     const title = '待清理人员信息'
-    const waitToClearMsg = await common.makeForwardMsg(e, [noPowerMsg, title, ...waitToClearMsgArr], title)
+    const waitToClearMsg = await common.makeForwardMsg(this.e, [noPowerMsg, title, ...waitToClearMsgArr], title)
     return this.reply(waitToClearMsg, false)
   }
 
   _makeSure() {
-    const { groupToKick } = this.getUCcontext()
     if (this.isCancel()) return
     if (this.isSure()) {
-      this.kickBlackMem(groupToKick)
       this.finishReply('确认操作，开始执行清理任务，每0.5s清理一次')
+      const { groupToKick } = this.getUCcontext()
+      this.kickBlackMem(groupToKick)
     }
   }
 
@@ -113,10 +110,10 @@ class UCKick extends UCGAPlugin {
     const success = []
     for (const groupInfo of groupToKick) {
       const groupClient = common.pickGroup(groupInfo.groupId)
-      for (const memInfo of groupInfo.memToKick) {
+      for (const { memId, name } of groupInfo.memToKick) {
         await common.sleep(0.5)
-        const info = `${memInfo.memId}（${memInfo.name}）`
-        const status = await groupClient.kickMember(memInfo.memId)
+        const info = `${memId}（${name}）`
+        const status = await groupClient.kickMember(memId)
         if (status) {
           log.debug(`成功清理群${groupInfo.groupId}用户${info}`)
           success.push(info)
@@ -129,11 +126,11 @@ class UCKick extends UCGAPlugin {
     log.purple('清理黑名单群员结束')
     const replyMsgArr = [`本次清理了${success.length}个黑名单用户`]
     if (success.length !== 0) {
-      replyMsgArr.push(Data.makeArrStr(success))
+      replyMsgArr.push(...Data.makeArrStr(success, { chunkSize: 100, length: 3000 }))
     }
     if (worng.length !== 0) {
       replyMsgArr.push('以下黑名单群员清理失败，可能是权限不足')
-      replyMsgArr.push(Data.makeArrStr(worng))
+      replyMsgArr.push(...Data.makeArrStr(worng, { chunkSize: 100, length: 3000 }))
     }
     const title = '清理黑名单执行结果'
     const replyMsg = await common.makeForwardMsg(this.e, [title, ...replyMsgArr], title)

@@ -2,14 +2,14 @@ import file from './file.js'
 import UCPr from './UCPr.js'
 
 function getLevel(userId, groupId) {
-  const groupCfg = UCPr.groupCFG(groupId)
+  const groupCFG = UCPr.group_CFG[groupId] ?? {}
   switch (true) {
     case Check.str(UCPr.GlobalMaster, userId): return 4
-    case Check.str(groupCfg.permission?.Master, userId): return 3
+    case Check.str(groupCFG.permission?.Master, userId): return 3
     case Check.str(UCPr.GlobalAdmin, userId): return 2
-    case Check.str(groupCfg.permission?.Admin, userId): return 1
+    case Check.str(groupCFG.permission?.Admin, userId): return 1
     case Check.str(UCPr.GlobalBlackQQ, userId): return -2
-    case Check.str(groupCfg.permission?.BlackQQ, userId): return -1
+    case Check.str(groupCFG.permission?.BlackQQ, userId): return -1
     default: return 0
   }
 }
@@ -26,7 +26,8 @@ function logLevel(userId, level) {
 /** 检查操作 */
 const Check = {
   /** 检查、递归创建文件夹 */
-  floder(path, mode = false) {
+  folder(path, mode = false) {
+    if (!path) return false
     if (!file.existsSync(path)) {
       mode && file.mkdirSync(path, true)
       return false
@@ -36,7 +37,7 @@ const Check = {
 
   /** 确认文件存在、读取文件 */
   file(path, mode = false) {
-    if (!file.existsSync(path)) {
+    if (!path || !file.existsSync(path)) {
       return false
     }
     if (mode) {
@@ -61,11 +62,11 @@ const Check = {
    */
   levelSet(userId, groupId) {
     if (this.e) {
-      return Check.levelSet(this.e.sender?.user_id ?? this.e.user_id, this.e.group_id)
+      return Check.levelSet(this.userId, this.groupId)
     }
     const level = new Set()
     if (!userId) return level
-    const groupCFG = UCPr.groupCFG(groupId)
+    const groupCFG = UCPr.group_CFG[groupId] ?? {}
     if (Check.str(UCPr.GlobalMaster, userId)) level.add(4)
     if (Check.str(groupCFG.permission?.Master, userId)) level.add(3)
     if (Check.str(UCPr.GlobalAdmin, userId)) level.add(2)
@@ -77,10 +78,11 @@ const Check = {
   },
 
   /**
-   * 检查用户权限等级，不判断其他
-   * 不传群号则只检测全局权限等级
-   * 按照权限等级从大到小检查
-   * @returns {number|boolean}
+   * - 检查用户权限等级，不判断其他
+   * - 不传群号则只检测全局权限等级
+   * - 按照权限等级从大到小检查
+   * <br>
+   *
    * 全局主人：4
    * 群主人：3
    * 全局管理：2
@@ -88,10 +90,11 @@ const Check = {
    * 普通用户：0
    * 群黑名单：-1
    * 全局黑名单：-2
+   * @returns {number|boolean}
    */
   level(userId, groupId, need) {
     if (this.e) {
-      return Check.level(this.userId ?? this.e.sender?.user_id ?? this.e.user_id, this.e.group_id, userId)
+      return Check.level(this.userId, this.groupId, userId)
     }
     if (!userId) return 0
     if (!isNaN(need)) {

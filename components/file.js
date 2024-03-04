@@ -69,13 +69,18 @@ const file = {
       }
     }
     if (option.basename) {
-      files = this.getFilesBasename(files)
+      files = this.getFilesBase(files)
     }
     return files
   },
 
-  /** 获取文件全名对应文件名数组 */
-  getFilesBasename(files) {
+  /** 获取路径对应文件全名数组(包括后缀) */
+  getFilesBase(files) {
+    return files.map(_file => path.parse(_file).base)
+  },
+
+  /** 获取路径对应文件名数组(不包括后缀) */
+  getFilesName(files) {
     return files.map(_file => path.parse(_file).name)
   },
 
@@ -215,9 +220,10 @@ const file = {
    * @param {string[]} strings 搜索的字符串数组
    * @param {string|Array} keywords 关键词数组
    * @param {boolean} [isSort=true] 是否排序
+   * @param {string} keyPath key路径
    * @returns {string[]|Array[]} 搜索结果
    */
-  searchStrings(strings, keywords, isSort = true) {
+  searchStrings(strings, keywords, keyPath, isSort = true) {
     /** 下标越小匹配度越高 */
     const searchLevelArr = []
     keywords = _.castArray(keywords)
@@ -225,7 +231,7 @@ const file = {
     const len = keywords.length
     const reg = new RegExp(keywords.join('|'), 'gi')
     strings.forEach(str => {
-      const matchLevel = str.match(reg)?.length
+      const matchLevel = _.get(str, keyPath, str).match(reg)?.length
       if (matchLevel) {
         const level = len - matchLevel
         searchLevelArr[level < 0 ? 0 : level].push(str)

@@ -1,24 +1,26 @@
-import { Data, UCPr, file, log } from '../components/index.js'
+import { Data, UCPr, file, log, Check } from '../components/index.js'
 import Base from './Base.js'
 import _ from 'lodash'
 
 export default class Help extends Base {
-  constructor(e) {
-    super(e)
+  constructor(thisArg) {
+    super(thisArg)
     this.model = 'help'
+    /** 用户权限等级 */
+    this.level = Check.level(this.userId, this.groupId)
   }
 
-  static get(e, groupId) {
-    const help = new Help(e)
-    return help.getData(groupId)
+  static get(thisArg) {
+    const help = new Help(thisArg)
+    return help.getData()
   }
 
   getIcon(iconNum) {
     return { x: -((iconNum - 1) % 10) * 50, y: -Math.floor((iconNum - 1) / 10) * 50 }
   }
 
-  getData(groupId) {
-    const groupCFG = UCPr.groupCFG(groupId)
+  getData() {
+    const groupCFG = UCPr.groupCFG(this.thisArg.groupId)
     const data = _.cloneDeep(UCPr.CFG.helpData.filter(group => {
       const { isOpen } = group
       if (isOpen && !isOpen(groupCFG)) return false
@@ -37,9 +39,9 @@ export default class Help extends Base {
         if (typeof require === 'number') {
           return this.level >= require
         }
-        const per = this.Permission(_.get(groupCFG[data[i].cfg], require, {}))
-        log.debug(`[Help.getData]判断用户${per.userId} ${require}权限：${per.isPer}`)
-        return per.isPer
+        const per = this.Permission(_.get(groupCFG[data[i].cfg], require))
+        log.debug(`[Help.getData]判断用户${per.userId} ${require}权限：${per.isPermission}`)
+        return per.isPermission
       })
       data[i].list = filterPower
       _.isEmpty(data[i].list) && data.splice(i, 1)

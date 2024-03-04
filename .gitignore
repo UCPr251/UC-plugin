@@ -1,17 +1,11 @@
-/.vs
-/.vscode
-/.eslintrc.cjs
-/.editorconfig
-/.eslintignore
-/.prettierignore
-/.VSCodeCounter
+.*
 /config
 /data
 /dev
 /test.js
 /UC功能解析.md
 /node_modules
-/components/reloadModule.js
+# /components/reloadModule.js
 /resources/wife
 /resources/chuoyichuo
 /resources/unNecRes
@@ -26,11 +20,4 @@
 /apps/atMute.js
 /apps/chuoMute.js
 /apps/ji.js
-/apps/Event/groupAdmin/*
-!/apps/Event/groupAdmin/kick.js
-!/apps/Event/groupAdmin/mute.js
-!/apps/Event/groupAdmin/recall.js
-!/apps/Event/groupAdmin/groupInfo.js
-!/apps/Event/groupAdmin/WM.js
-apps/JSsystem.js
-apps/card.js
+/apps/card.js

@@ -1,17 +1,16 @@
-import { Path, Check, UCDate, UCPr } from '../components/index.js'
+import { Path, UCDate, UCPr } from '../components/index.js'
 import Permission from './Permission.js'
 
 const letters = '0123456789ABCDEF'
 
 export default class Base {
-  constructor(e = {}) {
-    this.e = e
-    /** 用户权限等级 */
-    this.level = Check.level.call(this)
+  constructor(thisArg = {}) {
+    /** UCPlugin实例对象 */
+    this.thisArg = thisArg
     /** 用户Id */
-    this.userId = e.sender?.user_id || e.user_id
+    this.userId = this.thisArg.userId
     /** 群id */
-    this.groupId = e.group_id
+    this.groupId = this.thisArg.groupId
     this.model = Path.Plugin_Name
     this._path = Path._path.replace(/\\/g, '/')
     this.imgPath = Path.img.replace(/\\/g, '/')
@@ -20,7 +19,7 @@ export default class Base {
 
   /** 获取用户权限实例 */
   Permission(cfg = {}) {
-    return Permission.get(this.e, cfg)
+    return Permission.get(this.thisArg, cfg)
   }
 
   /** 群配置 */

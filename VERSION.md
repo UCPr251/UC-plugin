@@ -1,3 +1,13 @@
+## 2.5
+
+- [JS插件管理系统·JSsystem](./apps/JSsystem.js) `#安装JS` `#搜索JS` `#JS列表` `#停用JS列表` `#停用JS` `#启用JS` `#搜索JS` `#查看JS` `#卸载JS` `#重新查看JS`
+- [伪装群员](./apps/camouflage.js)`@XXX#伪装` `#取消伪装`
+- [群管·查询群员信息](./apps/Event/groupAdmin/memberInfo.js) `@XXX #让我康康`
+- [群管·入群申请处理](./apps/Event/groupAdmin/RequestAdd.js)
+- [群管·刷屏检测处理](./apps/Event/groupAdmin/floodScreen.js)
+- [群管·群员增加处理](./apps/Event/groupAdmin/Increase.js)
+- [群管·群员减少处理](./apps/Event/groupAdmin/Decrease.js)
+
 ## 2.4
 
 - [内定老婆](./apps/randomWife.js)`#内定老婆XXX` `#取消内定老婆`

@@ -31,7 +31,7 @@ export default class UCBackupRestore extends UCPlugin {
     if (!this.GM) return false
     const folderName = UCDate.today
     this.backupPath = Path.join(_backupPath, folderName)
-    if (Check.floder(this.backupPath)) return this.reply('今日已备份，若需重新备份请先删除原今日备份数据：\n#UC删除备份')
+    if (Check.folder(this.backupPath)) return this.reply('今日已备份，若需重新备份请先删除原今日备份数据：\n#UC删除备份')
     await this.reply('开始备份云崽数据，备份期间机器人不可用，备份时长视文件数量而定，请关注控制台')
     await common.sleep(1)
     let backed
@@ -67,13 +67,13 @@ export default class UCBackupRestore extends UCPlugin {
       const pluginPath = Path.join(Path.plugins, plugin)
       const pluginConfigPath = Path.join(pluginPath, 'config')
       const backupPluginPath = Path.join(this.backupPath, 'plugins', plugin)
-      if (Check.floder(pluginConfigPath)) {
+      if (Check.folder(pluginConfigPath)) {
         log.purple('备份' + pluginConfigPath)
         file.copyFolderRecursively(pluginConfigPath, Path.join(backupPluginPath, 'config'))
         backed.push(plugin + '/config')
       }
       const pluginDataPath = Path.join(pluginPath, 'data')
-      if (Check.floder(pluginDataPath)) {
+      if (Check.folder(pluginDataPath)) {
         if (plugin.endsWith('Admin')) continue
         log.purple('备份' + pluginDataPath)
         file.copyFolderRecursively(pluginDataPath, Path.join(backupPluginPath, 'data'), plugin === 'UC-plugin' ? ['backup'] : [], ['.git'])
@@ -135,20 +135,20 @@ export default class UCBackupRestore extends UCPlugin {
     const uninstalled = []
     for (const plugin of plugins) {
       const pluginPath = Path.join(Path.plugins, plugin)
-      if (!Check.floder(pluginPath)) {
+      if (!Check.folder(pluginPath)) {
         uninstalled.push(plugin)
         continue
       }
       const backupPluginPath = Path.join(this.backupPath, 'plugins', plugin)
       const backupConfigPath = Path.join(backupPluginPath, 'config')
-      if (Check.floder(backupConfigPath)) {
+      if (Check.folder(backupConfigPath)) {
         const pluginConfigPath = Path.join(pluginPath, 'config')
         log.purple('还原' + pluginConfigPath)
         file.copyFolderRecursively(backupConfigPath, pluginConfigPath)
         restored.push(plugin + '/config')
       }
       const backupDataPath = Path.join(backupPluginPath, 'data')
-      if (Check.floder(backupDataPath)) {
+      if (Check.folder(backupDataPath)) {
         const pluginDataPath = Path.join(pluginPath, 'data')
         log.purple('还原' + pluginDataPath)
         file.copyFolderRecursively(backupDataPath, pluginDataPath, [], ['.git'])

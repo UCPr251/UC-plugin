@@ -49,7 +49,6 @@ class UCRecall extends UCGAPlugin {
     const recallNum = Math.min(numMatch?.[0] ?? 1, this.Cfg.RECALL_MAX)
     const start = Date.now()
     await this.reply(`开始执行任务：撤回指定人群消息\n待清理：${recallNum}`, false, { recallMsg: 60 })
-    await common.sleep(0.2)
     const msgHistoryArr = await common.getPersonalChatHistoryArr(e.group, userId, seq, recallNum)
     if (_.isEmpty(msgHistoryArr)) return this.errorReply()
     const count = await common.recallMsgArr(e.group, msgHistoryArr)

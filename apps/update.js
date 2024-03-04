@@ -29,7 +29,7 @@ export default class UCUpdate extends UCPlugin {
           fnc: 'updateAll'
         },
         {
-          reg: /^#?(UC)?(强制)?(更新|刷新)授权$/i,
+          reg: /^#?(UC)?(更新|刷新)授权$/i,
           fnc: 'refresh'
         }
       ]
@@ -54,7 +54,7 @@ export default class UCUpdate extends UCPlugin {
 
   async updateUnNecRes() {
     if (!this.GM) return false
-    if (!Check.floder(Path.unNecRes)) {
+    if (!Check.folder(Path.unNecRes)) {
       this.reply('开始拉取UC资源')
       return Data.updateRes(true, (err) => {
         if (err) {
@@ -147,10 +147,7 @@ export default class UCUpdate extends UCPlugin {
 
   async refresh() {
     if (!this.GM) return false
-    if (/强制/.test(this.msg)) {
-      Data.execSync('git clean -fd && git reset --hard', Path.UC_plugin_decrypt)
-    }
-    const output = Data.refresh()
+    const output = await Data.refresh()
     UCPr.getConfig(5)
     UCPr.getConfig(6)
     return this.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))

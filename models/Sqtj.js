@@ -1,13 +1,13 @@
 import Base from './Base.js'
 
 export default class Sqtj extends Base {
-  constructor(e) {
-    super(e)
+  constructor(thisArg) {
+    super(thisArg)
     this.model = 'sqtj'
   }
 
-  static get(e, Data) {
-    const help = new Sqtj(e)
+  static get(thisArg, Data) {
+    const help = new Sqtj(thisArg)
     return help.getData(Data)
   }
 

@@ -3,15 +3,6 @@ import { UCGAPlugin } from '../../../models/index.js'
 import { segment } from 'icqq'
 import _ from 'lodash'
 
-/** 有时候icqq的监听会重复，做个CD限制 */
-async function checkCD() {
-  const key = `${this.redisData}:${this.groupId}:${this.userId}`
-  const data = await Data.redisGet(key)
-  if (data) return false
-  Data.redisSet(key, '1', 3600)
-  return true
-}
-
 const globalFloder = Path.get('WM', 'global')
 
 const WM = {
@@ -31,14 +22,16 @@ class UCWelcome extends UCGAPlugin {
       Cfg: 'GAconfig.welcome',
       event: 'notice.group.increase'
     })
-    this.redisData = '[UC]Welcome'
   }
 
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
-      if (!await checkCD.call(this)) return true
-      if (this.user_id === this.qq) return log.white(`[新增群聊]${this.groupId}`)
+      if (await this.isCD()) return
+      if (this.userId === this.qq) {
+        log.white(`[新增群聊]${this.groupStr}`)
+        return false
+      }
     }
     if (isGlobal) this.Cfg = UCPr.defaultCFG.GAconfig.welcome
     const replyMsg = []
@@ -49,10 +42,10 @@ class UCWelcome extends UCGAPlugin {
       replyMsg.push(segment.image(avatarUrl))
     }
     const info = `<${e.nickname ?? this.userId}>（${this.userId}）`
-    log.white(`[群员增加]${info} 群号：${this.groupId}`)
+    log.white(`[群员增加]${info} 群聊：${this.groupStr}`)
     const message = isGlobal ? globalWelcome : file.JSONreader(Path.get('WM', this.groupId, 'welcome.json')) ?? globalWelcome
     replyMsg.push(...common.makeMsg(message, 'info', info))
-    if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送入群欢迎`)
+    if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupStr}内处于禁言状态，取消发送入群欢迎`)
     return common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
   }
 }
@@ -68,17 +61,16 @@ class UCMourn extends UCGAPlugin {
       Cfg: 'GAconfig.mourn',
       event: 'notice.group.decrease'
     })
-    this.redisData = '[UC]Mourn'
   }
 
   async accept(e, isGlobal, isView = false) {
     if (!isView) {
       if (!this.isOpen || this.B) return false
-      if (!await checkCD.call(this)) return true
-      if (e.dismiss) return log.white(`[群聊解散]${this.groupId}`)
-      if (this.user_id === this.qq) {
-        if (e.operator_id !== this.qq) return log.white(`[被踢出群聊]${this.groupId}，操作者：${e.operator_id}`)
-        return log.white(`[退出群聊]${this.groupId}`)
+      if (await this.isCD()) return
+      if (e.dismiss) return log.white(`[群聊解散]${this.groupStr}`)
+      if (this.userId === this.qq) {
+        if (e.operator_id !== this.qq) return log.white(`[被踢出群聊]${this.groupStr}，操作者：${e.operator_id}`)
+        return log.white(`[退出群聊]${this.groupStr}`)
       }
     }
     if (isGlobal) this.Cfg = UCPr.defaultCFG.GAconfig.welcome
@@ -91,15 +83,15 @@ class UCMourn extends UCGAPlugin {
       replyMsg.push(segment.image(avatarUrl))
     }
     if (e.operator_id === this.userId) {
-      log.white(`[群员退群]${info} 群号：${this.groupId}`)
+      log.white(`[群员退群]${info} 群号：${this.groupStr}`)
       const message = isGlobal ? globalMourn : file.JSONreader(Path.get('WM', this.groupId, 'mourn.json')) ?? globalMourn
       replyMsg.push(...common.makeMsg(message, 'info', info))
-      if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送退群通知`)
+      if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupStr}内处于禁言状态，取消发送退群通知`)
       return common.sendMsgTo(isView || this.groupId, replyMsg, 'Group')
     } else if (e.operator_id !== this.qq) {
       log.white(`[群员被踢]${info} 操作人：${e.operator_id}`)
-      if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送退群通知`)
-      return common.sendMsgTo(isView || this.groupId, `${info}被管理员${e.operator_id ?? ''}踢出群聊`, 'Group')
+      if (e.group?.mute_left > 0) return log.mark(`Bot在群${this.groupStr}内处于禁言状态，取消发送退群通知`)
+      return common.sendMsgTo(isView || this.groupId, `${info}被管理员${this.getMemStr(e.operator_id ?? '')}踢出群聊`, 'Group')
     }
     log.white(`[机器人踢人]${info}`)
   }
@@ -148,7 +140,7 @@ class UCWMset extends UCGAPlugin {
   }
 
   init() {
-    Check.floder(WM.globalFloder, true)
+    Check.folder(WM.globalFloder, true)
     if (!Check.file(WM.welcome)) {
       file.JSONsaver(WM.welcome, [{ type: 'text', text: '欢迎info小伙伴进群~~~' }])
     }
@@ -170,7 +162,7 @@ class UCWMset extends UCGAPlugin {
     if (this.type === 'welcome') {
       app = new UCWelcome(e)
     } else {
-      e.member = this.UC.sender
+      e.member = this.sender
       e.operator_id = this.userId
       app = new UCMourn(e)
     }
@@ -192,7 +184,7 @@ class UCWMset extends UCGAPlugin {
     if (!this.e.message) return this.finishReply('错误的内容')
     const { oriData } = this.getUCcontext()
     const { type, floderPath, jsonPath, string, isGlobal, data, isAP } = oriData
-    Check.floder(floderPath, true)
+    Check.folder(floderPath, true)
     if (!isGlobal && !_.isEmpty(data)) {
       const imgs = _.filter(data, { type: 'image' })
       _.map(imgs, 'path').forEach(path => file.unlinkSync(path))

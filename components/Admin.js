@@ -72,7 +72,7 @@ const Admin = {
 
   /** 修改群设置 */
   groupCfg(groupId, path, operation, cfg) {
-    const groupConfig = tempData[groupId]?.data ?? UCPr.groupCFG(groupId)
+    const groupConfig = tempData[groupId]?.data ?? UCPr.group_CFG[groupId]
     if (!groupConfig) return log.warn('[Admin.groupCfg]群配置不存在：', groupId)
     const old = _.get(groupConfig[cfg], path)
     if (old !== undefined) {

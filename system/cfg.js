@@ -17,7 +17,7 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
   if (prefix) {
     path = prefix + path
   }
-  def &&= _.truncate(def, { length: 10, omission: '…' })
+  def &&= _.truncate(def, { length: 5, omission: '…' })
   if (type === 'select') {
     if (optional.refresher) { // 选择时动态刷新列表
       def = _.truncate(optional.refresher().join('/'), { length: 18, omission: '…' })
@@ -286,6 +286,41 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
   }
 }
 
+if (Check.file(Path.get('apps', 'JSsystem.js'))) {
+  prefix = 'JSsystem.'
+  config.js管理 = {
+    title: '工具-JS管理系统',
+    GM: true,
+    cfg: {
+      '': s(
+        'isOpen',
+        'JS系统开关',
+        '是否启用UC插件JS插件管理系统'
+      ),
+      压缩: s(
+        'isZip',
+        '多文件自动压缩',
+        '一次性查看多个JS文件时是否自动压缩为zip发送'
+      ),
+      群聊撤回: s(
+        'recallFileGroup',
+        '群聊文件撤回时间',
+        '群聊发送文件后自动撤回时长，0-120秒，0为不撤回',
+        'num',
+        0
+      ),
+      私聊撤回: s(
+        'recallFilePrivate',
+        '私聊文件撤回时间',
+        '私聊发送文件后自动撤回时长，4-120秒，0为不撤回',
+        'num',
+        0,
+        (num) => Math.min(120, num.match(/\d+/)?.[0])
+      )
+    }
+  }
+}
+
 if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
   prefix = 'chuoyichuo.'
   config.戳一戳 = {
@@ -311,7 +346,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
       图包: s(
         'picPath',
         '图包',
-        '戳一戳使用的图包',
+        '戳一戳使用的图包（自动群名片会取此图包名称）',
         'select',
         '',
         '',
@@ -323,7 +358,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳回复文本+图片的概率，可选0-1',
         'num',
         0.8,
-        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
       次数图片概率: s(
         'chuoimg',
@@ -331,7 +366,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '触发文本+图片回复时在文本前加上被戳次数的概率，独立于其他概率，可选0-1',
         'num',
         0.2,
-        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
       头像表情包概率: s(
         'face',
@@ -339,7 +374,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳回复头像表情包概率，可选0-1',
         'num',
         0.1,
-        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
       禁言概率: s(
         'mute',
@@ -347,7 +382,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         '被戳禁言对方概率，可选0-1。1-(文本图片+表情包+禁言)即为反击概率',
         'num',
         0.05,
-        (num) => Math.min(1, Number(num.match(/(?:0\.)?\d+/)?.[0]))
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
       禁言时长: s(
         'muteTime',
@@ -363,7 +398,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
 if (Check.file(Path.get('apps', 'randomWife.js'))) {
   prefix = 'randomWife.'
   config.随机老婆 = {
-    title: '随机老婆',
+    title: '随机老婆——随机二次元老婆',
     cfg: {
       '': s(
         'isOpen',
@@ -397,7 +432,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
 if (Check.file(Path.get('apps', 'randomMember.js'))) {
   prefix = 'randomMember.'
   config.随机群友 = {
-    title: '随机群友',
+    title: '随机群友——随机挑选群友',
     cfg: {
       '': s(
         'isOpen',
@@ -436,7 +471,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
 if (Check.file(Path.get('apps', 'sqtj.js'))) {
   prefix = 'sqtj.'
   config.水群统计 = {
-    title: '水群统计',
+    title: '水群统计——统计群任一天的聊天数据',
     cfg: {
       '': s(
         'isOpen',
@@ -457,6 +492,60 @@ if (Check.file(Path.get('apps', 'sqtj.js'))) {
         'isSave',
         '保存本地',
         '查询的聊天记录是否保存至本地，关闭则每次都从零获取数据，建议开启'
+      ),
+      权限: sPRO(
+        undefined,
+        '0111',
+        'use',
+        [2, 3, 4, 5]
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'camouflage.js'))) {
+  prefix = 'camouflage.'
+  config.伪装 = {
+    title: '伪装群友',
+    cfg: {
+      '': s(
+        'isOpen',
+        '伪装开关',
+        '是否开启UC伪装群友功能'
+      ),
+      时长: s(
+        'time',
+        '伪装时长',
+        '单次伪装时长，单位分钟',
+        'num',
+        10
+      ),
+      冷却: s(
+        'CD',
+        '冷却时长',
+        '单次伪装结束后CD，单位分钟，所有群共用CD，0为不冷却',
+        'num',
+        10
+      ),
+      次数限制: s(
+        'timesLimit',
+        '伪装次数限制',
+        '每群每人每天伪装次数限制，0为不限制，但最多不超过10（主人不限）',
+        'num',
+        3,
+        (num) => Math.min(10, num.match(/\d+/)?.[0])
+      ),
+      消息限制: s(
+        'msgLimit',
+        '伪装消息限制',
+        '消息数量限制，单次伪装发送的消息数量超过此值会直接退出伪装，0为不限制',
+        'num',
+        251
+      ),
+      静默: s(
+        'isSilent',
+        '不响应指令',
+        '伪装期间是否不响应指令（#结束伪装 除外）'
       ),
       权限: sPRO(
         undefined,
@@ -736,12 +825,7 @@ if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
       群拉黑: s(
         'isAutoBlack',
         '群同时拉黑',
-        '踢人是否同时在该群拉黑该用户'
-      ),
-      全局拉黑: s(
-        'isAutoGlobalBlack',
-        '全局拉黑',
-        '踢人是否同时在全局拉黑该用户'
+        '踢人后是否自动拉黑'
       ),
       回复: s(
         'kickReply',
@@ -751,6 +835,41 @@ if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
         '已经把这个坏惹踢掉了！'
       ),
       权限: sPRO('踢人', '011', undefined, [2, 3, 4])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'RequestAdd.js'))) {
+  prefix = 'RequestAdd.'
+  GAconfig.入群申请 = {
+    title: '群管·入群申请',
+    cfg: {
+      '': s(
+        'isOpen',
+        '入群申请开关',
+        '是否开启UC群管入群申请处理（下列功能总开关）'
+      ),
+      自动同意: s(
+        'isAutoApprove',
+        '自动同意',
+        '是否自动同意入群申请（黑名单除外）'
+      ),
+      拒绝黑名单: s(
+        'isAutoRefuseBlack',
+        '自动拒绝黑名单',
+        '是否自动拒绝黑名单用户的入群申请'
+      ),
+      通知群聊: s(
+        'isNoticeGroup',
+        '通知群聊',
+        '是否通知群（黑名单除外）'
+      ),
+      通知主人: s(
+        'isNoticeMaster',
+        '通知主人',
+        '入群申请是否通知主人'
+      ),
+      权限: sPRO('#同意/拒绝', '0110', undefined, [2, 3, 4, 5])
     }
   }
 }
@@ -790,9 +909,141 @@ if (Check.file(Path.get('groupAdmin', 'WM.js'))) {
       头像: s(
         'isAvatar',
         '展示头像',
-        '退群通知同时展示退群群员的头像'
+        '退群通知是否同时展示退群群员的头像'
       ),
       修改权限: sPRO('修改', '0110', undefined, [2, 3, 4, 5])
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'Increase.js'))) {
+  prefix = 'Increase.'
+  GAconfig.群员增加 = {
+    title: '群管·群员增加',
+    cfg: {
+      '': s(
+        'isOpen',
+        '群员增加开关',
+        '是否开启UC群管群员增加处理（下列功能总开关）'
+      ),
+      通知主人: s(
+        'isNotice',
+        '通知主人',
+        '群员增加是否通知主人'
+      ),
+      踢黑名单: s(
+        'isKickBlack',
+        '自动踢黑名单',
+        '检测到是黑名单用户进群时是否自动踢出并撤回其所有消息'
+      ),
+      踢出回复: s(
+        'kickBlackReply',
+        '自动踢出回复',
+        '自动踢出后的回复，info会替换为 用户名（QQ），BotName会替换为机器人名称',
+        'input',
+        '黑名单用户info，BotName已经把TA踢掉了！'
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'Decrease.js'))) {
+  prefix = 'Decrease.'
+  GAconfig.群员减少 = {
+    title: '群管·群员减少',
+    cfg: {
+      '': s(
+        'isOpen',
+        '群员减少开关',
+        '是否开启UC群管群员减少处理（下列功能总开关）'
+      ),
+      通知主人: s(
+        'isNotice',
+        '通知主人',
+        '群员减少是否通知主人'
+      ),
+      自动拉黑: s(
+        'isAutoBlack',
+        '自动拉黑',
+        '群员主动退群是否自动拉黑'
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('groupAdmin', 'floodScreen.js'))) {
+  prefix = 'floodScreen.'
+  GAconfig.刷屏检测 = {
+    title: '群管·刷屏检测',
+    cfg: {
+      '': s(
+        'isOpen',
+        '刷屏检测开关',
+        '是否开启UC群管刷屏检测'
+      ),
+      自动踢黑名单: s(
+        'isDetecteBlack',
+        '黑名单自动踢出',
+        '检测到黑名单用户发言是否自动踢出并撤回其消息'
+      ),
+      时间范围: s(
+        'timeRange',
+        '检测时间范围',
+        '刷屏检测时间范围，在该时间范围内连续刷屏则触发惩罚，单位秒',
+        'num',
+        10
+      ),
+      刷屏次数: s(
+        'judgeNum',
+        '刷屏次数',
+        '刷屏次数，达到该次数则触发惩罚',
+        'num',
+        10
+      ),
+      警告群员: s(
+        'isWarn',
+        '警告群员',
+        '是否警告群员，达到(刷屏数量-2)时警告'
+      ),
+      警告回复: s(
+        'warnText',
+        '警告回复',
+        '刷屏警告的回复内容',
+        'Input',
+        '不要刷屏哦~'
+      ),
+      惩罚群员: s(
+        'isPunish',
+        '惩罚群员',
+        '是否惩罚群员，达到刷屏惩罚阈值时惩罚'
+      ),
+      惩罚方式: s(
+        'punishMode',
+        '惩罚方式',
+        '惩罚方式：mute 或 kick',
+        'select',
+        '',
+        ['mute', 'kick']
+      ),
+      惩罚回复: s(
+        'punishText',
+        '惩罚回复',
+        '刷屏惩罚的回复内容',
+        'Input',
+        '天天就知道刷屏~✨杂鱼~✨杂鱼~'
+      ),
+      禁言时长: s(
+        'muteTime',
+        '禁言时长',
+        '设置为禁言时的禁言时长，单位分钟',
+        'num',
+        5
+      ),
+      自动拉黑: s(
+        'isAutoBlack',
+        '自动拉黑',
+        '设置为踢人时是否同时拉黑'
+      )
     }
   }
 }

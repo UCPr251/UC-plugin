@@ -75,8 +75,8 @@ const common = {
   /**
    * 获取头像URL
    * @param {*} Id
-   * @param {'group'|'user'} type
-   * @param {'0'|'100'} quality 100小尺寸；0大尺寸
+   * @param {'group'|'user'} [type='user']
+   * @param {'0'|'100'} [quality='100'] 100小尺寸；0大尺寸
    */
   getAvatarUrl(Id, type = 'user', quality = '100') {
     if (type === 'user') return `https://q1.qlogo.cn/g?b=qq&s=${quality}&nk=${Id}`
@@ -93,11 +93,10 @@ const common = {
 
   /** 获取群实例 */
   pickGroup(group) {
-    if (typeof group === 'number' || typeof group === 'string') {
-      if (!+group) return {}
+    if (group && (typeof group === 'number' || typeof group === 'string')) {
       group = Bot.pickGroup(+group)
     }
-    return group
+    return group || {}
   },
 
   /** 判断memberInfo是否群主或管理员 */
@@ -153,7 +152,7 @@ const common = {
   /** 获取一条消息中的所有图片url */
   getAllPicsUrl(e) {
     if (e.message) {
-      const imgs = _.filter(e.message, { type: 'img' })
+      const imgs = _.filter(e.message, ({ type }) => type === 'img' || type === 'image')
       return _.map(imgs, 'url')
     }
     return null
@@ -178,10 +177,10 @@ const common = {
   },
 
   /** 渲染图片并发送 */
-  async render(e, data, cfg = { quote: false, recallMsg: 0, at: false }) {
-    if (!e || !data) return log.warn('[common.render]图片渲染传参错误')
+  async render(thisArg, data, cfg = { quote: false, recallMsg: 0, at: false }) {
+    if (!thisArg || !data) return log.warn('[common.render]图片渲染传参错误')
     const base64 = await puppeteer.screenshot(data.tempPath ?? Path.Plugin_Name, data)
-    return await e.reply(base64, cfg.quote, cfg)
+    return await thisArg.reply(base64, cfg.quote, cfg)
   },
 
   /** 禁言群员，seconds为0则为解禁 */
@@ -319,8 +318,8 @@ const common = {
           log.debug('[common.sendFile]撤回群文件' + fid)
           e.group.fs.rm(fid)
         }, recallFile * 1000)
-        return fid
       }
+      return fileStat
     } else if (e.friend) {
       const fid = await e.friend.sendFile(buffer, name, (percentage) => {
         log.debug(`[common.sendFile]发送好友${e.sender.user_id}文件${name}，进度：${parseInt(percentage)}%`)
@@ -364,12 +363,12 @@ const common = {
       nickname
     }
     let forwardMsg = []
-    _.forEach(msg, (message) => forwardMsg.push({
+    msg.forEach((message) => forwardMsg.push({
       ...userInfo,
       message
     }))
     /** 制作转发内容 */
-    if (e.isGroup) {
+    if (e.group) {
       forwardMsg = await e.group.makeForwardMsg(forwardMsg)
     } else if (e.friend) {
       forwardMsg = await e.friend.makeForwardMsg(forwardMsg)
@@ -399,7 +398,7 @@ const common = {
       nickname
     }
     let forwardMsg = []
-    _.forEach(msg, (message) => forwardMsg.push({
+    msg.forEach((message) => forwardMsg.push({
       ...userInfo,
       message
     }))

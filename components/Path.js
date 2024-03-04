@@ -18,9 +18,6 @@ export function getPath(_path) {
   const system = path.join(UC, 'system')
   const helpjs = path.join(system, 'help.js')
   const cfgjs = path.join(system, 'cfg.js')
-  const servesyaml = path.join(system, 'serves.yaml')
-  const UC_plugin_decrypt = path.join(system, 'UC-plugin-decrypt')
-  const decryptyaml = path.join(UC_plugin_decrypt, 'decrypt.yaml')
   const resources = path.join(UC, 'resources')
   const resdata = path.join(resources, 'data')
   const img = path.join(resources, 'img')
@@ -33,6 +30,7 @@ export function getPath(_path) {
   const permissionyaml = path.join(config, 'permission.yaml')
   const tools = path.join(UC, 'tools')
   const data = path.join(UC, 'data')
+  const recycleBin = path.join(data, 'recycleBin')
   const temp = path.join(data, 'temp')
   const testjson = path.join(temp, 'test.json')
   const QA = path.join(data, 'QA')
@@ -52,7 +50,7 @@ export function getPath(_path) {
     ...path,
     /**
      * 获取路径
-     * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'botConfig'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'temp'|'QA'|'resources'|'unNecRes'|'img'|'example'|'sqtj'} rootDir 上级文件夹
+     * @param {'_path'|'plugins'|'UC'|'apps'|'groupAdmin'|'botConfig'|'components'|'defSet'|'system'|'model'|'config'|'groupCfg'|'data'|'recycleBin'|'temp'|'QA'|'resources'|'unNecRes'|'img'|'example'|'sqtj'} rootDir 上级文件夹
      * @param {string} basename 文件夹或文件basename
      * @returns 目标路径
      */
@@ -99,12 +97,6 @@ export function getPath(_path) {
     helpjs,
     /** ./system/cfg.js */
     cfgjs,
-    /** ./system/serves.yaml */
-    servesyaml,
-    /** ./system/UC_plugin_decrypt */
-    UC_plugin_decrypt,
-    /** ./system/UC_plugin_decrypt/decrypt.yaml */
-    decryptyaml,
     /** ./resources */
     resources,
     /** ./resources/data */
@@ -129,6 +121,8 @@ export function getPath(_path) {
     tools,
     /** ./data */
     data,
+    /** ./data/recycleBin */
+    recycleBin,
     /** ./data/temp */
     temp,
     /** ./data/temp/test.json */
