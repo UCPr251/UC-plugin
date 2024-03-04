@@ -2,7 +2,7 @@ import { Path, file, UCPr, Data, log, common, Check } from './index.js'
 import _ from 'lodash'
 
 /** 权限判断优先级说明 */
-const judgePriority = '权限判断优先级：主人>全局仅主人>黑名单>功能仅主人>不允许群聊=不允许私聊>允许任何人>允许插件管理员=允许群管理员'
+const judgePriority = '是否有权限操作，判断优先级 主人>全局仅主人=黑名单=功能仅主人=不允许群聊=不允许私聊>允许任何人>允许插件管理员=允许群管理员'
 /** 权限判断字符，中文 */
 const judgeInfo = ['群聊', '私聊', '仅主人', '插管', '群管', '任何人']
 /** 权限判断字符，英文 */
