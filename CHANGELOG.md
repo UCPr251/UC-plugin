@@ -4,6 +4,12 @@
 
 ### 3月
 
+#### 3-6
+
+- 修复[file](./components/file.js)函数错误调用
+- 修复[开关Bot下线响应指令](./models/UCEvent.js)检测权限报错
+- 修改[开关Bot下线响应指令](./models/UCEvent.js)检测部分提前，权限判断延后，避免每次都检测权限
+
 #### 3-5
 
 **ver 2.5.0**

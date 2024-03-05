@@ -168,9 +168,9 @@ export default class Permission {
     at: false,
     recallMsg: 0
   }, forceJudge = false) {
-    if (forceJudge) { this.reply?.(UCPr.noPerReply, option.quote ?? true, option); return false }
+    if (forceJudge) { option.isReply && this.reply?.(UCPr.noPerReply, option.quote ?? true, option); return false }
     if (UCPr.onlyMaster && !this.M) return false
-    if (!this.isPermission) { this.reply?.(UCPr.noPerReply, option.quote ?? true, option); return false }
+    if (!this.isPermission) { option.isReply && this.reply?.(UCPr.noPerReply, option.quote ?? true, option); return false }
     return true
   }
 

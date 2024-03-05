@@ -324,7 +324,7 @@ export default class UCPlugin extends plugin {
 
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {
     if (_.isEmpty(msg)) return
-    if (!this.e.reply) {
+    if (!this.e?.reply) {
       if (this.isGroup && this.groupId) {
         this.group ??= common.pickGroup(this.groupId)
         this.e.reply = this.group.sendMsg.bind(this.group)

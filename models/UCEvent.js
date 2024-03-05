@@ -82,13 +82,15 @@ class UCSwitchBotEvent extends UCEvent {
   async deal(e, type) {
     // 第二次处理，直接deal
     if (e.isUCSwitchBot) return this.dealMsg(e, type)
+    const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
+    const isPrefix = reg.test(this.msg)
+    if (!e.atme && !isPrefix) return false
     if (!this.verifyPermission(this.Cfg.closedCommand, { isReply: false })) return false
     if (this.Cfg.isAt && e.atme) {
       e.isUCSwitchBot = true
       return this.dealMsg(e, type)
     }
-    const reg = new RegExp(`^\\s*${UCPr.BotName}`, 'i')
-    if (this.Cfg.isPrefix && reg.test(this.msg)) {
+    if (this.Cfg.isPrefix && isPrefix) {
       e.isUCSwitchBot = true
       e.message.forEach(v => (v.type === 'text' && (v.text &&= v.text.replace(reg, ''))))
       return this.dealMsg(e, type)
