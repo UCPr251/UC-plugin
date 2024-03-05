@@ -69,7 +69,7 @@ const file = {
       }
     }
     if (option.basename) {
-      files = this.getFilesBase(files)
+      files = this.getFilesName(files)
     }
     return files
   },
