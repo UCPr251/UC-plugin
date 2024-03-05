@@ -156,7 +156,7 @@ export default class UCUpdate extends UCPlugin {
 
 Data.loadTask({
   // 每天检查更新一次UC资源
-  cron: '0 0 4 * * 0',
+  cron: '0 0 4 * * ?',
   name: 'UC-updateUnNecRes',
   fnc: Data.updateRes.bind(Data, false, (err) => err && log.error('UC自动更新资源失败', err))
 })
