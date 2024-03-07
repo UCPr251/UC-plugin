@@ -38,20 +38,17 @@ class UCRequestGroupAdd extends UCGAPlugin {
 
   async dealNotice() {
     if (this.B || (!this.Cfg.isNoticeGroup && !this.Cfg.isNoticeMaster)) return
-    const replyMsg = ['[入群申请通知]']
+    const replyMsg = ['【入群申请通知】']
     replyMsg.push(segment.image(common.getAvatarUrl(this.userId)))
     replyMsg.push('昵称：' + this.e.nickname)
     replyMsg.push('\n账号：' + this.userId)
     if (this.e.inviter_id) replyMsg.push('\n邀请人：' + this.getMemStr(this.e.inviter_id))
-    if (this.e.comment) replyMsg.push('\n申请理由：' + this.e.comment)
-    if (this.e.tips) {
-      replyMsg.push('\nTips：' + this.e.tips)
-    }
-    replyMsg.push('\n可引用该消息回复#同意 或#拒绝 处理申请')
+    if (this.e.comment) replyMsg.push('\n' + this.e.comment)
+    if (this.e.tips) replyMsg.push('\nTips：' + this.e.tips)
+    replyMsg.push('\n引用回复 #同意|#拒绝')
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
     if (!this.Cfg.isNoticeMaster) return
-    log.red(123)
-    replyMsg.splice(1, 0, '\n群聊：' + this.groupId, '\n群昵称：' + this.groupName, segment.image(common.getAvatarUrl(this.groupId, 'group')))
+    replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '\n群聊：' + this.groupId, '\n群昵称：' + this.groupName)
     await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Private')
   }
 
@@ -83,7 +80,7 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
       if (!e.source) return false
       if (!e.source.message) return false
       userId = parseInt(e.source.message.match(/账号：(\d+)/)[1].trim())
-      groupId ||= parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+      groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
     }
     const systemMsg = await Bot.getSystemMsg()
     const event = systemMsg.find(v => v.request_type == 'group' && v.sub_type == 'add' && v.group_id === groupId && v.user_id === userId)

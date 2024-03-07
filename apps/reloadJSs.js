@@ -24,7 +24,7 @@ export default class UCReloadJSs extends UCPlugin {
           fnc: 'UCreloadJSs'
         },
         {
-          reg: /^#?UC卸载(插件)?(.+)/i,
+          reg: /^#?UC卸载插件(.+)/i,
           fnc: 'UCunloadJS'
         },
         {

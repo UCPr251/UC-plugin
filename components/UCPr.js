@@ -222,12 +222,12 @@ class UCPr {
 
   /** URL */
   get authorUrl() {
-    return this.package.author.url
+    return this.package.author?.url ?? 'https://gitee.com/UCPr251'
   }
 
   /** UC插件URL */
   get repoUrl() {
-    return this.package.repository.url
+    return this.package.repository?.url ?? 'https://gitee.com/UCPr251/UC-plugin'
   }
 
   /** 默认所有全局配置 */

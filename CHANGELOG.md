@@ -4,6 +4,18 @@
 
 ### 3月
 
+#### 3-7
+
+**ver 2.5.1**
+
+- 修复[入群申请私聊引用处理](./apps/Event/groupAdmin/RequestAdd.js)无法找到申请
+- 修改[入群申请](./apps/Event/groupAdmin/RequestAdd.js)等通知文本
+- 修复[戳一戳禁言](./apps/chuoyichuo.js)时间错误
+- 修复[水群统计](./apps/sqtj.js)自动推送发送消息错误
+- 将[戳一戳回复](./apps/chuoyichuo.js)的文本内容保存在单独的文件置于[UC-plugin/resources/data/chuoyichuo.txt](./resources/data/chuoyichuo.txt)，避免自行增删时导致更新冲突
+- 增加[戳一戳回复](./apps/chuoyichuo.js)CD限制，[避免大幅刷屏](https://gitee.com/UCPr251/UC-plugin/issues/I96GQ6)
+- [伪装群员](./apps/camouflage.js)如果bot是群主会同时同步头衔
+
 #### 3-6
 
 - 修复[file](./components/file.js)函数错误调用

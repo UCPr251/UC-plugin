@@ -5,7 +5,6 @@
 /test.js
 /UC功能解析.md
 /node_modules
-# /components/reloadModule.js
 /resources/wife
 /resources/chuoyichuo
 /resources/unNecRes
@@ -13,7 +12,7 @@
 /apps/accredit.js
 /apps/BdynamicPush.js
 /apps/test.js
-/apps/vitsAI.js
+/apps/genshinvoice.js
 /apps/upload.js
 /apps/searchNovel.js
 /apps/QA.js
@@ -21,3 +20,4 @@
 /apps/chuoMute.js
 /apps/ji.js
 /apps/card.js
+apps/Event/groupAdmin/searchChatHistory.js

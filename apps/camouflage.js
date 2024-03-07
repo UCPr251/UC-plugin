@@ -30,6 +30,7 @@ export default class UCCamouflage extends UCPlugin {
     if (!this.Cfg.isOpen) return false
     if (!this.verifyPermission(this.Cfg.use)) return
     if (UCPr.wz.ing) return this.reply(`当前正在执行群聊${UCPr.wz.groupId}对群员${UCPr.wz.userId}的伪装任务\n结束时间：${UCPr.wz.endTime}\n冷却时间：${UCPr.wz.CD}分钟\n请等待伪装和冷却结束`)
+    if (this.at === this.e.self_id) return this.reply('我就站在你面前，你看我几分像从前？')
     if (!this.at) return this.reply('请同时艾特要伪装的群员')
     if (!this.M) {
       const CD = await Data.redisGet(this.CDData, 0)
@@ -49,10 +50,14 @@ export default class UCCamouflage extends UCPlugin {
     this.selfAvatarPath = await Data.download(selfAvatarUrl, Path.temp, 'selfAvatar')
     if (!Check.file(this.memAvatarPath)) return this.reply('下载群员头像失败，请稍后重试')
     if (!Check.file(this.selfAvatarPath)) return this.reply('下载自身头像失败，请稍后重试')
-    const { card, nickname } = memClient.info
-    this.e.bot.setAvatar(this.memAvatarPath).catch(e => log.error(e))
-    this.e.group.setCard(this.e.self_id, card || nickname).catch(e => log.error(e))
+    const { card, nickname, title } = memClient.info
+    this.e.bot.setAvatar(this.memAvatarPath)
+    this.e.group.setCard(this.e.self_id, card || nickname)
+    if (this.UC.botIsOwner) {
+      this.e.group.setTitle(this.e.self_id, title)
+    }
     this.selfCard = selfClient.info.card
+    this.selfTitle = selfClient.info.title
     if (this.Cfg.isSilent) {
       const groupData = UCPr.defaultCfg.getConfig('group')
       groupData[this.groupId] ??= {}
@@ -86,8 +91,9 @@ export default class UCCamouflage extends UCPlugin {
 
   restoreFnc(isMsgLimit = false) {
     this.finishUCcontext()
-    this.e.bot.setAvatar(this.selfAvatarPath).catch(e => log.error(e))
-    this.e.group.setCard(this.e.self_id, this.selfCard).catch(e => log.error(e))
+    this.e.bot.setAvatar(this.selfAvatarPath).catch(e => log.error('修改头像错误', e))
+    this.e.group.setCard(this.e.self_id, this.selfCard).catch(e => log.error('修改群名片错误', e))
+    this.UC.botIsOwner && this.e.group.setTitle(this.e.self_id, this.selfTitle).catch(e => log.error('修改群头衔错误', e))
     this.Cfg.CD && Data.redisSet(this.CDData, UCDate.getTime(this.Cfg.CD, 'm'), this.Cfg.CD * 60)
     if (this.Cfg.isSilent) {
       const groupData = UCPr.defaultCfg.getConfig('group')
@@ -128,6 +134,7 @@ class UCCamouflageEvent extends UCEvent {
         id: msg.message_id
       })
     }
+    if (!replyMsg.length) return
     this.reply(replyMsg)
     UCPr.wz.count++
     if (UCPr.wz.count >= UCPr.wz.msgLimit) return UCPr.wz.restoreFnc(true)

@@ -245,6 +245,13 @@ if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
       { options: file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.js' }).map(item => ({ label: item, value: item })) }
     ),
     s(
+      'CD',
+      '冷却',
+      '戳一戳CD，0为不限制，各群独立，单位秒',
+      'InputNumber',
+      { min: 0 }
+    ),
+    s(
       'textimg',
       '文本+图片概率',
       '被戳回复文本+图片概率',
@@ -956,8 +963,7 @@ export function supportGuoba() {
       isV3: true,
       isV2: false,
       description: UCPr.package.description,
-      iconPath: Path.get('img',
-        'xiubi.png')
+      iconPath: Path.get('img', 'xiubi.png')
     },
     configInfo: {
       schemas: [

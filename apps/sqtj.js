@@ -16,7 +16,7 @@ export default class UCSqtj extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?(UC)?(分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计$/i,
+          reg: /^#?(UC)?(分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
           fnc: 'sqtj'
         },
         {
@@ -180,6 +180,7 @@ async function autoSendSqtj() {
   if (push_ing) return
   push_ing = true
   const processGroup = async function (groupId) {
+    if (!groupId) return null
     const Cfg = _.get(UCPr.groupCFG(groupId), 'config.sqtj', {})
     const isAutoSend = Cfg.isOpen && Cfg.isAutoSend
     if (!isAutoSend) return null
@@ -194,7 +195,9 @@ async function autoSendSqtj() {
       message: [{ type: 'text', text: '#昨日水群统计' }],
       user_id: UCPr.GlobalMaster[0],
       isGroup: true,
-      reply: group.sendMsg.bind(group)
+      reply(base64) {
+        group.sendMsg(base64)
+      }
     }
     const sqtj = new UCSqtj(e)
     const localData = sqtj.getLocalData()

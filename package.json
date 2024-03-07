@@ -1,6 +1,6 @@
 {
   "name": "UC-plugin",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "UC插件，提供各种工具、娱乐、群管等功能",
   "type": "module",
   "repository": {

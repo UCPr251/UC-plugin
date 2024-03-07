@@ -350,7 +350,14 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'select',
         '',
         '',
-        { refresher: () => file.readdirSync(Path.chuoyichuo, { removes: '一键重命名.bat' }) }
+        { refresher: () => file.readdirSync(Path.chuoyichuo, { type: 'Directory' }) }
+      ),
+      冷却: s(
+        'CD',
+        '冷却',
+        '戳一戳CD，0为不限制，各群独立，单位秒',
+        'num',
+        0
       ),
       文本图片概率: s(
         'textimg',

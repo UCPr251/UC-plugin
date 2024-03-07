@@ -263,7 +263,7 @@ const UCDate = {
 
   /**
    * @description 单位换算→秒数
-   * @example daysCount('2', '分')
+   * @example secondsCount('2', '分')
    * @param {string} count 倍数/系数，如20
    * @param {string} unit 计量单位
    */
