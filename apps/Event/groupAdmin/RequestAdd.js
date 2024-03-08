@@ -47,7 +47,7 @@ class UCRequestGroupAdd extends UCGAPlugin {
     if (this.e.tips) replyMsg.push('\nTips：' + this.e.tips)
     if (this.e.tips?.includes('风险')) {
       replyMsg.push('\n该账号有风险，请手动处理')
-    } else {
+    } else if (this.UC.botIsOwnerOrAdmin) {
       replyMsg.push('\n引用回复 #同意|#拒绝')
     }
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
@@ -78,13 +78,16 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
   }
 
   async deal(e) {
-    if (!this.defaultVerify()) return
+    if (this.isGroup && !this.defaultVerify()) return
     let userId = this.targetId, groupId = this.groupId
     if (e.source || !userId || !groupId) {
       if (!e.source) return false
       if (!e.source.message) return false
       userId = parseInt(e.source.message.match(/账号：(\d+)/)[1].trim())
-      groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+      if (!this.isGroup) {
+        groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+        if (!common.botIsGroupAdmin(groupId)) return this.noPowReply()
+      }
     }
     const systemMsg = await Bot.getSystemMsg()
     const event = systemMsg.find(v => v.request_type == 'group' && v.sub_type == 'add' && v.group_id === groupId && v.user_id === userId)
