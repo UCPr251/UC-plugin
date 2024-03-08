@@ -45,7 +45,7 @@ class UCRequestGroupAdd extends UCGAPlugin {
     if (this.e.inviter_id) replyMsg.push('\n邀请人：' + this.getMemStr(this.e.inviter_id))
     if (this.e.comment) replyMsg.push('\n' + this.e.comment)
     if (this.e.tips) replyMsg.push('\nTips：' + this.e.tips)
-    replyMsg.push('\n引用回复 #同意|#拒绝')
+    if (this.UC.botIsOwnerOrAdmin) replyMsg.push('\n引用回复 #同意|#拒绝')
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
     if (!this.Cfg.isNoticeMaster) return
     replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '\n群聊：' + this.groupId, '\n群昵称：' + this.groupName)
@@ -74,13 +74,16 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
   }
 
   async deal(e) {
-    if (!this.defaultVerify()) return
+    if (this.isGroup && !this.defaultVerify()) return
     let userId = this.targetId, groupId = this.groupId
     if (e.source || !userId || !groupId) {
       if (!e.source) return false
       if (!e.source.message) return false
       userId = parseInt(e.source.message.match(/账号：(\d+)/)[1].trim())
-      groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+      if (!this.isGroup) {
+        groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+        if (!common.botIsGroupAdmin(groupId)) return this.noPowReply()
+      }
     }
     const systemMsg = await Bot.getSystemMsg()
     const event = systemMsg.find(v => v.request_type == 'group' && v.sub_type == 'add' && v.group_id === groupId && v.user_id === userId)
