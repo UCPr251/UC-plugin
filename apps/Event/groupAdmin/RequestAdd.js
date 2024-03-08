@@ -45,7 +45,11 @@ class UCRequestGroupAdd extends UCGAPlugin {
     if (this.e.inviter_id) replyMsg.push('\n邀请人：' + this.getMemStr(this.e.inviter_id))
     if (this.e.comment) replyMsg.push('\n' + this.e.comment)
     if (this.e.tips) replyMsg.push('\nTips：' + this.e.tips)
-    replyMsg.push('\n引用回复 #同意|#拒绝')
+    if (this.e.tips?.includes('风险')) {
+      replyMsg.push('\n该账号有风险，请手动处理')
+    } else {
+      replyMsg.push('\n引用回复 #同意|#拒绝')
+    }
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
     if (!this.Cfg.isNoticeMaster) return
     replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '\n群聊：' + this.groupId, '\n群昵称：' + this.groupName)
