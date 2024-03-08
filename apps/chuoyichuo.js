@@ -21,7 +21,7 @@ export default class UCChuoyichuo extends UCPlugin {
     this.redisData = '[UC]chuoyichuo:' + this.groupId
   }
 
-  isCD() {
+  get isCD() {
     if (!this.Cfg.CD) return false
     if (CD[this.groupId]) return true
     CD[this.groupId] = true
