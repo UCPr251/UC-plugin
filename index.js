@@ -2,10 +2,10 @@
 import { Path, Data, log, UCPr, file } from './components/index.js'
 import { EventLoader } from './models/UCEvent.js'
 
-/** 日志 */
-global.log = log
 /** 数据 */
 global.UCPr = UCPr
+/** 日志 */
+setTimeout(() => (global.log = log))
 
 const files = await Data.init()
 

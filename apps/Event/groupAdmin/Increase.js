@@ -28,11 +28,11 @@ class UCIncrease extends UCGAPlugin {
     const notice = this.B ? '黑名单' : '新群员'
     const replyMsg = [`【${notice}入群通知】`]
     replyMsg.push(segment.image(common.getAvatarUrl(this.groupId, 'group')))
-    replyMsg.push('\n群聊：' + this.groupId)
+    replyMsg.push('群聊：' + this.groupId)
     replyMsg.push('\n群号：' + this.groupId)
     replyMsg.push(segment.image(common.getAvatarUrl(this.userId)))
     replyMsg.push(notice + '：' + this.userName)
-    replyMsg.push('\n' + notice + 'QQ：' + this.userId)
+    replyMsg.push('\n账号：' + this.userId)
     await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Private')
   }
 
