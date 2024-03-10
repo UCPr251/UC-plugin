@@ -82,6 +82,7 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
     let userId = this.targetId, groupId = this.groupId
     if (e.source || !userId || !groupId) {
       if (!e.source?.message) return false
+      if (!e.source.message.includes('【入群申请通知】')) return false
       userId = parseInt(e.source.message.match(/账号：(\d+)/)?.[1].trim())
       if (!userId) return false
       if (!this.isGroup) {
