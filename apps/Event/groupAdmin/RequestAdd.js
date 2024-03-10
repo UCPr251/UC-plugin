@@ -81,16 +81,17 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
     if (this.isGroup && !this.defaultVerify()) return
     let userId = this.targetId, groupId = this.groupId
     if (e.source || !userId || !groupId) {
-      if (!e.source) return false
-      if (!e.source.message) return false
-      userId = parseInt(e.source.message.match(/账号：(\d+)/)[1].trim())
+      if (!e.source?.message) return false
+      userId = parseInt(e.source.message.match(/账号：(\d+)/)?.[1].trim())
+      if (!userId) return false
       if (!this.isGroup) {
-        groupId = parseInt(e.source.message.match(/群聊：(\d+)/)[1].trim())
+        groupId = parseInt(e.source.message.match(/群聊：(\d+)/)?.[1].trim())
+        if (!groupId) return false
         if (!common.botIsGroupAdmin(groupId)) return this.noPowReply()
       }
     }
     const systemMsg = await Bot.getSystemMsg()
-    const event = systemMsg.find(v => v.request_type == 'group' && v.sub_type == 'add' && v.group_id === groupId && v.user_id === userId)
+    const event = systemMsg.find(v => v.request_type === 'group' && v.sub_type === 'add' && v.group_id === groupId && v.user_id === userId)
     if (!event || !event.approve) return this.reply('未找到该申请记录')
     const isAgree = this.msg.includes('同意')
     const result = await event.approve(isAgree)
