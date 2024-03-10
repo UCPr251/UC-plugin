@@ -264,7 +264,7 @@ export default class UCPlugin extends plugin {
 
   /** 用户是否确认操作 */
   isSure(fnc) {
-    if (/^(是|确认|确定|确信|肯定|yes)$/.test(this.msg)) {
+    if (/^(确定|是|确认|确信|肯定|yes)$/.test(this.msg)) {
       fnc && fnc()
       return true
     }
@@ -277,7 +277,7 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    if (/^(取消|否|no)$/.test(this.msg)) {
+    if (/^#?(取消|否|no)/.test(this.msg)) {
       return this.finishReply('取消已操作', setFnc, option)
     }
     return false
