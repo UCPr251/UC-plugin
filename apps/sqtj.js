@@ -141,7 +141,7 @@ export default class UCSqtj extends UCPlugin {
           faces: 0
         }
       }
-      if (raw_message === '[动画表情]') {
+      if (raw_message === '[动画表情][动画表情]') {
         filterData[userId].faces++
       }
     }

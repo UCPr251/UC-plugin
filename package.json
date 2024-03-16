@@ -1,6 +1,6 @@
 {
   "name": "UC-plugin",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "UC插件，提供各种工具、娱乐、群管等功能",
   "type": "module",
   "repository": {
@@ -16,15 +16,8 @@
     "url": "https://gitee.com/UCPr251"
   },
   "dependencies": {
-    "archiver": "^6.0.1",
-    "chalk": "^5.3.0",
-    "chokidar": "^3.6.0",
-    "icqq": "^0.6.10",
-    "lodash": "^4.17.21",
-    "moment": "^2.30.1",
-    "net": "^1.0.2",
-    "node-stream-zip": "^1.15.0",
-    "unzipper": "^0.10.14",
-    "yaml": "^2.4.0"
+    "archiver": "^7.0.1",
+    "jszip": "^3.10.1",
+    "net": "^1.0.2"
   }
 }

@@ -21,3 +21,6 @@
 /apps/ji.js
 /apps/card.js
 apps/Event/groupAdmin/searchChatHistory.js
+apps/icqq.js
+apps/RepeatInterruption.js
+tools/searchString.js

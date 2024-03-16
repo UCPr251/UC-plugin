@@ -18,7 +18,7 @@ log.purple(`----${UCPr.Plugin_Name} ${UCPr.version}载入中-----`)
 
 let ret = []
 
-files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}`)))
+files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}.js`)))
 
 ret = await Promise.allSettled(ret)
 

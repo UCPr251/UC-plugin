@@ -211,7 +211,7 @@ async function BotPluginsDeal(e) {
   loader.priority.forEach(v => {
     const p = new v.class(e)
     p.e = e
-    if (!loader.checkDisable(e, p)) return
+    if (!loader.checkDisable(p)) return
     if (!loader.filtEvent(e, p)) return
     priority.push(p)
   })
