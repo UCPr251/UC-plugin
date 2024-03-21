@@ -63,7 +63,7 @@ export default class UCJSsystem extends UCPlugin {
         this.e.isUCJS = isUCJS
         this.e.filename = filename
         this.e.dirPath = dirPath
-        this.finishUCcontext(this.setFnc)
+        this.finishUCcontext()
         this.setUCcontext(this.setFnc2)
         return this.reply(`你已经安装过${dirPath}${filename}插件了，是否覆盖原插件？[是|否]`)
       }
@@ -74,7 +74,7 @@ export default class UCJSsystem extends UCPlugin {
       } else {
         this.errorReply()
       }
-      this.finishUCcontext(this.setFnc)
+      this.finishUCcontext()
     }
   }
 
