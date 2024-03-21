@@ -1,6 +1,5 @@
 import { common, log, UCPr } from '../../../components/index.js'
 import { UCGAPlugin } from '../../../models/index.js'
-import { segment } from 'icqq'
 
 class UCIncrease extends UCGAPlugin {
   constructor(e) {

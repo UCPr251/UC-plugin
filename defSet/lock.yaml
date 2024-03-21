@@ -18,8 +18,9 @@ config:
     apiKey: null
   sqtj:
     isSave: null
+  ActReminder:
+    opCron: null
+    srCron: null
 GAconfig:
   recall:
     FILTER_MAX: null
-  kick:
-    isAutoGlobalBlack: null

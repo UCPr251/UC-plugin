@@ -45,7 +45,7 @@ export default class UCRestart extends UCPlugin {
       return this.reply('[UC]restart.bat文件丢失，无法重启')
     }
     if (!Check.file(Path.get('_path', 'app.js'))) {
-      return this.reply('云崽根目录app.js文件丢失，无法重启')
+      return this.reply('[UC]云崽根目录app.js文件丢失，无法重启')
     }
     let isPM2 = false
     if (process.argv[1].includes('pm2')) {

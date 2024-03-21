@@ -1,5 +1,4 @@
 import { Path, Data, Check, common, UCPr, file, UCDate } from '../components/index.js'
-import { loadJs, unloadJs } from './reloadJSs.js'
 import { UCPlugin } from '../models/index.js'
 
 export default class UCJSsystem extends UCPlugin {
@@ -69,7 +68,7 @@ export default class UCJSsystem extends UCPlugin {
         return this.reply(`你已经安装过${dirPath}${filename}插件了，是否覆盖原插件？[是|否]`)
       }
       if (await Data.download(fileUrl, isUCJS ? Path.apps : Path.example, filename)) {
-        if (!UCPr.isWatch) loadJs(Path.get('apps', filename))
+        if (!UCPr.isWatch) UCPr.function.loadJs(Path.get('apps', filename))
         this.reply(`操作成功，新增${dirPath}${filename}，已自动载入该插件`)
         Data.refresh()
       } else {
@@ -83,11 +82,11 @@ export default class UCJSsystem extends UCPlugin {
     if (this.isCancel(this.setFnc2)) return
     if (this.isSure()) {
       const { isUCJS, filePath, fileUrl, filename, dirPath } = this.getUCcontext(this.setFnc2)
-      if (!UCPr.isWatch && isUCJS) unloadJs(filePath)
+      if (!UCPr.isWatch && isUCJS) UCPr.function.unloadJs(filePath)
       file.unlinkSync(filePath)
       await common.sleep(0.2)
       if (await Data.download(fileUrl, isUCJS ? Path.apps : Path.example, filename)) {
-        if (!UCPr.isWatch && isUCJS) loadJs(filePath)
+        if (!UCPr.isWatch && isUCJS) UCPr.function.loadJs(filePath)
         this.reply(`操作成功，已覆盖${dirPath}${filename}，${isUCJS ? '已自动载入该UC插件' : '可能需要重启'}`)
         Data.refresh()
       } else {

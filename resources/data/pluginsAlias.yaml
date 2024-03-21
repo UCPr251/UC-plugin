@@ -11,7 +11,7 @@
 - reg: 白纸|zhi
   name: zhi-plugin
 - reg: 千羽|qianyu
-  name: qianyu-plugin
+  name: reset-qianyu-plugin
 - reg: 椰奶|椰羊|yenai
   name: yenai-plugin
 - reg: 图鉴|tujian|Atlas

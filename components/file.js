@@ -5,6 +5,9 @@ import _ from 'lodash'
 
 /** 文件读写 */
 const file = {
+
+  ...fs,
+
   /** 读取yaml */
   YAMLreader(_path, defaultValue = null) {
     if (!_path || !this.existsSync(_path)) return defaultValue
@@ -20,7 +23,9 @@ const file = {
   /** 读取json */
   JSONreader(_path, defaultValue = null) {
     if (!_path || !this.existsSync(_path)) return defaultValue
-    return JSON.parse(fs.readFileSync(_path, 'utf8'))
+    const fileData = fs.readFileSync(_path, 'utf8')
+    if (!fileData) return defaultValue
+    return JSON.parse(fileData)
   },
 
   /** 保存json */
@@ -84,32 +89,6 @@ const file = {
     return files.map(_file => path.parse(_file).name)
   },
 
-  /** 读取文件 */
-  readFileSync(_path, encoding, flag) {
-    encoding === undefined && (encoding = 'utf8')
-    return fs.readFileSync(_path, { encoding, flag })
-  },
-
-  /** 写入数据 */
-  writeFileSync(_path, data) {
-    return fs.writeFileSync(_path, data)
-  },
-
-  /** 移动文件 */
-  renameSync(oriFilePath, targetFilePath) {
-    return fs.renameSync(oriFilePath, targetFilePath)
-  },
-
-  /** 创建文件夹 */
-  mkdirSync(_path, recursive) {
-    return fs.mkdirSync(_path, { recursive })
-  },
-
-  /** 文件是否存在 */
-  existsSync(_path) {
-    return fs.existsSync(_path)
-  },
-
   /** 路径是否是文件夹 */
   isDirectory(_path) {
     return fs.lstatSync(_path).isDirectory()
@@ -118,12 +97,6 @@ const file = {
   /** 路径是否是文件 */
   isFile(_path) {
     return fs.lstatSync(_path).isFile()
-  },
-
-  unlink(_path) {
-    return fs.unlink(_path, (err) => {
-      if (err) throw err
-    })
   },
 
   /**
@@ -168,7 +141,7 @@ const file = {
         fs.unlinkSync(currentPath)
       }
     }
-    try { fs.rmdirSync(dir) } catch (e) { }
+    try { fs.rmdirSync(dir) } catch (e) { global.log?.error('删除文件夹失败：', ...arguments, e) }
   },
 
   /** 递归复制文件夹 */
@@ -185,34 +158,9 @@ const file = {
     })
   },
 
-  /** 复制文件 */
-  copyFileSync(orlFilePath, targetFilePath) {
-    return fs.copyFileSync(orlFilePath, targetFilePath)
-  },
-
-  /** 符号链接信息 */
-  lstatSync(_path) {
-    return fs.lstatSync(_path)
-  },
-
-  /** 文件信息 */
-  statSync(_path) {
-    return fs.statSync(_path)
-  },
-
-  /** 创建可读流 */
-  createReadStream(_path) {
-    return fs.createReadStream(_path)
-  },
-
-  /** 创建可写流 */
-  createWriteStream(_path) {
-    return fs.createWriteStream(_path)
-  },
-
   /** 格式化目录/文件名 */
   formatFilename(oriName) {
-    return oriName.replace(/\\|\/|:|\*|\?|<|>|\|"/g, '')
+    return oriName.replace(/\\|\/|:|\*|\?|"|<|>|\|/g, '')
   },
 
   /**
@@ -269,11 +217,12 @@ const file = {
         const matchLevel = _file.match(reg)?.length
         if (matchLevel) {
           const level = len - matchLevel
+          const { name, ext } = path.parse(_file)
           searchLevelArr[level < 0 ? 0 : level].push({
-            name: path.parse(_file).name,
-            file: _file,
-            ext: path.extname(_file),
-            path: filePath
+            name, // filename without ext
+            file: _file, // basename
+            ext, // file ext
+            path: filePath // full path
           })
         }
       } else if (stats.isDirectory() && option.recursive) {

@@ -21,9 +21,16 @@ function s(title, desc, require = 0, swh) {
 const helpData = []
 
 helpData.push({
+  // 展示title
   group: 'UC系统管理（支持艾特）',
+  // 所需权限等级
   require: 2,
+  // 设置所属类
   cfg: 'config',
+  // 折叠显示的块title + 单独触发指令 #UC${command}帮助
+  command: '系统',
+  // 折叠显示的块描述
+  desc: 'UC插件系统帮助',
   list: [
     s(
       '#UC设置',
@@ -132,6 +139,10 @@ helpData.push({
   group: 'UC群管',
   require: 1,
   isOpen: (groupCFG) => groupCFG.GAconfig.isOpen,
+  // 折叠显示的块title + 单独触发指令 #UC${command}帮助
+  command: '群管',
+  // 折叠显示的块描述
+  desc: 'UC插件群管帮助',
   cfg: 'GAconfig',
   list: [
     s(
@@ -238,6 +249,8 @@ helpData.push({
 helpData.push({
   group: 'UC娱乐功能',
   require: 0,
+  command: '娱乐',
+  desc: 'UC-娱乐功能帮助',
   cfg: 'config',
   list: [
     s(
@@ -248,37 +261,19 @@ helpData.push({
     ),
     s(
       '#随机老婆',
-      '随机二次元老婆',
+      '每日随机二次元老婆',
       '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#随机老婆列表',
-      '随机二次元老婆列表',
-      '',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#上传随机老婆+名称',
-      '新增随机老婆图片',
-      'randomWife.add',
-      'randomWife.isOpen'
-    ),
-    s(
-      '#删除随机老婆+名称',
-      '删除指定随机老婆图片',
-      'randomWife.del',
       'randomWife.isOpen'
     ),
     s(
       'UC戳一戳#poke#',
-      '戳一戳生效',
+      '戳一戳回复',
       '',
       'chuoyichuo.isOpen'
     ),
     s(
       '#今/昨日水群统计',
-      '查看水群统计，指令前可指定日期',
+      '查看水群统计，可指定日期',
       'sqtj.use',
       'sqtj.isOpen'
     ),
@@ -291,10 +286,190 @@ helpData.push({
   ]
 })
 
+if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
+  helpData.push({
+    group: 'UC娱乐——戳一戳',
+    require: 4,
+    isOpen: (groupCFG) => groupCFG.config.chuoyichuo.isOpen,
+    command: '戳一戳',
+    desc: 'UC-戳一戳帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#查看戳一戳文本',
+        '查看戳一戳回复文本'
+      ),
+      s(
+        '#新增戳一戳文本',
+        '新增戳一戳回复文本'
+      ),
+      s(
+        '#删除戳一戳文本',
+        '删除戳一戳回复文本'
+      ),
+      s(
+        '#戳一戳图包列表',
+        '查看戳一戳图包列表'
+      ),
+      s(
+        '#创建戳一戳图包',
+        '创建戳一戳图包文件夹'
+      ),
+      s(
+        '#删除戳一戳图包',
+        '删除戳一戳图包文件夹及图片'
+      ),
+      s(
+        '#查看戳一戳图片',
+        '查看当前戳一戳图包内图片'
+      ),
+      s(
+        '#上传戳一戳图片',
+        '上传图片至当前戳一戳图包内'
+      ),
+      s(
+        '#删除戳一戳图片',
+        '删除当前戳一戳图包内图片'
+      )
+    ]
+  })
+}
+
+if (Check.file(Path.get('apps', 'randomWife.js'))) {
+  helpData.push({
+    group: 'UC娱乐——随机老婆',
+    require: 0,
+    isOpen: (groupCFG) => groupCFG.config.randomWife.isOpen,
+    command: '随机老婆',
+    desc: 'UC-随机老婆帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#随机老婆',
+        '每日随机二次元老婆'
+      ),
+      s(
+        '#查看随机老婆',
+        '查看随机二次元老婆图片'
+      ),
+      s(
+        '#上传随机老婆+名称',
+        '新增随机老婆图片',
+        'randomWife.add'
+      ),
+      s(
+        '#删除随机老婆+名称',
+        '删除指定随机老婆图片',
+        'randomWife.del'
+      )
+    ]
+  })
+}
+
+if (Check.file(Path.get('apps', 'chuoMaster.js'))) {
+  helpData.push({
+    group: 'UC娱乐——戳主人回复',
+    require: 3,
+    isOpen: (groupCFG) => groupCFG.config.chuoMaster.isOpen,
+    command: '戳主人',
+    desc: 'UC-戳主人回复帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#查看戳主人回复',
+        '查看当前已有戳主人回复'
+      ),
+      s(
+        '#新增戳主人回复',
+        '增加新的戳主人回复'
+      ),
+      s(
+        '#删除戳主人回复',
+        '删除已添加的戳主人回复'
+      )
+    ]
+  })
+}
+
+if (Check.file(Path.get('apps', 'atMaster.js'))) {
+  helpData.push({
+    group: 'UC娱乐——艾特主人回复',
+    require: 3,
+    isOpen: (groupCFG) => groupCFG.config.atMaster.isOpen,
+    command: '艾特主人',
+    desc: 'UC-艾特主人回复帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#查看艾特主人回复',
+        '查看当前已有艾特主人回复'
+      ),
+      s(
+        '#新增艾特主人回复',
+        '增加新的艾特主人回复'
+      ),
+      s(
+        '#删除艾特主人回复',
+        '删除已添加的艾特主人回复'
+      )
+    ]
+  })
+}
+
+if (Check.file(Path.get('apps', 'randomWife.js'))) {
+  helpData.push({
+    group: 'UC娱乐——水群统计',
+    require: 0,
+    isOpen: (groupCFG) => groupCFG.config.sqtj.isOpen,
+    command: '水群统计',
+    desc: 'UC-水群统计帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#水群统计',
+        '分析今日水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#一周水群统计',
+        '分析今日水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#一月水群统计',
+        '分析今日水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#昨日水群统计',
+        '分析昨日水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#水群统计3-19',
+        '查看3-19本地水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#分析水群统计3-19',
+        '分析获取3-19水群统计',
+        'sqtj.use'
+      ),
+      s(
+        '#重新分析水群统计3-19',
+        '重新获取3-19水群统计',
+        3
+      )
+    ]
+  })
+}
+
 helpData.push({
   group: 'UC工具——杂项',
   require: 2,
   cfg: 'config',
+  command: '工具',
+  desc: 'UC-杂项工具帮助',
   list: [
     s(
       '@XXX#UC代 #XXX',
@@ -331,34 +506,48 @@ helpData.push({
       '#UC锁定功能列表',
       '锁定功能列表',
       4
-    ),
-    s(
-      '#UC安装过码',
-      '安装过验证码插件loveMys',
-      4
-    ),
-    s(
-      '#UC注入过码tk',
-      '注入loveMys过码token',
-      4
-    ),
-    s(
-      '#UC验证码查询',
-      '查询当前token剩余次数',
-      4
-    ),
-    s(
-      '#UC更新过码',
-      '更新过码插件loveMys',
-      4
     )
   ]
 })
+
+if (Check.file(Path.get('apps', 'loveMys.js'))) {
+  helpData.push({
+    group: 'UC工具——loveMys管理系统（此功能不再维护）',
+    require: 4,
+    command: 'loveMys',
+    desc: 'UC-loveMys帮助',
+    cfg: 'config',
+    list: [
+      s(
+        '#UC安装loveMys',
+        '安装loveMys插件'
+      ),
+      s(
+        '#UC注入loveMysapi',
+        '注入loveMys api'
+      ),
+      s(
+        '#UC注入loveMystk',
+        '注入loveMys token'
+      ),
+      s(
+        '#UCloveMys查询',
+        '查询当前token剩余次数'
+      ),
+      s(
+        '#UC更新loveMys',
+        '更新插件loveMys'
+      )
+    ]
+  })
+}
 
 if (Check.file(Path.get('apps', 'JSsystem.js'))) {
   helpData.push({
     group: 'UC工具——JS插件管理系统',
     require: 4,
+    command: 'JS',
+    desc: 'UC-JS管理系统帮助',
     cfg: 'config',
     list: [
       s(
@@ -405,6 +594,8 @@ if (isWin && Check.file(Path.get('apps', 'qsignRestart.js'))) {
   helpData.push({
     group: 'UC工具——签名自动重启系统',
     require: 4,
+    command: '签名',
+    desc: 'UC-签名重启帮助',
     cfg: 'config',
     list: [
       s(
@@ -439,6 +630,8 @@ if (Check.file(Path.get('apps', 'otherSet.js'))) {
   helpData.push({
     group: 'UC工具——otherSet（指令修改崽other.yaml）',
     require: 4,
+    command: 'other',
+    desc: 'UC-otherSet帮助',
     cfg: 'config',
     list: [
       s(
@@ -497,6 +690,8 @@ if (Check.file(Path.get('apps', 'groupSet.js'))) {
   helpData.push({
     group: 'UC工具——groupSet（指令修改崽group.yaml）',
     require: 3,
+    command: 'group',
+    desc: 'UC-groupSet帮助',
     cfg: 'config',
     list: [
       s(
@@ -513,8 +708,8 @@ if (Check.file(Path.get('apps', 'groupSet.js'))) {
         '设置群个人CD 单位ms'
       ),
       s(
-        '#开启/关闭仅艾特',
-        '仅响应艾特的指令'
+        '#开启(非主人)?仅艾特',
+        '开关(非主人)?仅响应艾特'
       ),
       s(
         '#禁用/解禁功能',
@@ -532,6 +727,8 @@ if (Check.file(Path.get('apps', 'noticeSet.js'))) {
   helpData.push({
     group: 'UC工具——noticeSet（指令修改崽notice.yaml）',
     require: 4,
+    command: 'notice',
+    desc: 'UC-noticeSet帮助',
     cfg: 'config',
     list: [
       s(
@@ -554,6 +751,8 @@ if (Check.file(Path.get('apps', 'BackupRestore.js'))) {
   helpData.push({
     group: 'UC工具——备份数据',
     require: 4,
+    command: '备份',
+    desc: 'UC-备份数据帮助',
     cfg: 'config',
     list: [
       s(
@@ -574,8 +773,10 @@ if (Check.file(Path.get('apps', 'BackupRestore.js'))) {
 
 if (Check.file(Path.get('apps', 'accredit.js'))) {
   helpData.push({
-    group: 'UC授权管理',
+    group: 'UC工具——授权管理',
     require: 4,
+    command: '授权',
+    desc: 'UC-授权帮助',
     cfg: 'config',
     list: [
       s(
@@ -596,10 +797,12 @@ if (Check.file(Path.get('apps', 'accredit.js'))) {
 
 if (Check.file(Path.get('apps', 'BLivePush.js'))) {
   helpData.push({
-    group: 'UC直播推送',
+    group: 'UC娱乐——B站直播推送',
     require: 0,
-    cfg: 'config',
     isOpen: (groupCFG) => Data.check('BlivePush') && groupCFG.config.BlivePush.isGroup,
+    command: '直播推送',
+    desc: 'UC-直播推送帮助',
+    cfg: 'config',
     list: [
       s(
         '注：可接群号指定群',
@@ -608,7 +811,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
       ),
       s(
         '#直播推送帮助',
-        '原文字版完整叙述'
+        '文字版完整帮助叙述'
       ),
       s(
         '#查询up123456',
@@ -650,6 +853,8 @@ if (Check.file(Path.get('apps', 'queueUp.js'))) {
   helpData.push({
     group: 'UC工具——群内排队',
     require: 1,
+    command: '排队',
+    desc: 'UC-群内排队帮助',
     cfg: 'config',
     list: [
       s(
@@ -657,8 +862,8 @@ if (Check.file(Path.get('apps', 'queueUp.js'))) {
         '初始化或重置群内排队任务'
       ),
       s(
-        '#排队',
-        '群员参与排队，添加至待处理'
+        '#(取消)?排队',
+        '群员参与或退出排队，主人可艾特'
       ),
       s(
         '@XXX #完成',

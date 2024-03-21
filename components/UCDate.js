@@ -7,8 +7,11 @@ daysMap.set('天', 1)
 daysMap.set('日', 1)
 daysMap.set('d', 1)
 daysMap.set('周', 7)
+daysMap.set('w', 7)
 daysMap.set('月', 30)
+daysMap.set('m', 30)
 daysMap.set('年', 365)
+daysMap.set('y', 365)
 
 const secondsMap = new Map()
 secondsMap.set('秒', 1)
@@ -21,6 +24,7 @@ secondsMap.set('天', 86400)
 secondsMap.set('日', 86400)
 secondsMap.set('d', 86400)
 secondsMap.set('周', 604800)
+secondsMap.set('w', 604800)
 secondsMap.set('月', 2592000)
 secondsMap.set('年', 31536000)
 
@@ -47,6 +51,8 @@ numMap.set('玖', 9)
 
 /** 对日期的处理操作 */
 const UCDate = {
+
+  YMDReg: /((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2}日?/,
 
   /**
    * 格式化日期
@@ -163,10 +169,10 @@ const UCDate = {
     }
   },
 
-  /** 计算日期时间差值，返回{ Y, M, D, h, m, s } */
+  /** 计算两日期时间差值，返回{ Y, M, D, h, m, s } */
   diffDate(start_time, end_time) {
-    const startDate = moment(start_time, 'YYYY-MM-DD HH:mm:ss')
-    const endDate = end_time ? moment(end_time, 'YYYY-MM-DD HH:mm:ss') : moment()
+    const startDate = moment(start_time, start_time && 'YYYY-MM-DD HH:mm:ss')
+    const endDate = moment(end_time, end_time && 'YYYY-MM-DD HH:mm:ss')
     return this.diff(endDate.diff(startDate))
   },
 
@@ -311,7 +317,7 @@ const UCDate = {
 
   /** 提取消息中的年月日并格式化为 年-月-日 */
   getFormatedDate(msg) {
-    return this.formatDate(/((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2}/.exec(msg)?.[0])
+    return this.formatDate(this.YMDReg.exec(msg)?.[0])
   },
 
   /** 简单汉字时长转天数 */

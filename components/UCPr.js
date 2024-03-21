@@ -22,18 +22,22 @@ const CFG = {
 /** 实时锅巴信息 */
 export let guoba_config = {}
 
-/** 排序、转换 */
-function transform(path) {
-  guoba_config.permission[path] = _.sortBy(guoba_config.permission[path]).join('，')
-}
-
 /** 更新锅巴设置填充信息 */
 function getNewGuobaConfig() {
   const { config, GAconfig, permission } = CFG
   guoba_config = _.cloneDeep({ config, GAconfig, permission })
-  transform('GlobalMaster')
-  transform('GlobalAdmin')
-  transform('GlobalBlackQQ')
+  for (const key of Reflect.ownKeys(guoba_config)) {
+    for (const _key of Reflect.ownKeys(guoba_config[key])) {
+      if (_.isPlainObject(guoba_config[key][_key])) {
+        for (const _key_ of Reflect.ownKeys(guoba_config[key][_key])) {
+          if (_.isPlainObject(guoba_config[key][_key][_key_]) && Reflect.has(guoba_config[key][_key][_key_], 'isM')) {
+            const power = _.keys(_.pickBy(guoba_config[key][_key][_key_], _.identity))
+            guoba_config[key][_key][_key_] = { power }
+          }
+        }
+      }
+    }
+  }
 }
 
 const cfgMap = new Map()
@@ -68,17 +72,21 @@ function getNewConfig(mode) {
 
 /** 系统数据 */
 class UCPr {
-  constructor({ Author, Plugin_Name }) {
+  constructor() {
     /** UCPr */
-    this.Author = Author
+    this.Author = Path.Author
     /** UC-plugin */
-    this.Plugin_Name = Plugin_Name
+    this.Plugin_Name = Path.Plugin_Name
     /** 数据状态 */
     this.status = false
     /** 各配置数据 */
     this.CFG = CFG
     /** 数据更新函数 5：help.js 6：cfg.js */
     this.getConfig = getConfig
+    /** 公共函数 */
+    this.function = {}
+    /** 公共数据 */
+    this.temp = {}
     /** 事件监听器 */
     this.event = {
       'message.group': [],
@@ -92,6 +100,8 @@ class UCPr {
     this.task = []
     /** proxy代理管理器{ name: new Proxy() } */
     this.proxy = {}
+    /** hook管理器 */
+    this.hook = []
     /** 群原始配置 */
     this.group_CFG = {}
     /** package.json */
@@ -296,6 +306,11 @@ class UCPr {
     return this.config.BotName || Bot.nickname
   }
 
+  /** 全局开关响应前缀，BotName+前缀即可触发，用于避免与其他机器人冲突 */
+  get globalPrefix() {
+    return this.config.globalPrefix ?? false
+  }
+
   /** 过码剩余次数提醒预警值 */
   get loveMysNotice() {
     return this.config.loveMysNotice ?? 50
@@ -307,7 +322,7 @@ class UCPr {
   }
 
   get emptyStr() {
-    return '暂无'
+    return '无'
   }
 
   /** 用户无权限回复 */
@@ -423,4 +438,4 @@ class UCPr {
 
 }
 
-export default new UCPr(Path)
+export default new UCPr()

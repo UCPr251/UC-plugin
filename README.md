@@ -7,7 +7,7 @@
 </p>
 
 # [UC-plugin][UC]
-[![访问量(自2.4.0)](https://profile-counter.glitch.me/UC-plugin/count.svg "访问量(自2.4.0版本)")][UC]
+[![访问量(自2.4.0 2024-2-23)](https://profile-counter.glitch.me/UC-plugin/count.svg "访问量(自2.4.0版本2024-2-23)")][UC]
 
 </div>
 
@@ -284,6 +284,20 @@ pnpm i --filter=UC-plugin
 若有报错欢迎提[issue]和[pr]！
 
 [:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
+
+## 其他
+
+- [UC图片资源仓库](https://gitee.com/UCPr251/UC-plugin-unNecRes) 若想添加UC初始图片，请向该仓库发起pr
+
+## 赞助鸣谢
+
+- 以下排名按时间先后
+
+|**老板**|:innocent:|**老板**|:innocent:|**老板**|:innocent:|
+| :-: | :-----: | :-: | :----: | :-: | :----: |
+| @ikun | 30 | @霜寂i | 28.88 | @倒戈 | 4.9 |
+| @我是芙宁娜的狗 | 10 | @也只 | 10 | @please | 5 |
+
 
 ---
 

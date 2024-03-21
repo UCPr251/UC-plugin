@@ -1,6 +1,6 @@
 {
   "name": "UC-plugin",
-  "version": "2.5.2",
+  "version": "2.6.0 dev",
   "description": "UC插件，提供各种工具、娱乐、群管等功能",
   "type": "module",
   "repository": {
@@ -15,9 +15,15 @@
     "name": "UCPr",
     "url": "https://gitee.com/UCPr251"
   },
+  "engines": {
+    "node": ">=16.6.0"
+  },
   "dependencies": {
     "archiver": "^7.0.1",
     "jszip": "^3.10.1",
     "net": "^1.0.2"
+  },
+  "imports": {
+    "#UCData": "./system/Data.js"
   }
 }

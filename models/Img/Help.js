@@ -1,4 +1,4 @@
-import { Data, UCPr, file, log, Check } from '../components/index.js'
+import { Data, file, log, Check } from '../../components/index.js'
 import Base from './Base.js'
 import _ from 'lodash'
 
@@ -8,25 +8,53 @@ export default class Help extends Base {
     this.model = 'help'
     /** 用户权限等级 */
     this.level = Check.level(this.userId, this.groupId)
+    /** 已开启折叠的帮助组 */
+    this.helpFold = UCPr.config.helpFold
   }
 
-  static get(thisArg) {
-    const help = new Help(thisArg)
-    return help.getData()
+  static get(thisArg, command) {
+    const help = new Help(thisArg, command)
+    return help.getData(command)
+  }
+
+  /** 获取所有帮助组的command数组 */
+  static get commandArr() {
+    return _.map(UCPr.CFG.helpData, 'command').filter(Boolean)
+  }
+
+  getFoldGroup(fold) {
+    const list = fold.map(group => {
+      const { command, desc } = group
+      const title = `#UC${command}帮助`
+      return { title, desc }
+    })
+    if (!list.length) return
+    return { group: '更多UC帮助', list }
   }
 
   getIcon(iconNum) {
     return { x: -((iconNum - 1) % 10) * 50, y: -Math.floor((iconNum - 1) / 10) * 50 }
   }
 
-  getData() {
+  getData(command) {
     const groupCFG = UCPr.groupCFG(this.thisArg.groupId)
-    const data = _.cloneDeep(UCPr.CFG.helpData.filter(group => {
-      const { isOpen } = group
-      if (isOpen && !isOpen(groupCFG)) return false
-      // 筛选组
-      return this.level >= group.require
-    }))
+    const oriData = command
+      ? [_.cloneDeep(_.find(UCPr.CFG.helpData, { command })) ?? {}]
+      : _.cloneDeep(UCPr.CFG.helpData)
+    /** 折叠的组 */
+    const fold = []
+    const data = oriData.filter(group => {
+      const { isOpen, command: _command, require } = group
+      // 实时开关判断
+      if (typeof isOpen === 'function' && !isOpen(groupCFG)) return false
+      // 组类折叠判断
+      if (!command && this.helpFold.includes(_command)) {
+        if (this.level >= require) fold.push(group)
+        return false
+      }
+      // 组类权限判断
+      return this.level >= require
+    })
     // 筛选元素
     for (const i in data) {
       const filterPower = data[i].list.filter(groupInfo => {
@@ -34,7 +62,7 @@ export default class Help extends Base {
         // 功能开关判断
         if (swh && !_.get(groupCFG[data[i].cfg], swh, true)) return false
         else if (swh === false) return false
-        // 权限判断
+        // 单独权限判断
         if (!require) return true
         if (typeof require === 'number') {
           return this.level >= require
@@ -46,6 +74,10 @@ export default class Help extends Base {
       data[i].list = filterPower
       _.isEmpty(data[i].list) && data.splice(i, 1)
     }
+    if (!data.length) return
+    const folded = this.getFoldGroup(fold)
+    !command && folded && data.unshift(folded)
+    // 处理icon
     const iconNum = data.reduce((a, b) => a + b.list.length, 0)
     const randomNumArr = Data.generateRandomArray(1, 350, iconNum)
     let count = 0

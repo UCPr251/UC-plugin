@@ -1,32 +1,30 @@
 import { Path, Check, Data, UCDate, common, file } from '../components/index.js'
-import { UCPlugin } from '../models/index.js'
-import { segment } from 'icqq'
+import { UCPlugin, ImgManager } from '../models/index.js'
 import _ from 'lodash'
+
+/**
+ * 此功能由
+ * @三三 （2244891707）
+ * 定制并自愿于UC中集成公开
+ * 定制日期：2023.7.5
+ */
 
 export default class UCRandomWife extends UCPlugin {
   constructor(e) {
     super({
       e,
       name: 'UC-randomWife',
-      dec: '随机二次元老婆',
+      dsc: '随机二次元老婆',
       event: 'message',
       Cfg: 'config.randomWife',
       rule: [
         {
           reg: /^#?(随机|今日)(二次元)?(老婆|纸片人|wife)$/i,
-          fnc: 'randomwife'
+          fnc: 'randomWife'
         },
         {
-          reg: /^#?随机老婆列表$/,
-          fnc: 'randomWifeList'
-        },
-        {
-          reg: /^#?(增加|加|新增|上传)(随机)?老婆(.+)/,
-          fnc: 'addWife'
-        },
-        {
-          reg: /^#?删除随机老婆/,
-          fnc: 'delWife'
+          reg: /^#?(增加|新增|上传|查看|删除)随机老婆(.*)/,
+          fnc: 'manageWifeImg'
         },
         {
           reg: /^#?内定老婆/,
@@ -43,7 +41,7 @@ export default class UCRandomWife extends UCPlugin {
     this.setFnc = '_imgContext'
   }
 
-  async randomwife() {
+  async randomWife() {
     if (!this.Cfg.isOpen) return false
     if (!this.verifyLevel()) return
     if (!this.checkUnNecRes()) return
@@ -64,7 +62,7 @@ export default class UCRandomWife extends UCPlugin {
     }
     now_times++
     const wifes = getWifes()
-    if (!wifes.length) return this.reply('未正确拉取UC资源，请使用#UC更新资源 获取图片资源')
+    if (!wifes.length) return this.reply('老婆图片资源为空')
     const chooseWifeData = getChooseWifeData()
     let wife_img = chooseWifeData[this.userId]
     if (!wife_img) {
@@ -91,44 +89,23 @@ export default class UCRandomWife extends UCPlugin {
     } else {
       msg.push(segment.image(imgPath))
     }
-    if (this.isGroup) {
-      msg.unshift('\n')
-      msg.unshift(segment.at(this.userId))
-    }
-    return this.reply(msg, true)
+    return this.reply(msg, true, { at: true })
   }
 
-  async randomWifeList(e) {
+  async manageWifeImg() {
     if (!this.Cfg.isOpen) return false
     if (!this.verifyLevel()) return
     if (!this.checkUnNecRes()) return
-    const wifes = getWifes(true)
-    if (!wifes.length) {
-      return this.reply('随机老婆列表为空')
+    const name = this.msg.match(/老婆(.*)/)[1]
+    const manager = ImgManager.create(Path.wife, this, '随机老婆')
+    if (this.msg.includes('删除')) {
+      if (!this.verifyPermission(this.Cfg.del)) return
+      return manager.del(name)
     }
-    const replyArr = Data.makeArrStr(wifes, { length: 3000, chunkSize: 100 })
-    const title = '随机老婆列表'
-    const replyMsg = await common.makeForwardMsg(e, [title, ...replyArr, '可用#删除随机老婆XXX 删除指定老婆图片'], title)
-    return this.reply(replyMsg)
-  }
-
-  async addWife(e) {
-    if (!this.Cfg.isOpen) return false
+    const type = this.msg.includes('查看') ? 'view' : 'add'
+    if (type === 'view') return manager.view(name)
     if (!this.verifyPermission(this.Cfg.add)) return
-    if (!this.checkUnNecRes()) return
-    const wifeName = this.msg.match(/老婆(.*)/)[1]
-    const wifes = getWifes(true)
-    if (Check.str(wifes, wifeName)) {
-      return this.reply(wifeName + '已经存在于随机老婆图库中，不能重复添加哦~')
-    }
-    const url = await common.getPicUrl(e)
-    if (!url) {
-      e.wifeName = wifeName
-      this.setUCcontext()
-      return this.reply(`老婆名：${wifeName}\n请发送图片（可取消）`)
-    }
-    await Data.download(url, Path.wife, wifeName)
-    return this.reply('新增随机老婆成功：' + wifeName)
+    return manager.add(name, { autoRename: false, solo: true })
   }
 
   async _imgContext() {
@@ -149,14 +126,6 @@ export default class UCRandomWife extends UCPlugin {
     return this.searchFiles(Path.wife, wifeName, '_chooseWife', { data: { userId }, basename: true, note: '要内定的老婆' })
   }
 
-  async delWife() {
-    if (!this.Cfg.isOpen) return false
-    if (!this.verifyPermission(this.Cfg.del)) return
-    if (!this.checkUnNecRes()) return
-    const wifeName = this.msg.replace(/#?(删|减|删除)(随机)?老婆/, '').trim()
-    return this.searchFiles(Path.wife, wifeName, '_delWife', { basename: true, note: '要删除的随机老婆' })
-  }
-
   _chooseWife([wifeFile], { userId }) {
     const chooseWifeData = getChooseWifeData()
     const choosed = _.findKey(chooseWifeData, v => v === wifeFile)
@@ -167,10 +136,6 @@ export default class UCRandomWife extends UCPlugin {
     chooseWifeData[userId] = wifeFile
     saveChooseWifeData(chooseWifeData)
     return this.reply(`成功内定${userId}老婆：${wifeFile}`)
-  }
-
-  _delWife(wifeFiles) {
-    return this.reply('删除随机老婆成功：\n' + Data.makeArrStr(file.unlinkSync(Path.wife, ...wifeFiles), { length: 3000 }))
   }
 
   async cancelWife() {

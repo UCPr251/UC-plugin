@@ -29,7 +29,7 @@ const Check = {
   folder(path, mode = false) {
     if (!path) return false
     if (!file.existsSync(path)) {
-      mode && file.mkdirSync(path, true)
+      mode && file.mkdirSync(path, { recursive: true })
       return false
     }
     return true
@@ -41,7 +41,7 @@ const Check = {
       return false
     }
     if (mode) {
-      return file.readFileSync(path)
+      return file.readFileSync(path, 'utf8')
     }
     return true
   },

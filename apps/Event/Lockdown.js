@@ -32,7 +32,6 @@ class UCLockdown extends UCEvent {
       len = loader.priority.length
       await common.sleep(1)
     } while (loader.priority.length !== len)
-    await common.sleep(1)
     log.debug('插件加载完毕，开始锁定功能')
     this.lock()
   }

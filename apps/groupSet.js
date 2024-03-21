@@ -3,14 +3,17 @@ import { UCPlugin } from '../models/index.js'
 import loader from '../../../lib/plugins/loader.js'
 import _ from 'lodash'
 
-let Cfg = {}, pluginsData
+let Cfg = {}
 
-function getNewCfg() {
+function getCfg() {
   Cfg = file.YAMLreader(Path.get('botConfig', 'group.yaml'))
-  pluginsData = _.sortBy(_.map(loader.priority, ({ name, key }) => ({ name, key })), 'key')
 }
 
-Data.watch(Path.get('botConfig', 'group.yaml'), getNewCfg)
+function saveCfg() {
+  file.YAMLsaver(Path.get('botConfig', 'group.yaml'), Cfg)
+}
+
+Data.watch(Path.get('botConfig', 'group.yaml'), getCfg)
 
 const noticeForGM = `温馨提示：
 云崽的底层功能黑白名单生效逻辑是：
@@ -19,7 +22,7 @@ const noticeForGM = `温馨提示：
 3、比如说你在锅巴的默认群配置中禁用了A功能，然后新增了某群的配置并在该群内禁用了B功能，那么实际在该群被禁用的功能只有B而没有A
 4、同理，如果你在锅巴默认群配置的功能白名单中启用了功能A，然后新增了某群的配置并在该群配置的功能白名单内添加了B功能，那么在该群内能够生效的功能只有B而没有A
 5、再同理，其他的群配置也是如此，单独的群配置中存在的项会覆盖默认配置中同名项
-6、如果你想要彻底禁用某一个功能而不受单独的群配置的影响，那么你可以选择卸载该功能（废话），也可以使用#UC锁定功能，不同于云崽底层的禁用，被#UC锁定的功能在任何位置都不会生效（相当于被删除）
+6、如果你想要彻底禁用某一个功能而不受单独的群配置的影响，那么你可以选择卸载该功能（废话），也可以使用#UC锁定功能，不同于云崽底层的禁用，被#UC锁定的功能在任何位置都不会被动生效（相当于被删除）
 7、顺带一提，默认群配置的功能黑名单等也会对私聊生效`
 
 export default class UCGroupSet extends UCPlugin {
@@ -34,7 +37,7 @@ export default class UCGroupSet extends UCPlugin {
           fnc: 'CD'
         },
         {
-          reg: /^#?(全局)?(开启|关闭)仅艾特\s*\d*$/i,
+          reg: /^#?(全局)?(开启|关闭)(非主人)?仅艾特\s*\d*$/i,
           fnc: 'onlyReplyAt'
         },
         {
@@ -47,11 +50,7 @@ export default class UCGroupSet extends UCPlugin {
         }
       ]
     })
-    this.init = getNewCfg
-  }
-
-  save() {
-    file.YAMLsaver(Path.get('botConfig', 'group.yaml'), Cfg)
+    this.init = getCfg
   }
 
   getDisabled(isGlobal, groupId) {
@@ -96,7 +95,7 @@ export default class UCGroupSet extends UCPlugin {
     const isGroupCD = /群/.test(this.msg)
     const path = (isGlobal ? 'default' : groupId) + (isGroupCD ? '.groupGlobalCD' : '.singleCD')
     _.set(Cfg, path, cd)
-    this.save()
+    saveCfg()
     return this.reply(`操作成功，修改${locStr}配置${isGroupCD ? '群' : '个人'}CD为${cd}`)
   }
 
@@ -105,10 +104,10 @@ export default class UCGroupSet extends UCPlugin {
     const locData = this.getLoc()
     if (!locData) return
     const { isGlobal, groupId } = locData
-    const operation = Number(/开启/.test(this.msg))
+    const operation = this.msg.includes('开启') ? this.msg.includes('非主人') ? 2 : 1 : 0
     const path = (isGlobal ? 'default' : groupId) + '.onlyReplyAt'
     _.set(Cfg, path, operation)
-    this.save()
+    saveCfg()
     return this.reply(`操作成功，${operation ? '开启' : '关闭'}${isGlobal ? '默认' : `群${groupId}`}配置仅回复艾特`)
   }
 
@@ -122,11 +121,11 @@ export default class UCGroupSet extends UCPlugin {
     if (!cd) return this.reply(`请同时指定${locStr}配置中要设置的CD值，单位毫秒`)
     const path = isGlobal ? 'default.groupGlobalCD' : `${groupId}.groupGlobalCD`
     _.set(Cfg, path, cd)
-    this.save()
+    saveCfg()
     return this.reply(`操作成功，修改${locStr}配置群CD为${cd}`)
   }
 
-  async disable(e) {
+  async disable() {
     if (!this.verifyLevel(3)) return
     const locData = this.getLoc()
     if (!locData) return
@@ -134,6 +133,7 @@ export default class UCGroupSet extends UCPlugin {
     const path = isGlobal ? 'default.disable' : `${groupId}.disable`
     const disabled = this.getDisabled(isGlobal, groupId)
     const isDisable = /禁用/.test(this.msg)
+    const pluginsData = _.sortBy(_.map(loader.priority, ({ name, key }) => ({ name, key })), 'key')
     const filterPlugins = pluginsData.filter(v => isDisable === !disabled.includes(v.name))
     const list = _.map(filterPlugins, 'name')
     const fnc = isDisable ? '_disable' : '_cancelDisable'
@@ -150,8 +150,8 @@ export default class UCGroupSet extends UCPlugin {
     const title = `请选择要${operate}的功能`
     const msg = [title]
     if (this.GM) msg.push(noticeForGM)
-    const replyMsg = await common.makeForwardMsg(e, [...msg, `请选择要在${isGlobal ? '默认' : `群${groupId}`}配置中${operate}的功能的序号\n间隔可一次${operate}多个\n也可使用1-10可一次${operate}多个`, ...info], title)
-    e.data = {
+    const replyMsg = await common.makeForwardMsg(this.e, [...msg, `请选择要在${isGlobal ? '默认' : `群${groupId}`}配置中${operate}的功能的序号\n间隔可一次${operate}多个\n也可使用1-10可一次${operate}多个`, ...info], title)
+    this.e.data = {
       list,
       fnc,
       path,
@@ -162,24 +162,25 @@ export default class UCGroupSet extends UCPlugin {
     return this.reply(replyMsg)
   }
 
-  async disableList(e) {
+  async disableList() {
     if (!this.verifyLevel(3)) return
     const locData = this.getLoc()
     if (!locData) return
     const { isGlobal, groupId } = locData
     const disabled = this.getDisabled(isGlobal, groupId)
     if (!disabled.length) return this.reply(`${isGlobal ? '默认' : `群${groupId}`}未禁用任何功能`)
-    const infoData = _.sortBy(disabled.map(name => pluginsData.find(obj => obj.name === name)).filter(v => v), 'key')
-    const infoMsg = Data.makeArrStr(infoData, { chunkSize: 50, length: 2000, property: 'name', property2: 'key' })
+    const pluginsData = _.sortBy(_.map(loader.priority, ({ name, key }) => ({ name, key })), 'key')
+    const infoData = _.sortBy(disabled.map(name => pluginsData.find(obj => obj.name === name)).filter(Boolean), 'key')
+    const infoMsg = Data.makeArrStr(infoData, { chunkSize: 50, length: 3000, property: 'name', property2: 'key' })
     const title = `${isGlobal ? '默认' : `群${groupId}`}禁用功能`
-    const replyMsg = await common.makeForwardMsg(e, [title, ...infoMsg, '如需解禁功能可使用#解禁功能'])
+    const replyMsg = await common.makeForwardMsg(this.e, [title, ...infoMsg, '如需解禁功能可使用#解禁功能'])
     return this.reply(replyMsg)
   }
 
   async _disable(toDisable, data) {
     const { path, disabled, groupId } = data
     _.set(Cfg, path, _.sortBy(disabled.concat(toDisable)))
-    this.save()
+    saveCfg()
     this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能禁用：\n${Data.makeArrStr(toDisable, { length: 2000 })}`)
   }
 
@@ -188,9 +189,9 @@ export default class UCGroupSet extends UCPlugin {
     const canceledData = _.difference(disabled, toCancelDisable)
     _.set(Cfg, path, canceledData)
     if (groupId && _.isEmpty(canceledData) && Object.keys(Cfg[groupId]).length === 1) {
-      _.unset(Cfg, groupId)
+      Reflect.deleteProperty(Cfg, groupId)
     }
-    this.save()
+    saveCfg()
     this.reply(`操作成功，${groupId ? `群${groupId}` : '默认'}功能解禁：\n${Data.makeArrStr(toCancelDisable, { length: 2000 })}`)
   }
 

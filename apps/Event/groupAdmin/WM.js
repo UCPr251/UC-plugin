@@ -1,6 +1,5 @@
 import { Check, Data, common, log, UCPr, Path, file } from '../../../components/index.js'
 import { UCGAPlugin } from '../../../models/index.js'
-import { segment } from 'icqq'
 import _ from 'lodash'
 
 const globalFloder = Path.get('WM', 'global')
@@ -194,9 +193,11 @@ class UCWMset extends UCGAPlugin {
     for (const v of reply) {
       if (v.type !== 'image') continue
       v.path = await Data.download(v.url, floderPath, type + ++imgCount)
-      _.unset(v, 'url')
-      _.unset(v, 'file')
-      _.unset(v, 'asface')
+      for (const key in v) {
+        if (key !== 'path' && key !== 'type') {
+          Reflect.deleteProperty(v, key)
+        }
+      }
     }
     if (_.isEmpty(reply)) return this.finishReply('无有效参数，请重新修改')
     file.JSONsaver(jsonPath, reply)

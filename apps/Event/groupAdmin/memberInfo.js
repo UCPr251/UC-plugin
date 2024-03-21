@@ -24,7 +24,6 @@ class UCMemberInfo extends UCGAPlugin {
     const member = this.UCGA.targetClient
     if (!member.info) return this.reply('未获取到群员信息：' + this.targetId)
     const replyMsg = this.makeMsg(member.info)
-    console.log(member.info)
     return this.reply(replyMsg)
   }
 

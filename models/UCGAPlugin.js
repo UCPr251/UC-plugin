@@ -1,11 +1,11 @@
-import { UCPr, Check, Data } from '../components/index.js'
+import { Data } from '../components/index.js'
 import UCEvent from './UCEvent.js'
 
 export default class UCGAPlugin extends UCEvent {
   constructor({
     e,
-    name = 'UC插件·事件',
-    dsc = 'UC插件·事件',
+    name = 'UC插件·群管',
+    dsc = 'UC插件·群管',
     event = 'message.group',
     priority,
     rule,
@@ -22,7 +22,7 @@ export default class UCGAPlugin extends UCEvent {
     this.numMatch = this.msg.match(/\d{5,10}/g)
     /** 目标id */
     this.targetId = this.at || +this.numMatch?.[0]
-    /** 空UCGA权限实例 */
+    /** 默认UCGA权限实例 */
     this.UCGA = this.Permission()
     /** bot是否管理员或群主 */
     this.botIsAdminOrOwner = this.UCGA.botIsOwnerOrAdmin
@@ -75,30 +75,6 @@ export default class UCGAPlugin extends UCEvent {
     if (data) return true
     Data.redisSet(key, '1', 3600)
     return false
-  }
-
-  /** 检查是否全局主人 */
-  isGM(userId) {
-    return Check.Master(userId)
-  }
-
-  /** 检查是否主人 */
-  isM(userId, groupId) {
-    if (this.isGM(userId)) return true
-    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.Master, userId)
-    return Check.str(this.groupCFG.permission?.Master, userId)
-  }
-
-  /** 检查是否全局管理 */
-  isGA(userId) {
-    return Check.Admin(userId)
-  }
-
-  /** 检查是否管理 */
-  isA(userId, groupId) {
-    if (this.isGA(userId)) return true
-    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.Admin, userId)
-    return Check.str(this.groupCFG.permission?.Admin, userId)
   }
 
 }

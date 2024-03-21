@@ -16,8 +16,12 @@ export default class UCSqtj extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?(UC)?(分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
+          reg: /^#?(UC)?((重新)?分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
           fnc: 'sqtj'
+        },
+        {
+          reg: /^#?(UC)?一(周|月)水群统计$/i,
+          fnc: 'sqtjD'
         },
         {
           reg: /^#?水群推送测试$/,
@@ -27,15 +31,15 @@ export default class UCSqtj extends UCPlugin {
     })
     if (!this.groupId) return
     this.floderPath = Path.get('sqtj', this.groupId)
-    this.isYesterday = /昨/.test(this.msg)
+    this.isYesterday = this.msg.includes('昨')
     const matchDate = UCDate.getFormatedDate(this.msg)
     this.isToday = !this.isYesterday && !matchDate
-    this.date = matchDate ?? (this.isYesterday ? UCDate.getdate_time(-1)[0] : UCDate.date_time[0])
+    this.date = matchDate ?? (this.isYesterday ? UCDate.yesterday : UCDate.today)
     this.jsonPath = Path.join(this.floderPath, `${this.date}.json`)
   }
 
   getLocalData() {
-    if (!this.Cfg.isSave && !Check.folder(this.floderPath)) return null
+    if (!Check.folder(this.floderPath)) return null
     Check.folder(this.floderPath, true)
     return file.JSONreader(this.jsonPath)
   }
@@ -68,12 +72,16 @@ export default class UCSqtj extends UCPlugin {
       }
     }
     ing[this.groupId] = 1
+    if (this.msg.includes('重新分析')) {
+      if (!this.verifyLevel(3)) return (ing[this.groupId] = 0)
+      file.unlinkSync(this.jsonPath)
+    }
     const localData = this.getLocalData()
     const sqtjData = localData ?? { isWholeDay: false, count: 0, chatHistoryArr: [] }
     let chatHistoryArr = sqtjData.chatHistoryArr
     if (!sqtjData.isWholeDay) {
       if (!this.isToday && !this.isYesterday) {
-        const isAnalyze = /分析/.test(this.msg)
+        const isAnalyze = this.msg.includes('分析')
         if (isAnalyze) {
           this.reply(`开始分析${this.date}水群统计，请等待……`)
         } else if (!chatHistoryArr.length) {
@@ -104,6 +112,10 @@ export default class UCSqtj extends UCPlugin {
     return true
   }
 
+  async sqtjD(e) {
+
+  }
+
   async getChatHistory(start, end, lastSeq) {
     const newData = []
     uc:
@@ -123,11 +135,11 @@ export default class UCSqtj extends UCPlugin {
     return newData
   }
 
-  async filterMsg(chatHistoryArr, isSelf) {
+  async filterMsg(chatHistoryArr) {
     const filterData = {}
     for (const info of chatHistoryArr) {
       const { user_id: userId, sender, raw_message } = info
-      if (userId === this.qq && !isSelf) continue
+      if (userId === this.qq && !this.Cfg.isSelf) continue
       if (this.isB(userId)) continue
       const name = sender.card || sender.nickname || userId
       if (filterData[userId]) {
@@ -180,43 +192,12 @@ async function autoSendSqtj() {
   if (push_ing) return
   push_ing = true
   const processGroup = async function (groupId) {
-    if (!groupId) return null
-    const Cfg = _.get(UCPr.groupCFG(groupId), 'config.sqtj', {})
-    const isAutoSend = Cfg.isOpen && Cfg.isAutoSend
-    if (!isAutoSend) return null
-    const group = common.pickGroup(groupId)
-    const msgInfo = await common.getChatHistoryArr(group, 0, 1)
-    if (!msgInfo.length) return null
-    const seq = msgInfo[0]?.seq ?? 0
-    const e = {
-      group,
-      seq,
-      groupId,
-      message: [{ type: 'text', text: '#昨日水群统计' }],
-      user_id: UCPr.GlobalMaster[0],
-      isGroup: true,
-      reply(base64) {
-        group.sendMsg(base64)
-      }
-    }
-    const sqtj = new UCSqtj(e)
-    const localData = sqtj.getLocalData()
-    const sqtjData = localData ? _.cloneDeep(localData) : { isWholeDay: false, count: 0, chatHistoryArr: [] }
-    const shouldSave = !(localData && localData.isWholeDay)
-    let chatHistoryArr = sqtjData.chatHistoryArr
-    if (!sqtjData.isWholeDay) {
-      const newData = await sqtj.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
-      chatHistoryArr = [...newData, ...chatHistoryArr]
-      sqtjData.isWholeDay = true
-    }
-    const filterData = await sqtj.filterMsg(chatHistoryArr, Cfg.isSelf)
-    const count = chatHistoryArr.length
-    sqtjData.count = count
-    sqtjData.chatHistoryArr = chatHistoryArr
-    if (Cfg.isSave && shouldSave) {
-      sqtj.saveLocalData(sqtjData)
-    }
+    const result = await getSqtjData(groupId, '#昨日水群统计')
+    if (!result) return null
+    const { e, sqtj, sqtjData } = result
+    const filterData = await sqtj.filterMsg(sqtjData.chatHistoryArr)
     if (_.isEmpty(filterData)) return null
+    const count = sqtjData.count
     const data = await sqtj.getImgData(filterData, count)
     const imgData = Sqtj.get(this, { ...data, count, date })
     return { e, imgData, groupId }
@@ -238,11 +219,49 @@ async function autoSendSqtj() {
       }
     }
   }
-  const yesterday = moment().subtract(1, 'd')
-  const start = yesterday.startOf('d').valueOf() / 1000
-  const end = yesterday.endOf('d').valueOf() / 1000
-  const date = UCDate.getdate_time(-1)[0]
+  const date = UCDate.yesterday
   const groups = Array.from(Bot.gl.keys())
   await processGroups(groups)
   push_ing = false
+}
+
+UCPr.function.getSqtjData = getSqtjData
+async function getSqtjData(groupId, text) {
+  if (!groupId) return null
+  const Cfg = _.get(UCPr.groupCFG(groupId), 'config.sqtj', {})
+  const isAutoSend = Cfg.isOpen && Cfg.isAutoSend
+  if (!isAutoSend) return null
+  const group = common.pickGroup(groupId)
+  const msgInfo = await common.getChatHistoryArr(group, 0, 1)
+  if (!msgInfo.length) return null
+  const seq = msgInfo[0]?.seq ?? 0
+  const e = {
+    group,
+    seq,
+    groupId,
+    message: [{ type: 'text', text }],
+    user_id: UCPr.GlobalMaster[0],
+    isGroup: true,
+    reply(base64) {
+      group.sendMsg(base64)
+    }
+  }
+  const sqtj = new UCSqtj(e)
+  sqtj.Cfg = Cfg
+  const localData = sqtj.getLocalData()
+  const sqtjData = localData ? _.cloneDeep(localData) : { isWholeDay: false, count: 0, chatHistoryArr: [] }
+  const shouldSave = !(localData && localData.isWholeDay)
+  let chatHistoryArr = sqtjData.chatHistoryArr
+  if (!sqtjData.isWholeDay) {
+    const { start, end } = sqtj.getDayTimestamps()
+    const newData = await sqtj.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
+    chatHistoryArr = [...newData, ...chatHistoryArr]
+    sqtjData.isWholeDay = true
+  }
+  sqtjData.count = chatHistoryArr.length
+  sqtjData.chatHistoryArr = chatHistoryArr
+  if (Cfg.isSave && shouldSave) {
+    sqtj.saveLocalData(sqtjData)
+  }
+  return { sqtjData, sqtj, e }
 }

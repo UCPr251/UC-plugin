@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-export function getPath(_path) {
+export function creatPath(_path) {
   const Plugin_Name = 'UC-plugin'
   const qsign = path.resolve(_path, '..', 'unidbg-fetch-qsign')
   const botConfig = path.join(_path, 'config', 'config')
@@ -153,4 +153,6 @@ export function getPath(_path) {
   return Path
 }
 
-export default getPath(process.cwd())
+const Path = creatPath(process.cwd())
+
+export default Path

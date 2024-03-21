@@ -8,17 +8,17 @@ import _ from 'lodash'
  * @param {path} path config中的path，定位设置
  * @param {string} title 展示的小标题，仅展示
  * @param {string} desc 功能描述，仅展示
- * @param {'num'|'input'|'switch'|'power'|'select'} [type='switch'] 指令修改value类型，数据处理分类
+ * @param {'Input'|'InputNumber'|'Switch'|'Select'|'Power'} [type='Switch'] 指令修改value类型，数据处理分类
  * @param {string|number} def 默认值
  * @param {Function} input 对输入值的处理函数
  * @param {{}} [optional={}] 额外条件
  */
-function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
+function s(path, title, desc, type = 'Switch', def = '', input, optional = {}) {
   if (prefix) {
     path = prefix + path
   }
-  def &&= _.truncate(def, { length: 5, omission: '…' })
-  if (type === 'select') {
+  def &&= _.truncate(def, { length: 6, omission: '…' })
+  if (type === 'Select') {
     if (optional.refresher) { // 选择时动态刷新列表
       def = _.truncate(optional.refresher().join('/'), { length: 18, omission: '…' })
       input = (str) => _.find(optional.refresher(), v => v == str)
@@ -43,16 +43,17 @@ function s(path, title, desc, type = 'switch', def = '', input, optional = {}) {
  * @param {string} [def=''] 默认值
  * @param {string} [_prefix=''] 权限path前缀，组装为：prefix_prefix
  * @param {Array} options 可配置项数组['群聊', '私聊', '仅主人', '插件管理', '群管理', '任何人']
+ * @param {string} desc 额外描述
  * @returns {}
  */
-function sPRO(name = '使用', def = '', _prefix = 'use', options = [0, 1, 2, 3, 4, 5]) {
+function sPRO(name = '使用', def = '', _prefix = 'use', options = [0, 1, 2, 3, 4, 5], desc = '') {
   const property = name + '权限'
   return {
     ...s(
       _prefix,
       property,
-      property + '判断，1开0关，分别代表：' + options.map(i => judgeInfo[i]).join('、'),
-      'power',
+      `${property}判断，${desc}${desc ? '，' : ''}1开0关，分别代表：` + options.map(i => judgeInfo[i]).join('、'),
+      'Power',
       def
     ),
     options
@@ -64,7 +65,7 @@ let prefix = ''
 
 const 系统 = {
   /** 一个设置组的标题 */
-  title: '系统——UC插件系统设置',
+  title: 'UC系统——UC插件系统设置',
   /** 仅限全局设置 */
   GM: true,
   /** 一个设置组的各个单独设置 */
@@ -72,7 +73,7 @@ const 系统 = {
     开发环境: s(
       'isWatch',
       '开发环境',
-      '用于开发环境的功能，可热更新apps，重启生效'
+      '用于开发环境的功能，支持热更新，重启生效'
     ),
     调试日志: s(
       'debugLog',
@@ -87,7 +88,7 @@ const 系统 = {
     合并主人: s(
       'isDefaultMaster',
       '合并插件主人',
-      '插件主人是否和机器人主人合并，不影响插件管理员设置'
+      '是否合并插件主人和机器人主人'
     ),
     自动备份: s(
       'autoBackup',
@@ -97,13 +98,13 @@ const 系统 = {
     仅主人: s(
       'onlyMaster',
       '仅主人可操作',
-      '是否仅主人可使用UC插件功能'
+      '是否仅主人可使用UC插件所有功能，开启后除主人的所有人UC功能皆不响应'
     ),
     优先级: s(
       'priority',
       '插件优先级',
-      'UC插件优先级，优先级越小越优先响应，可为任意整数',
-      'num',
+      'UC插件优先级，优先级越小越优先响应，可为任意整数，重启生效',
+      'InputNumber',
       251,
       (num) => parseInt(/-?\d+/.exec(num)?.[0])
     ),
@@ -111,7 +112,7 @@ const 系统 = {
       'server',
       'api服务',
       '插件api服务的服务器，建议1，如遇api网络问题可以尝试切换',
-      'num',
+      'InputNumber',
       1,
       (num) => parseInt(num.match(/[12]/)?.[0])
     ),
@@ -119,35 +120,40 @@ const 系统 = {
       'BotName',
       '机器人名称',
       'UC插件的机器人名称，用于个别时候的机器人回复或开关Bot的指令等',
-      'input',
+      'Input',
       '纳西妲'
+    ),
+    全局前缀: s(
+      'globalPrefix',
+      '全局前缀',
+      '全局开关响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”'
     ),
     // 过码提醒: s(
     //   'loveMysNotice',
     //   '过码剩余提醒',
     //   '每日零点loveMys（如果有）剩余过码次数小于等于该值时自动提醒主人，0则不提醒',
-    //   'num',
+    //   'InputNumber',
     //   50
     // ),
     // 用户无权限回复: s(
     //   'noPerReply',
     //   '用户无权限回复',
     //   '用户无权限进行某操作时，机器人的回复',
-    //   'input',
+    //   'Input',
     //   '无权限'
     // ),
     // 机器人无权限回复: s(
     //   'noPowReply',
     //   '无权限回复',
     //   '机器人无权限进行某操作时，机器人的回复',
-    //   'input',
+    //   'Input',
     //   '主淫，小的权限不足，无法执行该操作嘤嘤嘤~'
     // ),
     // 连接失败回复: s(
     //   'fetchErrReply',
     //   '连接失败回复',
     //   'api服务连接失败时机器人的回复',
-    //   'input',
+    //   'Input',
     //   '服务连接失败，请稍后重试'
     // )
   }
@@ -158,7 +164,7 @@ const config = { '': 系统 }
 if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'
   config.签名 = {
-    title: '签名——签名自动重启设置，重启生效',
+    title: 'UC工具——签名自动重启设置，重启生效',
     GM: true,
     cfg: {
       自动重启: s(
@@ -190,14 +196,14 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
         'errorTimes',
         '签名异常重启次数',
         '签名异常次数大于等于该值时执行签名重启，避免高频重启，不建议低于2',
-        'num',
+        'InputNumber',
         3
       ),
       路径: s(
         'qsign',
         '签名路径',
         '签名启动器执行路径，不填则取默认路径',
-        'input',
+        'Input',
         Path.qsign,
         undefined,
         {
@@ -208,28 +214,28 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
         'host',
         '签名host',
         '签名的host，默认127.0.0.1',
-        'input',
+        'Input',
         '127.0.0.1'
       ),
       port: s(
         'port',
         '签名port',
         '签名的port，默认801',
-        'num',
+        'InputNumber',
         801
       ),
       启动器名称: s(
         'qsingRunner',
         '启动器名称',
         '签名启动器的全称，插件会通过启动器启动签名，默认一键startAPI.bat',
-        'input',
+        'Input',
         '一键startAPI.bat'
       ),
       检测间隔: s(
         'sleep',
         '签名崩溃检测间隔',
         '崩溃检测时间间隔，单位秒，不建议低于10',
-        'num',
+        'InputNumber',
         60,
         (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
       )
@@ -240,37 +246,41 @@ if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
 if (Check.file(Path.get('apps', 'switchBot.js'))) {
   prefix = 'switchBot.'
   config.开关机器人 = {
-    title: '开关机器人——指定群开关机器人设置',
+    title: 'UC工具——指定群开关机器人设置',
     cfg: {
       开启指令: s(
         'openReg',
         '开启指令',
-        '让Bot上班的指令：BotName+指令即可触发，多个用|间隔',
-        'input',
-        '上班|工作'
+        '让Bot上班的指令：BotName+指令即可触发，多个用|间隔，仅以全局为准',
+        'Input',
+        '上班|工作',
+        undefined,
+        { global: true }
       ),
       关闭指令: s(
         'closeReg',
         '关闭指令',
-        '让Bot下班的指令：BotName+指令即可触发，多个用|间隔',
-        'input',
-        '下班|休息'
+        '让Bot下班的指令：BotName+指令即可触发，多个用|间隔，仅以全局为准',
+        'Input',
+        '下班|休息',
+        undefined,
+        { global: true }
       ),
       开启回复: s(
         'openMsg',
         '开启回复',
         '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
-        'input',
+        'Input',
         '好哒，BotName开始上班啦！'
       ),
       关闭回复: s(
         'closeMsg',
         '关闭回复',
         '在群内开启Bot时的回复，“BotName”会被替换为系统设置的BotName的名称',
-        'input',
+        'Input',
         'BotName休息去啦~'
       ),
-      权限: sPRO('开关', '010', 'use', [2, 3, 4]),
+      权限: sPRO('开关', '0100', 'use', [2, 3, 4, 5]),
       响应前缀: s(
         'isPrefix',
         '响应前缀',
@@ -289,7 +299,7 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
 if (Check.file(Path.get('apps', 'JSsystem.js'))) {
   prefix = 'JSsystem.'
   config.js管理 = {
-    title: '工具-JS管理系统',
+    title: 'UC工具-JS管理系统',
     GM: true,
     cfg: {
       '': s(
@@ -306,16 +316,77 @@ if (Check.file(Path.get('apps', 'JSsystem.js'))) {
         'recallFileGroup',
         '群聊文件撤回时间',
         '群聊发送文件后自动撤回时长，0-120秒，0为不撤回',
-        'num',
+        'InputNumber',
         0
       ),
       私聊撤回: s(
         'recallFilePrivate',
         '私聊文件撤回时间',
         '私聊发送文件后自动撤回时长，4-120秒，0为不撤回',
-        'num',
+        'InputNumber',
         0,
         (num) => Math.min(120, num.match(/\d+/)?.[0])
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'ActReminder.js'))) {
+  prefix = 'ActReminder.'
+  config.活动提醒 = {
+    title: 'UC工具——游戏活动截止前提醒群员赶紧上班',
+    cfg: {
+      原神提醒: s(
+        'opIsOpen',
+        '原神提醒开关',
+        '原神活动截止提醒开关'
+      ),
+      星铁提醒: s(
+        'srIsOpen',
+        '星铁提醒开关',
+        '星铁活动截止提醒开关'
+      ),
+      原神cron: s(
+        'opCron',
+        '原神提醒cron',
+        '每次检测时若原神活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+        'Input',
+        '0 0 12 * * ?',
+        undefined,
+        { global: true }
+      ),
+      星铁cron: s(
+        'srCron',
+        '星铁提醒cron',
+        '每次检测时若星铁活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+        'Input',
+        '0 0 12 * * ?',
+        undefined,
+        { global: true }
+      ),
+      原神天数: s(
+        'opDays',
+        '原神提醒天数',
+        '每次检测时若原神活动剩余天数小于等于该值则提醒',
+        'InputNumber',
+        1
+      ),
+      星铁天数: s(
+        'srDays',
+        '星铁提醒天数',
+        '每次检测时若星铁活动剩余天数小于等于该值则提醒',
+        'InputNumber',
+        1
+      ),
+      原神艾特: s(
+        'opAtAll',
+        '原神全员艾特',
+        '原神活动截止提醒是否艾特全员（需管理员权限）'
+      ),
+      星铁艾特: s(
+        'opAtAll',
+        '星铁全员艾特',
+        '星铁活动截止提醒是否艾特全员（需管理员权限）'
       )
     }
   }
@@ -324,7 +395,7 @@ if (Check.file(Path.get('apps', 'JSsystem.js'))) {
 if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
   prefix = 'chuoyichuo.'
   config.戳一戳 = {
-    title: '戳一戳——群聊戳一戳回复设置',
+    title: 'UC娱乐——群聊戳一戳回复设置',
     cfg: {
       '': s(
         'isOpen',
@@ -340,14 +411,14 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'groupCard',
         '群名片后缀',
         '更新群名片后缀内容，num会被替换为当前被戳次数',
-        'input',
+        'Input',
         '今日已被戳num次~'
       ),
       图包: s(
         'picPath',
         '图包',
         '戳一戳使用的图包（自动群名片会取此图包名称）',
-        'select',
+        'Select',
         '',
         '',
         { refresher: () => file.readdirSync(Path.chuoyichuo, { type: 'Directory' }) }
@@ -356,22 +427,30 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'CD',
         '冷却',
         '戳一戳CD，0为不限制，各群独立，单位秒',
-        'num',
+        'InputNumber',
         0
       ),
       文本图片概率: s(
         'textimg',
         '文本+图片概率',
         '被戳回复文本+图片的概率，可选0-1',
-        'num',
+        'InputNumber',
         0.8,
         (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      语音概率: s(
+        'AiRecord',
+        'AI语音概率',
+        '当回复文字(汉字数>=3)时，将文字转语音的概率，speaker取图包名称，可选角色见#UC音色列表，此概率独立于整体概率，可选0-0.5',
+        'InputNumber',
+        0.1,
+        (num) => Math.min(0.5, num.match(/(?:0\.)?\d+/)?.[0])
       ),
       次数图片概率: s(
         'chuoimg',
         '次数+图片概率',
         '触发文本+图片回复时在文本前加上被戳次数的概率，独立于其他概率，可选0-1',
-        'num',
+        'InputNumber',
         0.2,
         (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
@@ -379,7 +458,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'face',
         '头像表情包概率',
         '被戳回复头像表情包概率，可选0-1',
-        'num',
+        'InputNumber',
         0.1,
         (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
@@ -387,7 +466,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'mute',
         '被戳禁言概率',
         '被戳禁言对方概率，可选0-1。1-(文本图片+表情包+禁言)即为反击概率',
-        'num',
+        'InputNumber',
         0.05,
         (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
       ),
@@ -395,8 +474,100 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
         'muteTime',
         '禁言时长',
         '禁言的时长，单位分，0为不禁言',
-        'num',
+        'InputNumber',
         2
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'chuoMaster.js'))) {
+  prefix = 'chuoMaster.'
+  config.艾特主人回复 = {
+    title: 'UC娱乐——戳主人回复',
+    cfg: {
+      '': s(
+        'isOpen',
+        '戳主人回复开关',
+        '是否开启UC戳主人回复'
+      ),
+      艾特: s(
+        'isAt',
+        '艾特回复',
+        '回复时是否同时艾特对方'
+      ),
+      回复概率: s(
+        'text',
+        '回复概率',
+        '戳主人回复消息的概率，0-1',
+        'InputNumber',
+        0.6,
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      图片概率: s(
+        'img',
+        '图片概率',
+        '戳主人发送合成表情包概率，0-1',
+        'InputNumber',
+        0.1,
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      反击概率: s(
+        'poke',
+        '反击概率',
+        '戳主人反击概率，0-1',
+        'InputNumber',
+        0.2,
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      禁言概率: s(
+        'mute',
+        '禁言概率',
+        '戳主人禁言概率，0-1',
+        'InputNumber',
+        0.1,
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      禁言时长: s(
+        'muteTime',
+        '禁言时长',
+        '禁言的时长，单位分，0为不禁言',
+        'InputNumber',
+        2
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'atMaster.js'))) {
+  prefix = 'atMaster.'
+  config.艾特主人回复 = {
+    title: 'UC娱乐——艾特主人回复',
+    cfg: {
+      '': s(
+        'isOpen',
+        '艾特主人回复开关',
+        '是否开启UC艾特主人回复'
+      ),
+      概率: s(
+        'probability',
+        '回复概率',
+        '艾特主人回复的概率，0-1',
+        'InputNumber',
+        0.5,
+        (num) => Math.min(1, num.match(/(?:0\.)?\d+/)?.[0])
+      ),
+      艾特: s(
+        'isAt',
+        '艾特回复',
+        '回复时是否同时艾特对方'
+      ),
+      权限: sPRO(
+        '回复',
+        '0111',
+        'use',
+        [2, 3, 4, 5],
+        '满足此权限条件的用户才可能会触发艾特主人回复'
       )
     }
   }
@@ -405,7 +576,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
 if (Check.file(Path.get('apps', 'randomWife.js'))) {
   prefix = 'randomWife.'
   config.随机老婆 = {
-    title: '随机老婆——随机二次元老婆',
+    title: 'UC娱乐——随机二次元老婆',
     cfg: {
       '': s(
         'isOpen',
@@ -416,7 +587,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
         'wifeLimits',
         '每日老婆限制',
         '每日随机老婆次数限制，包括主人',
-        'num',
+        'InputNumber',
         1,
         (num) => Math.max(1, num.match(/\d+/)?.[0])
       ),
@@ -439,7 +610,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
 if (Check.file(Path.get('apps', 'randomMember.js'))) {
   prefix = 'randomMember.'
   config.随机群友 = {
-    title: '随机群友——随机挑选群友',
+    title: 'UC娱乐——随机挑选群友',
     cfg: {
       '': s(
         'isOpen',
@@ -454,15 +625,17 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
       指令: s(
         'keyWords',
         '触发指令',
-        '#加触发指令 就可以触发该功能，不区分字母大小写',
-        'input',
-        '随机群友'
+        '#加触发指令 就可以触发该功能，不区分字母大小写，仅以全局为准',
+        'Input',
+        '随机群友',
+        undefined,
+        { global: true }
       ),
       回复: s(
         'reply',
         '回复内容',
         '随机群友回复内容，info会被替换为：群友昵称（QQ）',
-        'input',
+        'Input',
         '恭喜info成为天选之子！'
       ),
       权限: sPRO(
@@ -478,7 +651,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
 if (Check.file(Path.get('apps', 'sqtj.js'))) {
   prefix = 'sqtj.'
   config.水群统计 = {
-    title: '水群统计——统计群任一天的聊天数据',
+    title: 'UC娱乐——统计群任一天的聊天数据',
     cfg: {
       '': s(
         'isOpen',
@@ -513,7 +686,7 @@ if (Check.file(Path.get('apps', 'sqtj.js'))) {
 if (Check.file(Path.get('apps', 'camouflage.js'))) {
   prefix = 'camouflage.'
   config.伪装 = {
-    title: '伪装群友',
+    title: 'UC娱乐——群聊伪装群友发送消息',
     cfg: {
       '': s(
         'isOpen',
@@ -524,21 +697,21 @@ if (Check.file(Path.get('apps', 'camouflage.js'))) {
         'time',
         '伪装时长',
         '单次伪装时长，单位分钟',
-        'num',
+        'InputNumber',
         10
       ),
       冷却: s(
         'CD',
         '冷却时长',
         '单次伪装结束后CD，单位分钟，所有群共用CD，0为不冷却',
-        'num',
+        'InputNumber',
         10
       ),
       次数限制: s(
         'timesLimit',
         '伪装次数限制',
         '每群每人每天伪装次数限制，0为不限制，但最多不超过10（主人不限）',
-        'num',
+        'InputNumber',
         3,
         (num) => Math.min(10, num.match(/\d+/)?.[0])
       ),
@@ -546,7 +719,7 @@ if (Check.file(Path.get('apps', 'camouflage.js'))) {
         'msgLimit',
         '伪装消息限制',
         '消息数量限制，单次伪装发送的消息数量超过此值会直接退出伪装，0为不限制',
-        'num',
+        'InputNumber',
         251
       ),
       静默: s(
@@ -567,7 +740,7 @@ if (Check.file(Path.get('apps', 'camouflage.js'))) {
 if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
   prefix = 'BlivePush.'
   config.直播推送 = {
-    title: '直播推送',
+    title: 'UC娱乐——B站直播推送',
     cfg: {
       群聊: s(
         'isGroup',
@@ -582,10 +755,11 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
       检测间隔: s(
         'mins',
         '推送检测间隔',
-        '推送检测间隔，单位分钟，不建议小于4',
-        'num',
+        '推送检测间隔，单位分钟，不建议小于4，仅以全局为准，重启生效',
+        'InputNumber',
         4,
-        (num) => Math.max(2, num.match(/\d+/)?.[0])
+        (num) => Math.max(2, num.match(/\d+/)?.[0]),
+        { global: true }
       ),
       权限: sPRO(
         '订阅',
@@ -599,7 +773,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
 if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
   prefix = 'bigjpg.'
   config.放大图片 = {
-    title: '放大图片',
+    title: 'UC娱乐——放大图片',
     cfg: {
       '': s(
         'isOpen',
@@ -610,40 +784,24 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
         'apiKey',
         'ApiKey',
         '用于放大图片服务的密钥',
-        'input',
+        'Input',
         '*****',
         undefined,
-        { value: '请在锅巴查看' }
+        { value: '请在锅巴查看', global: true }
       ),
       风格: s(
         'style',
         '放大风格',
         '可选卡通和照片，对于卡通图片放大效果最佳',
-        'select',
+        'Select',
         '',
         ['art', 'photo']
-      ),
-      默认降噪: s(
-        'noise',
-        '默认降噪程度',
-        '默认降噪级别，可选0-4，分别代表[无，低，中，高，最高]',
-        'select',
-        '',
-        [0, 1, 2, 3, 4]
-      ),
-      默认放大: s(
-        'magnification',
-        '默认放大倍数',
-        '默认放大倍数，可选2、4、8、16',
-        'select',
-        '',
-        [2, 4, 8, 16]
       ),
       次数限制: s(
         'limits',
         '每日放大数量限制',
         '每人每天放大次数限制，0为不限制，主人不受限',
-        'num',
+        'InputNumber',
         3
       ),
       保存本地: s(
@@ -678,7 +836,7 @@ if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
 prefix = ''
 
 const 群管 = {
-  title: '群管——UC群管系统设置',
+  title: 'UC群管——UC群管系统设置',
   cfg: {
     群管: s(
       'isOpen',
@@ -694,7 +852,7 @@ const 群管 = {
       'overTime',
       '超时时长',
       '群管上下文操作的超时时间',
-      'num',
+      'InputNumber',
       120,
       (num) => Math.max(10, parseInt(num.match(/\d+/)?.[0]))
     )
@@ -717,35 +875,35 @@ if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
         'FILTER_MAX',
         '最大获取记录',
         '允许递归获取的群聊天记录最大深度',
-        'num',
+        'InputNumber',
         520
       ),
       默认清屏: s(
         'defaultClear',
         '默认清屏数量',
         '清屏不指定数量时默认撤回数量',
-        'num',
+        'InputNumber',
         10
       ),
       最大清屏: s(
         'CLEAR_MAX',
         '最大清屏数量',
         '允许清屏数量的最大值',
-        'num',
+        'InputNumber',
         100
       ),
       最大数量: s(
         'RECALL_MAX',
         '最大撤回数量',
         '允许指定单人撤回的最大值',
-        'num',
+        'InputNumber',
         20
       ),
       间隔: s(
         'intervalTime',
         '撤回间隔',
         '批量撤回群消息的间隔时间，单位秒，建议大于等于0.1',
-        'num',
+        'InputNumber',
         0.1,
         (num) => Number(num.match(/(?:\d+\.)?\d+/)?.[0])
       ),
@@ -768,49 +926,49 @@ if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
         'MUTE_MAX',
         '最大禁言时长',
         '允许禁言最大时长，单位秒，默认一天（主人不限）',
-        'num',
+        'InputNumber',
         86400
       ),
       默认: s(
         'defaultMute',
         '默认禁言时长',
         '禁言不指定时长时默认禁言时长，单位秒',
-        'num',
+        'InputNumber',
         60
       ),
       回复: s(
         'muteReply',
         '禁言回复',
         '禁言回复，info会替换为 用户名（QQ），time会替换为禁言时长',
-        'input',
+        'Input',
         '已经把info拖进小黑屋枪毙time啦！'
       ),
       解禁回复: s(
         'releaseReply',
         '解禁回复',
         '解禁时的回复，info会替换为 用户名（QQ）',
-        'input',
+        'Input',
         '成功解救info'
       ),
       全体回复: s(
         'allMuteReply',
         '全体禁言回复',
         '全体禁言回复',
-        'input',
+        'Input',
         '全都不许说话了哦~'
       ),
       全体解禁回复: s(
         'releaseAllMuteReply',
         '全体解禁回复',
         '全体解禁回复',
-        'input',
+        'Input',
         '好耶~可以说话辽~'
       ),
       全部解禁回复: s(
         'releaseAllMutedReply',
         '全部解禁回复',
         '全部解禁回复，num会被替换为解禁群员的数量',
-        'input',
+        'Input',
         '归还了num名群员的清白之身！'
       ),
       权限: sPRO('禁言', '011', 'use', [2, 3, 4]),
@@ -838,7 +996,7 @@ if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
         'kickReply',
         '踢人回复',
         '踢人回复',
-        'input',
+        'Input',
         '已经把这个坏惹踢掉了！'
       ),
       权限: sPRO('踢人', '011', undefined, [2, 3, 4])
@@ -947,7 +1105,7 @@ if (Check.file(Path.get('groupAdmin', 'Increase.js'))) {
         'kickBlackReply',
         '自动踢出回复',
         '自动踢出后的回复，info会替换为 用户名（QQ），BotName会替换为机器人名称',
-        'input',
+        'Input',
         '黑名单用户info，BotName已经把TA踢掉了！'
       )
     }
@@ -997,14 +1155,14 @@ if (Check.file(Path.get('groupAdmin', 'floodScreen.js'))) {
         'timeRange',
         '检测时间范围',
         '刷屏检测时间范围，在该时间范围内连续刷屏则触发惩罚，单位秒',
-        'num',
+        'InputNumber',
         10
       ),
       刷屏次数: s(
         'judgeNum',
         '刷屏次数',
         '刷屏次数，达到该次数则触发惩罚',
-        'num',
+        'InputNumber',
         10
       ),
       警告群员: s(
@@ -1028,7 +1186,7 @@ if (Check.file(Path.get('groupAdmin', 'floodScreen.js'))) {
         'punishMode',
         '惩罚方式',
         '惩罚方式：mute 或 kick',
-        'select',
+        'Select',
         '',
         ['mute', 'kick']
       ),
@@ -1043,7 +1201,7 @@ if (Check.file(Path.get('groupAdmin', 'floodScreen.js'))) {
         'muteTime',
         '禁言时长',
         '设置为禁言时的禁言时长，单位分钟',
-        'num',
+        'InputNumber',
         5
       ),
       自动拉黑: s(

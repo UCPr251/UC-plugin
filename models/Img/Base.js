@@ -1,9 +1,9 @@
-import { Path, UCDate, UCPr } from '../components/index.js'
-import Permission from './Permission.js'
+import { Path, UCDate } from '../../components/index.js'
+import Permission from '../Permission.js'
 
 const letters = '0123456789ABCDEF'
 
-export default class Base {
+export default class ImgBase {
   constructor(thisArg = {}) {
     /** UCPlugin实例对象 */
     this.thisArg = thisArg

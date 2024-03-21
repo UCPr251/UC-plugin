@@ -46,7 +46,7 @@ export default class UCUpdate extends UCPlugin {
       Data.refresh()
       if (Update_Plugin.isUp) {
         this.reply(`UC-plugin更新${notice}`)
-        Data.execSync(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
+        Data.exec(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
       }
     }
     return true
@@ -117,7 +117,6 @@ export default class UCUpdate extends UCPlugin {
     const Update_All = new update()
     Update_All.e = e
     Update_All.reply = this.reply
-    const oriDependencies = UCPr.package.dependencies
     const symbol = Symbol('[UC]updateAll')
     Update_All[symbol] = async function () {
       await this.runUpdate()
@@ -133,10 +132,10 @@ export default class UCUpdate extends UCPlugin {
     await common.sleep(1)
     const command = this.msg.replace(/UC/i, '')
     if (Update_All.isUp) {
-      const nowDependencies = UCPr.package.dependencies
-      if (!_.isEqual(oriDependencies, nowDependencies)) {
+      const nowDependencies = file.JSONreader(Path.packagejson).dependencies
+      if (!_.isEqual(UCPr.package.dependencies, nowDependencies)) {
         Data.refresh()
-        Data.execSync(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
+        Data.exec(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
       }
       await common.sleep(2.51)
       return this.reply(`${command}执行${notice}`)
@@ -155,8 +154,8 @@ export default class UCUpdate extends UCPlugin {
 }
 
 Data.loadTask({
-  // 每天检查更新一次UC资源
-  cron: '0 0 4 * * ?',
+  // 每3天检查更新一次UC资源
+  cron: '0 0 4 */3 * ?',
   name: 'UC-updateUnNecRes',
   fnc: Data.updateRes.bind(Data, false, (err) => err && log.error('UC自动更新资源失败', err))
 })

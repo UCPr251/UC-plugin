@@ -1,6 +1,5 @@
 import { Check, Data, UCDate, common } from '../components/index.js'
 import { UCPlugin } from '../models/index.js'
-import { segment } from 'icqq'
 
 export default class UCBigjpg extends UCPlugin {
   constructor(e) {
@@ -16,7 +15,8 @@ export default class UCBigjpg extends UCPlugin {
         }
       ]
     })
-    this.redisData = '[UC]bigjpg'
+    if (!e) return
+    this.redisData = '[UC]bigjpg:' + this.userId
     this.setFnc = '_imgContext'
     this.setFnc2 = '_magnificationContext'
     this.setFnc3 = '_noiseContext'
@@ -28,7 +28,7 @@ export default class UCBigjpg extends UCPlugin {
     if (!this.verifyPermission(this.Cfg.use)) return false
     if (!this.M && this.Cfg.limits) {
       let new_times = 0
-      const now_times = await Data.redisGet(this.redisData + e.sender.user_id, 0) || 0
+      const now_times = await Data.redisGet(this.redisData, 0) || 0
       if (now_times) {
         if (now_times >= this.Cfg.limits) {
           return this.reply(`你今天已经放大了${now_times}次了，明天再来吧~`)
@@ -36,7 +36,7 @@ export default class UCBigjpg extends UCPlugin {
         new_times = now_times
       }
       new_times++
-      await Data.redisSet(this.redisData + e.sender.user_id, new_times, UCDate.EXsecondes)
+      await Data.redisSet(this.redisData, new_times, UCDate.EXsecondes)
     }
     if (!this.img) {
       this.setUCcontext()
@@ -46,9 +46,10 @@ export default class UCBigjpg extends UCPlugin {
   }
 
   async _imgContext() {
-    if (this.isCancel()) return false
+    if (this.isCancel()) return
     const url = await common.getPicUrl(this.e)
     if (!url) return this.reply('请发送图片')
+    log.debug(url)
     this.e.url = url
     const c = [this.Cfg.x4 || this.M, this.Cfg.x8 || this.M, this.Cfg.x16 || this.M]
     if (c.every(v => !v)) {
@@ -61,28 +62,25 @@ export default class UCBigjpg extends UCPlugin {
   }
 
   _magnificationContext() {
-    if (this.isCancel(this.setFnc2)) return false
+    if (this.isCancel(this.setFnc2)) return
     const { url } = this.getUCcontext(this.setFnc2)
     this.e.url = url
     this.e.magnification = parseInt(this.msg)
     if (isNaN(this.e.magnification) || !Check.str([2, 4, 8, 16], this.e.magnification)) {
-      this.reply('无效参数，自动选择放大倍数：' + this.Cfg.magnification)
-      this.e.magnification = this.Cfg.magnification
+      return this.reply('无效参数，请重新选择')
     } else if (this.e.magnification !== 2 && !this.M && !this.Cfg[`x${this.e.magnification}`]) {
-      this.reply(`当前未开启${this.e.magnification}倍放大哦~`)
-    } else {
-      this.setUCcontext(this.setFnc3)
-      this.finishReply('请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高', this.setFnc2)
+      return this.reply(`当前未开启${this.e.magnification}倍放大哦~`)
     }
+    this.setUCcontext(this.setFnc3)
+    this.finishReply('请选择降噪系数：0, 1, 2, 3, 4 \n分别表示降噪程度：无, 低, 中, 高, 最高', this.setFnc2)
   }
 
   _noiseContext() {
-    if (this.isCancel(this.setFnc3)) return false
+    if (this.isCancel(this.setFnc3)) return
     const { url, magnification } = this.getUCcontext(this.setFnc3)
-    let noise = parseInt(this.msg)
+    const noise = parseInt(this.msg)
     if (isNaN(noise) || !Check.str([0, 1, 2, 3, 4], noise)) {
-      this.reply('无效参数，自动选择降噪系数：' + this.Cfg.noise)
-      noise = this.Cfg.noise
+      return this.reply('无效参数，请重新选择')
     }
     Data.bigjpgRequest.call(this, url, noise - 1, Math.log2(magnification))
     this.finishReply(`放大倍数：${magnification}\n降噪系数：${noise}\n正在放大图片…………\n可能需要较长时间，请耐心等待`, this.setFnc3)

@@ -178,8 +178,27 @@ floodScreen:
   # 惩罚方式：mute或kick
   punishMode: mute
   # 刷屏惩罚前的回复内容（关闭惩罚后仍会回复）
-  punishText: 天天就知道刷屏~✨杂鱼~✨杂鱼~
+  punishText: 天天就知道刷屏❤️~杂鱼❤️~杂鱼❤️~
   # 设置为禁言时的禁言时长，单位分钟
   muteTime: 5
   # 设置为踢人时是否同时拉黑
   isAutoBlack: true
+
+# 搜索群聊天记录
+searchChatHistory:
+  # 是否开启UC群管搜索群聊天记录，开启此功能前建议开启水群统计自动推送和自动保存，否则可能无法获取到历史消息或搜索缓慢
+  isOpen: true
+  # 默认搜索天数，仅当本地存在相应聊天记录时有效，否则只会查找当天或指定日期的聊天记录
+  defaultDays: 7
+  # 当本地聊天记录不存在时是否自动获取（仅限一天），建议开启水群统计自动推送和自动保存
+  autoGet: true
+  # 搜索权限
+  use:
+    # 是否仅主人
+    isM: false
+    # 是否允许群插件管理员
+    isA: true
+    # 是否允许群原生管理员
+    isGA: true
+    # 是否允许任何人
+    isE: false

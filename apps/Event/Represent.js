@@ -1,6 +1,5 @@
 import { Check, common, UCPr } from '../../components/index.js'
 import { UCEvent } from '../../models/index.js'
-import _ from 'lodash'
 
 class UCRepresent extends UCEvent {
   constructor(e) {
@@ -19,8 +18,8 @@ class UCRepresent extends UCEvent {
   }
 
   async represent(e) {
-    if (!this.M) return false
-    if (e.detail_type === 'guild') return false
+    if (!this.M || e.detail_type === 'guild') return false
+    if (!this.GM && (Check.str(UCPr.defaultCfg.masterQQ, this.at) || this.isGM(this.at))) return this.reply('群主人不能代全局主人发言哦~')
     let user_id, card, nickname
     if (this.isGroup) {
       if (!this.at) return false
@@ -36,8 +35,9 @@ class UCRepresent extends UCEvent {
       card = nickname = (friend?.nickname || user_id)
       e.logText = `[私聊][${nickname}(${user_id})]`
     }
+    log.whiteblod(`[${this.userId}代${this.at}发言]`)
     await common.sleep(0.2)
-    delete e.uid
+    Reflect.deleteProperty(e, 'uid')
     e.user_id = user_id
     e.from_id = user_id
     e.isMaster = Check.str(UCPr.defaultCfg.masterQQ, user_id)
@@ -46,20 +46,20 @@ class UCRepresent extends UCEvent {
       nickname,
       user_id
     }
-    const message = _.filter(e.message.map(v => {
-      if (v.type !== 'text') return v
+    const message = e.message.map(v => {
+      if (v.type !== 'text' || !v.text?.includes('代')) return v
       return {
         type: 'text',
-        text: v.text.replace(/#?(UC)?代/i, '').replace(user_id, '').trim()
+        text: v.text.replace(/^#?(UC)?代/i, '').replace(user_id, '').replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim()
       }
-    }), (v) => v.type !== 'at' || v.qq !== user_id)
-    e.at = _.findLast(message, { type: 'at' })?.qq
+    }).filter((v) => v.type !== 'at' || v.qq !== user_id)
+    e.at = message.findLast(v => v.type === 'at')?.qq
     e.message = message
-    const msg = this.msg.match(/代(.+)/)[1].replace(user_id, '').trim()
+    const msg = this.msg.match(/代(.+)/)[1].replace(user_id, '').replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim()
     e.msg = msg
     e.raw_message = msg
     e.original_msg = msg
-    return this.BotPluginsDeal(e)
+    this.BotDealEvent(e)
   }
 }
 

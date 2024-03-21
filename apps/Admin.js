@@ -35,11 +35,11 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'searchUser'
         },
         {
-          reg: /^#?UC(删除)?错误日志$/i,
+          reg: /^#?UC(删除|清空)?错误日志$/i,
           fnc: 'errorLog'
         },
         {
-          reg: /^#?UC(帮助|help)$/i,
+          reg: new RegExp(`^#?UC\\s*(${Help.commandArr.join('|')})?\\s*(帮助|help)$`, 'i'),
           fnc: 'UC_HELP'
         },
         {
@@ -208,8 +208,9 @@ export default class UCAdmin extends UCPlugin {
 
   async UC_HELP() {
     if (!this.verifyLevel()) return false
-    const data = Help.get(this)
-    if (!data) return
+    const command = Help.commandArr.find(command => new RegExp(command, 'i').test(this.msg))
+    const data = Help.get(this, command)
+    if (!data) return this.reply('帮助内容为空，可能是所查看功能未开启或权限不足')
     return common.render(this, data)
   }
 
@@ -243,10 +244,10 @@ export default class UCAdmin extends UCPlugin {
           showGroup = group
           // 获取新设置值
           let operation
-          if (setData.type === 'switch') {
+          if (setData.type === 'Switch') {
             if (/开启|启动/.test(str3)) operation = true
             else if (/关闭|禁用/.test(str3)) operation = false
-          } else if (setData.type === 'num') {
+          } else if (setData.type === 'InputNumber') {
             if (setData.input) {
               const setNum = setData.input(str3)
               if (setNum || setNum === 0) {
@@ -257,7 +258,7 @@ export default class UCAdmin extends UCPlugin {
             } else {
               operation = parseInt(str3.match(/\d+/)?.[0] ?? setData.def)
             }
-          } else if (setData.type === 'power') {
+          } else if (setData.type === 'Power') {
             const numMatch = str3.match(/0|1/g)
             if (numMatch && numMatch.length === setData.options?.length) {
               if (!isGlobal) {
@@ -276,7 +277,7 @@ export default class UCAdmin extends UCPlugin {
             if (setData.input) {
               operation = setData.input(str3)
             } else {
-              operation = str3
+              operation = str3.trim()
             }
           }
           // 保存新设置

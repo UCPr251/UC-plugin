@@ -1,7 +1,35 @@
-import Admin, { judgePriority, judgeInfo, judgeProperty, judgeHelpInfo } from './components/Admin.js'
+import Admin, { judgePriority, judgeInfo, judgeProperty } from './components/Admin.js'
 import { Path, file, Data, UCPr } from './components/index.js'
 import { guoba_config } from './components/UCPr.js'
 import _ from 'lodash'
+
+const addUserPrompt = {
+  content: '请输入QQ号：',
+  placeholder: '请输入QQ号',
+  okText: '添加',
+  rules: [
+    { required: true, message: 'QQ都忘了填了吗~真是杂鱼呢❤️~杂鱼❤️~' },
+    { min: 5, message: '短短的也很可爱哟❤️~❤️~' },
+    { max: 12, message: '好长🥵~瘦不了了🥵~' }
+  ]
+}
+
+/**
+ * @component 组件类型
+ * @param Switch 开关
+ * @param Select 选择框
+ * @param Input 单行输入框
+ * @param InputTextArea 多行输入框，可自行调整高度
+ * @param InputNumber 数字输入框
+ * @param InputPassword 密码输入框，默认不显示明文
+ * @param Slider 滑动输入条
+ * @param EasyCron cron表达式输入框
+ * @param RadioGroup 单选按钮组，布局在同一个逻辑组内
+ * @param GTags 锅巴自定义-手动输入、添加或删除标签，布局在同一个逻辑组内
+ * @param GSelectFriend 锅巴自定义-选择好友组件，弹出式选择框
+ * @param GSelectGroup 锅巴自定义-选择群组件，弹出式选择框
+ * @param GSubForm 锅巴自定义-子表单，可以添加或删除
+ */
 
 /** config前缀 */
 let cfgPrefix = 'config.'
@@ -12,9 +40,10 @@ let prefix = ''
  * @param {property} field 属性名
  * @param {string} label 展示名
  * @param {string} bottomHelpMessage 描述信息
- * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'|'InputPassword'} component 展示值属性
- * @param {object} componentProps 配置项：max, min, placeholder等
+ * @param {'Input'|'InputNumber'|'InputTextArea'|'Switch'|'Select'|'InputPassword'|'Slider'|'EasyCron'|'RadioGroup'|'GTags'|'GSelectFriend'|'GSelectGroup'|'GSubForm'} component 展示值属性
+ * @param {object} componentProps 配置项：max, min, placeholder, valueFormatter等
  * @param {object} optional 可选项
+ * @returns {{}} 返回展示配置
  */
 function s(field, label, bottomHelpMessage, component = 'Switch', componentProps = {}, optional = { required: false, helpMessage: undefined }) {
   field = cfgPrefix + prefix + field
@@ -28,19 +57,40 @@ function s(field, label, bottomHelpMessage, component = 'Switch', componentProps
   return _.merge({}, display, optional)
 }
 
-function sPRO(name, _prefix = 'use.', options = [1, 1, 1, 1, 1, 1], name_prefix = '') {
-  const info = []
+// function sPRO(name, _prefix = 'use.', options = [1, 1, 1, 1, 1, 1], name_prefix = '') {
+//   const info = []
+//   for (const i in judgeProperty) {
+//     if (!options[i]) continue
+//     info.push(s(
+//       _prefix + judgeProperty[i],
+//       name_prefix + judgeInfo[i],
+//       judgeHelpInfo[i] + name,
+//       'Switch', {},
+//       { helpMessage: judgePriority }
+//     ))
+//   }
+//   return info
+// }
+
+function sPRO(name, _prefix = 'use.', choose = [1, 1, 1, 1, 1, 1], name_prefix = '使用', desc = '') {
+  const options = []
   for (const i in judgeProperty) {
-    if (!options[i]) continue
-    info.push(s(
-      _prefix + judgeProperty[i],
-      name_prefix + judgeInfo[i],
-      judgeHelpInfo[i] + name,
-      'Switch', {},
-      { helpMessage: judgePriority }
-    ))
+    if (!choose[i]) continue
+    options.push({ label: judgeInfo[i], value: judgeProperty[i] })
   }
-  return info
+  return s(
+    _prefix + 'power',
+    name_prefix + '权限设置',
+    name + ' 功能使用权限判断' + (desc ? '，' + desc : ''),
+    'Select',
+    {
+      allowAdd: true,
+      allowDel: true,
+      mode: 'multiple',
+      options
+    },
+    { helpMessage: judgePriority }
+  )
 }
 
 // 模板
@@ -52,7 +102,7 @@ function sPRO(name, _prefix = 'use.', options = [1, 1, 1, 1, 1, 1], name_prefix 
 //       label: '【UC】设置',
 //       component: 'Divider'
 //     },
-//     ...sPRO('#', undefined, [0, 0, 1, 1, 1, 1])
+//     sPRO('#', undefined, [0, 0, 1, 1, 1, 1])
 //   ]
 //   js = js.concat(newCfg)
 // }
@@ -63,7 +113,7 @@ if (file.existsSync(Path.get('apps', 'qsignRestart.js')) && process.platform ===
   prefix = 'qsignRestart.'
   const newCfg = [
     {
-      label: '【UC】签名自动重启设置（修改后重启生效！）',
+      label: '【UC】签名自动重启设置（修改后重启生效）',
       component: 'Divider'
     },
     s(
@@ -127,7 +177,9 @@ if (file.existsSync(Path.get('apps', 'qsignRestart.js')) && process.platform ===
       'sleep',
       '崩溃检测间隔',
       '崩溃检测时间间隔，单位秒，不建议低于10',
-      'InputNumber', { min: 10 })
+      'InputNumber',
+      { min: 10 }
+    )
   ]
   js = js.concat(newCfg)
 }
@@ -136,19 +188,19 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
   prefix = 'switchBot.'
   const newCfg = [
     {
-      label: '【UC】指定群开关Bot设置',
+      label: '【UC】单独群上下班Bot设置',
       component: 'Divider'
     },
     s(
       'openReg',
       '开启指令',
-      '让Bot上班的指令：BotName+指令即可触发，多个用|间隔',
+      '让Bot上班的指令，可设置多个，BotName+其一指令即可触发，仅以全局为准',
       'Input'
     ),
     s(
       'closeReg',
       '关闭指令',
-      '让Bot下班的指令：BotName+指令即可触发，多个用|间隔',
+      '让Bot下班的指令：BotName+指令即可触发，多个用|间隔，仅以全局为准',
       'Input'
     ),
     s(
@@ -163,7 +215,7 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
       '关闭Bot的回复，BotName会被替换为上面设置的BotName的名称',
       'Input'
     ),
-    ...sPRO('群开关Bot', undefined, [0, 0, 1, 1, 1, 0]),
+    sPRO('群开关Bot', undefined, [0, 0, 1, 1, 1, 1]),
     s(
       'isPrefix',
       '响应前缀',
@@ -174,7 +226,7 @@ if (file.existsSync(Path.get('apps', 'switchBot.js'))) {
       '响应艾特',
       '在关闭群聊的情况下，以BotName开头的消息是否也响应'
     ),
-    ...sPRO('响应前缀和响应艾特', 'closedCommand.', [0, 0, 1, 1, 1, 1])
+    sPRO('响应前缀和响应艾特', 'closedCommand.', [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }
@@ -209,6 +261,63 @@ if (file.existsSync(Path.get('apps', 'JSsystem.js'))) {
       '私聊发送文件后自动撤回时长，4-120秒，0为不撤回',
       'InputNumber',
       { min: 0, max: 120 }
+    )
+  ]
+  js = js.concat(newCfg)
+}
+
+if (file.existsSync(Path.get('apps', 'ActReminder.js'))) {
+  prefix = 'ActReminder.'
+  const newCfg = [
+    {
+      label: '【UC】游戏活动截止提醒',
+      component: 'Divider'
+    },
+    s(
+      'opIsOpen',
+      '原神提醒开关',
+      '原神活动截止提醒开关'
+    ),
+    s(
+      'srIsOpen',
+      '星铁提醒开关',
+      '星铁活动截止提醒开关'
+    ),
+    s(
+      'opCron',
+      '原神提醒cron',
+      '原神活动检测时间cron表达式，默认为每天12点检测，修改后重启生效，仅以全局为准',
+      'EasyCron'
+    ),
+    s(
+      'srCron',
+      '星铁提醒cron',
+      '星铁活动检测时间cron表达式，默认为每天12点检测，修改后重启生效，仅以全局为准',
+      'EasyCron'
+    ),
+    s(
+      'opDays',
+      '原神提醒天数',
+      '每次检测时若原神活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+      'InputNumber',
+      { min: 0 }
+    ),
+    s(
+      'srDays',
+      '星铁提醒天数',
+      '每次检测时若星铁活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+      'InputNumber',
+      { min: 0 }
+    ),
+    s(
+      'opAtAll',
+      '原神全员艾特',
+      '原神活动截止提醒是否艾特全员（需管理员权限）'
+    ),
+    s(
+      'opAtAll',
+      '星铁全员艾特',
+      '星铁活动截止提醒是否艾特全员（需管理员权限）'
     )
   ]
   js = js.concat(newCfg)
@@ -255,27 +364,89 @@ if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
       'textimg',
       '文本+图片概率',
       '被戳回复文本+图片概率',
-      'InputNumber',
-      { min: 0, max: 1 }
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
+    ),
+    s(
+      'AiRecord',
+      'AI语音概率',
+      '当回复文字(汉字数>=3)时，将文字转语音的概率，speaker取图包名称，可选角色见#UC音色列表，此概率独立于整体概率，可选0-0.5',
+      'Slider',
+      { min: 0, max: 0.5, step: 0.01 }
     ),
     s(
       'chuoimg',
       '次数+图片概率',
       '被戳回复被戳次数+文本+图片概率，此概率独立于整体概率，意为触发文本+图片回复时又有多少概率在文本前加上被戳次数，可选0-1',
-      'InputNumber',
-      { min: 0, max: 1 }
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
     ),
     s(
       'face',
       '头像表情包概率',
       '被戳回复头像表情包概率',
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
+    ),
+    s(
+      'mute',
+      '禁言概率',
+      '被戳禁言对方概率，剩下的就是反击概率',
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
+    ),
+    s(
+      'muteTime',
+      '禁言时长',
+      '禁言的时长，单位分，0为不禁言',
+      'InputNumber',
+      { min: 0 })
+  ]
+  js = js.concat(newCfg)
+}
+
+if (file.existsSync(Path.get('apps', 'chuoMaster.js'))) {
+  prefix = 'chuoMaster.'
+  const newCfg = [
+    {
+      label: '【UC】戳主人回复设置',
+      component: 'Divider'
+    },
+    s(
+      'isOpen',
+      '戳主人回复开关',
+      '是否开启UC戳主人回复'
+    ),
+    s(
+      'isAt',
+      '艾特回复',
+      '回复时是否同时艾特对方'
+    ),
+    s(
+      'text',
+      '回复概率',
+      '戳主人回复消息的概率，0-1',
+      'InputNumber',
+      { min: 0, max: 1 }
+    ),
+    s(
+      'img',
+      '图片概率',
+      '戳主人发送合成表情包概率，0-1',
+      'InputNumber',
+      { min: 0, max: 1 }
+    ),
+    s(
+      'poke',
+      '反击概率',
+      '戳主人反击概率，0-1',
       'InputNumber',
       { min: 0, max: 1 }
     ),
     s(
       'mute',
       '禁言概率',
-      '被戳禁言对方概率，剩下的就是反击概率',
+      '戳主人禁言概率，0-1',
       'InputNumber',
       { min: 0, max: 1 }
     ),
@@ -284,7 +455,43 @@ if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
       '禁言时长',
       '禁言的时长，单位分，0为不禁言',
       'InputNumber',
-      { min: 1 })
+      { min: 0 }
+    )
+  ]
+  js = js.concat(newCfg)
+}
+
+if (file.existsSync(Path.get('apps', 'atMaster.js'))) {
+  prefix = 'atMaster.'
+  const newCfg = [
+    {
+      label: '【UC】艾特主人回复设置',
+      component: 'Divider'
+    },
+    s(
+      'isOpen',
+      '艾特主人回复开关',
+      '是否开启UC艾特主人回复'
+    ),
+    s(
+      'probability',
+      '回复概率',
+      '艾特主人回复的概率，0-1',
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
+    ),
+    s(
+      'isAt',
+      '艾特回复',
+      '回复时是否同时艾特对方'
+    ),
+    sPRO(
+      '艾特主人回复',
+      undefined,
+      [0, 0, 1, 1, 1, 1],
+      '回复',
+      '满足此权限条件的用户才可能会触发艾特主人回复'
+    )
   ]
   js = js.concat(newCfg)
 }
@@ -308,8 +515,8 @@ if (file.existsSync(Path.get('apps', 'randomWife.js'))) {
       'InputNumber',
       { min: 1 }
     ),
-    ...sPRO('#上传随机老婆', 'add.', [0, 0, 1, 1, 1, 1], '上传 · '),
-    ...sPRO('#删除随机老婆', 'del.', [0, 0, 1, 1, 1, 1], '删除 · ')
+    sPRO('#上传随机老婆', 'add.', [0, 0, 1, 1, 1, 1], '上传'),
+    sPRO('#删除随机老婆', 'del.', [0, 0, 1, 1, 1, 1], '删除')
   ]
   js = js.concat(newCfg)
 }
@@ -334,7 +541,7 @@ if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
     s(
       'keyWords',
       '触发指令',
-      '触发指令，#你设置的值 就可以触发该功能，修改后直接生效，英语字母大小写都可以触发',
+      '触发指令，#你设置的值 就可以触发该功能，修改后直接生效，英语字母大小写都可以触发，仅以全局为准',
       'Input'
     ),
     s(
@@ -343,7 +550,7 @@ if (file.existsSync(Path.get('apps', 'randomMember.js'))) {
       '随机群友回复内容，info会被替换为群友信息：群友昵称（QQ）',
       'Input'
     ),
-    ...sPRO('#随机群友', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#随机群友', undefined, [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }
@@ -375,7 +582,7 @@ if (file.existsSync(Path.get('apps', 'sqtj.js'))) {
       '保存本地',
       '查询的聊天记录是否保存至本地，关闭则每次都从零获取数据，建议开启'
     ),
-    ...sPRO('#水群统计', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#水群统计', undefined, [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }
@@ -423,12 +630,12 @@ if (file.existsSync(Path.get('apps', 'camouflage.js'))) {
       '不响应指令',
       '伪装期间是否不响应指令（#结束伪装 除外）'
     ),
-    ...sPRO('#伪装 #结束伪装', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#伪装 #结束伪装', undefined, [0, 0, 1, 1, 1, 1])
   ]
   js = js.concat(newCfg)
 }
 
-Data.refresh()
+await Data.refresh()
 
 if (Data.check('BlivePush') && file.existsSync(Path.get('apps', 'BlivePush.js'))) {
   prefix = 'BlivePush.'
@@ -450,11 +657,11 @@ if (Data.check('BlivePush') && file.existsSync(Path.get('apps', 'BlivePush.js'))
     s(
       'mins',
       '推送检测间隔',
-      '推送检测间隔，单位分钟，不建议小于4',
+      '推送检测间隔，单位分钟，不建议小于4，仅以全局为准，重启生效',
       'InputNumber',
       { min: 2 }
     ),
-    ...sPRO('订阅推送')
+    sPRO('订阅推送')
   ]
   js = js.concat(newCfg)
 }
@@ -488,35 +695,6 @@ if (Data.check('bigjpg') && file.existsSync(Path.get('apps', 'bigjpg.js'))) {
       }
     ),
     s(
-      'noise',
-      '默认降噪程度',
-      '默认降噪级别，可选[无，低，中，高，最高]',
-      'Select',
-      {
-        options: [
-          { label: '无', value: 0 },
-          { label: '低', value: 1 },
-          { label: '中', value: 2 },
-          { label: '高', value: 3 },
-          { label: '最高', value: 4 }
-        ]
-      }
-    ),
-    s(
-      'magnification',
-      '默认放大倍数',
-      '默认放大倍数，可选[2倍，4倍，8倍，16倍]',
-      'Select',
-      {
-        options: [
-          { label: '2倍', value: 2 },
-          { label: '4倍', value: 4 },
-          { label: '8倍', value: 8 },
-          { label: '16倍', value: 16 }
-        ]
-      }
-    ),
-    s(
       'limits',
       '每日放大数量限制',
       '每人每天放大次数限制，0为不限制，主人不受限',
@@ -543,7 +721,7 @@ if (Data.check('bigjpg') && file.existsSync(Path.get('apps', 'bigjpg.js'))) {
       '16倍放大',
       '16倍，关闭仅允许主人放大16倍'
     ),
-    ...sPRO('#放大图片')
+    sPRO('#放大图片')
   ]
   js = js.concat(newCfg)
 }
@@ -618,7 +796,7 @@ if (file.existsSync(Path.get('groupAdmin', 'recall.js'))) {
       'InputNumber',
       { min: 0 }
     ),
-    ...sPRO('#撤回', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#撤回', undefined, [0, 0, 1, 1, 1, 1])
   )
 }
 
@@ -638,13 +816,15 @@ if (file.existsSync(Path.get('groupAdmin', 'mute.js'))) {
       'MUTE_MAX',
       '最大禁言时长',
       '允许禁言最大时长，单位秒，默认一天（主人不限）',
-      'InputNumber'
+      'InputNumber',
+      { min: 60 }
     ),
     s(
       'defaultMute',
       '默认禁言时长',
       '禁言不指定时长时默认禁言时长，单位秒',
-      'InputNumber'
+      'InputNumber',
+      { min: 60 }
     ),
     s(
       'muteReply',
@@ -676,8 +856,8 @@ if (file.existsSync(Path.get('groupAdmin', 'mute.js'))) {
       '全部解禁回复，num会被替换为解禁群员的数量',
       'Input'
     ),
-    ...sPRO('#禁言', undefined, [0, 0, 1, 1, 1, 0]),
-    ...sPRO('#全体禁言', 'muteAll.', [0, 0, 1, 1, 1, 0])
+    sPRO('#禁言', undefined, [0, 0, 1, 1, 1, 0]),
+    sPRO('#全体禁言', 'muteAll.', [0, 0, 1, 1, 1, 0])
   )
 }
 
@@ -704,7 +884,7 @@ if (file.existsSync(Path.get('groupAdmin', 'kick.js'))) {
       '踢人回复',
       'Input'
     ),
-    ...sPRO('#踢', undefined, [0, 0, 1, 1, 1, 0])
+    sPRO('#踢', undefined, [0, 0, 1, 1, 1, 0])
   )
 }
 
@@ -740,7 +920,7 @@ if (file.existsSync(Path.get('groupAdmin', 'RequestAdd.js'))) {
       '通知主人',
       '入群申请是否通知主人'
     ),
-    ...sPRO('#同意/拒绝', undefined, [0, 0, 1, 1, 1, 0])
+    sPRO('#同意/拒绝', undefined, [0, 0, 1, 1, 1, 0])
   )
 }
 
@@ -766,7 +946,7 @@ if (file.existsSync(Path.get('groupAdmin', 'welcome.js'))) {
       '艾特新群员',
       '入群欢迎同时艾特新群员'
     ),
-    ...sPRO('#修改入群欢迎', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#修改入群欢迎', undefined, [0, 0, 1, 1, 1, 1])
   )
 }
 
@@ -787,7 +967,7 @@ if (file.existsSync(Path.get('groupAdmin', 'mourn.js'))) {
       '展示头像',
       '退群通知是否同时展示退群群员的头像'
     ),
-    ...sPRO('#修改退群通知', undefined, [0, 0, 1, 1, 1, 1])
+    sPRO('#修改退群通知', undefined, [0, 0, 1, 1, 1, 1])
   )
 }
 
@@ -933,20 +1113,28 @@ const permission = [
   s(
     'GlobalMaster',
     'UC全局主人',
-    '拥有本插件全局主人权限的QQ，多个请用中文逗号间隔',
-    'InputTextArea'
+    '拥有本插件全局主人权限的用户，可与底层主人独立设置',
+    'GSelectFriend'
   ),
   s(
     'GlobalAdmin',
     'UC全局管理',
-    '拥有本插件全局群管理权限的QQ，多个请用中文逗号间隔',
-    'InputTextArea'
+    '拥有本插件全局群管理权限的用户',
+    'GSelectFriend'
   ),
   s(
     'GlobalBlackQQ',
     'UC全局黑名单',
-    '插件全局拉黑QQ，无法使用本插件，多个请用中文逗号间隔',
-    'InputTextArea'
+    '插件全局拉黑用户，无法使用本插件',
+    'GTags',
+    {
+      placeholder: '请输入黑名单QQ',
+      allowAdd: true,
+      allowDel: true,
+      showPrompt: true,
+      promptProps: addUserPrompt,
+      valueFormatter: (value) => parseInt(value)
+    }
   )
 ]
 
@@ -975,37 +1163,32 @@ export function supportGuoba() {
         s(
           'isWatch',
           '开发环境',
-          '开发环境下使用，热更新app，重启生效'
+          '开发环境下使用，支持热更新，重启生效'
         ),
         s(
           'debugLog',
           '调试日志输出',
-          '是否输出调试日志'
+          '是否在控制台输出UC插件调试日志。开发者模式下，会强制开启调试日志'
         ),
         s(
           'log',
           '普通日志输出',
-          '是否输出普通日志'
+          '是否在控制台输出UC插件普通日志'
         ),
         s(
           'isDefaultMaster',
           '合并主人',
-          '是否合并插件主人和机器人主人，不影响管理员设置'
-        ),
-        s(
-          'autoBackup',
-          '每日自动备份',
-          '是否每日零点前自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用'
+          '是否合并插件主人和机器人主人'
         ),
         s(
           'onlyMaster',
           '仅主人可操作',
-          '开启后仅主人可操作本插件'
+          '是否仅主人可使用UC插件所有功能，开启后除主人的所有人UC功能皆不响应'
         ),
         s(
           'priority',
           '插件优先级',
-          '本插件优先级，修改后重启生效',
+          'UC插件优先级，优先级越小越优先响应，可为任意整数，重启生效',
           'InputNumber'
         ),
         s(
@@ -1023,8 +1206,18 @@ export function supportGuoba() {
         s(
           'BotName',
           '机器人名称',
-          '机器人个别时候回复消息时的名称，不填写则取QQ昵称',
+          'UC插件的机器人名称，用于个别时候的机器人回复或开关Bot的指令等',
           'Input'
+        ),
+        s(
+          'globalPrefix',
+          '全局前缀',
+          '全局开关响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”'
+        ),
+        s(
+          'autoBackup',
+          '每日自动备份',
+          '是否每日零点前自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用'
         ),
         s(
           'loveMysNotice',
@@ -1036,45 +1229,57 @@ export function supportGuoba() {
         s(
           'noPerReply',
           '用户无权限回复',
-          '用户权限不足以操作机器人时的回复',
+          '用户无权限进行某操作时，机器人的回复',
           'Input'
         ),
         s(
           'noPowReply',
           'Bot无权限回复',
-          'Bot权限不足无法执行操作时的回复',
+          '机器人无权限进行某操作时，机器人的回复',
           'Input'
         ),
         s(
           'fetchErrReply',
           '连接失败回复',
-          'Api服务连接失败回复',
+          'api服务连接失败时机器人的回复',
           'Input'
         ),
-        ...GAconfig
-      ].concat(js),
+        s(
+          'helpFold',
+          '帮助图折叠',
+          '帮助图折叠展示的部分，不直接在#UC帮助中展示，仅可通过专用指令查看该组帮助',
+          'Select',
+          {
+            allowAdd: true,
+            allowDel: true,
+            mode: 'multiple',
+            options: _.map(UCPr.CFG.helpData, 'command').filter(Boolean).map(item => ({ value: item }))
+          }
+        )
+      ].concat(js, GAconfig),
 
       getConfigData() {
         return guoba_config
       },
 
       setConfigData(data, { Result }) {
-        let changed = false
-        for (let [property, value] of Object.entries(data)) {
-          const [cfg, ...ret] = property.split('.')
-          const path = ret.join('.')
-          if (!path) continue
-          _.set(guoba_config, property, value) // 同步数据
-          if (path === 'GlobalMaster' || path === 'GlobalAdmin' || path === 'GlobalBlackQQ') {
-            value = _.sortBy(value
-              .split('，')
-              .filter(num => num.length >= 5 && num.length <= 10)
-              .map(Number)
-            )
-          }
-          if (Admin.globalCfg(path, value, cfg)) changed = true
+        const change = (path, value, cfg) => {
+          if (!path) return
+          Admin.globalCfg(path, value, cfg) && changed.push(path)
         }
-        if (changed) {
+        const changed = []
+        for (const [property, value] of Object.entries(data)) {
+          const [cfg, ...ret] = property.split('.')
+          _.set(guoba_config, property, value)
+          if (ret.at(-1) === 'power') {
+            ret.pop()
+            const path = ret.join('.')
+            Reflect.ownKeys(_.get(UCPr[cfg], path)).forEach(item => change(path + '.' + item, value.includes(item), cfg))
+            continue
+          }
+          change(ret.join('.'), value, cfg)
+        }
+        if (changed.length) {
           Data.refreshLock()
           return Result.ok({}, '保存成功~')
         }

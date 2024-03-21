@@ -1,6 +1,5 @@
 import { Path, Check, Data, UCDate, common, file, log, UCPr } from '../components/index.js'
 import { UCPlugin } from '../models/index.js'
-import { segment } from 'icqq'
 import _ from 'lodash'
 
 const help = `[UC]B站直播推送插件
@@ -36,12 +35,7 @@ export default class UCBlivePush extends UCPlugin {
       Cfg: 'config.BlivePush',
       rule: [
         {
-          reg: '^#?UC直播推送测试$',
-          fnc: 'bLivePush',
-          permission: 'master'
-        },
-        {
-          reg: /^#?(UC)?直播(推送|订阅)帮助$/i,
+          reg: /^#?直播推送帮助$/i,
           fnc: 'bLiveHelp'
         },
         {
@@ -314,7 +308,8 @@ export default class UCBlivePush extends UCPlugin {
             }
             const data = (await this.fetch('BlivePush1', room))?.data
             if (!data || !data.live) continue
-            if (Object.prototype.hasOwnProperty.call(data.live, 'video')) {
+            // if (Object.prototype.hasOwnProperty.call(data.live, 'video')) {
+            if (Reflect.has(data.live, 'video')) {
               if (!pushed[loc]?.includes(room)) {
                 pushed[loc] = _.concat(pushed[loc] || [], room)
                 living.push(room)

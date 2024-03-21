@@ -7,7 +7,7 @@ import _ from 'lodash'
 export default class UCPlugin extends plugin {
   constructor({
     e,
-    name = 'UC-plugin-apps',
+    name = 'UC插件',
     dsc = 'UC插件',
     event = 'message',
     priority = UCPr.priority,
@@ -30,6 +30,10 @@ export default class UCPlugin extends plugin {
     this.groupId = this.e.group_id ?? this.e.group?.group_id ?? this.e.group?.gid ?? this.e.groupId
     /** 群实例 */
     this.group = this.e.group
+    /** message */
+    this.message = this.e.message
+    /** 好友实例 */
+    this.friend = this.e.friend
     /** 群所有配置config, GAconfig, permission，无则全局 */
     this.groupCFG = UCPr.groupCFG(this.groupId)
     /** 群config配置，无则全局 */
@@ -41,7 +45,7 @@ export default class UCPlugin extends plugin {
     if (!this.userId) return
     /** 权限判断Class */
     this.PermissionClass = Permission
-    /** 空cfg权限实例 */
+    /** 默认UC权限实例 */
     this.UC = this.Permission()
     /** 权限级别Set */
     this.levelSet = this.UC.levelSet
@@ -153,6 +157,30 @@ export default class UCPlugin extends plugin {
     return true
   }
 
+  /** 检查是否全局主人 */
+  isGM(userId) {
+    return Check.Master(userId)
+  }
+
+  /** 检查是否主人 */
+  isM(userId, groupId) {
+    if (this.isGM(userId)) return true
+    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.Master, userId)
+    return Check.str(this.groupCFG.permission?.Master, userId)
+  }
+
+  /** 检查是否全局管理 */
+  isGA(userId) {
+    return Check.Admin(userId)
+  }
+
+  /** 检查是否管理 */
+  isA(userId, groupId) {
+    if (this.isGA(userId)) return true
+    if (groupId) return Check.str(UCPr.groupCFG(groupId).permission?.Admin, userId)
+    return Check.str(this.groupCFG.permission?.Admin, userId)
+  }
+
   /** 检查是否全局黑名单 */
   isGB(userId) {
     return Check.BlackQQ(userId)
@@ -182,35 +210,48 @@ export default class UCPlugin extends plugin {
     super.finish(fnc)
   }
 
+  __transferStation() {
+    const data = this.getUCcontext('__transferStation.data')
+    if (!data) {
+      this.finishUCcontext('__transferStation')
+      return log.error(`[UCPlugin.__transferStation]上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
+    }
+    const { transferFnc } = data
+    if (typeof transferFnc !== 'function') return log.error('[UCPlugin.__transferStation]函数不存在')
+    return transferFnc(this, data)
+  }
+
   /** 获取序号指定数据 */
-  __chooseContext() {
+  async __chooseContext() {
     if (this.isCancel('__chooseContext')) return
     const data = this.getUCcontext('__chooseContext.data')
     if (!data) {
       this.finishUCcontext('__chooseContext')
-      log.error(`上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
-      return
+      return log.error(`[UCPlugin.__chooseContext]上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
     }
-    const { list, fnc } = data
-    let numMatch = this.msg.match(/\d+/g)
+    const { list, fnc, handler } = data
+    let msg = this.msg
+    // handler自定义处理this，返回所需序号
+    if (handler) {
+      const result = await handler(this, data)
+      if (result === true) return
+      if (result) msg = result
+    }
+    let numMatch = msg.match(/\d+/g)
     if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
       const [start, end] = this.msg.match(/\d+/g).map(Number)
-      if (start > end) {
-        this.reply('???')
-        return false
-      }
+      if (start > end) return this.reply('???')
       numMatch = _.range(start, Math.min(end, list.length) + 1)
     } else {
       numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
     }
-    if (_.isEmpty(numMatch)) {
-      this.reply('请输入有效的序号或取消操作')
-      return false
-    } else {
-      const arr = numMatch.map(num => list[num - 1])
-      this.finishUCcontext('__chooseContext')
-      this[fnc](arr, data)
+    if (!numMatch?.length) {
+      return this.reply('请输入有效的序号或取消操作')
     }
+    const arr = numMatch.map(num => list[num - 1])
+    this.finishUCcontext('__chooseContext')
+    if (typeof fnc === 'function') fnc(arr, data)
+    else fnc && this[fnc](arr, data)
   }
 
   /**
@@ -247,19 +288,17 @@ export default class UCPlugin extends plugin {
     }
     const search = await file.searchFiles(path, name, { type })
     if (search.length === 0) return this.reply(`未找到【${name}】相关文件`)
-    if (search.length !== 1) {
-      const list = _.map(search, 'file').filter(v => Path.extname(v))
-      this.e.data = {
-        fnc,
-        list,
-        ...data
-      }
-      this.setUCcontext('__chooseContext')
-      const list_ = basename ? _.map(search, 'name') : list
-      const info = Data.makeArrStr(list_, { length: 3000 })
-      return this.reply('找到多个相关文件，请选择序号或取消：\n' + info)
+    if (search.length === 1) return this[fnc]([search[0].file], data)
+    const list = _.map(search, 'file').filter(v => Path.extname(v))
+    this.e.data = {
+      fnc,
+      list,
+      ...data
     }
-    return this[fnc]([search[0].file], data)
+    this.setUCcontext('__chooseContext')
+    const list_ = basename ? _.map(search, 'name') : list
+    const info = Data.makeArrStr(list_, { length: 3000 })
+    return this.reply('找到多个相关文件，请选择序号或取消：\n' + info)
   }
 
   /** 用户是否确认操作 */
@@ -277,8 +316,8 @@ export default class UCPlugin extends plugin {
     at: false,
     recallMsg: 0
   }) {
-    if (/^#?(取消|否|no)/.test(this.msg)) {
-      return this.finishReply('取消已操作', setFnc, option)
+    if (/^#?(取消|退出|否|no)/.test(this.msg)) {
+      return this.finishReply('操作已结束', setFnc, option)
     }
     return false
   }
@@ -305,10 +344,14 @@ export default class UCPlugin extends plugin {
             msgArr.push(msg.text?.replace(/^\s*[＃井#]+\s*/, '#').replace(/^\s*[\\*※＊]+\s*/, '*').trim())
             break
           case 'image':
+            /** 图片url */
             this.img ??= []
             this.img.push(msg.url)
             break
           case 'at':
+            /** at数据 */
+            this.atRet ??= []
+            this.atRet.push(msg.qq ?? msg.id)
             this.at ??= msg.qq ?? msg.id // 与底层e.at相反，以第一个艾特为准
             break
           case 'file':
@@ -324,22 +367,22 @@ export default class UCPlugin extends plugin {
 
   async reply(msg, quote, data = { recallMsg: 0, at: false }) {
     if (_.isEmpty(msg)) return
-    if (!this.e?.reply) {
-      if (this.isGroup && this.groupId) {
-        this.group ??= common.pickGroup(this.groupId)
-        this.e.reply = this.group.sendMsg.bind(this.group)
+    if (this.e && !this.e.reply) {
+      if (this.groupId) {
+        this.group ||= common.pickGroup(this.groupId)
+        this.e.reply = function (msg) { this.group.sendMsg(msg) }
       } else if (this.userId) {
         this.e.friend ??= Bot.pickFriend(this.userId)
-        this.e.reply = this.e.friend.sendMsg.bind(this.e.friend)
+        this.e.reply = function (msg) { this.e.friend.sendMsg(msg) }
       }
     }
-    if (!this.e.reply) return log.error('发送消息错误，e.reply不存在')
+    if (!this.e?.reply) return log.error('发送消息错误，e.reply不存在')
     if (this.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
     let { recallMsg = 0, at = false } = data
     if (at && this.isGroup) {
       msg = _.castArray(msg)
       if (at === true || !+at) at = this.userId
-      msg.unshift(segment.at(at))
+      msg.unshift(segment.at(at, this.sender.card || this.sender.nickname), '\n')
     }
     const msgRes = await this.e.reply(msg, quote && !this.e.file).catch(err => {
       log.error('发送消息错误', err)

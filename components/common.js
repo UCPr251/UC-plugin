@@ -1,7 +1,7 @@
-import { UCDate, file, Path, UCPr } from './index.js'
+import file from './file.js'
+import UCDate from './UCDate.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import _ from 'lodash'
-import { segment } from 'icqq'
 
 /** 常用api */
 const common = {
@@ -25,7 +25,7 @@ const common = {
     }
   },
 
-  /** 根据message制作reply[] */
+  /** 根据message制作reply[]，用于发送 */
   makeMsg(message, replaceKey = [], replaceValue = []) {
     if (!_.isArray(message)) return null
     replaceKey = _.castArray(replaceKey)
@@ -53,7 +53,7 @@ const common = {
     return reply
   },
 
-  /** 根据message提取数据，支持text at image fase sface */
+  /** 根据message提取数据，用于保存，支持text at image fase sface */
   getMsg(message) {
     const new_message = []
     for (const v of message) {
@@ -179,16 +179,14 @@ const common = {
   /** 渲染图片并发送 */
   async render(thisArg, data, cfg = { quote: false, recallMsg: 0, at: false }) {
     if (!thisArg || !data) return log.warn('[common.render]图片渲染传参错误')
-    const base64 = await puppeteer.screenshot(data.tempPath ?? Path.Plugin_Name, data)
+    const base64 = await puppeteer.screenshot(data.tempPath ?? global.UCPr?.Plugin_Name ?? 'UC-plugin', data)
     return await thisArg.reply(base64, cfg.quote, cfg)
   },
 
   /** 禁言群员，seconds为0则为解禁 */
   async muteMember(userId, groupId, seconds) {
     const groupClient = this.pickGroup(groupId)
-    const status = await groupClient.muteMember(userId, seconds)
-    if (!status) return false
-    return true
+    await groupClient.muteMember(userId, seconds)
   },
 
   /** 获取禁言群员列表、信息 */
@@ -348,10 +346,10 @@ const common = {
    * 制作转发消息
    * @param e icqq消息e
    * @param {Array} msg 消息数组
-   * @param dec 转发描述
+   * @param title 转发描述
    * @param isBot  转发信息是否为Bot
    */
-  async makeForwardMsg(e, msg, dec = undefined, isBot = true) {
+  async makeForwardMsg(e, msg, title = undefined, isBot = true) {
     let nickname = isBot ? Bot.nickname : e.sender.nickname
     const user_id = isBot ? Bot.uin : e.sender.user_id
     if (e.isGroup && isBot) {
@@ -376,10 +374,10 @@ const common = {
       return null
     }
     /** 处理描述，icqq0.4.12及以上 */
-    if (dec) {
+    if (title) {
       const detail = forwardMsg.data?.meta?.detail
       if (detail) {
-        detail.news = [{ text: dec }]
+        detail.news = [{ text: title }]
       }
     }
     return forwardMsg
@@ -390,7 +388,7 @@ const common = {
    * @param {number} id 群号或Q号
    * @param {'Group'|'Private'} [type]
    */
-  async makeforwardMsg(msg, id, type = 'Group', dec = undefined) {
+  async makeforwardMsg(msg, id, type = 'Group', title = undefined) {
     const nickname = Bot.nickname
     const user_id = Bot.uin
     const userInfo = {
@@ -405,10 +403,10 @@ const common = {
     /** 制作转发内容 */
     forwardMsg = await Bot[type === 'Group' ? 'pickGroup' : 'pickFriend'](id).makeForwardMsg(forwardMsg)
     /** 处理描述，icqq0.4.12及以上 */
-    if (dec) {
+    if (title) {
       const detail = forwardMsg.data?.meta?.detail
       if (detail) {
-        detail.news = [{ text: dec }]
+        detail.news = [{ text: title }]
       }
     }
     return forwardMsg

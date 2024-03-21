@@ -20,7 +20,7 @@ log.error = (...args) => console.error(red(...args))
 
 const file = await import('../components/file.js').then((module) => module.default).catch((err) => { log.error('file.js导入失败：\n', err); process.exit(1) })
 const UCDate = await import('../components/UCDate.js').then((module) => module.default).catch((err) => { log.error('UCDate.js导入失败：\n', err); process.exit(1) })
-const Path = await import('../components/Path.js').then((module) => module.getPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.error('Path.js导入失败：\n', err); process.exit(1) })
+const Path = await import('../components/Path.js').then((module) => module.creatPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.error('Path.js导入失败：\n', err); process.exit(1) })
 
 if (!file.existsSync(Path.UC)) {
   log.error('错误路径')

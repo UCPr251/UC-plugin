@@ -52,9 +52,9 @@ export default class UCCamouflage extends UCPlugin {
     if (!Check.file(this.selfAvatarPath)) return this.reply('下载自身头像失败，请稍后重试')
     const { card, nickname, title } = memClient.info
     this.e.bot.setAvatar(this.memAvatarPath)
-    this.e.group.setCard(this.e.self_id, card || nickname)
+    this.group.setCard(this.e.self_id, card || nickname)
     if (this.UC.botIsOwner) {
-      this.e.group.setTitle(this.e.self_id, title)
+      this.group.setTitle(this.e.self_id, title)
     }
     this.selfCard = selfClient.info.card
     this.selfTitle = selfClient.info.title
@@ -92,8 +92,8 @@ export default class UCCamouflage extends UCPlugin {
   restoreFnc(isMsgLimit = false) {
     this.finishUCcontext()
     this.e.bot.setAvatar(this.selfAvatarPath).catch(e => log.error('修改头像错误', e))
-    this.e.group.setCard(this.e.self_id, this.selfCard).catch(e => log.error('修改群名片错误', e))
-    this.UC.botIsOwner && this.e.group.setTitle(this.e.self_id, this.selfTitle).catch(e => log.error('修改群头衔错误', e))
+    this.group.setCard(this.e.self_id, this.selfCard).catch(e => log.error('修改群名片错误', e))
+    this.UC.botIsOwner && this.group.setTitle(this.e.self_id, this.selfTitle).catch(e => log.error('修改群头衔错误', e))
     this.Cfg.CD && Data.redisSet(this.CDData, UCDate.getTime(this.Cfg.CD, 'm'), this.Cfg.CD * 60)
     if (this.Cfg.isSilent) {
       const groupData = UCPr.defaultCfg.getConfig('group')

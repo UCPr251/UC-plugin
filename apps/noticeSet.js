@@ -45,7 +45,7 @@ export default class UCNoticeSet extends UCPlugin {
   }
 
   _tokenContext() {
-    if (this.isCancel()) return false
+    if (this.isCancel()) return
     const tk = this.msg.trim()
     if (tk.length < 10) return this.reply('请输入正确的token')
     const { type, noticeData, path } = this.getUCcontext()

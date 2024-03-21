@@ -83,6 +83,7 @@ export default class UCReloadJSs extends UCPlugin {
           await common.sleep(0.1)
           await loadJs(newAppPath)
           watch = Data.watch(newAppPath, reloadJS.bind(loader, newAppPath))
+          JSs.add(jsName)
         }
         watcher[jsName] = watch
       })
@@ -117,7 +118,7 @@ export default class UCReloadJSs extends UCPlugin {
     msg += `UC载入${JSs.size}个功能\n`
     msg += `UC载入${UCPr.task.length}个定时任务\n`
     msg += `UC载入${Object.values(UCPr.event).reduce((ori, arr) => ori + arr.length, 0)}个Event\n`
-    msg += `UC监听${Object.keys(watcher).length}个js\n`
+    // msg += `UC监听${Object.keys(watcher).length}个js\n`
     msg += `UC共监听${Object.keys(UCPr.watcher).length}个文件(夹)\n`
     msg += `Bot本体总计${loader.priority.length}个插件功能\n`
     msg += `Bot本体总计${loader.task.length}个定时任务`
@@ -233,11 +234,12 @@ async function reloadJSs(isWatch = true) {
   return _JSs.length
 }
 
+UCPr.function.loadJs = loadJs
 /**
  * 载入js并按照优先级重新排序
  * @param {string} jsPath 需要载入的JS路径
  */
-export async function loadJs(jsPath) {
+async function loadJs(jsPath) {
   try {
     const temp = await import(`file:///${jsPath}?${Date.now()}`)
     const app = temp.default ?? temp[Object.keys(temp)[0]]
@@ -268,11 +270,12 @@ export async function loadJs(jsPath) {
   order()
 }
 
+UCPr.function.unloadJs = unloadJs
 /**
  * 卸载JS并删除其定时任务
  * @param {string} jsPath 需要卸载的JS路径
  */
-export async function unloadJs(jsPath) {
+async function unloadJs(jsPath) {
   const name = 'UC-' + Path.parse(jsPath).name
   const del = Data.remove(loader.priority, name, 'name')[0]
   if (del) {

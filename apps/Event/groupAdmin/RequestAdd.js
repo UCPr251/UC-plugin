@@ -1,4 +1,3 @@
-import { segment } from 'icqq'
 import { log, UCPr, common } from '../../../components/index.js'
 import { UCGAPlugin } from '../../../models/index.js'
 
@@ -43,7 +42,7 @@ class UCRequestGroupAdd extends UCGAPlugin {
     replyMsg.push('昵称：' + this.e.nickname)
     replyMsg.push('\n账号：' + this.userId)
     if (this.e.inviter_id) replyMsg.push('\n邀请人：' + this.getMemStr(this.e.inviter_id))
-    if (this.e.comment) replyMsg.push('\n' + this.e.comment)
+    if (this.e.comment) replyMsg.push('\n' + (this.e.comment.startsWith('答案') ? '' : '验证信息：') + this.e.comment)
     if (this.e.tips) replyMsg.push('\nTips：' + this.e.tips)
     if (this.e.tips?.includes('风险')) {
       replyMsg.push('\n该账号有风险，请手动处理')
@@ -52,7 +51,7 @@ class UCRequestGroupAdd extends UCGAPlugin {
     }
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
     if (!this.Cfg.isNoticeMaster) return
-    replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '\n群聊：' + this.groupId, '\n群昵称：' + this.groupName)
+    replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '群聊：' + this.groupId, '\n群昵称：' + this.groupName)
     await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Private')
   }
 
@@ -82,6 +81,7 @@ class UCAgreeRefuseRequestGroupAdd extends UCGAPlugin {
     let userId = this.targetId, groupId = this.groupId
     if (e.source || !userId || !groupId) {
       if (!e.source?.message) return false
+      if (!e.source.user_id !== this.qq) return false
       if (!e.source.message.includes('【入群申请通知】')) return false
       userId = parseInt(e.source.message.match(/账号：(\d+)/)?.[1].trim())
       if (!userId) return false

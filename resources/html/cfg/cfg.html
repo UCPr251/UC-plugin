@@ -29,11 +29,11 @@
               <span class="cfg-hint-lock"> （已锁定） </span>
             {{else}}
                 <span class="cfg-hint"> #UC{{if isGlobal}}全局{{/if}}{{if type === 'GAconfig'}}群管{{/if}}设置{{cfgGroupKey}}{{cfgKey}}
-                  {{if cfgValue.type === 'switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
+                  {{if cfgValue.type === 'Switch'}}开启/关闭{{else}}{{cfgValue.def}}{{/if}}
                 </span>
             {{/if}}
             <!-- 该设置的当前状态 -->
-            {{if cfgValue.type !== 'switch'}}
+            {{if cfgValue.type !== 'Switch'}}
               <div class="cfg-status">{{cfgValue.value}}</div>
             {{else if cfgValue.value}}
               <div class="cfg-status">已开启</div>
