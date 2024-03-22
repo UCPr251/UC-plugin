@@ -73,6 +73,8 @@ pnpm i --filter=UC-plugin
 
 - 仅为UC已实现功能，使用请以实际为准
 
+---
+
 </details>
 
 - 为便于统一开发插件和各种集成功能打造而成
