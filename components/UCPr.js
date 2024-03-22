@@ -127,9 +127,9 @@ class UCPr {
     const config = _.cloneDeep(this.CFG.config)
     const { GAconfig } = this.CFG
     const removes = ['qsignRestart', 'JSsystem']
-    for (const key in config) {
+    for (const key of Reflect.ownKeys(config)) {
       if (!_.isPlainObject(config[key]) || removes.includes(key)) {
-        delete config[key]
+        Reflect.deleteProperty(config, key)
       }
     }
     for (const yaml of yamls) {

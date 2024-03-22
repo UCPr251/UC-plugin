@@ -25,6 +25,7 @@ export default class MsgManager extends Base {
   async _add(thisArg) {
     thisArg.setFnc = this.transferFnc
     if (thisArg.isCancel()) return
+    if (!thisArg.message) return thisArg.reply('接收消息为空，请重试')
     thisArg.finishUCcontext()
     const dirPath = Path.join(this.folderPath, this.saveDir)
     Check.folder(dirPath, true)

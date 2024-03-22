@@ -64,7 +64,7 @@ function handleChoice(choice) {
     const backups = file.readdirSync(_backupPath, { type: 'Directory' })
     if (!backups.length) {
       log.red('\n请先备份或将由UC插件备份的数据置于UC-plugin/data/backup后重试')
-      return main()
+      return rl.question(`\n请输入选项${purple('序号')}：`, handleChoice)
     }
     displayMenu(backups, `要${red(choice === 2 ? '还原' : '删除')}的备份数据日期`)
     return rl.question(`\n请输入选项${purple('序号')}：`, (_choice) => chooseFolder(_choice, backups, choice === 2 ? 'restore' : 'unlink'))

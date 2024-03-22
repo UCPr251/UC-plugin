@@ -193,7 +193,8 @@ class UCWMset extends UCGAPlugin {
     for (const v of reply) {
       if (v.type !== 'image') continue
       v.path = await Data.download(v.url, floderPath, type + ++imgCount)
-      for (const key in v) {
+      if (!v.path) return this.finishReply('图片下载失败：' + v.url + '\n请重试')
+      for (const key of Reflect.ownKeys(v)) {
         if (key !== 'path' && key !== 'type') {
           Reflect.deleteProperty(v, key)
         }

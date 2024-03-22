@@ -338,7 +338,7 @@ if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
     s(
       'isAutoSetCard',
       '被戳更新群名片',
-      '被戳是否自动更新群名片'
+      '被戳是否自动更新群名片：当前图包名称|后缀'
     ),
     s(
       'groupCard',
@@ -1211,8 +1211,8 @@ export function supportGuoba() {
         ),
         s(
           'globalPrefix',
-          '全局前缀',
-          '全局开关响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”'
+          '允许前缀',
+          '开关允许响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”'
         ),
         s(
           'autoBackup',

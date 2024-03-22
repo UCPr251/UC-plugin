@@ -39,7 +39,7 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'errorLog'
         },
         {
-          reg: new RegExp(`^#?UC\\s*(${Help.commandArr.join('|')})?\\s*(帮助|help)$`, 'i'),
+          reg: /^#?UC.*(帮助|help)$/i,
           fnc: 'UC_HELP'
         },
         {
@@ -70,7 +70,7 @@ export default class UCAdmin extends UCPlugin {
   async groupPermission(e) {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
-    if (!this.verifyLevel(need)) return false
+    if (!this.verifyLevel(need)) return
     const numMatch = this.msg.match(/\d{5,10}/g) ?? []
     const userId = this.at ?? numMatch[0]
     if (!userId) return this.reply('请艾特或指定要操作的对象')
@@ -92,7 +92,7 @@ export default class UCAdmin extends UCPlugin {
   async globalPermission(e) {
     if (e.atme) return false
     const { type, name, need } = this.getInfo()
-    if (!this.verifyLevel(need)) return false
+    if (!this.verifyLevel(need)) return
     const isAdd = /设置|加|拉/.test(this.msg)
     const numMatch = this.msg.match(/\d{5,10}/g)
     if (numMatch && numMatch.length > 1) {
@@ -122,7 +122,7 @@ export default class UCAdmin extends UCPlugin {
   /** 按照全局或群查找 */
   async permissionList(e) {
     const { type, name, need } = this.getInfo()
-    if (!this.verifyLevel(need > 3 ? 3 : need)) return false
+    if (!this.verifyLevel(need > 3 ? 3 : need)) return
     const numMatch = this.msg.match(/\d+/)
     const groupId = (this.GM ? numMatch?.[0] : this.groupId) ?? this.groupId
     const title = `UC插件${name}列表`
@@ -151,7 +151,7 @@ export default class UCAdmin extends UCPlugin {
 
   async searchUser(e) {
     if (e.atme) return false
-    if (!this.verifyLevel(3)) return false
+    if (!this.verifyLevel(3)) return
     const numMatch = this.msg.match(/\d+/)
     const userId = this.at || (this.GM ? numMatch?.[0] : undefined)
     if (!userId) return this.reply(`请艾特${this.GM ? '或指定' : ''}需要查询的用户`)
@@ -195,7 +195,7 @@ export default class UCAdmin extends UCPlugin {
   }
 
   async errorLog(e) {
-    if (!this.verifyLevel(4)) return false
+    if (!this.verifyLevel(4)) return
     if (/删除/.test(this.msg)) {
       Data.delErrorLog()
       return this.reply('删除成功')
@@ -203,19 +203,20 @@ export default class UCAdmin extends UCPlugin {
     const errorLog = Data.getLogArr(Path.errorLogjson, { num: 30 })
     if (!errorLog) return this.reply('当前无错误日志哦~')
     const replyMsg = await common.makeForwardMsg(e, errorLog, 'UC插件错误日志')
-    return this.reply(replyMsg, false)
+    return this.reply(replyMsg)
   }
 
   async UC_HELP() {
-    if (!this.verifyLevel()) return false
-    const command = Help.commandArr.find(command => new RegExp(command, 'i').test(this.msg))
+    if (!this.verifyLevel()) return
+    const str = this.msg.match(/#?UC(.*)帮助$/i)[1].trim()
+    const command = str && Help.getCommand(str)
     const data = Help.get(this, command)
     if (!data) return this.reply('帮助内容为空，可能是所查看功能未开启或权限不足')
     return common.render(this, data)
   }
 
   async UC_CFG() {
-    if (!this.verifyLevel(1)) return false
+    if (!this.verifyLevel(1)) return
     // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
     let isGlobal = /全局/.test(this.msg)
     if (isGlobal && !this.GM) return false
@@ -240,8 +241,8 @@ export default class UCAdmin extends UCPlugin {
       if (setData) {
         log.debug(setData)
         const [g, s] = setData.path.split('.')
+        showGroup = group
         if (isGlobal || type === 'GAconfig' || (s && !isGlobal && _.has(UCPr.groupCFG(groupId)[type][g], s))) {
-          showGroup = group
           // 获取新设置值
           let operation
           if (setData.type === 'Switch') {
@@ -302,7 +303,7 @@ export default class UCAdmin extends UCPlugin {
   }
 
   async lockConfig() {
-    if (!this.verifyLevel(4)) return false
+    if (!this.verifyLevel(4)) return
     const { lock } = UCPr.CFG
     const lockPath = this.msg.match(/设置(.*)/)?.[1]
     if (!lockPath) {

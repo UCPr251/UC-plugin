@@ -250,6 +250,7 @@ helpData.push({
   group: 'UC娱乐功能',
   require: 0,
   command: '娱乐',
+  reg: '娱乐|休闲',
   desc: 'UC-娱乐功能帮助',
   cfg: 'config',
   list: [
@@ -292,6 +293,7 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
     require: 4,
     isOpen: (groupCFG) => groupCFG.config.chuoyichuo.isOpen,
     command: '戳一戳',
+    reg: '戳+(?!.*主人)|poke',
     desc: 'UC-戳一戳帮助',
     cfg: 'config',
     list: [
@@ -341,6 +343,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
     require: 0,
     isOpen: (groupCFG) => groupCFG.config.randomWife.isOpen,
     command: '随机老婆',
+    reg: '(随机)?老婆',
     desc: 'UC-随机老婆帮助',
     cfg: 'config',
     list: [
@@ -372,6 +375,7 @@ if (Check.file(Path.get('apps', 'chuoMaster.js'))) {
     require: 3,
     isOpen: (groupCFG) => groupCFG.config.chuoMaster.isOpen,
     command: '戳主人',
+    reg: '戳(?=.*主人)(回复)?',
     desc: 'UC-戳主人回复帮助',
     cfg: 'config',
     list: [
@@ -397,6 +401,7 @@ if (Check.file(Path.get('apps', 'atMaster.js'))) {
     require: 3,
     isOpen: (groupCFG) => groupCFG.config.atMaster.isOpen,
     command: '艾特主人',
+    reg: '(艾特|at|@)主人(回复)?',
     desc: 'UC-艾特主人回复帮助',
     cfg: 'config',
     list: [
@@ -422,6 +427,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
     require: 0,
     isOpen: (groupCFG) => groupCFG.config.sqtj.isOpen,
     command: '水群统计',
+    reg: '水群(统计)?',
     desc: 'UC-水群统计帮助',
     cfg: 'config',
     list: [
@@ -547,6 +553,7 @@ if (Check.file(Path.get('apps', 'JSsystem.js'))) {
     group: 'UC工具——JS插件管理系统',
     require: 4,
     command: 'JS',
+    reg: 'JS',
     desc: 'UC-JS管理系统帮助',
     cfg: 'config',
     list: [
@@ -596,6 +603,7 @@ if (isWin && Check.file(Path.get('apps', 'qsignRestart.js'))) {
     require: 4,
     command: '签名',
     desc: 'UC-签名重启帮助',
+    reg: '签名(自动)?(重启)?',
     cfg: 'config',
     list: [
       s(
@@ -632,6 +640,7 @@ if (Check.file(Path.get('apps', 'otherSet.js'))) {
     require: 4,
     command: 'other',
     desc: 'UC-otherSet帮助',
+    reg: 'other(set)?',
     cfg: 'config',
     list: [
       s(
@@ -691,6 +700,7 @@ if (Check.file(Path.get('apps', 'groupSet.js'))) {
     group: 'UC工具——groupSet（指令修改崽group.yaml）',
     require: 3,
     command: 'group',
+    reg: 'group(set)?',
     desc: 'UC-groupSet帮助',
     cfg: 'config',
     list: [
@@ -728,6 +738,7 @@ if (Check.file(Path.get('apps', 'noticeSet.js'))) {
     group: 'UC工具——noticeSet（指令修改崽notice.yaml）',
     require: 4,
     command: 'notice',
+    reg: 'notice(set)?',
     desc: 'UC-noticeSet帮助',
     cfg: 'config',
     list: [
@@ -752,6 +763,7 @@ if (Check.file(Path.get('apps', 'BackupRestore.js'))) {
     group: 'UC工具——备份数据',
     require: 4,
     command: '备份',
+    reg: '备份(数据)?',
     desc: 'UC-备份数据帮助',
     cfg: 'config',
     list: [
@@ -801,6 +813,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js'))) {
     require: 0,
     isOpen: (groupCFG) => Data.check('BlivePush') && groupCFG.config.BlivePush.isGroup,
     command: '直播推送',
+    reg: '直播(推送)?',
     desc: 'UC-直播推送帮助',
     cfg: 'config',
     list: [

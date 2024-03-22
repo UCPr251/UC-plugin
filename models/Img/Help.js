@@ -17,9 +17,16 @@ export default class Help extends Base {
     return help.getData(command)
   }
 
-  /** 获取所有帮助组的command数组 */
-  static get commandArr() {
-    return _.map(UCPr.CFG.helpData, 'command').filter(Boolean)
+  static getCommand(msg) {
+    let command = _.map(UCPr.CFG.helpData, 'command').filter(Boolean).find(command => new RegExp(`^${command}`, 'i').test(msg))
+    if (command) {
+      log.debug(`直接匹配到command：${command}`)
+    } else {
+      const useReg = _.filter(UCPr.CFG.helpData, 'reg')
+      command = useReg.find(v => new RegExp(v.reg, 'i').test(msg))?.command
+      log.debug(`模糊匹配到command：${command}`)
+    }
+    return command
   }
 
   getFoldGroup(fold) {
