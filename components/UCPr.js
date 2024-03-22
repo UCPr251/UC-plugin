@@ -218,7 +218,7 @@ class UCPr {
     return UCfetch.call(this, urlCode, parameters)
   }
 
-  /** 群配置 */
+  /** 获取群配置 */
   groupCFG(groupId) {
     if (!this.group_CFG[groupId]) return this.defaultCFG
     return _.merge({}, this.group_CFG[groupId], this.CFG.lock)
