@@ -240,7 +240,7 @@ export default class UCAdmin extends UCPlugin {
       if (setData) {
         log.debug(setData)
         const [g, s] = setData.path.split('.')
-        if (isGlobal || type === 'GAconfig' || (s && !isGlobal && s in UCPr.groupCFG(groupId)[type][g])) {
+        if (isGlobal || type === 'GAconfig' || (s && !isGlobal && UCPr.groupCFG(groupId)[type][g]?.[s])) {
           showGroup = group
           // 获取新设置值
           let operation

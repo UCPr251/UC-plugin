@@ -164,7 +164,7 @@ const config = { '': 系统 }
 if (Check.file(Path.get('apps', 'qsignRestart.js'))) {
   prefix = 'qsignRestart.'
   config.签名 = {
-    title: 'UC工具——签名自动重启设置，重启生效',
+    title: 'UC工具——签名自动重启设置（修改后重启生效）',
     GM: true,
     cfg: {
       自动重启: s(
@@ -299,7 +299,7 @@ if (Check.file(Path.get('apps', 'switchBot.js'))) {
 if (Check.file(Path.get('apps', 'JSsystem.js'))) {
   prefix = 'JSsystem.'
   config.js管理 = {
-    title: 'UC工具-JS管理系统',
+    title: 'UC工具——JS管理系统设置',
     GM: true,
     cfg: {
       '': s(
@@ -334,22 +334,22 @@ if (Check.file(Path.get('apps', 'JSsystem.js'))) {
 if (Check.file(Path.get('apps', 'ActReminder.js'))) {
   prefix = 'ActReminder.'
   config.活动提醒 = {
-    title: 'UC工具——游戏活动截止前提醒群员赶紧上班',
+    title: 'UC工具——游戏活动截止提醒设置',
     cfg: {
       原神提醒: s(
         'opIsOpen',
         '原神提醒开关',
-        '原神活动截止提醒开关'
+        '原神活动截止提醒开关，建议只在需要的群内单独开启'
       ),
       星铁提醒: s(
         'srIsOpen',
         '星铁提醒开关',
-        '星铁活动截止提醒开关'
+        '星铁活动截止提醒开关，建议只在需要的群内单独开启'
       ),
       原神cron: s(
         'opCron',
         '原神提醒cron',
-        '每次检测时若原神活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+        '原神活动检测时间cron表达式，仅以全局设置为准，修改后重启生效',
         'Input',
         '0 0 12 * * ?',
         undefined,
@@ -358,7 +358,7 @@ if (Check.file(Path.get('apps', 'ActReminder.js'))) {
       星铁cron: s(
         'srCron',
         '星铁提醒cron',
-        '每次检测时若星铁活动剩余天数小于等于该值则提醒，忽略时分秒值，建议大于等于1',
+        '星铁活动检测时间cron表达式，仅以全局设置为准，修改后重启生效',
         'Input',
         '0 0 12 * * ?',
         undefined,
@@ -384,7 +384,7 @@ if (Check.file(Path.get('apps', 'ActReminder.js'))) {
         '原神活动截止提醒是否艾特全员（需管理员权限）'
       ),
       星铁艾特: s(
-        'opAtAll',
+        'srAtAll',
         '星铁全员艾特',
         '星铁活动截止提醒是否艾特全员（需管理员权限）'
       )
@@ -395,7 +395,7 @@ if (Check.file(Path.get('apps', 'ActReminder.js'))) {
 if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
   prefix = 'chuoyichuo.'
   config.戳一戳 = {
-    title: 'UC娱乐——群聊戳一戳回复设置',
+    title: 'UC娱乐——戳一戳回复设置',
     cfg: {
       '': s(
         'isOpen',
@@ -483,8 +483,8 @@ if (Check.file(Path.get('apps', 'chuoyichuo.js'))) {
 
 if (Check.file(Path.get('apps', 'chuoMaster.js'))) {
   prefix = 'chuoMaster.'
-  config.艾特主人回复 = {
-    title: 'UC娱乐——戳主人回复',
+  config.戳主人回复 = {
+    title: 'UC娱乐——戳主人回复设置',
     cfg: {
       '': s(
         'isOpen',
@@ -542,7 +542,7 @@ if (Check.file(Path.get('apps', 'chuoMaster.js'))) {
 if (Check.file(Path.get('apps', 'atMaster.js'))) {
   prefix = 'atMaster.'
   config.艾特主人回复 = {
-    title: 'UC娱乐——艾特主人回复',
+    title: 'UC娱乐——艾特主人回复设置',
     cfg: {
       '': s(
         'isOpen',
@@ -576,7 +576,7 @@ if (Check.file(Path.get('apps', 'atMaster.js'))) {
 if (Check.file(Path.get('apps', 'randomWife.js'))) {
   prefix = 'randomWife.'
   config.随机老婆 = {
-    title: 'UC娱乐——随机二次元老婆',
+    title: 'UC娱乐——随机二次元老婆设置',
     cfg: {
       '': s(
         'isOpen',
@@ -610,7 +610,7 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
 if (Check.file(Path.get('apps', 'randomMember.js'))) {
   prefix = 'randomMember.'
   config.随机群友 = {
-    title: 'UC娱乐——随机挑选群友',
+    title: 'UC娱乐——随机挑选群友设置',
     cfg: {
       '': s(
         'isOpen',
@@ -651,7 +651,7 @@ if (Check.file(Path.get('apps', 'randomMember.js'))) {
 if (Check.file(Path.get('apps', 'sqtj.js'))) {
   prefix = 'sqtj.'
   config.水群统计 = {
-    title: 'UC娱乐——统计群任一天的聊天数据',
+    title: 'UC娱乐——统计群聊聊天数据设置',
     cfg: {
       '': s(
         'isOpen',
@@ -686,7 +686,7 @@ if (Check.file(Path.get('apps', 'sqtj.js'))) {
 if (Check.file(Path.get('apps', 'camouflage.js'))) {
   prefix = 'camouflage.'
   config.伪装 = {
-    title: 'UC娱乐——群聊伪装群友发送消息',
+    title: 'UC娱乐——群聊伪装群友设置',
     cfg: {
       '': s(
         'isOpen',
@@ -740,7 +740,7 @@ if (Check.file(Path.get('apps', 'camouflage.js'))) {
 if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
   prefix = 'BlivePush.'
   config.直播推送 = {
-    title: 'UC娱乐——B站直播推送',
+    title: 'UC娱乐——B站直播推送设置',
     cfg: {
       群聊: s(
         'isGroup',
@@ -773,7 +773,7 @@ if (Check.file(Path.get('apps', 'BLivePush.js')) && Data.check('BlivePush')) {
 if (Check.file(Path.get('apps', 'bigjpg.js')) && Data.check('BlivePush')) {
   prefix = 'bigjpg.'
   config.放大图片 = {
-    title: 'UC娱乐——放大图片',
+    title: 'UC娱乐——放大图片设置',
     cfg: {
       '': s(
         'isOpen',
@@ -864,7 +864,7 @@ const GAconfig = { '': 群管 }
 if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
   prefix = 'recall.'
   GAconfig.撤回 = {
-    title: '群管·撤回',
+    title: 'UC群管·撤回',
     cfg: {
       '': s(
         'isOpen',
@@ -915,7 +915,7 @@ if (Check.file(Path.get('groupAdmin', 'recall.js'))) {
 if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
   prefix = 'mute.'
   GAconfig.禁言 = {
-    title: '群管·禁言',
+    title: 'UC群管·禁言',
     cfg: {
       '': s(
         'isOpen',
@@ -980,7 +980,7 @@ if (Check.file(Path.get('groupAdmin', 'mute.js'))) {
 if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
   prefix = 'kick.'
   GAconfig.踢人 = {
-    title: '群管·踢人',
+    title: 'UC群管·踢人',
     cfg: {
       '': s(
         'isOpen',
@@ -1007,7 +1007,7 @@ if (Check.file(Path.get('groupAdmin', 'kick.js'))) {
 if (Check.file(Path.get('groupAdmin', 'RequestAdd.js'))) {
   prefix = 'RequestAdd.'
   GAconfig.入群申请 = {
-    title: '群管·入群申请',
+    title: 'UC群管·入群申请',
     cfg: {
       '': s(
         'isOpen',
@@ -1042,7 +1042,7 @@ if (Check.file(Path.get('groupAdmin', 'RequestAdd.js'))) {
 if (Check.file(Path.get('groupAdmin', 'WM.js'))) {
   prefix = 'welcome.'
   GAconfig.入群欢迎 = {
-    title: '群管·入群欢迎',
+    title: 'UC群管·入群欢迎',
     cfg: {
       '': s(
         'isOpen',
@@ -1064,7 +1064,7 @@ if (Check.file(Path.get('groupAdmin', 'WM.js'))) {
   }
   prefix = 'mourn.'
   GAconfig.退群通知 = {
-    title: '群管·退群通知',
+    title: 'UC群管·退群通知',
     cfg: {
       '': s(
         'isOpen',
@@ -1084,7 +1084,7 @@ if (Check.file(Path.get('groupAdmin', 'WM.js'))) {
 if (Check.file(Path.get('groupAdmin', 'Increase.js'))) {
   prefix = 'Increase.'
   GAconfig.群员增加 = {
-    title: '群管·群员增加',
+    title: 'UC群管·群员增加',
     cfg: {
       '': s(
         'isOpen',
@@ -1115,7 +1115,7 @@ if (Check.file(Path.get('groupAdmin', 'Increase.js'))) {
 if (Check.file(Path.get('groupAdmin', 'Decrease.js'))) {
   prefix = 'Decrease.'
   GAconfig.群员减少 = {
-    title: '群管·群员减少',
+    title: 'UC群管·群员减少',
     cfg: {
       '': s(
         'isOpen',
@@ -1139,7 +1139,7 @@ if (Check.file(Path.get('groupAdmin', 'Decrease.js'))) {
 if (Check.file(Path.get('groupAdmin', 'floodScreen.js'))) {
   prefix = 'floodScreen.'
   GAconfig.刷屏检测 = {
-    title: '群管·刷屏检测',
+    title: 'UC群管·刷屏检测',
     cfg: {
       '': s(
         'isOpen',

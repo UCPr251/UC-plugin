@@ -29,8 +29,12 @@ export default class UCUpdate extends UCPlugin {
           fnc: 'updateAll'
         },
         {
-          reg: /^#?(UC)?(更新|刷新)授权$/i,
+          reg: /^#?UC(更新|刷新)授权$/i,
           fnc: 'refresh'
+        },
+        {
+          reg: /^#?UC切换分支(dev|master)$/i,
+          fnc: 'switchBranch'
         }
       ]
     })
@@ -38,18 +42,28 @@ export default class UCUpdate extends UCPlugin {
 
   async update(e) {
     if (!this.GM) return false
-    const Update_Plugin = new update()
-    Update_Plugin.e = e
-    Update_Plugin.reply = this.reply
-    if (Update_Plugin.getPlugin(UCPr.Plugin_Name)) {
-      await Update_Plugin.runUpdate(UCPr.Plugin_Name)
-      Data.refresh()
-      if (Update_Plugin.isUp) {
-        this.reply(`UC-plugin更新${notice}`)
-        Data.exec(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
+    let updated = false
+    if (UCPr.branch === 'master') {
+      const Update_Plugin = new update()
+      Update_Plugin.e = e
+      Update_Plugin.reply = this.reply
+      if (Update_Plugin.getPlugin(UCPr.Plugin_Name)) {
+        await Update_Plugin.runUpdate(UCPr.Plugin_Name)
+        Data.refresh()
+        updated = Update_Plugin.isUp
       }
+    } else {
+      const result = Data.execSync('git pull origin dev', Path.UC)
+      if (!result) return this.reply('更新UC插件dev分支失败，请查看控制台报错信息手动处理')
+      if (/Already/i.test(result)) {
+        return this.reply('当前UC插件dev分支已是最新')
+      }
+      updated = true
     }
-    return true
+    if (updated) {
+      this.reply(`UC-plugin更新${notice}`)
+      Data.exec(`pnpm i --filter=${UCPr.Plugin_Name}`, Path.UC)
+    }
   }
 
   async updateUnNecRes() {
@@ -151,6 +165,28 @@ export default class UCUpdate extends UCPlugin {
     UCPr.getConfig(6)
     return this.reply('刷新成功，当前授权项：\n' + Data.empty(Data.makeArrStr(output)))
   }
+
+  async switchBranch() {
+    if (!this.GM) return
+    let result, branch = 'master'
+    if (/dev/i.test(this.msg)) {
+      if (UCPr.branch === 'dev') {
+        return this.reply('当前UC插件已处于dev分支，无需切换')
+      }
+      branch = 'dev'
+      result = Data.execSync('git pull && checkout origin/dev', Path.UC)
+    } else {
+      if (UCPr.branch === 'master') {
+        return this.reply('当前UC插件已处于master分支，无需切换')
+      }
+      result = Data.execSync('checkout master', Path.UC)
+    }
+    if (result) {
+      return this.reply(`成功切换分支至${branch}，重启生效`)
+    }
+    return this.reply('切换分支失败，请查看控制台报错信息手动处理')
+  }
+
 }
 
 Data.loadTask({

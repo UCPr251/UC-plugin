@@ -136,13 +136,12 @@ class UCPr {
       const yamlPath = Path.get('groupCfg', yaml)
       const groupCFGData = file.YAMLreader(yamlPath)
       const name = Path.parse(yaml).name
-      this.group_CFG[name] = groupCFGData
       Data.watch(yamlPath, () => {
         this.group_CFG[name] = file.YAMLreader(yamlPath)
         log.whiteblod(`修改群设置文件${yaml}`)
       })
       // 合并筛选新增配置
-      const usefulData = Data.mergeCfg(groupCFGData, {
+      const usefulData = this.group_CFG[name] = Data.mergeCfg(groupCFGData, {
         config, GAconfig, permission: { Master: [], Admin: [], BlackQQ: [] }
       })
       if (!_.isEqual(groupCFGData, usefulData)) {
@@ -228,6 +227,11 @@ class UCPr {
   /** UC插件版本 */
   get version() {
     return this.package.version
+  }
+
+  /** 当前UC插件所处分支 */
+  get branch() {
+    return /dev/.test(Data.execSync('git branch --show-current', Path.UC)) ? 'dev' : 'master'
   }
 
   /** URL */

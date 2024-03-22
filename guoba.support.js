@@ -276,23 +276,23 @@ if (file.existsSync(Path.get('apps', 'ActReminder.js'))) {
     s(
       'opIsOpen',
       '原神提醒开关',
-      '原神活动截止提醒开关'
+      '原神活动截止提醒开关，建议只在需要的群内单独开启'
     ),
     s(
       'srIsOpen',
       '星铁提醒开关',
-      '星铁活动截止提醒开关'
+      '星铁活动截止提醒开关，建议只在需要的群内单独开启'
     ),
     s(
       'opCron',
       '原神提醒cron',
-      '原神活动检测时间cron表达式，默认为每天12点检测，修改后重启生效，仅以全局为准',
+      '原神活动检测时间cron表达式，仅以全局设置为准，修改后重启生效',
       'EasyCron'
     ),
     s(
       'srCron',
       '星铁提醒cron',
-      '星铁活动检测时间cron表达式，默认为每天12点检测，修改后重启生效，仅以全局为准',
+      '星铁活动检测时间cron表达式，仅以全局设置为准，修改后重启生效',
       'EasyCron'
     ),
     s(
@@ -315,7 +315,7 @@ if (file.existsSync(Path.get('apps', 'ActReminder.js'))) {
       '原神活动截止提醒是否艾特全员（需管理员权限）'
     ),
     s(
-      'opAtAll',
+      'srAtAll',
       '星铁全员艾特',
       '星铁活动截止提醒是否艾特全员（需管理员权限）'
     )
@@ -426,29 +426,29 @@ if (file.existsSync(Path.get('apps', 'chuoMaster.js'))) {
       'text',
       '回复概率',
       '戳主人回复消息的概率，0-1',
-      'InputNumber',
-      { min: 0, max: 1 }
+      'Slider',
+      { min: 0, max: 1, step: 0.01 }
     ),
     s(
       'img',
       '图片概率',
       '戳主人发送合成表情包概率，0-1',
       'InputNumber',
-      { min: 0, max: 1 }
+      { min: 0, max: 1, step: 0.01 }
     ),
     s(
       'poke',
       '反击概率',
       '戳主人反击概率，0-1',
       'InputNumber',
-      { min: 0, max: 1 }
+      { min: 0, max: 1, step: 0.01 }
     ),
     s(
       'mute',
       '禁言概率',
       '戳主人禁言概率，0-1',
       'InputNumber',
-      { min: 0, max: 1 }
+      { min: 0, max: 1, step: 0.01 }
     ),
     s(
       'muteTime',
