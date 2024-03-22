@@ -231,7 +231,7 @@ class UCPr {
 
   /** 当前UC插件所处分支 */
   get branch() {
-    return /dev/.test(Data.execSync('git branch --show-current', Path.UC)) ? 'dev' : 'master'
+    return /master/.test(Data.execSync('git branch', Path.UC).split('\n').map(v => v.trim()).filter(v => v.startsWith('* ')).map(v => v.slice(2))[0]) ? 'master' : 'dev'
   }
 
   /** URL */
