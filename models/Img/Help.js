@@ -97,7 +97,7 @@ export default class Help extends Base {
     return {
       ...this.screenData,
       helpData: data,
-      saveId: 'UC-help',
+      saveId: 'UC-Help',
       headImg: `${this.imgPath}/namecard/${_.sample(file.readdirSync(`${this.imgPath}/namecard`, { type: '.png' }))}`,
       quality: 100,
       backgroupColor

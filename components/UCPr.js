@@ -285,6 +285,11 @@ class UCPr {
     return this.config.autoBackup ?? false
   }
 
+  /** 强制仅全局 */
+  get onlyGlobal() {
+    return this.config.onlyGlobal ?? false
+  }
+
   /** 是否仅主人可操作 */
   get onlyMaster() {
     return this.config.onlyMaster ?? false

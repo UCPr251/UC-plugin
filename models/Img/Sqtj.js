@@ -15,7 +15,7 @@ export default class Sqtj extends Base {
     return {
       ...this.screenData,
       ...Data,
-      saveId: 'UC-sqtj',
+      saveId: 'UC-Sqtj',
       quality: 100
     }
   }

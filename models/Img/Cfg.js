@@ -23,12 +23,12 @@ export default class Cfg extends Base {
     return cfg.getData(data)
   }
 
-  /** 获取所有设置组的关键词|字符串 */
+  /** 获取某一类所有组的关键词|字符串 */
   static groupReg(type) {
     return Object.keys(UCPr.CFG.cfgData[type]).filter(Boolean).join('|')
   }
 
-  /** 获取某一组的各个设置的关键词正则 */
+  /** 获取某一类某一组的各个子key的关键词正则 */
   static setReg(type, group) {
     return new RegExp(Object.keys(UCPr.CFG.cfgData[type][group].cfg).filter(Boolean).join('|'), 'i')
   }
@@ -80,7 +80,7 @@ export default class Cfg extends Base {
       hasFile: isGlobal ? true : !!UCPr.group_CFG[groupId],
       type,
       groupId,
-      saveId: 'UC-cfg'
+      saveId: 'UC-Cfg'
     }
   }
 }

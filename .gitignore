@@ -22,6 +22,7 @@ apps/ji.js
 apps/card.js
 apps/RepeatInterruption.js
 apps/icqq.js
+apps/Event/groupAdmin/setTitle.js
 apps/Event/groupAdmin/searchChatHistory.js
 apps/icqq.js
 apps/RepeatInterruption.js
