@@ -1,4 +1,4 @@
 import ImgManager from './ImgManager.js'
-import MsgManager from './msgManager.js'
+import MsgManager from './MsgManager.js'
 
 export { ImgManager, MsgManager }
