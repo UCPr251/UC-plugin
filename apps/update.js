@@ -174,12 +174,12 @@ export default class UCUpdate extends UCPlugin {
         return this.reply('当前UC插件已处于dev分支，无需切换')
       }
       branch = 'dev'
-      result = Data.execSync('git pull && checkout origin/dev', Path.UC)
+      result = Data.execSync('git pull && git checkout origin/dev', Path.UC)
     } else {
       if (UCPr.branch === 'master') {
         return this.reply('当前UC插件已处于master分支，无需切换')
       }
-      result = Data.execSync('checkout master', Path.UC)
+      result = Data.execSync('git checkout master', Path.UC)
     }
     if (result) {
       return this.reply(`成功切换分支至${branch}，重启生效`)
