@@ -59,7 +59,7 @@ export default class UCCamouflage extends UCPlugin {
     this.selfCard = selfClient.info.card
     this.selfTitle = selfClient.info.title
     if (this.Cfg.isSilent) {
-      const groupData = UCPr.defaultCfg.getConfig('group')
+      const groupData = UCPr.botCfg.getConfig('group')
       groupData[this.groupId] ??= {}
       UCPr.wz.oriEnable = groupData[this.groupId].enable // 群原始功能白名单
       groupData[this.groupId].enable = ['UC-camouflage']
@@ -96,7 +96,7 @@ export default class UCCamouflage extends UCPlugin {
     this.UC.botIsOwner && this.group.setTitle(this.e.self_id, this.selfTitle).catch(e => log.error('修改群头衔错误', e))
     this.Cfg.CD && Data.redisSet(this.CDData, UCDate.getTime(this.Cfg.CD, 'm'), this.Cfg.CD * 60)
     if (this.Cfg.isSilent) {
-      const groupData = UCPr.defaultCfg.getConfig('group')
+      const groupData = UCPr.botCfg.getConfig('group')
       if (UCPr.wz.oriEnable) {
         groupData[this.groupId].enable = UCPr.wz.oriEnable
       } else {

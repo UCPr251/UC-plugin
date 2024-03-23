@@ -19,7 +19,7 @@ const removes = {
 /** 额外添加的公告id */
 const additional = {
   op: [],
-  sr: [459]
+  sr: []
 }
 
 const API = {
@@ -59,8 +59,9 @@ export default class UCActReminder extends UCPlugin {
   }
 
   async test() {
-    this.ActReminder('op')
-    this.ActReminder('sr')
+    if (!this.verifyLevel(4)) return
+    await this.ActReminder('op')
+    await this.ActReminder('sr')
   }
 
   async ActReminder(mode) {
@@ -73,7 +74,7 @@ export default class UCActReminder extends UCPlugin {
     }
     // log.debug(mode)
     // log.debug(groupsToPush[mode])
-    if (groupsToPush[mode].length) this.reminder(mode)
+    if (groupsToPush[mode].length) await this.reminder(mode)
   }
 
   async reminder(mode) {
@@ -115,7 +116,7 @@ export default class UCActReminder extends UCPlugin {
       msgToPush.push(msg)
     }
     log.whiteblod(`${type}活动数据获取完毕，开始推送`)
-    this.sendMsg(msgToPush, daysSubtracts, mode)
+    await this.sendMsg(msgToPush, daysSubtracts, mode)
   }
 
   additional(arr, res, mode) {

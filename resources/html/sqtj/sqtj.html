@@ -7,47 +7,47 @@
 </head>
 
 <body>
-  <div id="container">
+  <div id="container" style="background-image: url({{bgImg}});">
     <div class="topdiv">
       <div>
         <img src="https://q1.qlogo.cn/g?b=qq&s=100&nk={{bqd.userId}}" />
         <img src="{{pluResPath}}/img/sqtj/表情帝.png" class="wl bqd" />
         <span>表情帝</span>
-        <span>{{bqd.name}}</span>
-        <span>共发送{{bqd.faces}}张表情包</span>
+        <span class="name">{{bqd.name}}</span>
+        <span class="desc">共发送{{bqd.faces}}张表情包</span>
       </div>
       <div>
         <img src="https://q1.qlogo.cn/g?b=qq&s=100&nk={{dsw.userId}}" />
         <img src="{{pluResPath}}/img/sqtj/大水王.png" class="wl dsw" />
         <span>大水王</span>
-        <span>{{dsw.name}}</span>
-        <span>水群占比{{dsw.percentage}}%</span>
+        <span class="name">{{dsw.name}}</span>
+        <span class="desc">水群占比{{dsw.percentage}}%</span>
       </div>
       <div>
         <img src="https://q1.qlogo.cn/g?b=qq&s=100&nk={{shwz.user_id}}" />
         <img src="{{pluResPath}}/img/sqtj/深海乌贼.png" class="wl shwz" />
         <span>深海乌贼</span>
-        <span>{{shwz.nickname}}</span>
-        <span>上次发言在{{shwz.lastmsgtime}}</span>
+        <span class="name">{{shwz.name}}</span>
+        <span class="desc">上次发言在{{shwz.lastmsgtime}}</span>
       </div>
-  </div>
-  <table>
-      <tr>
-        <th>NO</th>
-        <th>昵称</th>
-        <th>消息数</th>
-        <th>表情数</th>
-        <th>消息占比</th>
-      </tr>
-      {{each charArr char,index}}
-      <tr>
-        <td>{{index+1}}</td>
-        <td><img src="https://q1.qlogo.cn/g?b=qq&s=100&nk={{char.userId}}" />{{char.name}}</td>
-        <td>{{char.times}}</td>
-        <td>{{char.faces}}</td>
-        <td>{{char.percentage}}%</td>
-      </tr>
-      {{/each}}
+    </div>
+    <table>
+        <tr>
+          <th>排名</th>
+          <th>昵称</th>
+          <th>消息数</th>
+          <th>表情数</th>
+          <th>消息占比</th>
+        </tr>
+        {{each charArr char,index}}
+        <tr>
+          <td>{{index+1}}</td>
+          <td><img src="https://q1.qlogo.cn/g?b=qq&s=100&nk={{char.userId}}" />{{char.name}}</td>
+          <td>{{char.times}}</td>
+          <td>{{char.faces}}</td>
+          <td>{{char.percentage}}%</td>
+        </tr>
+        {{/each}}
     </table>
     <div class="logo">{{date}}水群统计，消息总计{{count}}<br>{{nowTime}}<br>Created By Miao-Yunzai && UC-plugin {{version}}</div>
   </div>

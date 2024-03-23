@@ -19,7 +19,7 @@ class UCRepresent extends UCEvent {
 
   async represent(e) {
     if (!this.M || e.detail_type === 'guild') return false
-    if (!this.GM && (Check.str(UCPr.defaultCfg.masterQQ, this.at) || this.isGM(this.at))) return this.reply('群主人不能代全局主人发言哦~')
+    if (!this.GM && (Check.str(UCPr.botCfg.masterQQ, this.at) || this.isGM(this.at))) return this.reply('群主人不能代全局主人发言哦~')
     let user_id, card, nickname
     if (this.isGroup) {
       if (!this.at) return false
@@ -40,7 +40,7 @@ class UCRepresent extends UCEvent {
     Reflect.deleteProperty(e, 'uid')
     e.user_id = user_id
     e.from_id = user_id
-    e.isMaster = Check.str(UCPr.defaultCfg.masterQQ, user_id)
+    e.isMaster = Check.str(UCPr.botCfg.masterQQ, user_id)
     e.sender = {
       card,
       nickname,

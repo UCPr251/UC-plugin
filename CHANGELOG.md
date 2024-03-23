@@ -36,6 +36,8 @@
 - 优化[代发言](./apps/Event/Represent.js)，群主人不得代机器人主人或UC全局主人发言，避免未知后果
 - 优化[离线备份还原](./tools/BackupRestore.js)展示效果
 - 适配trss崽[转发消息制作和发送消息](./components/common.js)
+- 优化[水群统计](./apps/sqtj.js)图片展示效果，支持自行管理水群统计背景
+- 优化上下文序号选择逻辑，支持发送`all`便捷全部选中
 
 新增：
 

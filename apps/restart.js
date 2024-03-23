@@ -69,7 +69,7 @@ export default class UCRestart extends UCPlugin {
     await Data.redisSet(this.redisData, data, 251)
     const delayTime = 4
     Data.exec(`start restart.bat ${delayTime}`, Path.UC)
-    setTimeout(process.exit, delayTime * 500)
+    setTimeout(() => process.exit(+UCPr.isTrss), delayTime * 500)
   }
 
   checkPnpm() {

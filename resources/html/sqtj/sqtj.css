@@ -10,25 +10,37 @@
 
 body {
     font-family: "SourceHanSansCN-Heavy";
-    transform: scale(1);
+    font-size: 36px;
 }
 
 #container {
-    background-image: url(../../img/sqtj/背景.png);
     background-size: cover;
-    color: white;
-    width: 900px;
+    background-color: #b7eeff;
+    /* border: 10px solid rgb(105, 180, 255); */
+    width: 1300px;
+}
+
+#container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background: inherit;
+    filter: blur(5px);
+    z-index: 0;
 }
 
 .topdiv {
-    background-color: rgb(14, 5, 19);
-    width: 900px;
-    height: 200px;
+    width: 1300px;
+    height: 400px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    padding-top: 20px;
+    margin-top: 10px;
+    padding-top: 50px;
 }
 
 .topdiv div {
@@ -36,14 +48,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    padding: 20px;
 }
 
 img {
-    width: 80px;
-    height: 80px;
+    width: 160px;
+    height: 160px;
     border-radius: 100%;
-    z-index: 10;
+    object-fit: cover;
 }
 
 .wl {
@@ -52,34 +64,40 @@ img {
 }
 
 .dsw {
-    top: -35px;
-    left: 33px;
+    top: -70px;
+    left: 100px;
 }
 
 .bqd {
-    width: 100px;
-    height: 100px;
     top: 0px;
+    width: 200px;
+    height: 200px;
 }
 
 .shwz {
-    top: -25px;
-    left: 13px;
-    width: 150px;
-    height: 150px;
-    z-index: 5;
+    top: -48px;
+    left: 66px;
+    width: 300px;
+    height: 300px;
 }
 
 .topdiv div span {
-    margin-top: 5px;
-    width: 160px;
+    margin-top: 10px;
+    width: 400px;
     text-align: center;
     z-index: 10;
 }
 
-.topdiv div span:nth-child(5) {
-    width: 160px;
-    font-size: 12px;
+.name {
+    color: transparent;
+    background-image: linear-gradient(to right, #001bff, #00f0ff, #ff2600, #ffe100, #7300ff, #00ff88);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.desc {
+    font-size: 24px;
+    color: #1d2b2f;
 }
 
 table {
@@ -89,35 +107,23 @@ table {
     margin-top: 0px;
 }
 
-tr:nth-child(1) {
-    background-color: rgb(14, 5, 19);
-}
-
-.last {
-    line-height: 40px;
-    background-color: rgb(14, 5, 19);
-}
-
 th,
 td {
     text-align: center;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    padding: 20px;
+    /* border-top: 2px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 2px solid #ccc; */
     position: relative;
 }
 
-tr>th:nth-child(2) {
-    text-align: left;
-    padding-left: 12%;
-}
-
 td img {
-    width: 30px;
-    height: 30px;
+    width: 60px;
+    height: 60px;
     border-radius: 100%;
-    margin-right: 5px;
-    margin-left: 20%;
+    margin-right: 10px;
+    margin-left: 10%;
 }
 
 td:nth-child(2) {
@@ -133,8 +139,8 @@ td:nth-child(2) {
     background-image: url(../../img/sqtj/金牌.png);
     position: absolute;
     top: 17%;
-    left: 36%;
-    background-size: 30px 30px;
+    left: 34%;
+    background-size: 60px 60px;
     background-repeat: no-repeat;
 }
 
@@ -145,8 +151,8 @@ td:nth-child(2) {
     background-image: url(../../img/sqtj/银牌.png);
     position: absolute;
     top: 17%;
-    left: 34%;
-    background-size: 25px 30px;
+    left: 32%;
+    background-size: 50px 60px;
     background-repeat: no-repeat;
 }
 
@@ -157,15 +163,52 @@ td:nth-child(2) {
     background-image: url(../../img/sqtj/铜牌.png);
     position: absolute;
     top: 17%;
-    left: 32%;
-    background-size: 30px 30px;
+    left: 27%;
+    background-size: 60px 60px;
+    background-repeat: no-repeat;
+}
+
+#container>table>tbody>tr:nth-child(2)>td:nth-child(2)::after {
+    background-image: url(../../img/sqtj/第一.png);
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: -4%;
+    left: 9%;
+    background-size: 60px 60px;
+    background-repeat: no-repeat;
+}
+
+#container>table>tbody>tr:nth-child(3)>td:nth-child(2)::after {
+    background-image: url(../../img/sqtj/第二.png);
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: -4%;
+    left: 9%;
+    background-size: 60px 60px;
+    background-repeat: no-repeat;
+}
+
+#container>table>tbody>tr:nth-child(4)>td:nth-child(2)::after {
+    background-image: url(../../img/sqtj/第三.png);
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: -4%;
+    left: 9%;
+    background-size: 60px 60px;
     background-repeat: no-repeat;
 }
 
 .logo {
-    font-size: 12px;
-    line-height: 20px;
-    margin-top: 10px;
+    font-size: 24px;
+    line-height: 40px;
+    padding-top: 20px;
+    padding-bottom: 10px;
     text-align: center;
-    color: #fff;
+    color: #000;
 }

@@ -237,18 +237,20 @@ export default class UCPlugin extends plugin {
       if (result === true) return
       if (result) msg = result
     }
-    let numMatch = msg.match(/\d+/g)
-    if (/^[1-9]\d*\s*-\s*[1-9]\d*$/.test(this.msg)) {
-      const [start, end] = this.msg.match(/\d+/g).map(Number)
+    let numMatch
+    if (/all/i.test(msg)) {
+      numMatch = _.range(0, list.length)
+    } else if ((numMatch = /^([1-9]\d*)\s*-\s*([1-9]\d*)$/.exec(msg))) {
+      const [start, end] = numMatch.slice(1).map(Number)
       if (start > end) return this.reply('???')
-      numMatch = _.range(start, Math.min(end, list.length) + 1)
+      numMatch = _.range(start - 1, Math.min(end, list.length))
     } else {
-      numMatch = numMatch?.filter(num => num >= 1 && num <= list.length)
+      numMatch = msg.match(/\d+/g)?.filter(num => num >= 1 && num <= list.length).map(num => num - 1)
     }
     if (!numMatch?.length) {
       return this.reply('请输入有效的序号或取消操作')
     }
-    const arr = numMatch.map(num => list[num - 1])
+    const arr = numMatch.map(num => list[num])
     this.finishUCcontext('__chooseContext')
     if (typeof fnc === 'function') fnc(arr, data)
     else fnc && this[fnc](arr, data)

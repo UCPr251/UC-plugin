@@ -1,6 +1,6 @@
 /* eslint-disable no-labels */
 import { Check, Data, Path, UCDate, UCPr, common, file } from '../components/index.js'
-import { UCPlugin, Sqtj } from '../models/index.js'
+import { UCPlugin, Sqtj, ImgManager } from '../models/index.js'
 import moment from 'moment'
 import _ from 'lodash'
 
@@ -16,12 +16,16 @@ export default class UCSqtj extends UCPlugin {
       event: 'message.group',
       rule: [
         {
-          reg: /^#?(UC)?((重新)?分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?水群统计(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
+          reg: /^#?(UC)?((重新)?分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?(水群统计|sqtj)(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
           fnc: 'sqtj'
         },
         {
           reg: /^#?(UC)?一(周|月)水群统计$/i,
-          fnc: 'sqtjD'
+          fnc: 'sqtjWM'
+        },
+        {
+          reg: /^#?(UC)?(增加|新增|上传|查看|删除)水群统计背景$/i,
+          fnc: 'manageSqtjBG'
         },
         {
           reg: /^#?水群推送测试$/,
@@ -49,9 +53,9 @@ export default class UCSqtj extends UCPlugin {
     return file.JSONsaver(this.jsonPath, data)
   }
 
-  getDayTimestamps() {
-    const startOfDay = moment(this.date).startOf('d')
-    const endOfDay = moment(this.date).endOf('d')
+  getDayTimestamps(date = this.date) {
+    const startOfDay = moment(date).startOf('d')
+    const endOfDay = moment(date).endOf('d')
     return {
       start: startOfDay.valueOf() / 1000,
       end: endOfDay.valueOf() / 1000
@@ -59,8 +63,8 @@ export default class UCSqtj extends UCPlugin {
   }
 
   async sqtj(e) {
-    if (!this.verifyPermission(this.Cfg.use)) return false
     if (!this.Cfg.isOpen) return false
+    if (!this.verifyPermission(this.Cfg.use)) return
     if (ing[this.groupId]) {
       return this.reply('当前正在生成中，请等待……', true)
     }
@@ -112,8 +116,20 @@ export default class UCSqtj extends UCPlugin {
     return true
   }
 
-  async sqtjD(e) {
+  async sqtjWM(e) {
+    if (this.B || !this.Cfg.isOpen) return false
+    if (ing[this.groupId]) {
+      return this.reply('当前正在生成中，请等待……', true)
+    }
+  }
 
+  async manageSqtjBG() {
+    if (!this.Cfg.isOpen) return false
+    if (!this.verifyLevel(4)) return
+    if (!this.checkUnNecRes()) return
+    const manager = ImgManager.create(Path.get('unNecRes', 'sqtj'), this, '水群统计背景')
+    const type = this.msg.includes('查看') ? 'view' : this.msg.includes('删除') ? 'del' : 'add'
+    return manager[type]()
   }
 
   async getChatHistory(start, end, lastSeq) {
@@ -160,16 +176,19 @@ export default class UCSqtj extends UCPlugin {
     return filterData
   }
 
-  async getImgData(filterData, count) {
+  async getImgData(filterData, count, WM = false) {
     const charArr = _.orderBy(_.values(filterData), ['times', 'faces', 'userId'], ['desc', 'desc', 'asc']).slice(0, 10)
-    for (const i in charArr) {
-      charArr[i].percentage = (charArr[i].times / count * 100).toFixed(2)
+    for (const char of charArr) {
+      char.percentage = (char.times / count * 100).toFixed(2)
+      char.name = _.truncate(char.name, { length: 15, omission: '…' })
     }
+    if (WM) return charArr
     const dsw = charArr[0]
     const bqd = _.maxBy(charArr, 'faces')
     const memberDataArr = Array.from((await this.e.group.getMemberMap()).values())
     const shwz = _.minBy(memberDataArr, 'last_sent_time')
-    shwz.lastmsgtime = UCDate.diff(Date.now() - shwz.last_sent_time * 1000).toStr() + '前'
+    shwz.name = _.truncate(shwz.nickname, { length: 10, omission: '…' })
+    shwz.lastmsgtime = UCDate.format(shwz.last_sent_time * 1000)
     return { charArr, dsw, bqd, shwz }
   }
 

@@ -104,8 +104,9 @@ export default class ImgManager extends Base {
     const successed = []
     /** 上传失败的图片、原因 */
     const failed = []
-    log.debug(thisArg.file)
+    thisArg.file && log.debug(thisArg.file)
     if (thisArg.img) {
+      thisArg.finishUCcontext()
       if (solo) thisArg.img = [thisArg.img[0]]
       if (thisArg.img.length === 1) {
         const result = await Data.download(thisArg.img[0], Path.temp, this.name)
@@ -130,12 +131,13 @@ export default class ImgManager extends Base {
         moveImgFnc(tempPath)
       }
     } else if (thisArg.file) {
+      thisArg.finishUCcontext()
       const [zipUrl, fileBase] = await common.getFileUrl(thisArg) ?? []
-      if (!zipUrl || !fileBase) return thisArg.finishReply('获取文件下载链接失败')
+      if (!zipUrl || !fileBase) return thisArg.reply('获取文件下载链接失败')
       let { name: fileName, ext } = Path.parse(fileBase)
       ext = ext.toLowerCase()
       if (ext === '.zip') {
-        if (!zip) return thisArg.finishReply('当前操作不支持上传压缩包')
+        if (!zip) return thisArg.reply('当前操作不支持上传压缩包')
         thisArg.finishUCcontext()
         // 下载压缩包
         const zipPath = await Data.download(zipUrl, Path.temp, fileBase)
@@ -153,8 +155,8 @@ export default class ImgManager extends Base {
           return thisArg.reply(replMsg)
         })
       } else if (ext === '.7z' || ext === '.rar' || ext === '.gz' || ext === '.bz2') {
-        if (!zip) return thisArg.finishReply('当前操作不支持上传压缩包且压缩包仅支持zip格式')
-        return thisArg.finishReply('操作失败，压缩包仅支持zip格式')
+        if (!zip) return thisArg.reply('当前操作不支持上传压缩包且压缩包仅支持zip格式')
+        return thisArg.reply('操作失败，压缩包仅支持zip格式')
       } else if (ext === '.jpg' || ext === '.jpeg' || ext === '.png' || ext === '.webp' || ext === '.gif') {
         const toPath = correctName(fileBase)
         if (toPath) {
@@ -163,14 +165,14 @@ export default class ImgManager extends Base {
           else failed.push(result)
         }
       } else {
-        return thisArg.finishReply('不支持的格式：' + ext)
+        return thisArg.reply('不支持的格式：' + ext)
       }
     } else {
       thisArg.reply('请发送图片、文件或zip压缩包，或取消操作')
       return false
     }
     fnc && thisArg[fnc](successed)
-    return thisArg.finishReply(makeResultMsg().join('\n'))
+    return thisArg.reply(makeResultMsg().join('\n'))
   }
 
   async Del_View(name, { msgNum, imgNum }) {

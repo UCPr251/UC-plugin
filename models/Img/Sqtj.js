@@ -1,3 +1,4 @@
+import { file, Path } from '../../components/index.js'
 import Base from './Base.js'
 
 export default class Sqtj extends Base {
@@ -12,11 +13,14 @@ export default class Sqtj extends Base {
   }
 
   getData(Data) {
+    const bgImgFolder = Path.get('unNecRes', 'sqtj')
+    const imgs = file.readdirSync(bgImgFolder, { type: 'File' })
+    const bgImg = imgs.length ? Path.join(bgImgFolder, imgs[Math.floor(imgs.length * Math.random())]).replace(/\\/g, '/') : null
     return {
       ...this.screenData,
       ...Data,
-      saveId: 'UC-Sqtj',
-      quality: 100
+      bgImg,
+      saveId: 'UC-Sqtj'
     }
   }
 }

@@ -271,8 +271,13 @@ class UCPr {
   }
 
   /** 机器人本体设置 */
-  get defaultCfg() {
+  get botCfg() {
     return defaultCfg || {}
+  }
+
+  /** 是否trss崽 */
+  get isTrss() {
+    return this.botCfg.package.name === 'trss-yunzai'
   }
 
   /** 是否合并机器人主人和插件主人 */
@@ -357,7 +362,7 @@ class UCPr {
   /** 全局主人列表 */
   get GlobalMaster() {
     if (!this.isDefaultMaster) return this.permission.GlobalMaster
-    return _.uniq(this.defaultCfg.masterQQ.concat(this.permission.GlobalMaster)).map(Number)
+    return _.uniq(this.botCfg.masterQQ.concat(this.permission.GlobalMaster)).map(Number)
   }
 
   /** 指定群管理对象 */
@@ -392,7 +397,7 @@ class UCPr {
 
   /** 机器人qq号 */
   get qq() {
-    return Number(Bot.uin ?? this.defaultCfg.qq)
+    return Number(Bot.uin ?? this.botCfg.qq)
   }
 
   /** 签名自动重启设置 */

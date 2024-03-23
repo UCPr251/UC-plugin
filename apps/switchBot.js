@@ -4,7 +4,7 @@ import _ from 'lodash'
 
 function init() {
   setTimeout(() => {
-    const groupData = UCPr.defaultCfg.getConfig('group')
+    const groupData = UCPr.botCfg.getConfig('group')
     tempData = _.cloneDeep(groupData)
     switchBotData.forEach(groupId => _.set(groupData, `${groupId}.enable`, ['UC-switchBot']))
   }, 20)
@@ -40,7 +40,7 @@ export default class UCSwitchBot extends UCPlugin {
       ]
     })
     if (!this.isGroup) return
-    this.groupData = UCPr.defaultCfg.getConfig('group')
+    this.groupData = UCPr.botCfg.getConfig('group')
     this.isClose = _.isEqual(_.get(this.groupData, `${this.groupId}.enable`), ['UC-switchBot'])
   }
 
@@ -50,7 +50,7 @@ export default class UCSwitchBot extends UCPlugin {
     } else {
       switchBotData = file.JSONreader(Path.switchBotjson)
     }
-    tempData = _.cloneDeep(UCPr.defaultCfg.getConfig('group'))
+    tempData = _.cloneDeep(UCPr.botCfg.getConfig('group'))
     Data.watch(Path.switchBotjson, () => (switchBotData = file.JSONreader(Path.switchBotjson)))
     init()
     Data.watch(Path.get('botConfig', 'group.yaml'), init)

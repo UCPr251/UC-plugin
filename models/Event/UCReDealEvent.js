@@ -15,7 +15,7 @@ export default class UCReDealEvent extends UCEvent {
     /** 是否匹配BotName前缀 */
     this.isPrefix = this.reg.test(this.msg)
     /** 群配置 */
-    this.groupData = UCPr.defaultCfg.getConfig('group')
+    this.groupData = UCPr.botCfg.getConfig('group')
     /** 当前已下线 */
     this.isClosed = _.isEqual(_.get(this.groupData, `${this.groupId}.enable`), ['UC-switchBot'])
   }
