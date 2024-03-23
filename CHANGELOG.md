@@ -35,6 +35,7 @@
 - 优化[锅巴配置](./guoba.support.js)，更加美观、人性化，优化修改逻辑
 - 优化[代发言](./apps/Event/Represent.js)，群主人不得代机器人主人或UC全局主人发言，避免未知后果
 - 优化[离线备份还原](./tools/BackupRestore.js)展示效果
+- 适配trss崽[转发消息制作和发送消息](./components/common.js)
 
 新增：
 

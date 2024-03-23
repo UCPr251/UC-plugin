@@ -48,7 +48,7 @@ export default class UCRestart extends UCPlugin {
       return this.reply('[UC]云崽根目录app.js文件丢失，无法重启')
     }
     let isPM2 = false
-    if (process.argv[1].includes('pm2')) {
+    if (process.argv[1].includes('pm2') || process.env.app_type == 'pm2') {
       isPM2 = true
       const warnInfo = '当前云崽正在后台运行，重启后将尝试关闭云崽pm2进程，请关注控制台'
       log.warn(warnInfo)

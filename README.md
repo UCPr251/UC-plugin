@@ -81,7 +81,7 @@ pnpm i --filter=UC-plugin
 
 - 开发、测试环境：Windows11-Nodejs20
 
-- 本人目前只用[喵崽][Miao-Yunzai]icqq协议，暂不考虑主动适配其他崽或协议
+- 本人目前只用[喵崽][Miao-Yunzai]icqq协议，暂不考虑主动适配其他崽或协议(trss随缘适配，有问题可以提)
 
 - 各版本更新内容请查看[更新日志CHANGELOG](./CHANGELOG.md)
 
