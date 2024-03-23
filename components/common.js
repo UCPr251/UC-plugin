@@ -20,7 +20,7 @@ const common = {
     try {
       // 适配trss
       // return await Bot[`send${type}Msg`](loc, msg)
-      return await Bot[`pick${type}`](loc).sendMsg(msg)
+      return await Bot[`pick${type}`](+loc).sendMsg(msg)
     } catch (err) {
       log.error(`[common.sendMsgTo]发送${type} ${loc}消息错误`, msg, err)
       return false
