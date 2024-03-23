@@ -1,5 +1,4 @@
-// import Data from '#UCData'
-import Data from '../dev/Data.js'
+import Data from '#UCData'
 import file from './file.js'
 import Path from './Path.js'
 import UCDate from './UCDate.js'

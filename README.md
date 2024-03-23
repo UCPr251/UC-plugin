@@ -312,11 +312,11 @@ pnpm i --filter=UC-plugin
 
 若有报错欢迎提[issue]和[pr]！
 
-[:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
-
 ## 其他
 
 - [UC图片资源仓库](https://gitee.com/UCPr251/UC-plugin-unNecRes) 若想添加UC初始图片，请向该仓库发起pr
+
+[:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
 
 ## 赞助鸣谢
 
