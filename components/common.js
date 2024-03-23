@@ -350,12 +350,8 @@ const common = {
    * @param isBot  转发信息是否为Bot
    */
   async makeForwardMsg(e, msg, title = undefined, isBot = true) {
-    let nickname = isBot ? Bot.nickname : e.sender.nickname
     const user_id = isBot ? Bot.uin : e.sender.user_id
-    if (e.isGroup && isBot) {
-      const info = await Bot.getGroupMemberInfo(e.group_id, Bot.uin)
-      nickname = info?.card || info?.nickname || user_id
-    }
+    const nickname = isBot ? (Bot.nickname ?? user_id) : e.sender.nickname
     const userInfo = {
       user_id,
       nickname
