@@ -32,6 +32,13 @@ const groupsToPush = {
   sr: []
 }
 
+const pushed = {
+  op: [],
+  sr: []
+}
+
+const ing = {}
+
 export default class UCActReminder extends UCPlugin {
   constructor(e) {
     super({
@@ -65,7 +72,7 @@ export default class UCActReminder extends UCPlugin {
   }
 
   async ActReminder(mode) {
-    const gl = Array.from(Bot.gl.keys())
+    const gl = Array.from(new Set(Bot.gl.keys())).map(Number)
     for (const groupId of gl) {
       const Cfg = UCPr.groupCFG(groupId).config.ActReminder
       if (Cfg[`${mode}IsOpen`]) {
@@ -78,29 +85,35 @@ export default class UCActReminder extends UCPlugin {
   }
 
   async reminder(mode) {
+    if (ing[mode]) return
+    ing[mode] = true
     const type = mode === 'op' ? '原神' : '星铁'
     log.whiteblod(`开始进行${type}活动截止提醒推送`)
     const res = await fetch(API[mode])
       .then(res => res.json())
       .then(res => res.data)
     const list = mode === 'op' ? res?.list : res?.pic_list?.[0]?.type_list
-    if (!list) return log.error(`获取${type}活动公告数据失败`)
+    if (!list) {
+      ing[mode] = false
+      return log.error(`获取${type}活动公告数据失败`)
+    }
     let _data
     if (mode === 'op') {
       _data = _.find(list, { type_id: 1, type_label: '活动公告' })?.list
     } else {
       _data = _.find(list, { pic_type: 2 })?.list
     }
-    if (!_data) return log.error(`筛选${type}活动公告数据失败`)
+    if (!_data) {
+      ing[mode] = false
+      return log.error(`筛选${type}活动公告数据失败`)
+    }
     this.additional(_data, res, mode)
     const data = _data
       .filter(v => !removes[mode].includes(v.ann_id))
       .map(v => _.pick(v, ['title', 'subtitle', 'start_time', 'end_time', 'banner', 'img']))
     const diffs = data.map(v => UCDate.diffDate(undefined, v.end_time))
     const subtracts = diffs.map(v => v.toStr())
-    // log.debug(subtracts)
     const daysSubtracts = diffs.map(v => v.Y * 365 + v.M * 30 + v.D)
-    // log.debug(daysSubtracts)
     const duration = data.map(v => UCDate.diffDate(v.start_time, v.end_time).toStr())
     const msgToPush = []
     for (const i in daysSubtracts) {
@@ -132,6 +145,8 @@ export default class UCActReminder extends UCPlugin {
   async sendMsg(msgToPush, daysSubtracts, mode) {
     log.debug(daysSubtracts)
     for (const { groupId, Cfg } of groupsToPush[mode]) {
+      if (pushed[mode].includes(groupId)) continue
+      pushed[mode].push(groupId)
       log.debug('推送处理' + groupId)
       for (const i in daysSubtracts) {
         if (daysSubtracts[i] > Cfg[`${mode}Days`]) continue
@@ -139,7 +154,8 @@ export default class UCActReminder extends UCPlugin {
         await common.sleep(1)
       }
     }
-    groupsToPush[mode] = []
+    groupsToPush[mode] = pushed[mode] = []
+    ing[mode] = false
   }
 
 }

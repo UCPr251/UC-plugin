@@ -104,7 +104,7 @@ export default class UCSqtj extends UCPlugin {
     const count = chatHistoryArr.length
     sqtjData.count = count
     sqtjData.chatHistoryArr = chatHistoryArr
-    if (this.Cfg.isSave && !_.isEqual(sqtjData, localData)) this.saveLocalData(sqtjData)
+    if (!_.isEqual(sqtjData, localData)) this.saveLocalData(sqtjData)
     if (_.isEmpty(filterData)) {
       ing[this.groupId] = 0
       return this.reply('额(⊙o⊙)……暂时没有数据捏')
@@ -269,7 +269,6 @@ async function getSqtjData(groupId, text) {
   sqtj.Cfg = Cfg
   const localData = sqtj.getLocalData()
   const sqtjData = localData ? _.cloneDeep(localData) : { isWholeDay: false, count: 0, chatHistoryArr: [] }
-  const shouldSave = !(localData && localData.isWholeDay)
   let chatHistoryArr = sqtjData.chatHistoryArr
   if (!sqtjData.isWholeDay) {
     const { start, end } = sqtj.getDayTimestamps()
@@ -279,8 +278,6 @@ async function getSqtjData(groupId, text) {
   }
   sqtjData.count = chatHistoryArr.length
   sqtjData.chatHistoryArr = chatHistoryArr
-  if (Cfg.isSave && shouldSave) {
-    sqtj.saveLocalData(sqtjData)
-  }
+  localData?.isWholeDay || sqtj.saveLocalData(sqtjData)
   return { sqtjData, sqtj, e }
 }
