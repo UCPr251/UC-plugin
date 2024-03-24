@@ -68,6 +68,7 @@ export default class MsgManager extends Base {
 
   del() {
     this.dirs = file.readdirSync(this.folderPath, { type: 'Directory' })
+    if (!this.dirs.length) return this.reply('当前未设置自定义' + this.note)
     this.title = `请选择要删除的${this.note}`
     this.e.data = {
       list: this.dirs,

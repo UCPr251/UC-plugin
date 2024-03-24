@@ -2,13 +2,13 @@ import { file, Path } from '../../components/index.js'
 import Base from './Base.js'
 
 export default class Sqtj extends Base {
-  constructor(thisArg) {
+  constructor(thisArg, model = 'sqtj') {
     super(thisArg)
-    this.model = 'sqtj'
+    this.model = model
   }
 
-  static get(thisArg, Data) {
-    const help = new Sqtj(thisArg)
+  static get(thisArg, Data, model) {
+    const help = new Sqtj(thisArg, model)
     return help.getData(Data)
   }
 

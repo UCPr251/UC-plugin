@@ -20,8 +20,8 @@ export default class UCSqtj extends UCPlugin {
           fnc: 'sqtj'
         },
         {
-          reg: /^#?(UC)?一(周|月)水群统计$/i,
-          fnc: 'sqtjWM'
+          reg: /^#?(UC)?(\d+天|本?(周|月))水群统计$/i,
+          fnc: 'sqtjDWM'
         },
         {
           reg: /^#?(UC)?(增加|新增|上传|查看|删除)水群统计背景$/i,
@@ -35,6 +35,7 @@ export default class UCSqtj extends UCPlugin {
     })
     if (!this.groupId) return
     this.floderPath = Path.get('sqtj', this.groupId)
+    if (this.msg.includes('一')) return
     this.isYesterday = this.msg.includes('昨')
     const matchDate = UCDate.getFormatedDate(this.msg)
     this.isToday = !this.isYesterday && !matchDate
@@ -53,13 +54,32 @@ export default class UCSqtj extends UCPlugin {
     return file.JSONsaver(this.jsonPath, data)
   }
 
-  getDayTimestamps(date = this.date) {
-    const startOfDay = moment(date).startOf('d')
-    const endOfDay = moment(date).endOf('d')
+  getTimestamps(momentCilent) {
     return {
-      start: startOfDay.valueOf() / 1000,
-      end: endOfDay.valueOf() / 1000
+      start: momentCilent.startOf('d').valueOf() / 1000,
+      end: momentCilent.endOf('d').valueOf() / 1000
     }
+  }
+
+  getDaysTimestamps(n) {
+    const dates = []
+    for (let i = 0; i < n; i++) {
+      const date = moment().subtract(i, 'days')
+      dates.unshift(this.getTimestamps(date))
+    }
+    return dates
+  }
+
+  getMonthTimestamps() {
+    const dates = []
+    const today = moment().startOf('day')
+    const startOfMonth = moment().startOf('month')
+    const currentDate = moment(today)
+    while (currentDate.isSameOrAfter(startOfMonth, 'day')) {
+      dates.unshift(this.getTimestamps(currentDate))
+      currentDate.subtract(1, 'days')
+    }
+    return dates
   }
 
   async sqtj(e) {
@@ -96,7 +116,7 @@ export default class UCSqtj extends UCPlugin {
         this.reply(`开始分析${this.isYesterday ? '昨' : '今'}日水群统计，请等待……`)
       }
       sqtjData.isWholeDay = !this.isToday
-      const { start, end } = this.getDayTimestamps()
+      const { start, end } = this.getTimestamps(moment(this.date))
       const newData = await this.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
       chatHistoryArr = [...newData, ...chatHistoryArr]
     }
@@ -116,11 +136,12 @@ export default class UCSqtj extends UCPlugin {
     return true
   }
 
-  async sqtjWM(e) {
+  async sqtjDWM(e) {
     if (this.B || !this.Cfg.isOpen) return false
     if (ing[this.groupId]) {
       return this.reply('当前正在生成中，请等待……', true)
     }
+    const mode = /\d+天|本?(周|月)/.exec(this.msg)[0]
   }
 
   async manageSqtjBG() {
@@ -271,7 +292,7 @@ async function getSqtjData(groupId, text) {
   const sqtjData = localData ? _.cloneDeep(localData) : { isWholeDay: false, count: 0, chatHistoryArr: [] }
   let chatHistoryArr = sqtjData.chatHistoryArr
   if (!sqtjData.isWholeDay) {
-    const { start, end } = sqtj.getDayTimestamps()
+    const { start, end } = sqtj.getTimestamps(moment(sqtj.date))
     const newData = await sqtj.getChatHistory(start, end, chatHistoryArr[0]?.seq ?? 0)
     chatHistoryArr = [...newData, ...chatHistoryArr]
     sqtjData.isWholeDay = true

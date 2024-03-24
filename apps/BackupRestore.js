@@ -195,7 +195,7 @@ Data.loadTask({
     })
     child.stderr.on('data', (data) => {
       const errInfo = log.error(today + '自动备份失败', data)
-      common.sendMsgTo(UCPr.GlobalMaster[0], errInfo, 'Private')
+      common.sendMsgTo(UCPr.GlobalMaster[0], errInfo, 'Friend')
     })
     child.on('exit', (code) => {
       log.red(today + `自动备份结束，退出码${code}：${['正常退出', '路径错误', '备份过程中发生错误'][code]}`)

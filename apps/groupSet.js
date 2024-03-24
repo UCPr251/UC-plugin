@@ -108,7 +108,7 @@ export default class UCGroupSet extends UCPlugin {
     const path = (isGlobal ? 'default' : groupId) + '.onlyReplyAt'
     _.set(Cfg, path, operation)
     saveCfg()
-    return this.reply(`操作成功，${operation ? '开启' : '关闭'}${isGlobal ? '默认' : `群${groupId}`}配置仅回复艾特`)
+    return this.reply(`操作成功，${operation ? '开启' : '关闭'}${isGlobal ? '默认' : `群${groupId}`}配置${operation === 2 ? '非主人' : ''}仅回复艾特`)
   }
 
   async singleCD() {

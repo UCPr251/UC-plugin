@@ -14,9 +14,10 @@ const common = {
    * 发送消息
    * @param {number} loc 群号、Q号
    * @param {Array|string} msg 要发送的消息
-   * @param {'Group'|'Private'} type
+   * @param {'Group'|'Friend'} type
    */
   async sendMsgTo(loc, msg, type) {
+    if (type === 'Private') type = 'Friend'
     try {
       // 适配trss
       // return await Bot[`send${type}Msg`](loc, msg)

@@ -38,7 +38,7 @@ class UCDecreaseEvent extends UCGAPlugin {
     replyMsg.push(segment.image(common.getAvatarUrl(this.userId)))
     replyMsg.push(notice + '：' + this.userName)
     replyMsg.push('\n账号：' + this.userId)
-    await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Private')
+    await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Friend')
   }
 
 }

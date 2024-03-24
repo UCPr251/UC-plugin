@@ -52,7 +52,7 @@ class UCRequestGroupAdd extends UCGAPlugin {
     if (this.Cfg.isNoticeGroup) this.reply(replyMsg)
     if (!this.Cfg.isNoticeMaster) return
     replyMsg.splice(1, 0, segment.image(common.getAvatarUrl(this.groupId, 'group')), '群聊：' + this.groupId, '\n群昵称：' + this.groupName)
-    await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Private')
+    await common.sendMsgTo(this.GAconfig.permission?.Master[0] ?? UCPr.GlobalMaster[0], replyMsg, 'Friend')
   }
 
 }

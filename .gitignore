@@ -1,8 +1,8 @@
 .*
+test*
 config
 data
 dev
-test.js
 examples.js
 UC功能解析.md
 node_modules

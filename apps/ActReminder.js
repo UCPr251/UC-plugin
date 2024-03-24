@@ -113,7 +113,7 @@ export default class UCActReminder extends UCPlugin {
       .map(v => _.pick(v, ['title', 'subtitle', 'start_time', 'end_time', 'banner', 'img']))
     const diffs = data.map(v => UCDate.diffDate(undefined, v.end_time))
     const subtracts = diffs.map(v => v.toStr())
-    const daysSubtracts = diffs.map(v => v.Y * 365 + v.M * 30 + v.D)
+    const daysSubtracts = diffs.map(({ Y, M, D }) => Y * 365 + M * 30 + D)
     const duration = data.map(v => UCDate.diffDate(v.start_time, v.end_time).toStr())
     const msgToPush = []
     for (const i in daysSubtracts) {
