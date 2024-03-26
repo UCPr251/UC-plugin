@@ -43,7 +43,7 @@ export default class UCAdmin extends UCPlugin {
           fnc: 'UC_HELP'
         },
         {
-          reg: /^#?UC(全局)?(群管)?设置\s*.*/i,
+          reg: new RegExp(`^#?UC(全局)?(群管)?(${Cfg.groupReg('GAconfig')}|${Cfg.groupReg('config')})?设置\\s*.*`, 'i'),
           fnc: 'UC_CFG'
         },
         {
@@ -217,14 +217,15 @@ export default class UCAdmin extends UCPlugin {
 
   async UC_CFG() {
     if (!this.verifyLevel(1)) return
-    // #UC设置str1 str2 str3  str1:含设置组类 str2:含组内设置 str3:含修改值
     let isGlobal = /全局/.test(this.msg)
-    if (isGlobal && !this.GM) return false
-    const str1 = this.msg.replace(/#?UC(全局)?(群管)?设置/i, '').trim()
+    if (isGlobal && !this.GM) return
+    // _str1 str2 str1:含设置组 str2:含组设置 str3:含修改值
+    const [_str1, _str2] = this.msg.match(/#?UC(?:全局)?(?:群管)?(.*)设置(.*)/i).slice(1).map(str => str.trim())
     const type = /群管/.test(this.msg) ? 'GAconfig' : 'config'
+    const str1 = _str1 || _str2
     const group = new RegExp(Cfg.groupReg(type)).exec(str1)?.[0] ?? ''
     log.debug('修改设置group类：' + group)
-    const str2 = str1.replace(group, '').trim()
+    const str2 = _str1 ? _str2 : _str2.replace(group, '').trim()
     const set = Cfg.setReg(type, group).exec(str2)?.[0] ?? ''
     log.debug('修改设置set类：' + set)
     const str3 = str2.replace(set, '').trim()
@@ -234,15 +235,15 @@ export default class UCAdmin extends UCPlugin {
       if (this.GM) isGlobal = true
       else return this.reply('请于群内使用')
     }
-    let showGroup
+    let showGroup = group || undefined
     // 修改全局设置或群设置
     if (group || set) {
       const setData = UCPr.CFG.cfgData[type][group]?.cfg?.[set]
       if (setData) {
         log.debug(setData)
         const [g, s] = setData.path.split('.')
-        showGroup = group
         if (isGlobal || type === 'GAconfig' || (s && !isGlobal && _.has(UCPr.groupCFG(groupId)[type][g], s))) {
+          if (group === '') showGroup = ''
           // 获取新设置值
           let operation
           if (setData.type === 'Switch') {

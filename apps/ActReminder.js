@@ -72,7 +72,7 @@ export default class UCActReminder extends UCPlugin {
   }
 
   async ActReminder(mode) {
-    const gl = Array.from(new Set(Bot.gl.keys())).map(Number)
+    const gl = Array.from(Bot.gl.keys()).map(Number)
     for (const groupId of gl) {
       const Cfg = UCPr.groupCFG(groupId).config.ActReminder
       if (Cfg[`${mode}IsOpen`]) {
@@ -108,9 +108,9 @@ export default class UCActReminder extends UCPlugin {
       return log.error(`筛选${type}活动公告数据失败`)
     }
     this.additional(_data, res, mode)
-    const data = _data
+    const data = _.uniqBy(_data
       .filter(v => !removes[mode].includes(v.ann_id))
-      .map(v => _.pick(v, ['title', 'subtitle', 'start_time', 'end_time', 'banner', 'img']))
+      .map(v => _.pick(v, ['ann_id', 'title', 'subtitle', 'start_time', 'end_time', 'banner', 'img'])), 'ann_id')
     const diffs = data.map(v => UCDate.diffDate(undefined, v.end_time))
     const subtracts = diffs.map(v => v.toStr())
     const daysSubtracts = diffs.map(({ Y, M, D }) => Y * 365 + M * 30 + D)
@@ -145,6 +145,7 @@ export default class UCActReminder extends UCPlugin {
   async sendMsg(msgToPush, daysSubtracts, mode) {
     log.debug(daysSubtracts)
     for (const { groupId, Cfg } of groupsToPush[mode]) {
+      if (!groupId) continue
       if (pushed[mode].includes(groupId)) continue
       pushed[mode].push(groupId)
       log.debug('推送处理' + groupId)

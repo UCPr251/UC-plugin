@@ -41,6 +41,12 @@ export default class ImgManager extends Base {
       const files = file.readdirSync(this.folderPath, { type, basename: true })
       if (files.includes(name)) return this.reply(`${this.note}图片【${name}】已存在，请勿重复添加哦~`)
     }
+    // To do引用添加，直接添加
+    if (this.e.source) {
+
+    } else if (this.arg.img) {
+
+    }
     this.reply(`请发送需要上传的${this.note}图片` + (zip ? '或zip压缩包' : ''))
     /** 是否指定图片名称 */
     this.named = !!name
@@ -249,7 +255,7 @@ export default class ImgManager extends Base {
   }
 
   async page(thisArg) {
-    if (!/第.+页|下一页/.test(thisArg.msg)) return false
+    if (!/第.+页|下一页/.test(thisArg.msg)) return 'continue'
     if (!thisArg.msg.includes('下一页')) {
       const numRet = /第(.+)页/.exec(thisArg.msg)[1]
       const num = UCDate.transformChineseNum(numRet)
@@ -258,7 +264,7 @@ export default class ImgManager extends Base {
     } else if (this.nowPage >= this.totalPage) {
       this.nowPage = 0
     }
-    thisArg.finishUCcontext(this.setFnc)
+    thisArg.finishUCcontext(this.chooseFnc)
     this.setContextData(thisArg)
     const replyMsg = await common.makeForwardMsg(thisArg.e, this.msgGenerator.next().value, this.title + (this.totalPage === 1 ? '' : `【${this.nowPage}】`))
     thisArg.reply(replyMsg)
@@ -272,7 +278,7 @@ export default class ImgManager extends Base {
       list: this.imgs,
       nowPage: this.nowPage
     }
-    thisArg.setUCcontext(this.setFnc, 300)
+    thisArg.setUCcontext(this.chooseFnc, 300, false)
   }
 
 }

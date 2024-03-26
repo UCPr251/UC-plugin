@@ -663,6 +663,13 @@ if (Check.file(Path.get('apps', 'sqtj.js'))) {
         '统计机器人自身',
         '水群统计是否也统计机器人自身记录'
       ),
+      人数: s(
+        'rankNum',
+        '排名人数',
+        '水群统计排名人数',
+        'InputNumber',
+        10
+      ),
       推送: s(
         'isAutoSend',
         '0点推送水群统计',
@@ -1016,7 +1023,7 @@ if (Check.file(Path.get('groupAdmin', 'RequestAdd.js'))) {
       ),
       拒绝黑名单: s(
         'isAutoRefuseBlack',
-        '自动拒绝黑名单',
+        '拒绝黑名单',
         '是否自动拒绝黑名单用户的入群申请'
       ),
       通知群聊: s(

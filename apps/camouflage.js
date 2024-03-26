@@ -128,10 +128,9 @@ class UCCamouflageEvent extends UCEvent {
     if (key !== UCPr.wz.key) return
     const replyMsg = common.makeMsg(this.e.message)
     if (this.e.source) {
-      const msg = (await common.getChatHistoryArr(this.group, this.e.source.seq, 1))[0]
       replyMsg.unshift({
-        type: 'reply',
-        id: msg.message_id
+        ...this.e.source,
+        type: 'quote'
       })
     }
     if (!replyMsg.length) return

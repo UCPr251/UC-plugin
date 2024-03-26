@@ -25,6 +25,10 @@ export default class MsgManager extends Base {
   async _add(thisArg) {
     thisArg.setFnc = this.transferFnc
     if (thisArg.isCancel()) return
+    // To do 转发消息的处理
+    if (thisArg.e.message[0].type === 'node') {
+
+    }
     if (!thisArg.message) return thisArg.reply('接收消息为空，请重试')
     thisArg.finishUCcontext()
     const dirPath = Path.join(this.folderPath, this.saveDir)
@@ -74,7 +78,7 @@ export default class MsgManager extends Base {
       list: this.dirs,
       fnc: this._del.bind(this)
     }
-    this.arg.setUCcontext()
+    this.arg.setUCcontext(this.chooseFnc)
     return this.Del_View()
   }
 

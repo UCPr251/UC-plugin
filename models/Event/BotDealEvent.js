@@ -3,7 +3,7 @@ import loader from '../../../../lib/plugins/loader.js'
 import _ from 'lodash'
 
 export default async function BotDealEvent(e) {
-  if (loader.checkGuildMsg(e)) return false
+  if (loader.checkGuildMsg?.(e)) return false
   if (!loader.checkLimit(e)) return false
   if (!loader.checkBlack(e)) return false
   const priority = []

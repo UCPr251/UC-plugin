@@ -9,14 +9,16 @@ function getFncChain(error) {
     line = line.trim()
     const sp = line.split(' ')
     if (sp.length < 2 || sp.length > 3) return line
-    const fncName = sp.length === 3 ? '.' + sp[1].split('.').at(-1) : ''
-    const name = sp.at(-1).split('/').at(-1)
+    if (sp[1].startsWith('process')) return ''
+    const fncName = sp.length === 3 ? '.' + sp[1].split('.').pop() : ''
+    const name = sp.pop().split('/').pop()
     const extIndex = name.search(/\.js/)
     if (extIndex === -1) return line
     const fncFile = name.slice(0, extIndex)
     const fncLine = name.slice(extIndex + 3).match(/:\d+:\d+/)[0]
     return `[${fncFile}${fncName}${fncLine}]`
   })
+  if (fncChain.some(line => line.length && !line.startsWith('[') && !line.endsWith(']'))) return fncChain.join('\n←')
   return fncChain.join('←')
 }
 

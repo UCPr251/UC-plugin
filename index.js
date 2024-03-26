@@ -1,7 +1,8 @@
 /* eslint-disable import/first */
 /* eslint-disable indent */
 logger.info(logger.chalk.bold('[UC]开始载入UC插件'))
-import { Path, Data, log, UCPr } from './components/index.js'
+import { Data, log, UCPr } from './components/index.js'
+import applyErrorDecorator from './components/ErrorDecorator.js'
 import EventLoader from './models/Event/EventLoader.js'
 
 // if (!global.segment) {
@@ -20,6 +21,7 @@ import EventLoader from './models/Event/EventLoader.js'
 
 /** 数据 */
 global.UCPr = UCPr
+
 /** 日志 */
 setTimeout(() => (global.log = log))
 
@@ -28,9 +30,7 @@ const files = await Data.init()
 log.blue('---------------------')
 log.purple(`----${UCPr.Plugin_Name} ${UCPr.version} 载入中-----`)
 
-let ret = []
-
-files.forEach((file) => ret.push(import(`file:///${Path.apps}/${file}.js`)))
+let ret = files.map(app => import(`./apps/${app}.js`))
 
 ret = await Promise.allSettled(ret)
 
@@ -44,7 +44,7 @@ for (const i in files) {
         status = false
         continue
     }
-    apps[files[i]] = ret[i].value.default ?? ret[i].value[Object.keys(ret[i].value)[0]]
+    apps[files[i]] = applyErrorDecorator(ret[i].value.default)
 }
 
 await EventLoader()

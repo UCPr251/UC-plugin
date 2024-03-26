@@ -84,9 +84,9 @@ class UCPr {
     /** 数据更新函数 5：help.js 6：cfg.js */
     this.getConfig = getConfig
     /** 公共函数 */
-    this.function = {}
+    this.function = Object.create(null)
     /** 公共数据 */
-    this.temp = {}
+    this.temp = Object.create(null)
     /** 事件监听器 */
     this.event = {
       'message.group': [],
@@ -95,23 +95,23 @@ class UCPr {
       'request.group': []
     }
     /** 文件监听器{ path: watcher } */
-    this.watcher = {}
+    this.watcher = Object.create(null)
     /** cron任务管理器[ { cron, fnc, name, job } ] */
     this.task = []
     /** proxy代理管理器{ name: new Proxy() } */
-    this.proxy = {}
+    this.proxy = Object.create(null)
     /** hook管理器 */
     this.hook = []
     /** 群原始配置 */
-    this.group_CFG = {}
+    this.group_CFG = Object.create(null)
     /** package.json */
     this.package = {}
     /** 因锁定被移除的功能的数据 */
-    this.removedFncData = {}
+    this.removedFncData = Object.create(null)
     /** 签名崩溃检测计时器 */
     this.intervalId = null
     /** 伪装数据 */
-    this.wz = {}
+    this.wz = Object.create(null)
   }
 
   /** 初始化数据 */

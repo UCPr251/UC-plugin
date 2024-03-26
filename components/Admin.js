@@ -53,13 +53,13 @@ const Admin = {
   newConfig(groupId) {
     const configPath = this.getCfgPath(groupId)
     if (!Check.file(configPath)) {
-      const config = _.cloneDeep(UCPr.config)
-      const { GAconfig } = UCPr
+      const config = { ...UCPr.config }
       for (const key in config) {
         if (!_.isPlainObject(config[key])) {
-          delete config[key]
+          Reflect.deleteProperty(config, key)
         }
       }
+      const { GAconfig } = UCPr
       const newGroupCfg = { config, GAconfig }
       newGroupCfg.permission = {
         Master: [],

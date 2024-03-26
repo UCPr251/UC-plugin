@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import { UCPr, Path, Check, Data } from '../components/index.js'
 
 const isWin = process.platform === 'win32'
@@ -452,16 +453,6 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
         'sqtj.use'
       ),
       s(
-        '#一周水群统计',
-        '分析今日水群统计',
-        'sqtj.use'
-      ),
-      s(
-        '#一月水群统计',
-        '分析今日水群统计',
-        'sqtj.use'
-      ),
-      s(
         '#昨日水群统计',
         '分析昨日水群统计',
         'sqtj.use'
@@ -480,7 +471,22 @@ if (Check.file(Path.get('apps', 'randomWife.js'))) {
         '#重新分析水群统计3-19',
         '重新获取3-19水群统计',
         3
-      )
+      ),
+      // s(
+      //   '#10天水群统计',
+      //   '分析指定天数水群统计',
+      //   'sqtj.use'
+      // ),
+      // s(
+      //   '#本周水群统计',
+      //   '分析本周水群统计',
+      //   'sqtj.use'
+      // ),
+      // s(
+      //   '#本月水群统计',
+      //   '分析本月水群统计',
+      //   'sqtj.use'
+      // )
     ]
   })
 }

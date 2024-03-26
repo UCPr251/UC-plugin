@@ -12,7 +12,7 @@ export default class ManagerBase {
     /** 提示信息 */
     this.note = note
     /** 选择hook */
-    this.setFnc = '__chooseContext'
+    this.chooseFnc = '__chooseContext'
     /** 中转hook */
     this.transferFnc = '__transferStation'
   }

@@ -13,14 +13,16 @@ export default class UCSqtj extends UCPlugin {
       name: 'UC-sqtj',
       dsc: '水群统计',
       Cfg: 'config.sqtj',
-      event: 'message.group',
+      event: 'message',
       rule: [
         {
           reg: /^#?(UC)?((重新)?分析)?(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?(昨|今)?(天|日)?(水群统计|sqtj)(((\d{2}|\d{4})(-|年))?\d{1,2}(-|月)\d{1,2})?$/i,
+          event: 'message.group',
           fnc: 'sqtj'
         },
         {
           reg: /^#?(UC)?(\d+天|本?(周|月))水群统计$/i,
+          event: 'message.group',
           fnc: 'sqtjDWM'
         },
         {
@@ -35,7 +37,7 @@ export default class UCSqtj extends UCPlugin {
     })
     if (!this.groupId) return
     this.floderPath = Path.get('sqtj', this.groupId)
-    if (this.msg.includes('一')) return
+    if (/^#?(UC)?(\d+天|本?(周|月))水群统计$/i.test(this.msg)) return
     this.isYesterday = this.msg.includes('昨')
     const matchDate = UCDate.getFormatedDate(this.msg)
     this.isToday = !this.isYesterday && !matchDate
@@ -198,10 +200,10 @@ export default class UCSqtj extends UCPlugin {
   }
 
   async getImgData(filterData, count, WM = false) {
-    const charArr = _.orderBy(_.values(filterData), ['times', 'faces', 'userId'], ['desc', 'desc', 'asc']).slice(0, 10)
+    const charArr = _.orderBy(_.values(filterData), ['times', 'faces', 'userId'], ['desc', 'desc', 'asc']).slice(0, this.Cfg.rankNum)
     for (const char of charArr) {
       char.percentage = (char.times / count * 100).toFixed(2)
-      char.name = _.truncate(char.name, { length: 15, omission: '…' })
+      char.name = _.truncate(char.name, { length: 12, omission: '…' })
     }
     if (WM) return charArr
     const dsw = charArr[0]

@@ -49,35 +49,7 @@ pnpm i --filter=UC-plugin
 
 ## 关于[UC-plugin](#uc-plugin)
 
-<details>
-<summary> 查看UC已实现功能 </summary>
-
-| UC系统 | UC群管 | UC工具 | UC 娱乐 |
-| :---: | :---: | :---: | :---: |
-| [权限管理] |     [禁言]     |   [签名重启]  | [戳一戳回复] |
-| [帮助图]   |     [踢人]     |  [群内上下班] | [戳主人回复] |
-| [设置图]   |     [撤回]     |   [锁定功能]  | [戳一戳管理] |
-| [热更新]   |   [入群欢迎]   |    [代发言]   | [at主人回复] |
-| [查询权限] |   [退群通知]   |  [JS管理系统]  | [随机群友] |
-| [锁定设置] |   [退群处理]   | [备份还原数据] | [随机老婆] |
-| [锅巴支持] |   [刷屏检测]   | [活动截止提醒] | [伪装] |
-| [错误日志] | [入群申请处理] |   [群内排队]   | [水群统计] |
-| [更新指令] | [查看群员信息] |   [前台重启]   | [语音合成] |
-| [切换分支] | [设置头衔] (开发中) | [执行指令] | [放大图片] |
-| [一键卸载] | [搜索聊天记录] (开发中) | [指令修改group.yaml] | [直播推送] |
-|  |  | [指令修改notice.yaml] | [复读打断] (开发中) |
-|  |  | [指令修改other.yaml] |  |
-|  |  | [不重启更新插件] |  |
-|  |  | [高频艾特禁言] |  |
-|  |  | [高频戳禁言] |  |
-|  |  | [loveMys辅助] |  |
-|  |  | [icqq双向迁移] |  |
-
-- 仅为UC已实现功能，使用请以实际为准
-
----
-
-</details>
+- [<<<查看UC已实现功能>>>](./VERSION.md)
 
 - 为便于统一开发插件和各种集成功能打造而成
 
@@ -318,6 +290,35 @@ pnpm i --filter=UC-plugin
 
 - [UC图片资源仓库](https://gitee.com/UCPr251/UC-plugin-unNecRes) 若想添加UC初始图片，请向该仓库发起pr
 
+## 常见问题
+
+1. Q：单独群配置是如何生效的？
+  A: 在不存在 **单独群配置文件** 的群内，[群设置](#L113)会采用当前的[全局设置](#L120);而在拥有 **单独群配置文件** 的群内，群设置会使用该文件中的数据，即 **群配置优先于全局配置**（除[被锁定的设置](#锁定设置)和少数只以全局配置为准的设置以外）。
+
+2. Q：单独群配置文件如何生成的？
+  A: 当[单独修改某群的设置](#按照生效范围分类)时（包括设置主人等），系统会自动生成该群的群配置文件，此群配置文件会以 **当时的全局设置** 为初始值，新增群配置文件后会立即生效，此后全局设置与此群设置基本无关，修改全局设置也不会影响该群设置（除[被锁定的设置](#锁定设置)和少数只以全局配置为准的设置以外）。
+
+3. Q：锁定设置是如何实现的？
+  A：当UC的插件读取当前群设置时，被锁定的部分设置会覆盖群配置同名项，以此实现锁定设置的目的，此过程只发生在内存中而不会修改群配置文件。因此锁定设置后，仍可修改群内的被锁定的设置，只是修改的值不会生效，直到解除对该设置的锁定才会重新生效。
+
+群内判断某个设置最终生效值流程图：
+
+- 此群是否有群设置？
+  - 否
+    - 使用全局设置
+  - 是
+    - 所需读取的设置是否被锁定？
+      - 是
+        - 使用全局设置
+      - 否
+        - 使用群设置
+
+4. Q：我已经开启了XXX功能，为什么还是无法使用？
+  A：如果你已经阅读并理解了上述三个Q&A，那么你应该能自主解决此问题。
+
+5. Q：我已经开启了XXX功能，为什么 **其他人** 无法使用？
+  A：请检查此功能的[功能权限设置](#功能权限)并开放相应的权限。
+
 [:arrow_up: 返回顶层 :arrow_up:](#uc-plugin)
 
 ## 赞助鸣谢
@@ -336,59 +337,3 @@ pnpm i --filter=UC-plugin
 [issue]:https://gitee.com/UCPr251/UC-plugin/issues
 [pr]:https://gitee.com/UCPr251/UC-plugin/pulls
 [Miao-Yunzai]:https://gitee.com/yoimiya-kokomi/Miao-Yunzai
-<!-- 系统 -->
-[权限管理]:apps/Admin.js
-[帮助图]:apps/Admin.js
-[设置图]:apps/Admin.js
-[热更新]:apps/reloadJSs.js
-[查询权限]:apps/Admin.js
-[锁定设置]:apps/Admin.js
-[锅巴支持]:guoba.support.js
-[错误日志]:apps/Admin.js
-[更新指令]:apps/update.js
-[切换分支]:apps/update.js
-[一键卸载]:apps/run.js
-<!-- 群管 -->
-[禁言]:apps/Event/groupAdmin/mute.js
-[踢人]:apps/Event/groupAdmin/kick.js
-[撤回]:apps/Event/groupAdmin/recall.js
-[入群欢迎]:apps/Event/groupAdmin/WM.js
-[退群通知]:apps/Event/groupAdmin/WM.js
-[退群处理]:apps/Event/groupAdmin/Decrease.js
-[刷屏检测]:apps/Event/groupAdmin/floodScreen.js
-[入群申请处理]:apps/Event/groupAdmin/RequestAdd.js
-[查看群员信息]:apps/Event/groupAdmin/memberInfo.js
-[设置头衔]:apps/Event/groupAdmin/setTitle.js
-[搜索聊天记录]:apps/Event/groupAdmin/searchChatHistory.js
-<!-- 工具 -->
-[签名重启]:apps/qsignRestart.js
-[群内上下班]:apps/switchBot.js
-[锁定功能]:apps/Event/Lockdown.js
-[代发言]:apps/Event/Represent.js
-[JS管理系统]:apps/JSsystem.js
-[备份还原数据]:apps/BackupRestore.js
-[活动截止提醒]:apps/ActReminder.js
-[群内排队]:apps/queueUp.js
-[前台重启]:apps/restart.js
-[执行指令]:apps/run.js
-[指令修改group.yaml]:apps/groupSet.js
-[指令修改notice.yaml]:apps/noticeSet.js
-[指令修改other.yaml]:apps/otherSet.js
-[不重启更新插件]:apps/update.js
-[loveMys辅助]:apps/loveMys.js
-[高频艾特禁言]:apps/atMute.js
-[高频戳禁言]:apps/chuoMute.js
-[icqq双向迁移]:apps/icqq.js
-<!-- 娱乐 -->
-[戳一戳回复]:apps/chuoyichuo.js
-[戳主人回复]:apps/chuoMaster.js
-[戳一戳管理]:apps/chuoyichuoM.js
-[at主人回复]:apps/atMaster.js
-[随机群友]:apps/randomMember.js
-[随机老婆]:apps/randomWife.js
-[伪装]:apps/camouflage.js
-[水群统计]:apps/sqtj.js
-[语音合成]:apps/genshinvoice.js
-[放大图片]:apps/bigjpg.js
-[直播推送]:apps/BlivePush.js
-[复读打断]:apps/RepeatInterruption.js

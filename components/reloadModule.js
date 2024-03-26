@@ -11,7 +11,7 @@ async function _reloadModule(jsPath) {
     .then(res => res.default)
     .catch(error => log.error('载入模块失败：', error))
   for (const prototype of Reflect.ownKeys(newModule)) {
-    const Descriptor = Object.getOwnPropertyDescriptor(components[moduleName], prototype) || {}
+    const Descriptor = Reflect.getOwnPropertyDescriptor(components[moduleName], prototype) || {}
     if (Descriptor.get || Descriptor.set || Descriptor.writable === false) {
       continue
     }
@@ -24,7 +24,7 @@ async function _reloadModule(jsPath) {
 }
 
 export default function reloadModule() {
-  file.readdirSync(Path.components, { type: '.js', removes: ['reloadModule.js', 'UCPr.js', 'index.js'] })
+  file.readdirSync(Path.components, { type: '.js', removes: ['reloadModule.js', 'UCPr.js', 'index.js', 'ErrorDecorator.js'] })
     .forEach(_file => {
       Data.watch(Path.get('components', _file), _reloadModule)
     })

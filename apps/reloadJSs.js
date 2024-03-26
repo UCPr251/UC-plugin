@@ -1,4 +1,5 @@
 import { Path, Check, file, UCPr, log, Data, common } from '../components/index.js'
+import applyErrorDecorator from '../components/ErrorDecorator.js'
 import { UCPlugin } from '../models/index.js'
 import loader from '../../../lib/plugins/loader.js'
 
@@ -8,7 +9,7 @@ const watcher = {}
 
 let ing = false, timer
 
-export default class UCReloadJSs extends UCPlugin {
+class UCReloadJSs extends UCPlugin {
   constructor(e) {
     super({
       e,
@@ -216,6 +217,8 @@ export default class UCReloadJSs extends UCPlugin {
 
 }
 
+export default applyErrorDecorator(UCReloadJSs)
+
 /**
  * 重载除reloadJSs.js以外全部JS
  * @param {boolean} [isWatch=true] 重载后是否监听，默认监听
@@ -244,6 +247,7 @@ async function loadJs(jsPath) {
     const temp = await import(`file:///${jsPath}?${Date.now()}`)
     const app = temp.default ?? temp[Object.keys(temp)[0]]
     if (!app?.prototype) return
+    applyErrorDecorator(app)
     const plugin = new app()
     log.purple('[载入插件]' + '名称：' + plugin.name ?? '无', '优先级：' + plugin.priority ?? '无')
     const jsName = Path.basename(jsPath)

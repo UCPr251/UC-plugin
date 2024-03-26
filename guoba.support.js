@@ -573,6 +573,13 @@ if (file.existsSync(Path.get('apps', 'sqtj.js'))) {
       '水群统计是否也统计机器人自身记录'
     ),
     s(
+      'rankNum',
+      '排名人数',
+      '水群统计排名人数',
+      'InputNumber',
+      { min: 1 }
+    ),
+    s(
       'isAutoSend',
       '0点推送水群统计',
       '每日0点是否自动发送水群统计至群内，建议只在需要打开的群内单独开启，否则每个群都会发送'

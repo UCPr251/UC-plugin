@@ -9,7 +9,7 @@ export default class UCRestart extends UCPlugin {
       dsc: '重启机器人，不转后台运行',
       rule: [
         {
-          reg: /^#?UC重启$/i,
+          reg: /^#UC重启$/i,
           fnc: 'restart'
         }
       ]

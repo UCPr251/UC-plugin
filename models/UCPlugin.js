@@ -194,9 +194,9 @@ export default class UCPlugin extends plugin {
   }
 
   /** 创建上下文 */
-  setUCcontext(fnc = this.setFnc, time = 120) {
+  setUCcontext(fnc = this.setFnc, time = 120, reply) {
     if (typeof fnc === 'number') [fnc, time] = [this.setFnc, fnc]
-    super.setContext(fnc, false, time)
+    super.setContext(fnc, false, time, reply)
   }
 
   /** 获取上文e */
@@ -235,7 +235,10 @@ export default class UCPlugin extends plugin {
     if (handler) {
       const result = await handler(this, data)
       if (result === true) return
-      if (result) msg = result
+      if (result) {
+        if (result === 'continue') return 'continue'
+        msg = result
+      }
     }
     let numMatch
     if (/all/i.test(msg)) {
@@ -371,14 +374,14 @@ export default class UCPlugin extends plugin {
     if (_.isEmpty(msg)) return
     if (this.e && !this.e.reply) {
       if (this.groupId) {
-        this.group ||= common.pickGroup(this.groupId)
-        this.e.reply = function (msg) { this.group.sendMsg(msg) }
+        this.group ??= common.pickGroup(this.groupId)
+        if (this.group) this.e.reply = function (msg) { this.group.sendMsg(msg) }
       } else if (this.userId) {
         this.e.friend ??= Bot.pickFriend(this.userId)
-        this.e.reply = function (msg) { this.e.friend.sendMsg(msg) }
+        if (this.e.friend) this.e.reply = function (msg) { this.e.friend.sendMsg(msg) }
       }
     }
-    if (!this.e?.reply) return log.error('发送消息错误，e.reply不存在')
+    if (!this.e?.reply) return log.error('发送消息错误，e.reply不存在' + this.groupId ? `群：${this.groupId}` : this.userId ? `好友：${this.userId}` : '')
     if (this.group?.mute_left > 0) return log.mark(`Bot在群${this.groupId}内处于禁言状态，取消发送`)
     let { recallMsg = 0, at = false } = data
     if (at && this.isGroup) {
