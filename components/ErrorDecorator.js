@@ -7,7 +7,7 @@ function ErrorHandler(oriFunction, methodName) {
     try {
       return oriFunction.apply(this, args)
     } catch (err) {
-      log.error(`${methodName}`, err)
+      log.error(`[${methodName}]`, err)
     }
   }
 }
