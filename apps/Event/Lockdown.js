@@ -61,10 +61,10 @@ class UCLockdown extends UCEvent {
     const fnc = isLock ? '_newLock' : '_unlock'
     const fncStr = this.msg.match(/功能(.*)/)?.[1].trim()
     if (fncStr) {
-      const operations = fncStr.split(/\s+/)
+      const operations = fncStr.split(/\s+/).filter(Boolean)
       if (operations.length === 1) {
-        const toSearch_name = file.searchStrings(filterPlugins, operations[0].trim(), 'name')
-        const toSearch_key = file.searchStrings(filterPlugins, operations[0].trim(), 'key')
+        const toSearch_name = file.searchStrings(filterPlugins, operations[0], 'name')
+        const toSearch_key = file.searchStrings(filterPlugins, operations[0], 'key')
         const toSearch = _.uniqBy(_.concat(toSearch_name, toSearch_key), 'name')
         if (!toSearch.length) return this.reply(`无匹配的功能：${fncStr}`)
         if (toSearch.length === 1) {
