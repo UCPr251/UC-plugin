@@ -42,7 +42,7 @@ export default class UCBackupRestore extends UCPlugin {
       const errInfo = log.error('备份云崽数据失败', err)
       return this.reply(errInfo)
     }
-    const replyMsg = ['云崽数据备份完成', '已备份本体：config、data']
+    const replyMsg = ['云崽数据备份完成', '已备份本体：config、data、example']
     replyMsg.push('备份的插件数据：', ...Data.makeArrStr(backed, { chunkSize: 20 }))
     replyMsg.push(`备份数据位于UC-plugin/data/backup/${folderName}/内\n请自行留存\n还原：#UC还原备份\n删除：#UC删除备份`)
     const title = '备份完成，请查看备份数据'
@@ -56,6 +56,8 @@ export default class UCBackupRestore extends UCPlugin {
     file.copyFolderRecursively(Path.botConfig, Path.join(this.backupPath, 'config', 'config'))
     log.purple('备份' + Path.get('_path', 'data'))
     file.copyFolderRecursively(Path.get('_path', 'data'), Path.join(this.backupPath, 'data'))
+    log.purple('备份' + Path.example)
+    file.copyFolderRecursively(Path.example, Path.join(this.backupPath, 'plugins', 'example'))
     log.red('云崽本体数据备份完成')
   }
 
@@ -109,7 +111,7 @@ export default class UCBackupRestore extends UCPlugin {
       const errInfo = log.error('还原云崽数据失败', err)
       return this.reply(errInfo)
     }
-    const replyMsg = ['云崽数据成功还原至：' + folderName, '已还原本体：config、data']
+    const replyMsg = ['云崽数据成功还原至：' + folderName, '已还原本体：config、data、example']
     uninstalled.length && replyMsg.push('未安装的插件：', ...Data.makeArrStr(uninstalled, { chunkSize: 20 }))
     replyMsg.push('还原的插件数据：')
     replyMsg.push(...Data.makeArrStr(restored, { chunkSize: 20 }))
@@ -125,6 +127,8 @@ export default class UCBackupRestore extends UCPlugin {
     file.copyFolderRecursively(Path.join(this.backupPath, 'config', 'config'), Path.botConfig)
     log.purple('还原' + Path.get('_path', 'data'))
     file.copyFolderRecursively(Path.join(this.backupPath, 'data'), Path.get('_path', 'data'))
+    log.purple('还原' + Path.example)
+    file.copyFolderRecursively(Path.join(this.backupPath, 'plugins', 'example'), Path.example)
     log.red('云崽本体数据还原完成')
   }
 

@@ -114,6 +114,8 @@ function backupYunzaiData(backupPath) {
   file.copyFolderRecursively(Path.botConfig, Path.join(backupPath, 'config', 'config'))
   log.purple('备份' + Path.get('_path', 'data'))
   file.copyFolderRecursively(Path.get('_path', 'data'), Path.join(backupPath, 'data'))
+  log.purple('备份' + Path.example)
+  file.copyFolderRecursively(Path.example, Path.join(backupPath, 'plugins', 'example'))
   log.red('\n云崽本体数据备份完成')
 }
 
@@ -162,6 +164,8 @@ function restoreYunzaiData(backupPath) {
   file.copyFolderRecursively(Path.join(backupPath, 'config', 'config'), Path.botConfig)
   log.purple('还原' + Path.get('_path', 'data'))
   file.copyFolderRecursively(Path.join(backupPath, 'data'), Path.get('_path', 'data'))
+  log.purple('还原' + Path.example)
+  file.copyFolderRecursively(Path.join(backupPath, 'plugins', 'example'), Path.example)
   log.red('\n云崽本体数据还原完成')
 }
 

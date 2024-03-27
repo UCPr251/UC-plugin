@@ -26,7 +26,7 @@ export default class UCSqtj extends UCPlugin {
           fnc: 'sqtjDWM'
         },
         {
-          reg: /^#?(UC)?(增加|新增|上传|查看|删除)水群统计背景$/i,
+          reg: /^#(UC)?(增加|新增|上传|查看|删除)水群统计背景$/i,
           fnc: 'manageSqtjBG'
         },
         {

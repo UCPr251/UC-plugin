@@ -229,7 +229,7 @@ export default class ImgManager extends Base {
   }
 
   _view(imgs) {
-    const replMsg = imgs.map(img => segment.image(Path.join(this.folderPath, img)))
+    const replMsg = imgs.map((img, index) => [`${index + 1}、${img}`, segment.image(Path.join(this.folderPath, img))])
     return this.reply(replMsg, true)
   }
 
@@ -238,7 +238,7 @@ export default class ImgManager extends Base {
       const start = this.nowPage * this.msgNum
       const end = Math.min(this.imgsPath.length, (this.nowPage + 1) * this.msgNum * this.imgNum)
       // 一页消息
-      const msg = [this.title, `可发送“退出”以结束当前【${this.mode}】操作`, `第${this.nowPage + 1}页`]
+      const msg = [this.title, `请在5分钟内进行操作\n可发送“退出”以结束当前【${this.mode}】操作`, `第${this.nowPage + 1}页`]
       for (let i = start; i < end; i += this.imgNum) {
         // 一条消息
         const _msg = []

@@ -230,25 +230,24 @@ export default class UCPlugin extends plugin {
       return log.error(`[UCPlugin.__chooseContext]上下文hook数据异常丢失：${this.name}（${this.dsc}）自动结束上下文hook`)
     }
     const { list, fnc, handler } = data
-    let msg = this.msg
-    // handler自定义处理this，返回所需序号
+    let result
+    // handler自定义处理this，返回true则中断处理，可自行修改this属性
     if (handler) {
-      const result = await handler(this, data)
+      result = await handler(this, data)
       if (result === true) return
-      if (result) {
-        if (result === 'continue') return 'continue'
-        msg = result
-      }
     }
     let numMatch
-    if (/all/i.test(msg)) {
+    if (/all/i.test(this.msg)) {
       numMatch = _.range(0, list.length)
-    } else if ((numMatch = /^([1-9]\d*)\s*-\s*([1-9]\d*)$/.exec(msg))) {
+    } else if ((numMatch = /^([1-9]\d*)\s*-\s*([1-9]\d*)$/.exec(this.msg))) {
       const [start, end] = numMatch.slice(1).map(Number)
       if (start > end) return this.reply('???')
       numMatch = _.range(start - 1, Math.min(end, list.length))
-    } else {
-      numMatch = msg.match(/\d+/g)?.filter(num => num >= 1 && num <= list.length).map(num => num - 1)
+    } else if ((numMatch = this.msg.match(/\d+/g))) {
+      numMatch = numMatch.filter(num => num >= 1 && num <= list.length).map(num => num - 1)
+      // 不符合翻页操作、不符合序号选择
+    } else if (result === 'continue') {
+      return result
     }
     if (!numMatch?.length) {
       return this.reply('请输入有效的序号或取消操作')

@@ -63,7 +63,9 @@ class UCLockdown extends UCEvent {
     if (fncStr) {
       const operations = fncStr.split(/\s+/)
       if (operations.length === 1) {
-        const toSearch = file.searchStrings(filterPlugins, operations[0].trim(), 'name')
+        const toSearch_name = file.searchStrings(filterPlugins, operations[0].trim(), 'name')
+        const toSearch_key = file.searchStrings(filterPlugins, operations[0].trim(), 'key')
+        const toSearch = _.uniqBy(_.concat(toSearch_name, toSearch_key), 'name')
         if (!toSearch.length) return this.reply(`无匹配的功能：${fncStr}`)
         if (toSearch.length === 1) {
           return this[fnc](toSearch)

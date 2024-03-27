@@ -23,7 +23,7 @@ export default class UCRandomWife extends UCPlugin {
           fnc: 'randomWife'
         },
         {
-          reg: /^#?(增加|新增|上传|查看|删除)随机老婆(.*)/,
+          reg: /^#(增加|新增|上传|查看|删除)随机老婆(.*)/,
           fnc: 'manageWifeImg'
         },
         {
