@@ -18,8 +18,6 @@ server: 2
 BotName: 纳西妲
 # 允许响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”
 globalPrefix: false
-# 是否每日零点前自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用
-autoBackup: false
 # 每日零点loveMys剩余过码次数小于等于该值时自动提醒主人，0则不提醒
 loveMysNotice: 50
 # 用户无权限进行某操作时，机器人的回复
@@ -111,6 +109,25 @@ JSsystem:
   recallFileGroup: 0
   # 私聊发送文件后自动撤回时长，4-120秒，0为不撤回
   recallFilePrivate: 0
+
+# 备份、还原数据设置
+BackupRestore:
+  # 是否自动备份云崽、example、插件数据和JS等，开启前请尝试#UC备份数据 是否可用
+  autoBackup: false
+  # 自动备份执行的cron，默认为每天23点59分执行，修改后重启生效
+  cron: 0 59 23 * * ?
+  # 备份文件保存天数，超过此天数的以前的备份数据将会被清理，减少磁盘占用，0为不限制
+  retentionDays: 0
+  # 要备份的各个插件根目录下的文件夹，数据主要保存于data和config，可自行添加文件夹
+  Directory:
+    - config
+    - data
+  # 要排除的备份文件夹，递归复制时如果遇见此类文件夹会跳过
+  removeDirectory:
+    - .git
+    - node_modules
+  # 除上述包括的、需要额外备份的指定文件或文件夹，若为文件则备份文件，若为文件夹则递归备份文件夹，必须使用相对于崽根目录的路径，比如./logs
+  extra: []
 
 # 戳一戳设置
 chuoyichuo:

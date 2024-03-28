@@ -268,8 +268,8 @@ helpData.push({
       'randomWife.isOpen'
     ),
     s(
-      'UC戳一戳#poke#',
-      '戳一戳回复',
+      '戳一戳#poke#',
+      '群内戳一戳回复',
       '',
       'chuoyichuo.isOpen'
     ),
@@ -284,6 +284,10 @@ helpData.push({
       '(结束)?伪装群员',
       'camouflage.use',
       'camouflage.isOpen'
+    ),
+    s(
+      '#音色列表',
+      'AI语音合成'
     )
   ]
 })

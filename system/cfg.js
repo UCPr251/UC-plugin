@@ -90,11 +90,6 @@ const 系统 = {
       '合并插件主人',
       '是否合并插件主人和机器人主人'
     ),
-    自动备份: s(
-      'autoBackup',
-      '每日自动备份',
-      '是否每日零点自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用'
-    ),
     仅主人: s(
       'onlyMaster',
       '仅主人可操作',
@@ -387,6 +382,35 @@ if (Check.file(Path.get('apps', 'ActReminder.js'))) {
         'srAtAll',
         '星铁全员艾特',
         '星铁活动截止提醒是否艾特全员（需管理员权限）'
+      )
+    }
+  }
+}
+
+if (Check.file(Path.get('apps', 'BackupRestore.js'))) {
+  prefix = 'BackupRestore.'
+  config.备份 = {
+    title: 'UC工具——备份还原设置（完整设置请在锅巴修改）',
+    GM: true,
+    cfg: {
+      自动备份: s(
+        'autoBackup',
+        '自动备份',
+        '是否自动备份云崽、example、插件数据和JS，开启前请尝试#UC备份数据 是否可用'
+      ),
+      备份cron: s(
+        'cron',
+        '自动备份cron',
+        '自动备份执行的cron，默认为每天23点59分执行，修改后重启生效',
+        'Input',
+        '0 59 23 * * ?'
+      ),
+      保留天数: s(
+        'retentionDays',
+        '备份保留天数',
+        '备份文件保存天数，超过此天数的以前的备份数据将会被清理，减少磁盘占用，0为不限制',
+        'InputNumber',
+        0
       )
     }
   }

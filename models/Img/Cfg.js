@@ -67,7 +67,7 @@ export default class Cfg extends Base {
         } else if (!value.value) {
           let v = _.get(cfg, value.path)
           if (typeof v === 'string') {
-            v = _.truncate(v.trim(), { length: 12, omission: '…' })
+            v = _.truncate(v.trim(), { length: 13, omission: '…' })
           }
           value.value = v ?? '无'
         }

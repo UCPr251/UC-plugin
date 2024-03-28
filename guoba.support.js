@@ -323,6 +323,71 @@ if (file.existsSync(Path.get('apps', 'ActReminder.js'))) {
   js = js.concat(newCfg)
 }
 
+if (file.existsSync(Path.get('apps', 'BackupRestore.js'))) {
+  prefix = 'BackupRestore.'
+  const newCfg = [
+    {
+      label: '【UC】备份还原设置',
+      component: 'Divider'
+    },
+    s(
+      'autoBackup',
+      '自动备份',
+      '是否自动备份云崽、example、插件数据和JS，开启前请尝试#UC备份数据 是否可用'
+    ),
+    s(
+      'cron',
+      '自动备份cron',
+      '自动备份执行的cron，默认为每天23点59分执行，修改后重启生效',
+      'EasyCron'
+    ),
+    s(
+      'retentionDays',
+      '备份保留天数',
+      '备份文件保存天数，超过此天数的以前的备份数据将会被清理，减少磁盘占用，0为不限制',
+      'InputNumber',
+      { min: 0 }
+    ),
+    s(
+      'Directory',
+      '备份文件夹',
+      '要备份的各个插件根目录下的文件夹，数据主要保存于data和config，可自行添加文件夹',
+      'GTags',
+      {
+        placeholder: '请输入要备份插件文件夹名',
+        allowAdd: true,
+        allowDel: true,
+        valueFormatter: value => value.trim()
+      }
+    ),
+    s(
+      'removeDirectory',
+      '排除文件夹',
+      '要排除的备份文件夹，递归复制时如果遇见此类文件夹会跳过',
+      'GTags',
+      {
+        placeholder: '请输入备份时要排除的文件夹名',
+        allowAdd: true,
+        allowDel: true,
+        valueFormatter: value => value.trim()
+      }
+    ),
+    s(
+      'extra',
+      '额外文件(夹)',
+      '除上述包括的、需要额外备份的指定文件或文件夹，若为文件则备份文件，若为文件夹则递归备份文件夹，必须使用相对于崽根目录的路径，比如./logs',
+      'GTags',
+      {
+        placeholder: '请输入备份时要排除的文件夹名',
+        allowAdd: true,
+        allowDel: true,
+        valueFormatter: value => value.trim()
+      }
+    )
+  ]
+  js = js.concat(newCfg)
+}
+
 if (file.existsSync(Path.get('apps', 'chuoyichuo.js'))) {
   prefix = 'chuoyichuo.'
   const newCfg = [
@@ -1215,11 +1280,6 @@ export function supportGuoba() {
           'globalPrefix',
           '允许前缀',
           '开关允许响应前缀，不是“仅前缀”而是使BotName+指令也能正常触发，用于避免在多机器人的群内只想要操作某一机器人时“一呼百应”'
-        ),
-        s(
-          'autoBackup',
-          '每日自动备份',
-          '是否每日零点前自动备份云崽和插件数据，开启前请尝试#UC备份数据 是否可用'
         ),
         s(
           'loveMysNotice',

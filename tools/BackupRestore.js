@@ -9,6 +9,7 @@ process.exitCode = 0 // 正常退出
 process.exitCode = 1 // 路径错误
 process.exitCode = 2 // 备份过程中发生错误
 process.exitCode = 3 // 还原过程中发生错误
+process.exitCode = 4 // 异常退出
 
 const red = chalk.rgb(251, 50, 50)
 log.red = (...args) => log(red(...args))
@@ -20,12 +21,14 @@ log.error = (...args) => console.error(red(...args))
 
 const file = await import('../components/file.js').then((module) => module.default).catch((err) => { log.error('file.js导入失败：\n', err); process.exit(1) })
 const UCDate = await import('../components/UCDate.js').then((module) => module.default).catch((err) => { log.error('UCDate.js导入失败：\n', err); process.exit(1) })
-const Path = await import('../components/Path.js').then((module) => module.creatPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.error('Path.js导入失败：\n', err); process.exit(1) })
+const Path = await import('../components/Path.js').then((module) => module.createPath(path.resolve(process.cwd(), '..', '..', '..'))).catch((err) => { log.error('Path.js导入失败：\n', err); process.exit(1) })
 
 if (!file.existsSync(Path.UC)) {
   log.error('错误路径')
   process.exit(1)
 }
+
+const UCPr = { ...file.YAMLreader(Path.get('defSet', 'config.yaml')), ...file.YAMLreader(Path.configyaml) }
 
 const _backupPath = Path.get('data', 'backup')
 
@@ -44,7 +47,7 @@ function displayMenu(options, info = '') {
 }
 
 /** 处理选择操作项 */
-function handleChoice(choice) {
+async function handleChoice(choice) {
   if (choice.toLowerCase() === 'e' || choice.toLowerCase() === 'end') {
     log('\n拜拜!\n')
     process.exit(0)
@@ -58,10 +61,10 @@ function handleChoice(choice) {
       log(`\n今日(${purple(folderName)})已备份，若需重新备份请先${purple('删除原今日备份数据')}`)
       return rl.question(`\n请输入选项${purple('序号')}：`, handleChoice)
     }
-    backup(folderName)
+    await backup(folderName)
     return main()
   } else if (choice === 2 || choice === 3) {
-    const backups = file.readdirSync(_backupPath, { type: 'Directory' })
+    const backups = file.readdirSync(_backupPath, { type: 'Directory', removes: '.git' })
     if (!backups.length) {
       log.red('\n请先备份或将由UC插件备份的数据置于UC-plugin/data/backup后重试')
       return rl.question(`\n请输入选项${purple('序号')}：`, handleChoice)
@@ -73,7 +76,7 @@ function handleChoice(choice) {
 }
 
 /** 处理选择文件夹 */
-function chooseFolder(choice, backups, type) {
+async function chooseFolder(choice, backups, type) {
   if (choice.toLowerCase() === 'e' || choice.toLowerCase() === 'end') {
     log('\n拜拜!\n')
     process.exit(0)
@@ -86,7 +89,7 @@ function chooseFolder(choice, backups, type) {
     return rl.question(`\n请输入正确的选项${purple('序号')}：`, (choice) => chooseFolder(choice, backups, type))
   }
   if (type === 'restore') {
-    restore(backups[choice - 1])
+    await restore(backups[choice - 1])
   } else if (type === 'unlink') {
     unlink(backups[choice - 1])
   }
@@ -94,12 +97,13 @@ function chooseFolder(choice, backups, type) {
 }
 
 /** 备份 */
-function backup(folderName) {
+async function backup(folderName) {
   log('\n开始备份：' + purple(folderName))
   const backupPath = Path.join(_backupPath, folderName)
   try {
-    backupYunzaiData(backupPath)
-    backupPluginsData(backupPath)
+    await backupYunzai(backupPath)
+    await backupPlugins(backupPath)
+    await backupExtra(backupPath)
   } catch (err) {
     log.error('\n备份云崽数据失败：\n', err)
     return process.exit(2)
@@ -108,94 +112,98 @@ function backup(folderName) {
 }
 
 /** 备份云崽本体数据 */
-function backupYunzaiData(backupPath) {
+async function backupYunzai(backupPath) {
   log.red('\n开始备份云崽本体数据')
-  log.purple('备份' + Path.botConfig)
-  file.copyFolderRecursively(Path.botConfig, Path.join(backupPath, 'config', 'config'))
-  log.purple('备份' + Path.get('_path', 'data'))
-  file.copyFolderRecursively(Path.get('_path', 'data'), Path.join(backupPath, 'data'))
+  log.purple('备份' + Path.botOriConfig)
+  await copyDir(Path.botOriConfig, Path.join(backupPath, 'config'), UCPr.BackupRestore.removeDirectory)
+  log.purple('备份' + Path.botData)
+  await copyDir(Path.botData, Path.join(backupPath, 'data'), UCPr.BackupRestore.removeDirectory)
   log.purple('备份' + Path.example)
-  file.copyFolderRecursively(Path.example, Path.join(backupPath, 'plugins', 'example'))
-  log.red('\n云崽本体数据备份完成')
+  await copyDir(Path.example, Path.join(backupPath, 'plugins', 'example'), UCPr.BackupRestore.removeDirectory)
+  log.red('云崽本体数据备份完成')
 }
 
 /** 备份云崽插件数据 */
-function backupPluginsData(backupPath) {
+async function backupPlugins(backupPath) {
   log.red('\n开始备份云崽插件数据')
   const plugins = file.readdirSync(Path.plugins, { type: 'Directory', removes: ['exmaple', 'system', 'other', 'bin', 'temp'] })
   for (const plugin of plugins) {
     const pluginPath = Path.join(Path.plugins, plugin)
-    const pluginConfigPath = Path.join(pluginPath, 'config')
     const backupPluginPath = Path.join(backupPath, 'plugins', plugin)
-    if (file.existsSync(pluginConfigPath)) {
-      log.purple('备份' + pluginConfigPath)
-      file.copyFolderRecursively(pluginConfigPath, Path.join(backupPluginPath, 'config'))
-    }
-    const pluginDataPath = Path.join(pluginPath, 'data')
-    if (file.existsSync(pluginDataPath)) {
-      if (plugin.endsWith('Admin')) continue
-      log.purple('备份' + pluginDataPath)
-      file.copyFolderRecursively(pluginDataPath, Path.join(backupPluginPath, 'data'), plugin === 'UC-plugin' ? ['backup'] : [], ['.git'])
+    for (const dir of UCPr.BackupRestore.Directory) {
+      if (dir === 'data' && plugin.endsWith('Admin')) continue
+      const pluginDirPath = Path.join(pluginPath, dir)
+      if (file.existsSync(pluginDirPath)) {
+        log.purple('备份' + pluginDirPath)
+        await copyDir(pluginDirPath, Path.join(backupPluginPath, dir), plugin === 'UC-plugin' ? [...UCPr.BackupRestore.removeDirectory, 'backup'] : UCPr.BackupRestore.removeDirectory)
+      }
     }
   }
-  log.red('\n云崽插件数据备份完成')
+  log.red('云崽插件数据备份完成')
+}
+
+async function backupExtra(backupPath) {
+  const paths = (UCPr.BackupRestore.extra).filter(Boolean)
+  if (!paths.length) return false
+  log.red('\n开始备份额外数据')
+  for (const extra of paths) {
+    if (extra.includes('UC-plugin')) continue
+    const source = Path.get('_path', extra)
+    if (!file.existsSync(source)) continue
+    const target = Path.join(backupPath, extra)
+    log.purple('备份' + source)
+    await copyDir(source, target, UCPr.BackupRestore.removeDirectory)
+  }
+  log.red('额外数据备份完成')
 }
 
 /** 还原云崽 */
-function restore(folderName) {
+async function restore(folderName) {
   log.red('\n开始还原云崽数据为：' + folderName)
   const backupPath = Path.join(_backupPath, folderName)
-  let uninstalled
-  try {
-    restoreYunzaiData(backupPath)
-    uninstalled = restorePluginsData(backupPath)
-  } catch (err) {
-    log.error('\n还原云崽数据失败：\n', err)
-    process.exit(3)
-  }
-  uninstalled.length && log.purple(yellow('\n未安装的插件：\n') + uninstalled.join('\n'))
-  log.red('\n云崽数据成功还原至：' + folderName)
-}
-
-/** 还原云崽本体数据 */
-function restoreYunzaiData(backupPath) {
-  log.red('\n开始还原云崽本体数据')
-  log.purple('还原' + Path.botConfig)
-  file.copyFolderRecursively(Path.join(backupPath, 'config', 'config'), Path.botConfig)
-  log.purple('还原' + Path.get('_path', 'data'))
-  file.copyFolderRecursively(Path.join(backupPath, 'data'), Path.get('_path', 'data'))
-  log.purple('还原' + Path.example)
-  file.copyFolderRecursively(Path.join(backupPath, 'plugins', 'example'), Path.example)
-  log.red('\n云崽本体数据还原完成')
-}
-
-/** 还原云崽插件数据 */
-function restorePluginsData(backupPath) {
-  log.red('\n开始还原云崽插件数据')
-  const plugins = file.readdirSync(Path.join(backupPath, 'plugins'), { type: 'Directory' })
   const uninstalled = []
+  const plugins = file.readdirSync(Path.join(backupPath, 'plugins'), { type: 'Directory' })
   for (const plugin of plugins) {
     const pluginPath = Path.join(Path.plugins, plugin)
     if (!file.existsSync(pluginPath)) {
       uninstalled.push(plugin)
-      continue
-    }
-    const backupPluginPath = Path.join(backupPath, 'plugins', plugin)
-    const backupConfigPath = Path.join(backupPluginPath, 'config')
-    if (file.existsSync(backupConfigPath)) {
-      const pluginConfigPath = Path.join(pluginPath, 'config')
-      log.purple('还原' + pluginConfigPath)
-      file.copyFolderRecursively(backupConfigPath, pluginConfigPath)
-    }
-    const backupDataPath = Path.join(backupPluginPath, 'data')
-    if (file.existsSync(backupDataPath)) {
-      const pluginDataPath = Path.join(pluginPath, 'data')
-      log.purple('还原' + pluginDataPath)
-      file.copyFolderRecursively(backupDataPath, pluginDataPath, [], ['.git'])
     }
   }
-  log.red('\n云崽插件数据还原完成')
-  return uninstalled
+  await copyDir(backupPath, Path._path)
+  uninstalled.length && log.purple(yellow('\n未安装的插件：\n') + uninstalled.join('\n'))
+  log.red('\n云崽数据成功还原至：' + folderName)
+}
+
+async function copyFile(source, target) {
+  return new Promise((resolve, reject) => {
+    const rd = file.createReadStream(source)
+    rd.on('error', reject)
+    const wr = file.createWriteStream(target)
+    wr.on('error', reject)
+    wr.on('finish', resolve)
+    rd.pipe(wr)
+  }).catch(error => {
+    log.error(`复制${source}至${target}失败`)
+    log.error(error)
+  })
+}
+
+async function copyDir(sourceDir, targetDir, removes = []) {
+  if (file.isFile(sourceDir)) return copyFile(sourceDir, targetDir)
+  if (!file.existsSync(targetDir)) file.mkdirSync(targetDir, { recursive: true })
+  const files = await file.promises.readdir(sourceDir)
+  for (const _file of files) {
+    const srcPath = Path.join(sourceDir, _file)
+    const tgtPath = Path.join(targetDir, _file)
+    const stats = await file.promises.stat(srcPath)
+    if (stats.isFile()) {
+      await copyFile(srcPath, tgtPath)
+    } else if (stats.isDirectory()) {
+      if (removes.includes(_file)) continue
+      await copyDir(srcPath, tgtPath, removes)
+      log('复制目录' + srcPath)
+    }
+  }
 }
 
 /** 删除备份数据 */

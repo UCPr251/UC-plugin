@@ -126,7 +126,7 @@ class UCPr {
     const yamls = file.readdirSync(Path.groupCfg, { type: '.yaml' })
     const config = _.cloneDeep(this.CFG.config)
     const { GAconfig } = this.CFG
-    const removes = ['qsignRestart', 'JSsystem']
+    const removes = ['qsignRestart', 'JSsystem', 'BackupRestore']
     for (const key of Reflect.ownKeys(config)) {
       if (!_.isPlainObject(config[key]) || removes.includes(key)) {
         Reflect.deleteProperty(config, key)
@@ -285,11 +285,6 @@ class UCPr {
     return this.config.isDefaultMaster ?? true
   }
 
-  /** 是否每日零点前自动备份云崽和插件数据 */
-  get autoBackup() {
-    return this.config.autoBackup ?? false
-  }
-
   /** 强制仅全局 */
   get onlyGlobal() {
     return this.config.onlyGlobal ?? false
@@ -408,6 +403,11 @@ class UCPr {
   /** 开关Bot设置 */
   get switchBot() {
     return this.config.switchBot ?? {}
+  }
+
+  /** 备份还原设置 */
+  get BackupRestore() {
+    return this.config.BackupRestore ?? {}
   }
 
   /** 戳一戳设置 */

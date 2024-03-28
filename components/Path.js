@@ -1,9 +1,11 @@
 import path from 'node:path'
 
-export function creatPath(_path) {
+export function createPath(_path) {
   const Plugin_Name = 'UC-plugin'
   const qsign = path.resolve(_path, '..', 'unidbg-fetch-qsign')
-  const botConfig = path.join(_path, 'config', 'config')
+  const botOriConfig = path.join(_path, 'config')
+  const botConfig = path.join(botOriConfig, 'config')
+  const botData = path.join(_path, 'data')
   const plugins = path.join(_path, 'plugins')
   const example = path.join(plugins, 'example')
   const UC = path.join(plugins, Plugin_Name)
@@ -65,8 +67,12 @@ export function creatPath(_path) {
     Plugin_Name,
     /** 云崽工作目录路径 */
     _path,
+    /** 云崽/config */
+    botOriConfig,
     /** 云崽/config/config */
     botConfig,
+    /** 云崽/data */
+    botData,
     /** 签名默认路径 */
     qsign,
     /** 云崽/plugins */
@@ -153,6 +159,6 @@ export function creatPath(_path) {
   return Path
 }
 
-const Path = creatPath(process.cwd())
+const Path = createPath(process.cwd())
 
 export default Path
